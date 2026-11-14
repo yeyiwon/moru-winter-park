@@ -1,5 +1,6 @@
 import * as THREE from './vendor/three.module.js';
 import {moveVector,moveOnGround} from './movement.js';
+import {createDiscoveryGate} from './discovery.js';
 const canvas=document.getElementById('park-canvas');
 let renderer;
 try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});}catch(e){document.body.classList.add('no-webgl');document.getElementById('park-status').textContent='이 기기에서는 3D 화면을 사용할 수 없어요. 퀴즈는 계속 풀 수 있어요.';}
@@ -107,7 +108,10 @@ const books=bookSpecs.map(spec=>{
   return {...spec,root,book,ring,sparkle,aura};
 });
 const reduce=matchMedia('(prefers-reduced-motion: reduce)'),status=document.getElementById('park-status');
-const interactLabel=document.getElementById('interact-label'),interactButton=document.getElementById('open-quiz');
+const discoveryCard=document.getElementById('discovery-card'),screenPoint=new THREE.Vector3(),discoveryGate=createDiscoveryGate();
+let canvasRect=canvas.getBoundingClientRect(),knowledgeOrigin=null,shownBook=null;
+window.parkKnowledgeOrigin=()=>knowledgeOrigin;
+window.dismissParkDiscovery=()=>{discoveryGate.dismiss();shownBook=null;window.showParkDiscovery(null)};
 const keys=new Set(),tapUntil=new Map(),pointers=new Map(),velocity=new THREE.Vector2(),joy=new THREE.Vector2();
 let nearby=null,celebrateUntil=0,follow=false,jumpY=0,jumpVelocity=0,landingAt=-100,walkPhase=0,activeTime=0;
 let lastX=0,lastY=0,moved=0,pinchDistance=0;
@@ -120,7 +124,6 @@ window.addEventListener('keydown',e=>{
   if(typing(e)||e.metaKey||e.ctrlKey||e.altKey||paused())return;
   if(keyDirections[e.code]){e.preventDefault();document.activeElement?.blur();keys.add(e.code);if(!e.repeat)tapUntil.set(e.code,performance.now()+110);}
   if(e.code==='Space'&&!(e.target.closest('button,summary,a'))){e.preventDefault();if(!e.repeat)startJump();}
-  if(e.code==='KeyE'&&!e.repeat){e.preventDefault();window.openParkKnowledge(nearby?.cat);}
 });
 window.addEventListener('keyup',e=>keys.delete(e.code));
 window.addEventListener('blur',clearControls);document.addEventListener('visibilitychange',()=>{if(document.hidden)clearControls()});
@@ -132,7 +135,7 @@ joystick.addEventListener('pointermove',e=>{if(e.pointerId===joyPointer)setJoyst
 function releaseJoystick(e){if(e.pointerId!==joyPointer)return;joyPointer=null;joy.set(0,0);joystick.classList.remove('active');stick.style.transform='translate(-50%,-50%)'}
 joystick.addEventListener('pointerup',releaseJoystick);joystick.addEventListener('pointercancel',releaseJoystick);joystick.addEventListener('lostpointercapture',releaseJoystick);
 joystick.querySelectorAll('[data-move]').forEach(b=>b.addEventListener('click',e=>{if(e.detail===0){const code={up:'KeyW',down:'KeyS',left:'KeyA',right:'KeyD'}[b.dataset.move];tapUntil.set(code,performance.now()+220)}}));
-document.getElementById('jump').addEventListener('click',startJump);
+
 function pointDistance(){const p=[...pointers.values()];return p.length===2?Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y):0}
 canvas.addEventListener('pointerdown',e=>{if(paused())return;document.activeElement?.blur();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});lastX=e.clientX;lastY=e.clientY;moved=0;if(pointers.size===2)pinchDistance=pointDistance();canvas.setPointerCapture(e.pointerId)});
 canvas.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===2){const d=pointDistance();targetDistance=Math.max(16,Math.min(45,targetDistance+(pinchDistance-d)*.045));pinchDistance=d;moved=100;return}const dx=e.clientX-lastX,dy=e.clientY-lastY;moved+=Math.abs(dx)+Math.abs(dy);targetYaw-=dx*.003;targetPitch=Math.max(.25,Math.min(.72,targetPitch+dy*.0018));lastX=e.clientX;lastY=e.clientY});
@@ -140,19 +143,19 @@ canvas.addEventListener('pointerup',e=>{if(moved<8&&pointers.size===1){const rec
 canvas.addEventListener('pointercancel',e=>pointers.delete(e.pointerId));canvas.addEventListener('wheel',e=>{e.preventDefault();targetDistance=Math.max(16,Math.min(45,targetDistance+e.deltaY*.015))},{passive:false});
 window.parkCelebrate=()=>{celebrateUntil=performance.now()+1200;emitMotes(fluff.position.x,1.2,fluff.position.z,30)};
 window.parkNearbyCategory=()=>nearby?.cat;
-document.getElementById('park-reset').onclick=()=>{follow=true;targetYaw=.12;targetPitch=.47;targetDistance=innerWidth<650?29:23;};
-window.addEventListener('lab:open',()=>{clearControls();if(nearby)emitMotes(nearby.x,1.6,nearby.z,42);else emitMotes(fluff.position.x,1.2,fluff.position.z,42)});
+window.addEventListener('lab:open',()=>{clearControls();window.dismissParkDiscovery();if(nearby)emitMotes(nearby.x,1.6,nearby.z,42);else emitMotes(fluff.position.x,1.2,fluff.position.z,42)});
 window.addEventListener('lab:close',clearControls);
 // A single particle buffer for footsteps, landings and book discoveries.
 const moteCount=72,motePositions=new Float32Array(moteCount*3).fill(-100),moteStates=Array.from({length:moteCount},()=>({life:0}));
 const moteGeo=new THREE.BufferGeometry();moteGeo.setAttribute('position',new THREE.BufferAttribute(motePositions,3));
 const motes=new THREE.Points(moteGeo,new THREE.PointsMaterial({color:'#ffe6b6',size:.14,map:glowMap,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));scene.add(motes);let moteCursor=0,lastTrail=0;
 function emitMotes(x,y,z,count){if(reduce.matches||document.body.classList.contains('still'))return;for(let i=0;i<count;i++){const a=random()*Math.PI*2,s=count>5?1.5+random()*2:.2;const m=moteStates[moteCursor++%moteCount];Object.assign(m,{x,y,z,vx:Math.cos(a)*s,vy:1+random()*2,vz:Math.sin(a)*s,life:.6+random()*.5});}}
-function updateNearby(){
-  let candidate=null,nearest=2.5;for(const b of books){const d=Math.hypot(fluff.position.x-b.x,fluff.position.z-b.z);if(d<nearest){candidate=b;nearest=d;}}
-  if(candidate===nearby&&status.textContent)return;nearby=candidate;
-  interactLabel.textContent=nearby?`${nearby.label} 줍기`:'잡지식 줍기';interactButton.classList.toggle('near-book',!!nearby);
-  status.textContent=nearby?`${nearby.label} 책 발견 · ${innerWidth<650?'버튼을 눌러 펼치기':'E로 펼치기'}`:(innerWidth<650?'왼쪽 조이스틱으로 이동 · 책을 찾아보세요':'WASD로 이동 · 빛나는 책 가까이에서 E');
+function updateNearby(now){
+  let candidate=nearby&&Math.hypot(fluff.position.x-nearby.x,fluff.position.z-nearby.z)<3.5?nearby:null;
+  if(!candidate){let nearest=2.7;for(const b of books){const d=Math.hypot(fluff.position.x-b.x,fluff.position.z-b.z);if(d<nearest){candidate=b;nearest=d;}}}
+  if(candidate!==nearby||!status.textContent){nearby=candidate;status.textContent=nearby?`${nearby.label} 잡지식 발견`:(innerWidth<650?'조이스틱으로 산책 · 책에 다가가 보세요':'WASD로 산책 · 책에 다가가 보세요');}
+  const eligible=discoveryGate.update(candidate?.cat||null,now),nextBook=paused()?null:eligible;
+  if(nextBook!==shownBook){shownBook=nextBook;window.showParkDiscovery(nextBook?candidate:null);}
 }
 let lastFrame=0,previousWidth=0;
 function animate(now){requestAnimationFrame(animate);if(document.hidden){lastFrame=now;return}if(now-lastFrame<(paused()?40:innerWidth<650?28:16))return;
@@ -163,7 +166,7 @@ function animate(now){requestAnimationFrame(animate);if(document.hidden){lastFra
   if(Math.abs(velocity.x)+Math.abs(velocity.y)<.025)velocity.set(0,0);
   const oldX=fluff.position.x,oldZ=fluff.position.z,next=moveOnGround({x:oldX,z:oldZ},{x:velocity.x,z:velocity.y},dt);
   fluff.position.x=next.x;fluff.position.z=next.z;const travelled=Math.hypot(next.x-oldX,next.z-oldZ),walking=travelled>.001;
-  if(walking){if(!follow){follow=true;targetDistance=innerWidth<650?29:23;targetPitch=.47;}document.body.classList.add('has-walked');walkPhase+=travelled*4.2;const facing=Math.atan2(velocity.x,velocity.y);fluff.rotation.y+=Math.atan2(Math.sin(facing-fluff.rotation.y),Math.cos(facing-fluff.rotation.y))*Math.min(1,dt*12);if(t-lastTrail>.12){emitMotes(next.x,.13,next.z,2);lastTrail=t;}}
+  if(walking){if(!follow){follow=true;targetDistance=innerWidth<650?37:23;targetPitch=.47;}document.body.classList.add('has-walked');walkPhase+=travelled*4.2;const facing=Math.atan2(velocity.x,velocity.y);fluff.rotation.y+=Math.atan2(Math.sin(facing-fluff.rotation.y),Math.cos(facing-fluff.rotation.y))*Math.min(1,dt*12);if(t-lastTrail>.12){emitMotes(next.x,.13,next.z,2);lastTrail=t;}}
   if(!paused()&&(jumpY>0||jumpVelocity>0)){jumpVelocity-=15*dt;jumpY+=jumpVelocity*dt;if(jumpY<=0){jumpY=0;jumpVelocity=0;landingAt=t;emitMotes(next.x,.13,next.z,14);}}
   const celebrate=!still&&now<celebrateUntil,hop=celebrate?Math.abs(Math.sin(t*9))*.4:0,land=Math.max(0,1-(t-landingAt)/.22);
   fluff.position.y=1+jumpY+hop+(!still&&walking?Math.abs(Math.sin(walkPhase))*.08:0);
@@ -174,12 +177,13 @@ function animate(now){requestAnimationFrame(animate);if(document.hidden){lastFra
   target.x+=(tx-target.x)*(1-Math.exp(-dt*3));target.z+=(tz-target.z)*(1-Math.exp(-dt*3));target.y=follow?2.2:3;
   yaw+=(targetYaw-yaw)*(1-Math.exp(-dt*5));pitch+=(targetPitch-pitch)*(1-Math.exp(-dt*5));distance+=(targetDistance-distance)*(1-Math.exp(-dt*3));
   camera.position.set(target.x+Math.sin(yaw)*distance,target.y+Math.sin(pitch)*distance,target.z+Math.cos(yaw)*distance);camera.lookAt(target);
-  updateNearby();
+  updateNearby(now);
+  if(nearby){screenPoint.set(nearby.x,3.1,nearby.z).project(camera);const x=canvasRect.left+(screenPoint.x*.5+.5)*canvasRect.width,y=canvasRect.top+(-screenPoint.y*.5+.5)*canvasRect.height;knowledgeOrigin={x,y};discoveryCard.style.setProperty('--anchor-x',Math.max(180,Math.min(innerWidth-180,x)).toFixed(1)+'px');discoveryCard.style.setProperty('--anchor-y',Math.max(300,Math.min(innerHeight-80,y)).toFixed(1)+'px');}else knowledgeOrigin=null;
   if(!still){wheel.rotation.z=t*.08;gondolas.forEach(g=>g.rotation.z=-wheel.rotation.z);spinning.rotation.y=t*.16;seats.forEach((s,i)=>s.position.y=1.5+Math.sin(t*1.3+i)*.3);lanterns.forEach(({g,y,phase})=>{g.position.y=y+Math.sin(t*.5+phase)*.3;g.rotation.z=Math.sin(t*.4+phase)*.08});waterUniforms.uTime.value=t;skyUniforms.uTime.value=t;for(let i=0;i<fireCount;i++){const f=fireSeeds[i];fireData[i*3]=f.x+Math.sin(t*.3+f.p)*.6;fireData[i*3+1]=f.y+Math.sin(t*.8+f.p)*.4;fireData[i*3+2]=f.z+Math.cos(t*.4+f.p)*.6}fireGeo.attributes.position.needsUpdate=true;eyes.forEach(e=>e.scale.y=.138*(Math.sin(t*1.2)>.995?.12:1));stars.rotation.y=t*.002;}
   books.forEach((b,i)=>{const isNear=b===nearby;b.book.position.y=1.55+(still?0:Math.sin(t*1.7+i)*.13);b.book.rotation.y=still?.25:Math.sin(t*.35+i)*.28;b.sparkle.rotation.z=still?0:t*.4;b.ring.scale.setScalar(isNear?1.18:1);b.aura.material.opacity=isNear?.65:.25;});
   for(let i=0;i<moteCount;i++){const m=moteStates[i];if(m.life>0&&!still){m.life-=dt;m.x+=m.vx*dt;m.z+=m.vz*dt;m.y+=m.vy*dt;m.vy-=dt*3;motePositions.set([m.x,m.y,m.z],i*3)}else motePositions[i*3+1]=-100;}moteGeo.attributes.position.needsUpdate=true;
   renderer.render(scene,camera);
 }
-function resize(){const rect=canvas.getBoundingClientRect(),w=Math.max(1,rect.width),h=Math.max(1,rect.height);renderer.setSize(w,h,false);renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<650?1.35:1.7));camera.aspect=w/h;camera.fov=innerWidth<650?52:44;camera.updateProjectionMatrix();if(Math.abs(previousWidth-innerWidth)>60){targetDistance=innerWidth<650?(follow?29:36):(follow?23:29);targetPitch=follow?.47:innerWidth<650?.36:.32;previousWidth=innerWidth}status.textContent='';updateNearby();}
+function resize(){const rect=canvas.getBoundingClientRect();canvasRect=rect;const w=Math.max(1,rect.width),h=Math.max(1,rect.height);renderer.setSize(w,h,false);renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<650?1.35:1.7));camera.aspect=w/h;camera.fov=innerWidth<650?58:44;camera.updateProjectionMatrix();if(Math.abs(previousWidth-innerWidth)>60){targetDistance=innerWidth<650?(follow?37:45):(follow?23:29);targetPitch=follow?.47:innerWidth<650?.4:.32;previousWidth=innerWidth}status.textContent='';updateNearby(performance.now());}
 resize();requestAnimationFrame(animate);window.addEventListener('resize',resize);new ResizeObserver(resize).observe(canvas);
 }
