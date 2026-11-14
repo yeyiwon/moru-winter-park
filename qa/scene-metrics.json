@@ -1,10 +1,10 @@
 {
   "environment": "Node v22.4.1 darwin arm64",
   "measurement": "CPU scene geometry construction; no browser, WebGL or GPU rendering",
-  "sceneConstructionMs": 711.17,
-  "meshObjects": 52,
-  "materials": 12,
-  "triangles": 165663,
+  "sceneConstructionMs": 7141.19,
+  "meshObjects": 380,
+  "materials": 116,
+  "triangles": 561367,
   "renderFPS": null,
-  "visualVerification": "not-performed-after-browser-unavailable"
+  "browserVisualVerification": "not available; separate CPU mesh renders are documented in qa-report.md"
 }

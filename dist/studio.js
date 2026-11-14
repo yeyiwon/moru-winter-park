@@ -1,9 +1,9 @@
 import {islands,bridges} from './world-layout.js';
-const defaults={light:'#c5c8ea',brightness:100,fur:'#eee3ed',fluff:100,roundness:50,accessory:'none'};
+const defaults={light:'#c5c8ea',brightness:100,fur:'#e9e1d6',fluff:100,roundness:50,accessory:'none'};
 let saved={};try{saved=JSON.parse(localStorage.getItem('lab-appearance-v2'))||{};}catch{}
 const validColor=v=>/^#[0-9a-f]{6}$/i.test(v);
 const appearance={...defaults,...saved};for(const key of ['light','fur'])if(!validColor(appearance[key]))appearance[key]=defaults[key];
-for(const [key,min,max] of [['brightness',55,150],['fluff',50,150],['roundness',0,100]])appearance[key]=Number.isFinite(+appearance[key])?Math.min(max,Math.max(min,+appearance[key])):defaults[key];
+for(const [key,min,max] of [['brightness',55,150],['fluff',50,100],['roundness',0,100]])appearance[key]=Number.isFinite(+appearance[key])?Math.min(max,Math.max(min,+appearance[key])):defaults[key];
 if(!['none','star','ribbon'].includes(appearance.accessory))appearance.accessory='none';
 window.labAppearance=appearance;
 const studio=document.getElementById('studio'),tabs=[...studio.querySelectorAll('[data-studio]')];
@@ -23,7 +23,8 @@ studio.addEventListener('click',e=>{if(e.target===studio){const r=studio.getBoun
 studio.querySelector('[role=tablist]').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const current=tabs.indexOf(document.activeElement),index=e.key==='Home'?0:e.key==='End'?tabs.length-1:(current+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;selectTab(tabs[index].dataset.studio);tabs[index].focus();});
 for(const [id,key] of [['light-color','light'],['light-level','brightness'],['fur-length','fluff'],['roundness','roundness']])document.getElementById(id).addEventListener('input',e=>{appearance[key]=key==='light'?e.target.value:Number(e.target.value);update();});
 const map=document.getElementById('island-map');
-map.innerHTML=islands.map(i=>`<button data-island="${i.id}" style="--island:${i.color}"><span class="island-dot"></span><span>${i.name}<small>${i.subject}</small></span><span>↗</span></button>`).join('');
+const point=i=>({x:50+i.x/46*35,y:49+i.z/53*36});
+map.innerHTML='<svg class="map-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'+bridges.map(([a,b])=>{const p=point(a),q=point(b);return `<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}"/>`;}).join('')+'</svg>'+islands.map(i=>{const p=point(i);return `<button data-island="${i.id}" aria-label="${i.name}으로 이동" style="--island:${i.color};left:${p.x}%;top:${p.y}%"><span class="island-dot"></span><span>${i.name}<small>${i.subject}</small></span></button>`;}).join('');
 map.addEventListener('click',e=>{const b=e.target.closest('[data-island]');if(b&&window.travelToIsland){closeStudio();window.travelToIsland(b.dataset.island);}});
 window.addEventListener('lab:region',e=>map.querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',b.dataset.island===e.detail?'location':'false')));
 update();
