@@ -13,7 +13,7 @@ test('movement speed stays equal at 30 and 60 frames per second',()=>{
   assert.ok(Math.abs(a.z-3.2)<1e-9&&Math.abs(a.z-b.z)<1e-9);
 });
 test('the island edge, lake, castle and carousel block entry',()=>{
-  for(const [x,z] of [[20,0],[-10,-3],[7.1,-3.2],[1,-15]])assert.equal(canStandAt(x,z),false);
+  for(const [x,z] of [[20,0],[-10,-3],[7.1,-3.2],[3.4,-16]])assert.equal(canStandAt(x,z),false);
   for(const [start,velocity] of [[{x:14,z:10},{x:5,z:5}],[{x:2.5,z:-3.2},{x:5,z:0}],[{x:0,z:0},{x:-5,z:0}]]){
     const p=walk(start,velocity,300,.016);assert.equal(canStandAt(p.x,p.z),true);
     assert.ok(Math.hypot(p.x-start.x,p.z-start.z)<3);
