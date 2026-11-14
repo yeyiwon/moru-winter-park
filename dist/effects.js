@@ -9,7 +9,7 @@ soundButton.addEventListener('click',()=>{sound=!sound;soundLabel();try{localSto
 window.labFeedback=correct=>{tone(correct);if(correct)window.parkCelebrate?.();if(reduce.matches||document.body.classList.contains('still'))return;const answer=document.querySelector(correct?'.answer.correct':'.answer.wrong');answer?.animate(correct?[{boxShadow:'0 0 0 0 #b8eed000'},{boxShadow:'0 0 34px 0 #b8eed029',offset:.4},{boxShadow:'0 0 0 0 #b8eed000'}]:[{opacity:.55},{opacity:1}],{duration:correct?650:250,easing:'ease-out'});};
 })();
 const overlay=document.getElementById('quiz-overlay');
-function openQuiz(){overlay.hidden=false;document.body.classList.add('quiz-open');document.getElementById('close-quiz').focus();}
+function openQuiz(){overlay.hidden=false;document.body.classList.add('quiz-open');overlay.scrollTop=0;document.getElementById('close-quiz').focus({preventScroll:true});}
 function closeQuiz(){overlay.hidden=true;document.body.classList.remove('quiz-open');document.getElementById('open-quiz').focus();}
 document.getElementById('open-quiz').addEventListener('click',()=>{go('explore');openQuiz()});
 document.getElementById('close-quiz').addEventListener('click',closeQuiz);
