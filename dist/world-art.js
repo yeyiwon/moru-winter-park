@@ -1,125 +1,61 @@
-import * as THREE from './vendor/three.module.js';
-import {islands,bridges} from './world-layout.js';
-
-export function buildArchipelago(api){
-  const {scene,mesh,ball,cylinder,box,rod,torus,halo,M,glowMap}=api;
-  let seed=619;const rand=()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646;};
-  const gold=M('#c9ab76',.28,.72),ivory=M('#b6bac4',.62,.1),bark=M('#36454b'),green=M('#315d57'),dark=M('#283743');
-  const rotations=[],waterfalls=[];
-  function noiseTexture(){const c=document.createElement('canvas');c.width=c.height=256;const cx=c.getContext('2d'),im=cx.createImageData(256,256);for(let i=0;i<im.data.length;i+=4){const v=175+rand()*55;im.data.set([v,v,v,255],i);}cx.putImageData(im,0,0);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(12,12);return t;}
-  const grain=noiseTexture();
-  function terrain(island){
-    const mat=M(island.id==='nature'?'#315b50':'#3e4655',.96);mat.map=grain;mat.bumpMap=grain;mat.bumpScale=.09;
-    const top=cylinder(island.r,island.r-.3,.25,mat,island.x,-.15,island.z,scene,96);top.name='island-ground';const edge=top.geometry.attributes.position;for(let i=0;i<edge.count;i++){const x=edge.getX(i),z=edge.getZ(i),a=Math.atan2(z,x),scale=1+.025*Math.sin(a*5)+.022*Math.sin(a*9+.6);edge.setX(i,x*scale);edge.setZ(i,z*scale);}top.geometry.computeVertexNormals();
-    const rockGeo=new THREE.CylinderGeometry(island.r-.2,island.r*.55,6,64,5);const p=rockGeo.attributes.position;
-    for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),a=Math.atan2(z,x),v=1+.025*Math.sin(a*9+y*2)+.04*Math.sin(a*5-y);p.setXYZ(i,x*v,y,z*v);}rockGeo.computeVertexNormals();
-    mesh(rockGeo,M('#303946',.95),island.x,-3.3,island.z);
-    for(let j=0;j<8;j++){const a=rand()*Math.PI*2,r=island.r*.75,x=island.x+Math.cos(a)*r,z=island.z+Math.sin(a)*r;const stone=mesh(new THREE.IcosahedronGeometry(.7+rand(),1),M('#45515b'),x,-1.7-rand()*3,z);stone.scale.set(1,2,1);}
-    for(let j=0;j<4;j++){const a=j*Math.PI/2+.6;const mist=halo(island.x+Math.cos(a)*island.r,-5,island.z+Math.sin(a)*island.r,island.color,22);mist.material.opacity=.075;}
-  }
-  for(const island of islands.slice(1))terrain(island);
-  // Narrow sky bridges have detailed timber, warm edge lights and brass railings.
-  const plankMaterial=M('#67616b',.88),plankGeo=new THREE.BoxGeometry(3.7,.16,.62),planks=[];
-  for(const [a,b] of bridges){
-    const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz),ux=dx/len,uz=dz/len,start=a.r-1,end=len-b.r+1;
-    for(let d=start;d<end;d+=.69)planks.push({x:a.x+ux*d,z:a.z+uz*d,yaw:Math.atan2(ux,uz)});
-    for(const side of [-1,1]){
-      const x1=a.x+ux*start+uz*side*2,z1=a.z+uz*start-ux*side*2,x2=a.x+ux*end+uz*side*2,z2=a.z+uz*end-ux*side*2;
-      rod([x1,.85,z1],[x2,.85,z2],.035,gold);rod([x1,.28,z1],[x2,.28,z2],.025,gold);
-      for(let d=start;d<=end;d+=3){const x=a.x+ux*d+uz*side*2,z=a.z+uz*d-ux*side*2;rod([x,.05,z],[x,.96,z],.06,gold);ball(new THREE.MeshBasicMaterial({color:a.color}),x,1.01,z,.075);}
-    }
-  }
-  const bridgeMesh=new THREE.InstancedMesh(plankGeo,plankMaterial,planks.length),dummy=new THREE.Object3D();planks.forEach((p,i)=>{dummy.position.set(p.x,.02,p.z);dummy.rotation.set(0,p.yaw,0);dummy.updateMatrix();bridgeMesh.setMatrixAt(i,dummy.matrix)});bridgeMesh.receiveShadow=true;scene.add(bridgeMesh);
-  function groupAt(i,x=0,z=0){const g=new THREE.Group();g.position.set(i.x+x,0,i.z+z);scene.add(g);return g;}
-  function ringFloor(parent,r,mat){cylinder(r,r+.2,.22,mat,0,.1,0,parent,64);const ring=torus(r-.1,.04,gold,0,.23,0,parent);ring.rotation.x=-Math.PI/2;}
-  function arch(parent,x,z,h,w,color){
-    const pts=[new THREE.Vector3(x-w,0,z),new THREE.Vector3(x-w,h*.65,z),new THREE.Vector3(x,h,z),new THREE.Vector3(x+w,h*.65,z),new THREE.Vector3(x+w,0,z)];mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),48,.1,8,false),gold,0,0,0,parent);
-    const shape=new THREE.Shape();shape.moveTo(-w,0);shape.lineTo(w,0);shape.lineTo(w,h*.6);shape.quadraticCurveTo(w,h,0,h);shape.quadraticCurveTo(-w,h,-w,h*.6);shape.closePath();
-    const mirror=new THREE.MeshPhysicalMaterial({color,metalness:.85,roughness:.08,transparent:true,opacity:.7,side:THREE.DoubleSide,clearcoat:1});mesh(new THREE.ShapeGeometry(shape,36),mirror,x,.1,z,parent);halo(x,h*.5,z+.15,color,h*1.5,parent);
-  }
-  const leafGeo=new THREE.IcosahedronGeometry(1,1);
-  function tree(parent,x,z,height,color){
-    const leaves=new THREE.MeshStandardMaterial({color,roughness:.8,side:THREE.DoubleSide});
-    const foliage=new THREE.InstancedMesh(leafGeo,leaves,240),leafDummy=new THREE.Object3D();let n=0;
-    const trunk=[new THREE.Vector3(x,0,z),new THREE.Vector3(x+.15,height*.45,z),new THREE.Vector3(x-.2,height*.85,z)];mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(trunk),10,.15,7,false),bark,0,0,0,parent);
-    for(let j=0;j<6;j++){const a=j*2.4,r=.6+rand()*1.2,y=height*.62+rand()*height*.35,bx=x+Math.cos(a)*r,bz=z+Math.sin(a)*r;rod([x,height*.45,z],[bx,y,bz],.055,bark,parent);
-      for(let k=0;k<40;k++){const az=rand()*Math.PI*2,h=rand()*2-1,radius=Math.cbrt(rand())*.65,w=Math.sqrt(1-h*h);leafDummy.position.set(bx+Math.cos(az)*w*radius,y+h*radius*.65,bz+Math.sin(az)*w*radius);leafDummy.rotation.set(rand()*2,rand()*6,rand()*3);leafDummy.scale.set(.14+rand()*.1,.13+rand()*.08,.15+rand()*.12);leafDummy.updateMatrix();foliage.setMatrixAt(n,leafDummy.matrix);foliage.setColorAt(n,new THREE.Color().setScalar(.75+rand()*.35));n++;}}
-    foliage.castShadow=true;foliage.receiveShadow=true;parent.add(foliage);
-  }
-  // Glass observatory: an armillary sphere, optical telescope and etched dome ribs.
-  const observatory=groupAt(islands[1],0,-3);ringFloor(observatory,4.6,ivory);cylinder(4,4.1,1.7,dark,0,1,0,observatory,64);
-  const glass=new THREE.MeshPhysicalMaterial({color:'#87d2e7',metalness:.15,roughness:.1,transparent:true,opacity:.24,side:THREE.DoubleSide,depthWrite:false,clearcoat:1});
-  mesh(new THREE.SphereGeometry(4.1,48,24,0,Math.PI*2,0,Math.PI/2),glass,0,1.85,0,observatory);
-  for(let j=0;j<12;j++){const a=j/12*Math.PI*2,pts=[];for(let k=0;k<=24;k++){const t=k/24*Math.PI/2;pts.push(new THREE.Vector3(Math.cos(a)*Math.cos(t)*4.12,1.85+Math.sin(t)*4.12,Math.sin(a)*Math.cos(t)*4.12));}mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),24,.035,5,false),gold,0,0,0,observatory);}
-  cylinder(.18,.4,3,gold,0,2,0,observatory);const telescope=new THREE.Group();telescope.position.set(0,3.4,0);telescope.rotation.z=-.65;observatory.add(telescope);cylinder(.45,.6,3,ivory,0,0,0,telescope);cylinder(.61,.61,.18,gold,0,-1.5,0,telescope);cylinder(.39,.39,.06,new THREE.MeshBasicMaterial({color:'#8de0ee'}),0,1.52,0,telescope);
-  const armillary=groupAt(islands[1],-8,2);cylinder(.3,.9,1.5,ivory,0,.75,0,armillary);for(let j=0;j<3;j++){const ring=torus(1.6,.055,gold,0,2.8,0,armillary);ring.rotation.set(j*.6,j*.8,.4);rotations.push({g:ring,s:.08+j*.04});}ball(new THREE.MeshBasicMaterial({color:'#c4ecff'}),0,2.8,0,.24,armillary);halo(0,2.8,0,'#80cae9',4,armillary);
-  // The archive: a floating balance over a colonnade, shelves and copper-bound books.
-  const archive=groupAt(islands[2],1,-3);ringFloor(archive,5.5,ivory);
-  for(let j=0;j<9;j++){const a=j/8*Math.PI,x=Math.cos(a)*4.5,z=-Math.sin(a)*3.3;cylinder(.2,.32,4.8,ivory,x,2.5,z,archive,20);cylinder(.42,.42,.18,gold,x,4.9,z,archive);}
-  const roof=cylinder(5.5,5.7,.3,ivory,0,5.2,-.8,archive,6);roof.rotation.y=Math.PI/6;
-  rod([0,5.4,-.7],[0,9,-.7],.09,gold,archive);const balance=new THREE.Group();balance.position.set(0,8.7,-.7);archive.add(balance);rod([-3,0,0],[3,0,0],.08,gold,balance);rotations.push({g:balance,s:0,balance:true});
-  for(const side of [-1,1]){for(const dz of [-.55,.55])rod([side*2.7,0,0],[side*2.7,-1.65,dz],.02,gold,balance);const bowl=mesh(new THREE.SphereGeometry(.82,24,12,0,Math.PI*2,Math.PI/2,Math.PI/2),gold,side*2.7,-1.6,0,balance);bowl.scale.y=.3;}
-  for(let side of [-1,1])for(let shelf=0;shelf<3;shelf++){box(2.5,.1,.6,gold,side*3,shelf*.85+.6,-2,archive);for(let j=0;j<9;j++){const book=box(.16,.45+rand()*.2,.43,M(['#8f829a','#547f83','#b49679'][j%3]),side*3-1+j*.25,shelf*.85+.95,-2,archive);book.rotation.z=(rand()-.5)*.15;}}
-  // Mirror forest: freestanding silver portals and a grove with individual branches.
-  const forest=groupAt(islands[3]);for(let j=0;j<5;j++){const a=j/5*Math.PI*2,g=new THREE.Group();g.position.set(Math.cos(a)*7,0,Math.sin(a)*7);g.rotation.y=-a+Math.PI/2;forest.add(g);arch(g,0,0,4+rand(),1.2,'#b1abed');}
-  for(const [x,z,h] of [[-5,-5,7],[5,-6,6],[8,3,5],[-7,4,6]])tree(forest,x,z,h,'#6b668f');
-  // A glazed conservatory around a reflecting pool, with room to walk outside.
-  const garden=groupAt(islands[4],0,0);ringFloor(garden,4.7,green);
-  for(let j=0;j<4;j++){const a=j/4*Math.PI,pts=[];for(let k=0;k<=24;k++){const t=k/24*Math.PI;pts.push(new THREE.Vector3(Math.cos(t)*4.7*Math.cos(a),Math.sin(t)*6,Math.cos(t)*4.7*Math.sin(a)));}mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),32,.045,6,false),gold,0,0,0,garden);}
-  const poolMaterial=new THREE.MeshPhysicalMaterial({color:'#407c7e',metalness:.35,roughness:.12,clearcoat:1});
-  cylinder(3.9,3.9,.1,poolMaterial,0,.3,0,garden,64);
-  cylinder(1.3,1.5,.5,ivory,0,.4,0,garden,48);
-  cylinder(1.18,1.18,.04,green,0,.67,0,garden,48);
-  const specimen=new THREE.Group();specimen.position.y=.68;garden.add(specimen);tree(specimen,0,0,4.7,'#77a28b');
-  for(const radius of [2.1,2.8,3.5]){const ripple=torus(radius,.012,M('#8eb9b2',.3,.3),0,.36,0,garden);ripple.rotation.x=-Math.PI/2;}
-  const orangeryGlass=new THREE.MeshPhysicalMaterial({color:'#c4e0d8',roughness:.08,metalness:.1,transparent:true,opacity:.17,side:THREE.DoubleSide,depthWrite:false,clearcoat:1});
-  const orangery=mesh(new THREE.SphereGeometry(4.7,48,24,0,Math.PI*2,0,Math.PI/2),orangeryGlass,0,.3,0,garden);orangery.scale.y=1.28;
-  for(const side of [-1,1]){const seat=new THREE.Group();seat.position.set(side*10,0,.3);seat.rotation.y=-side*Math.PI/2;garden.add(seat);const wood=M('#8d7e76');for(let j=0;j<4;j++)box(2.6,.1,.15,wood,0,.65,-.26+j*.18,seat);for(let j=0;j<3;j++)box(2.6,.13,.08,wood,0,.94+j*.18,-.38,seat);for(const x of [-1,1]){rod([x,.05,-.3],[x,1.4,-.38],.05,gold,seat);rod([x,.05,.3],[x,.64,.3],.05,gold,seat);}}
-  for(let j=0;j<3;j++){const u={time:{value:0}},mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,uniforms:u,vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying vec2 vUv;uniform float time;void main(){float s=pow(.5+.5*sin(vUv.x*70.+sin(vUv.y*15.+time*3.)),5.);float e=sin(vUv.x*3.14159)*smoothstep(0.,.25,vUv.y);gl_FragColor=vec4(.43,.78,.82,(.1+s*.2)*e);}'});mesh(new THREE.PlaneGeometry(2.3,11,1,16),mat,-3+j*3,-5.2,16,garden);waterfalls.push(u);}
-  // Open-air music theatre: a giant lyre and a sweeping ivory keyboard.
-  const theatre=groupAt(islands[5],0,-2);ringFloor(theatre,6,M('#594e66'));ringFloor(theatre,4.7,M('#8d788b'));
-  const lyrePts=[new THREE.Vector3(-3,7,0),new THREE.Vector3(-3.3,3,0),new THREE.Vector3(0,1,0),new THREE.Vector3(3.3,3,0),new THREE.Vector3(3,7,0)];mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(lyrePts),64,.18,12,false),gold,0,0,0,theatre);rod([-3,6.5,0],[3,6.5,0],.14,gold,theatre);for(let j=-5;j<=5;j++)rod([j*.43,2+Math.abs(j)*.1,0],[j*.43,6.5,0],.016,gold,theatre);
-  for(let j=0;j<17;j++){const a=-.9+j*.112,g=new THREE.Group();g.position.set(Math.sin(a)*8,.1,Math.cos(a)*8-1);g.rotation.y=a;theatre.add(g);box(.75,.15,1.8,ivory,0,0,0,g);if(j%7!==2&&j%7!==6)box(.3,.25,.85,dark,.39,.12,-.45,g);}
-  for(let j=0;j<5;j++){const note=new THREE.Group();note.position.set(-4+j*2,7+Math.sin(j)*1.5,1);theatre.add(note);ball(gold,0,0,0,.18,note).scale.y=.65;rod([.15,0,0],[.15,.9,0],.035,gold,note);rotations.push({g:note,s:.12});}
-  // Clock harbour: a clock face, layered brass gears and moored paper sails.
-  const harbour=groupAt(islands[6],1,-2);ringFloor(harbour,4,ivory);box(3.7,5,2.8,M('#6f7280'),0,2.6,0,harbour);cylinder(0,3.4,2.8,M('#587484'),0,7,0,harbour,4).rotation.y=Math.PI/4;
-  const face=cylinder(1.55,1.55,.14,M('#e1d6b2'),0,4.7,1.5,harbour,64);face.rotation.x=Math.PI/2;torus(1.6,.1,gold,0,4.7,1.62,harbour);
-  for(let j=0;j<12;j++){const a=j/12*Math.PI*2;const tick=box(.06,.2,.03,gold,Math.sin(a)*1.3,4.7+Math.cos(a)*1.3,1.64,harbour);tick.rotation.z=-a;}rod([0,4.7,1.7],[.7,5.1,1.7],.045,dark,harbour);rod([0,4.7,1.71],[-.25,5.8,1.71],.03,dark,harbour);
-  for(let j=0;j<3;j++){const gear=new THREE.Group();gear.position.set(-4+j*4,3+j*.8,-1);harbour.add(gear);torus(1.1,.13,gold,0,0,0,gear);for(let k=0;k<16;k++){const a=k/16*Math.PI*2;const cog=box(.2,.25,.2,gold,Math.cos(a)*1.2,Math.sin(a)*1.2,0,gear);cog.rotation.z=a-Math.PI/2;}for(let k=0;k<6;k++){const a=k/6*Math.PI*2;rod([0,0,0],[Math.cos(a),Math.sin(a),0],.04,gold,gear);}rotations.push({g:gear,s:(j%2?-1:1)*.1});}
-  for(const side of [-1,1]){const boat=new THREE.Group();boat.position.set(side*8,.5,4);harbour.add(boat);const hull=ball(M('#9f8190'),0,0,0,1.1,boat);hull.scale.set(1.6,.3,.6);rod([0,0,0],[0,3.2,0],.05,gold,boat);const sail=new THREE.Shape();sail.moveTo(0,.5);sail.lineTo(0,3);sail.lineTo(1.4,.7);sail.closePath();mesh(new THREE.ShapeGeometry(sail),new THREE.MeshStandardMaterial({color:'#e3d1bb',side:THREE.DoubleSide}),0,0,0,boat);}
-  // Designed promenades and planted borders replace random grass and pebble rings.
-  const pathMat=M('#8f8b95',.86),pathEdge=M('#b8a68b',.54,.2),soil=M('#2a3938',1),bedStone=M('#606771',.8);
-  function promenade(points,width=2.7){const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(p[0],.055,p[1]))),position=[],uv=[],index=[],left=[],right=[];const steps=64;for(let i=0;i<=steps;i++){const t=i/steps,p=curve.getPoint(t),d=curve.getTangent(t),n=new THREE.Vector3(-d.z,0,d.x).normalize().multiplyScalar(width/2);position.push(p.x+n.x,p.y,p.z+n.z,p.x-n.x,p.y,p.z-n.z);uv.push(0,t*12,1,t*12);left.push(p.clone().add(n));right.push(p.clone().sub(n));if(i<steps){const v=i*2;index.push(v,v+2,v+1,v+1,v+2,v+3);}}const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(position,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(index);geo.computeVertexNormals();mesh(geo,pathMat);for(const points of [left,right])mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),64,.035,5,false),pathEdge);}
-  function planter(parent,x,z,rx,rz,color){const base=cylinder(1,1.05,.22,bedStone,x,.11,z,parent,48);base.scale.set(rx,1,rz);const inside=cylinder(.91,.91,.045,soil,x,.25,z,parent,48);inside.scale.set(rx,1,rz);const bloom=M(color,.86),foliage=M('#4b6d64',.94);for(let j=0;j<24;j++){const a=rand()*Math.PI*2,r=Math.sqrt(rand())*.8,px=x+Math.cos(a)*r*rx,pz=z+Math.sin(a)*r*rz,h=.23+rand()*.2;const bush=ball(foliage,px,.3,pz,.19+rand()*.12,parent);bush.scale.y*=.65;for(let k=0;k<3;k++){const pa=k*2.1,petal=ball(bloom,px+Math.cos(pa)*.09,.36+h,pz+Math.sin(pa)*.09,.11,parent);petal.scale.y*=.65;}ball(ivory,px,.38+h,pz,.025,parent);}}
-  for(const [x,z] of [[-3.7,-2.8],[3.7,-2.8],[-3.8,2.7],[3.8,2.7]])planter(garden,x,z,.85,1.05,'#d0b6d1');
-  const pathSpecs={
-    science:[[[0,15],[0,10],[-5,7],[-6,4],[-5,-1]],[[0,10],[5,8],[8,3],[7,-3]]],
-    law:[[[-13,8],[-8,7],[-6,3],[-4,1]],[[13,8],[8,7],[6,5],[5,1]]],
-    philosophy:[[[-13,-8],[-7,-5],[-2,-3],[2,0],[5,5],[13,8]]],
-    nature:[[[0,-16],[0,-11],[-5,-8],[-7,-3],[-7,4],[0,10]],[[0,-11],[5,-8],[7,-2],[7,5],[0,10]]],
-    art:[[[13,-8],[9,-4],[8,2],[4,6],[0,8],[-6,5],[-13,-8]]],
-    history:[[[13,8],[8,6],[6,3],[5,0]],[[5,3],[0,6],[-6,5],[-10,0],[-13,-8]]]
-  };
-  for(const island of islands.slice(1)){
-    const g=groupAt(island);for(const route of pathSpecs[island.id])promenade(route.map(([x,z])=>[island.x+x,island.z+z]));
-    const positions=island.id==='nature'?[[-10,-6,1.7,2.6],[-10,6,2.3,1.7],[10,-5,2,2.5],[9,7,2.2,1.5]]:[[-9,-7,2.2,1.3],[9,-7,2.2,1.3],[-10,6,1.8,1.2],[10,6,1.8,1.2]];
-    for(const [x,z,rx,rz] of positions)planter(g,x,z,rx,rz,island.color);
-    for(const [x,z] of [[-11,-5],[11,-5]])tree(g,x,z,3.2,island.id==='nature'?'#619781':'#71788e');
-    const lampMat=new THREE.MeshBasicMaterial({color:'#f4d5ab'});
-    for(const [x,z] of [[-4,9],[4,9],[-9,1],[9,1]]){cylinder(.055,.11,1.65,gold,x,.82,z,g,10);cylinder(.16,.19,.33,lampMat,x,1.8,z,g,8);cylinder(0,.25,.19,gold,x,2.06,z,g,8);halo(x,1.8,z,'#f8d6a8',1.6,g);}
-  }
-  // Observatory windows, concentric instrument markings and crystal clusters.
-  const windowMaterial=new THREE.MeshBasicMaterial({color:'#9cc6da'});for(let j=0;j<18;j++){const a=j/18*Math.PI*2,x=Math.cos(a)*4.03,z=Math.sin(a)*4.03;const window=box(.4,.65,.035,windowMaterial,x,1,z,observatory);window.rotation.y=-a+Math.PI/2;}
-  for(const radius of [4.3,4.65,5]){const stair=cylinder(radius,radius+.12,.12,ivory,0,.04+(5-radius)*.3,0,observatory);const rim=torus(radius,.025,gold,0,.14+(5-radius)*.3,0,observatory);rim.rotation.x=-Math.PI/2;}
-  for(let j=0;j<12;j++){const a=j*2.4,x=Math.cos(a)*6.8,z=Math.sin(a)*6.8;if(z>2)continue;const crystal=cylinder(0,.16+rand()*.2,.8+rand()*1.1,M('#91bdcf',.18,.25),x,.65,z,observatory,6);crystal.rotation.z=(rand()-.5)*.3;}
-  // Hanging seed lights and curled leaves make the greenhouse feel alive.
-  for(let j=0;j<9;j++){const a=j/9*Math.PI*2,r=1.3+rand()*1.5,x=Math.cos(a)*r,z=Math.sin(a)*r,y=4.5+rand()*1.5,len=.8+rand()*1.8;const pts=[new THREE.Vector3(x*.5,6,z*.5),new THREE.Vector3(x,y+.5,z),new THREE.Vector3(x+.15,y-len,z)];mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),16,.018,5,false),gold,0,0,0,garden);ball(new THREE.MeshBasicMaterial({color:'#d6f4a8'}),x+.15,y-len,z,.065,garden);halo(x+.15,y-len,z,'#c9ecad',.8,garden);}
-  const seatMat=M('#83717f',.76),stageStone=M('#706a7e',.8);
-  for(let level=0;level<3;level++){const r=7.2+level*.95,angleStart=.2,angleLength=Math.PI-.4;const terrace=mesh(new THREE.TorusGeometry(r,.28,8,80,angleLength),stageStone,0,.25+level*.28,0,theatre);terrace.rotation.x=Math.PI/2;terrace.rotation.z=angleStart;for(let j=0;j<13;j++){const a=angleStart+(j+.5)/13*angleLength,seat=box(.85,.12,.65,seatMat,Math.cos(a)*r,.6+level*.28,Math.sin(a)*r,theatre);seat.rotation.y=-a;}}
-  const pedimentShape=new THREE.Shape();pedimentShape.moveTo(-5.4,0);pedimentShape.lineTo(0,2.3);pedimentShape.lineTo(5.4,0);pedimentShape.closePath();mesh(new THREE.ExtrudeGeometry(pedimentShape,{depth:.28,bevelEnabled:true,bevelSize:.04,bevelThickness:.04,bevelSegments:2}),ivory,0,5.3,2,archive);
-  for(let j=-2;j<=2;j++)box(.07,4.2,.05,gold,j*.65,2.8,-2.8,archive);
-  for(const side of [-1,1]){for(let level=0;level<4;level++)box(1.3,.08,.5,gold,side*1.8,.8+level*.9,-2.9,archive);}
-  // Soft environmental reflections on brass and glass; no external texture downloads.
-  const envCanvas=document.createElement('canvas');envCanvas.width=512;envCanvas.height=256;const ctx=envCanvas.getContext('2d'),grad=ctx.createLinearGradient(0,0,0,256);grad.addColorStop(0,'#293754');grad.addColorStop(.45,'#a7b8cd');grad.addColorStop(.52,'#677e9b');grad.addColorStop(1,'#172b30');ctx.fillStyle=grad;ctx.fillRect(0,0,512,256);const env=new THREE.CanvasTexture(envCanvas);env.mapping=THREE.EquirectangularReflectionMapping;env.colorSpace=THREE.SRGBColorSpace;scene.environment=env;scene.environmentIntensity=.35;
-  return {grain,tree,planter,update(t){for(const {g,s,balance} of rotations){if(balance)g.rotation.z=Math.sin(t*.4)*.06;else g.rotation.z=t*s;}for(const u of waterfalls)u.time.value=t;}};
+import * as T from './vendor/three.module.js';
+import {rooms} from './world-layout.js';
+export function buildWorld(scene){
+ const mat=(color,roughness=.8,metalness=0)=>new T.MeshStandardMaterial({color,roughness,metalness});
+ const m={stone:mat('#515b70'),trim:mat('#9d9a9e',.84),roof:mat('#655b79',.38,.35),brass:mat('#b29b74',.36,.65),wood:mat('#5b4849',.9),soil:mat('#324442'),leaf:mat('#526e69',1),leaf2:mat('#687e79',1),ground:mat('#2b3d48',1),path:mat('#777788',.96),water:mat('#263f54',.18,.5),warm:new T.MeshStandardMaterial({color:'#f1d6ad',emissive:'#efad61',emissiveIntensity:.75,roughness:.6})};
+ const staticRoot=new T.Group();scene.add(staticRoot);const fixtures=[];
+ const mesh=(geo,material,x=0,y=0,z=0,parent=staticRoot)=>{const o=new T.Mesh(geo,material);o.position.set(x,y,z);o.castShadow=true;o.receiveShadow=true;parent.add(o);return o;};
+ const ell=(material,x,y,z,sx,sy,sz,parent=staticRoot)=>{const o=mesh(new T.SphereGeometry(1,24,16),material,x,y,z,parent);o.scale.set(sx,sy,sz);return o;};
+ const tube=(points,r,material,parent=staticRoot)=>mesh(new T.TubeGeometry(new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p))),24,r,7,false),material,0,0,0,parent);
+ const cyl=(rt,rb,h,material,x,y,z,parent=staticRoot)=>mesh(new T.CylinderGeometry(rt,rb,h,48),material,x,y,z,parent);
+ const box=(w,h,d,material,x,y,z,parent=staticRoot)=>mesh(new T.BoxGeometry(w,h,d),material,x,y,z,parent);
+ function round(w,h,d,r=.12){const s=new T.Shape(),x=-w/2,y=-h/2;s.moveTo(x+r,y);s.lineTo(x+w-r,y);s.quadraticCurveTo(x+w,y,x+w,y+r);s.lineTo(x+w,y+h-r);s.quadraticCurveTo(x+w,y+h,x+w-r,y+h);s.lineTo(x+r,y+h);s.quadraticCurveTo(x,y+h,x,y+h-r);s.lineTo(x,y+r);s.quadraticCurveTo(x,y,x+r,y);return new T.ExtrudeGeometry(s,{depth:d,steps:1,bevelEnabled:true,bevelThickness:.06,bevelSize:.06,bevelSegments:2,curveSegments:6});}
+ function archShape(w,h){const s=new T.Shape();s.moveTo(-w/2,0);s.lineTo(w/2,0);s.lineTo(w/2,h-w/2);s.absarc(0,h-w/2,w/2,0,Math.PI,false);s.lineTo(-w/2,0);return s;}
+ function arch(w,h,d,material,x,y,z,parent){return mesh(new T.ExtrudeGeometry(archShape(w,h),{depth:d,bevelEnabled:true,bevelSize:.04,bevelThickness:.04,bevelSegments:2,curveSegments:20}),material,x,y,z,parent);}
+ // Low-frequency hand-painted stone variation stays stable at play distance.
+ const canvas=document.createElement('canvas');canvas.width=canvas.height=256;const ctx=canvas.getContext('2d');ctx.fillStyle='#d0d2d0';ctx.fillRect(0,0,256,256);for(let i=0;i<24;i++){const x=(i*97)%256,y=(i*57)%256,g=ctx.createRadialGradient(x,y,1,x,y,50);g.addColorStop(0,'#a4aaab20');g.addColorStop(1,'#a4aaab00');ctx.fillStyle=g;ctx.fillRect(x-50,y-50,100,100);}const map=new T.CanvasTexture(canvas);map.wrapS=map.wrapT=T.RepeatWrapping;map.repeat.set(3,3);m.ground.map=map;m.stone.map=map;
+ function island(x,z,rx,rz){const g=new T.Group();g.position.set(x,-.3,z);g.scale.set(rx,1,rz);staticRoot.add(g);const pts=[new T.Vector2(.02,-3.4),new T.Vector2(.64,-2.2),new T.Vector2(.92,-1),new T.Vector2(1,-.25),new T.Vector2(.99,0),new T.Vector2(.01,0)];mesh(new T.LatheGeometry(pts,96),m.stone,0,0,0,g);cyl(1,1,.18,m.ground,0,.28,0,g);const border=mesh(new T.TorusGeometry(.985,.012,6,96),m.trim,0,.4,0,g);border.rotation.x=-Math.PI/2;}
+ island(0,0,19,16.4);island(0,-28,16.5,10.4);
+ function path(points,width=3){const curve=new T.CatmullRomCurve3(points.map(p=>new T.Vector3(p[0],.09,p[1]))),pos=[],ind=[],uv=[];for(let i=0;i<=64;i++){const t=i/64,p=curve.getPoint(t),v=curve.getTangent(t),n=new T.Vector3(-v.z,0,v.x).normalize().multiplyScalar(width/2);pos.push(p.x+n.x,p.y,p.z+n.z,p.x-n.x,p.y,p.z-n.z);uv.push(0,t,1,t);if(i<64){const j=i*2;ind.push(j,j+2,j+1,j+1,j+2,j+3);}}const geo=new T.BufferGeometry();geo.setAttribute('position',new T.Float32BufferAttribute(pos,3));geo.setAttribute('uv',new T.Float32BufferAttribute(uv,2));geo.setIndex(ind);geo.computeVertexNormals();mesh(geo,m.path);}
+ path([[0,15],[0,6],[0,-5],[0,-14]],4.2);path([[-14,2],[-6,3],[0,3],[6,3],[14,2]],3.2);path([[-14,8],[-7,6],[0,6],[5,7],[7,13]],2.6);path([[0,-20],[0,-24],[0,-35]],4.2);path([[-13,-23],[-6,-23],[0,-23],[6,-23],[13,-23]],3.1);
+ // The only bridge is short and wide; its geometry matches the walkable corridor.
+ for(let z=-16;z>=-21;z-=.55){const p=mesh(round(4.25,.42,.09,.06),m.wood,0,-.06,z);p.rotation.x=-Math.PI/2;}
+ for(const side of [-1,1]){tube([[side*2.25,1.12,-15.7],[side*2.25,1.18,-18.5],[side*2.25,1.12,-21.3]],.045,m.brass);for(const z of [-16,-18.6,-21.2]){cyl(.045,.065,1.1,m.brass,side*2.25,.57,z);ell(m.warm,side*2.25,1.16,z,.08,.08,.08);}}
+ // Open gatehouse: arched lintel and two rounded buttresses, no hidden centre collider.
+ for(const side of [-1,1]){const x=side*3.9;cyl(1.2,1.35,4.9,m.stone,x,2.45,-12.8);cyl(1.35,1.35,.2,m.trim,x,4.9,-12.8);const roof=mesh(new T.LatheGeometry([new T.Vector2(.01,2.1),new T.Vector2(.3,1.6),new T.Vector2(.65,.8),new T.Vector2(1.5,0)],48),m.roof,x,5,-12.8);arch(.5,1.1,.04,m.warm,x,2.8,-11.56,staticRoot);}
+ const lintel=new T.Shape();lintel.moveTo(-2.8,2);lintel.bezierCurveTo(-2.8,5,2.8,5,2.8,2);lintel.lineTo(2.8,5.2);lintel.quadraticCurveTo(0,6,-2.8,5.2);lintel.closePath();mesh(new T.ExtrudeGeometry(lintel,{depth:1.4,bevelEnabled:true,bevelThickness:.08,bevelSize:.08,bevelSegments:3}),m.stone,0,0,-13.5);
+ tube([[-2.8,2,-11.99],[-2.3,3.6,-11.99],[0,4.35,-11.99],[2.3,3.6,-11.99],[2.8,2,-11.99]],.06,m.brass);
+ function pavilion(x,z,w=6,d=5.4,accent=m.roof){const g=new T.Group();g.position.set(x,0,z);staticRoot.add(g);
+ mesh(round(w,3.8,d,.25),m.stone,0,2,-d/2,g);mesh(round(w+.35,.28,d+.3,.1),m.trim,0,.18,-d/2-.15,g);
+ const roofShape=new T.Shape();roofShape.moveTo(-w/2-.4,3.9);roofShape.quadraticCurveTo(-w*.28,4.1,0,6.1);roofShape.quadraticCurveTo(w*.28,4.1,w/2+.4,3.9);roofShape.lineTo(w/2+.4,4.1);roofShape.quadraticCurveTo(w*.28,4.35,0,6.38);roofShape.quadraticCurveTo(-w*.28,4.35,-w/2-.4,4.1);roofShape.closePath();mesh(new T.ExtrudeGeometry(roofShape,{depth:d+.65,bevelEnabled:true,bevelSize:.07,bevelThickness:.07,bevelSegments:2,curveSegments:16}),accent,0,0,-d/2-.32,g);
+ const face=new T.Shape();face.moveTo(-w/2,3.8);face.quadraticCurveTo(-w*.27,4.1,0,6.05);face.quadraticCurveTo(w*.27,4.1,w/2,3.8);face.closePath();mesh(new T.ShapeGeometry(face),m.stone,0,0,d/2+.012,g);
+ for(const s of [-1,1]){arch(1.7,2.65,.08,m.trim,s*w*.25,.7,d/2+.03,g);arch(1.42,2.35,.05,m.warm,s*w*.25,.85,d/2+.14,g);box(.065,2.2,.1,m.wood,s*w*.25,1.95,d/2+.23,g);box(1.35,.065,.1,m.wood,s*w*.25,1.6,d/2+.24,g);}
+ cyl(.45,.45,.09,m.brass,0,4.4,d/2+.15,g).rotation.x=Math.PI/2;cyl(.34,.34,.1,m.warm,0,4.4,d/2+.2,g).rotation.x=Math.PI/2;
+ for(const s of [-1,1])box(.1,3.9,.08,m.trim,s*(w/2-.2),2,d/2+.05,g);
+ return g;}
+ const exhibit=pavilion(-9,-5,6,5.3);const dome=new T.MeshPhysicalMaterial({color:'#7f9eae',metalness:.35,roughness:.25,clearcoat:.6});mesh(new T.SphereGeometry(1.6,40,20,0,Math.PI*2,0,Math.PI/2),dome,0,5.5,-.5,exhibit);for(let i=0;i<6;i++){const a=i*Math.PI/3,pts=[];for(let j=0;j<=12;j++){const t=j/12*Math.PI/2;pts.push([Math.cos(a)*Math.cos(t)*1.62,5.5+Math.sin(t)*1.62,-.5+Math.sin(a)*Math.cos(t)*1.62]);}tube(pts,.023,m.brass,exhibit);}
+ pavilion(9,-5.5,6.2,5.5);pavilion(-8,-29,6.1,5.6);pavilion(8,-29,6.1,5.6);const library=pavilion(10,9,5.2,4.8);library.rotation.y=-.3;
+ // A small kinetic wheel belongs to the science exhibit; it never dominates the campus.
+ const wheel=new T.Group();wheel.position.set(-12,4,-1.8);scene.add(wheel);for(const r of [2.25,1.9])mesh(new T.TorusGeometry(r,.04,8,64),m.brass,0,0,0,wheel);for(let i=0;i<8;i++){const a=i*Math.PI/4;tube([[0,0,0],[Math.sin(a)*2.25,Math.cos(a)*2.25,0]],.025,m.brass,wheel);ell(m.warm,Math.sin(a)*2.25,Math.cos(a)*2.25,0,.095,.095,.095,wheel);}tube([[-13.3,.2,-1.8],[-12,4,-1.8],[-10.7,.2,-1.8]],.1,m.brass);
+ // Sculpted broad canopies share one continuous surface, with branch centres under the mass.
+ const canopyGeo=new T.SphereGeometry(1,36,24),cp=canopyGeo.attributes.position;for(let i=0;i<cp.count;i++){const x=cp.getX(i),y=cp.getY(i),z=cp.getZ(i),r=1+.045*Math.sin(x*5+y*2)*Math.cos(z*5);cp.setXYZ(i,x*r,y*r,z*r);}canopyGeo.computeVertexNormals();
+ function tree(x,z,h,rotation=0){const g=new T.Group();g.position.set(x,0,z);g.rotation.y=rotation;staticRoot.add(g);tube([[0,0,0],[-.14,h*.38,.05],[.18,h*.7,0]],.12,m.wood,g);const crowns=[[-.65,.7,.12,1],[.55,.91,-.2,.82],[.45,.62,.65,.65]];for(const [dx,dy,dz,s] of crowns){tube([[0,h*.3,0],[dx*.7,h*dy*.82,dz*.7],[dx,h*dy,dz]],.06,m.wood,g);const o=mesh(canopyGeo,m.leaf,dx,h*dy,dz,g);o.scale.set(h*.4*s,h*.23*s,h*.34*s);}return g;}
+ for(const v of [[-15,-9,4.8,.3],[-14,-11,3.6,1],[14,-10,4.5,-.8],[15,4,3.6,.4],[-15,6,3.2,1],[-13,12,3.8,-1],[-12,-34,4.4,0],[12,-35,4.3,.8]])tree(...v);
+ function shrub(x,z,rx,rz){const g=new T.Group();g.position.set(x,0,z);staticRoot.add(g);cyl(1,1,.2,m.stone,0,.15,0,g).scale.set(rx,1,rz);for(const [dx,dz,s] of [[-.42,.12,.48],[.18,-.2,.63],[.53,.25,.32]]){const o=mesh(canopyGeo,m.leaf2,dx*rx,.45,dz*rz,g);o.scale.set(rx*s,.36,rz*s);}return g;}
+ for(const p of [[-5,12,2.1,1.1],[6,13,1.7,.8],[-14,-3,1.3,.8],[13,-15,1.8,1],[-12,-21,1.7,.8],[13,-23,1.2,1]])shrub(...p);
+ // Garden: one reflecting basin and three planted specimens for close observation.
+ cyl(2.5,2.65,.42,m.stone,-10,.25,10);cyl(2.26,2.26,.06,m.water,-10,.49,10);cyl(.7,.9,.6,m.trim,-10,.64,10);tree(-10,10,3.4,.4);
+ for(const [x,z,s] of [[-8,12,.6],[-11,13,.9],[-13,10,.7]]){cyl(.5,.35,.65,m.trim,x,.34,z);ell(m.leaf2,x,.8+s*.3,z,.65*s,.55*s,.65*s);}
+ // Purposeful fixtures: the three conditional bridges and a physical probability board.
+ const bridgeGates=[];for(let i=0;i<3;i++){const x=-9.8+i*1.8;box(1.35,.15,2.5,m.wood,x,.25,-23);const gate=box(1.3,.12,.16,m.brass,x,1.1,-23,scene);bridgeGates.push(gate);for(const s of [-1,1])cyl(.035,.045,1,m.brass,x+s*.65,.6,-23);}
+ const probGroup=new T.Group();probGroup.position.set(7,1.4,-23.8);probGroup.rotation.x=-.16;staticRoot.add(probGroup);mesh(round(3.2,2.5,.2,.15),m.wood,0,0,0,probGroup);for(let row=0;row<4;row++)for(let col=0;col<=row;col++)ell(m.brass,(col-row/2)*.55,.75-row*.42,.23,.045,.045,.045,probGroup);
+ const coin=mesh(new T.CylinderGeometry(.42,.42,.09,40),m.brass,7,3.4,-23.8,scene);coin.rotation.x=Math.PI/2;
+ // Region-specific signs are quiet physical plaques instead of floating repeated books.
+ const markers=[];for(const r of rooms){const root=new T.Group();const dx=r.x-r.door.x,dz=r.z-r.door.z,length=Math.hypot(dx,dz);root.position.set(r.door.x+dx/length*1.15,0,r.door.z+dz/length*1.15);scene.add(root);cyl(.35,.5,.7,m.stone,0,.35,0,root);const head=mesh(round(.9,.58,.09,.07),m.brass,0,.98,0,root);head.rotation.x=-.45;const glow=ell(m.warm,0,1.45,0,.08,.08,.08,root);markers.push({...r,root,glow});}
+ for(const [x,z] of [[-3,6],[3,0],[-3,-8],[3,-22],[-13,4],[6,12]]){cyl(.055,.1,2,m.brass,x,1,z);arch(.34,.52,.23,m.warm,x,1.88,z-.1,staticRoot);mesh(round(.7,.12,.65,.06),m.brass,x,2.46,z-.3);const light=new T.PointLight('#f3c998',5,5,2);light.position.set(x,2,z);scene.add(light);}
+ // Warm entrance wash and cool ambient sky are deliberately unequal.
+ for(const [x,z] of [[-9,-1.6],[9,-1.8],[10,12]]){const light=new T.PointLight('#f2bc7b',11,7,2);light.position.set(x,2,z);scene.add(light);}
+ function batch(root){root.updateMatrixWorld(true);const groups=new Map();root.traverse(o=>{if(!o.isMesh)return;const key=o.material.uuid;if(!groups.has(key))groups.set(key,{material:o.material,geos:[]});let g=o.geometry.clone().applyMatrix4(o.matrixWorld);if(g.index)g=g.toNonIndexed();groups.get(key).geos.push(g);});root.clear();root.position.set(0,0,0);for(const {material,geos} of groups.values()){const g=new T.BufferGeometry();for(const name of ['position','normal','uv']){const count=geos.reduce((n,x)=>n+(x.attributes[name]?.array.length||0),0);if(!count)continue;const arr=new Float32Array(count);let at=0;for(const x of geos){const a=x.attributes[name]?.array;if(a){arr.set(a,at);at+=a.length;}}g.setAttribute(name,new T.BufferAttribute(arr,name==='uv'?2:3));}g.computeBoundingSphere();mesh(g,material);for(const x of geos)x.dispose();}}
+ batch(staticRoot);
+ return{markers,interactive:bridgeGates,occluders:staticRoot.children,update(t,still){if(!still)wheel.rotation.z=t*.07;coin.rotation.z=still?.2:t*.25;},experiment(detail){if(detail.kind==='bridge')bridgeGates.forEach((g,i)=>{const open=i===0?detail.key&&detail.lantern:i===1?detail.key||detail.lantern:!detail.key&&!detail.lantern;g.rotation.z=open?Math.PI/2:0;g.material= open?m.warm:m.brass;});if(detail.kind==='coin')coin.rotation.z+=Math.PI*3;}};
 }

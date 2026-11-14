@@ -1,0 +1,6 @@
+export function toss(state,n,p=.5,rng=Math.random){const count=Math.max(0,Math.min(1000,n));let heads=state.heads||0,total=state.total||0;for(let i=0;i<count;i++){heads+=rng()<p?1:0;total++;}return{heads,total};}
+export function montyTrial(rng=Math.random){const prize=Math.floor(rng()*3),pick=Math.floor(rng()*3),goats=[0,1,2].filter(i=>i!==prize&&i!==pick),opened=goats[Math.floor(rng()*goats.length)],switched=[0,1,2].find(i=>i!==pick&&i!==opened);return{prize,pick,opened,stay:pick===prize,switch:switched===prize};}
+export function montyBatch(n,rng=Math.random){let stay=0,change=0;for(let i=0;i<Math.min(1000,n);i++){const t=montyTrial(rng);stay+=t.stay;change+=t.switch;}return{total:Math.min(1000,n),stay,change};}
+export function bridgeOpen(key,lantern){return[!!key&&!!lantern,!!key||!!lantern,!key&&!lantern];}
+export function barHeight(value,baseline,max=50){return Math.max(0,(value-baseline)/(max-baseline)*100);}
+export function seasonModel(tilt=23.44,month='june',latitude=37){const dec=(month==='june'?1:-1)*tilt,d=dec*Math.PI/180,lat=latitude*Math.PI/180;const hours=24/Math.PI*Math.acos(Math.max(-1,Math.min(1,-Math.tan(lat)*Math.tan(d))));return{north:hours,south:24-hours,northAltitude:90-Math.abs(latitude-dec),southAltitude:90-Math.abs(-latitude-dec)};}

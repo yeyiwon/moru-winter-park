@@ -1,17 +1,9 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {layout,movement,navigation} from './load-world.mjs';
-const {findPath,clearSegment}=navigation,{canStandAt,moveOnGround}=movement;
-const home={x:2.6,z:8};
-function checkRoute(start,end){const route=findPath(start,end);assert.ok(route.length,'reachable destination');let previous=start;for(const p of route){assert.ok(clearSegment(previous,p),'no shortcut through structures or gaps');previous=p;}assert.ok(Math.hypot(previous.x-end.x,previous.z-end.z)<.01);return route;}
-test('all seven islands can be reached on foot from the park',()=>{for(const island of layout.islands)checkRoute(home,island.spawn);});
-test('all ten knowledge markers are reachable, including beyond buildings',()=>{for(const [x,z] of [[2.6,5.1],[-5,-46],[6,-56],[40,-24],[52,-22],[44,24],[-6,49],[-42,32],[-40,-24],[-52,-23]])checkRoute(home,{x,z});});
-test('the route around the carousel can be followed without sticking',()=>{let pos={x:2.6,z:8};const target={x:11,z:-7},route=findPath(pos,target);for(const point of route){for(let step=0;step<3000;step++){const dx=point.x-pos.x,dz=point.z-pos.z,d=Math.hypot(dx,dz);if(d<.08)break;const speed=Math.min(6.2,d*10);pos=moveOnGround(pos,{x:dx/d*speed,z:dz/d*speed},1/60);assert.ok(canStandAt(pos.x,pos.z));}assert.ok(Math.hypot(pos.x-point.x,pos.z-point.z)<.09);}assert.ok(Math.hypot(pos.x-target.x,pos.z-target.z)<.09);});
-test('void clicks are rejected and the lake cannot be crossed',()=>{assert.deepEqual(findPath(home,{x:300,z:0}),[]);assert.deepEqual(findPath(home,{x:NaN,z:0}),[]);assert.equal(canStandAt(30,0),false);assert.equal(clearSegment({x:-2,z:0},{x:-18,z:0}),false);});
-
-test('castle gate stays open all the way onto the north bridge',()=>{
-  for(let z=-9;z>=-31;z-=.1)for(const x of [-.65,0,.65])assert.ok(canStandAt(x,z),`gate/bridge corridor blocked at ${x}, ${z}`);
-  assert.ok(clearSegment({x:0,z:-9},{x:0,z:-31}));
-  assert.equal(canStandAt(-3.4,-16),false);assert.equal(canStandAt(3.4,-16),false);
-  const route=checkRoute({x:0,z:-9},{x:0,z:-31});assert.equal(route.length,1,'direct passage, without a detour via other islands');
-});
+const {findPath,clearSegment}=navigation,{canStandAt,moveOnGround}=movement,home={x:0,z:8};
+function checkRoute(start,end){const route=findPath(start,end);assert.ok(route.length,`reachable ${JSON.stringify(end)}`);let previous=start;for(const p of route){assert.ok(clearSegment(previous,p),'no shortcuts through walls or voids');previous=p;}assert.ok(Math.hypot(previous.x-end.x,previous.z-end.z)<.01);return route;}
+test('six learning entries are reachable from home and each other',()=>{for(const r of layout.rooms){checkRoute(home,r.door);for(const other of layout.rooms)checkRoute(r.door,other.door);}});
+test('gate and entire north bridge are directly traversable with clearance',()=>{for(let z=9;z>=-35;z-=.1)for(const x of [-.7,0,.7])assert.ok(canStandAt(x,z),`${x},${z}`);assert.equal(checkRoute(home,{x:0,z:-35}).length,1);});
+test('A star paths around building sides can actually be walked',()=>{for(const target of [{x:-9,z:-10},{x:9,z:-11},{x:-8,z:-34},{x:8,z:-34},{x:10,z:13}]){let p={...home};const route=checkRoute(p,target);for(const dest of route){for(let i=0;i<3000;i++){const dx=dest.x-p.x,dz=dest.z-p.z,d=Math.hypot(dx,dz);if(d<.06)break;const speed=Math.min(4.3,d*10);p=moveOnGround(p,{x:dx/d*speed,z:dz/d*speed},1/60);assert.ok(canStandAt(p.x,p.z));}assert.ok(Math.hypot(p.x-dest.x,p.z-dest.z)<.07);}}});
+test('void, non-finite clicks and wall shortcuts are rejected',()=>{assert.deepEqual(findPath(home,{x:300,z:0}),[]);assert.deepEqual(findPath(home,{x:NaN,z:0}),[]);assert.equal(canStandAt(30,0),false);assert.equal(clearSegment({x:-4,z:-5},{x:-14,z:-5}),false);});

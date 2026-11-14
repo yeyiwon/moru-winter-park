@@ -1,0 +1,380 @@
+
+> test
+> node --experimental-vm-modules --test tests/*.test.mjs
+
+TAP version 13
+# Subtest: sixty fully structured items across at least six fields, twelve representatives
+ok 1 - sixty fully structured items across at least six fields, twelve representatives
+  ---
+  duration_ms: 2.48475
+  ...
+# Subtest: every knowledge room has completed material, including dedicated memory items
+ok 2 - every knowledge room has completed material, including dedicated memory items
+  ---
+  duration_ms: 0.24175
+  ...
+# Subtest: spaced review uses a distinct new situation instead of immediate application
+ok 3 - spaced review uses a distinct new situation instead of immediate application
+  ---
+  duration_ms: 0.616042
+  ...
+# Subtest: brief passes do not flash a card; staying nearby reveals it
+ok 4 - brief passes do not flash a card; staying nearby reveals it
+  ---
+  duration_ms: 1.415458
+  ...
+# Subtest: dismissed cards remain closed until leaving and re-entering
+ok 5 - dismissed cards remain closed until leaving and re-entering
+  ---
+  duration_ms: 0.304375
+  ...
+# Subtest: moving to another book starts a new dwell
+ok 6 - moving to another book starts a new dwell
+  ---
+  duration_ms: 0.135542
+  ...
+# (node:15178) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: catalog, prediction, evidence, explanation, application and resume form a complete DOM flow
+ok 7 - catalog, prediction, evidence, explanation, application and resume form a complete DOM flow
+  ---
+  duration_ms: 251.14275
+  ...
+# Subtest: all content renders, choices cannot submit before prediction, and hints progress
+ok 8 - all content renders, choices cannot submit before prediction, and hints progress
+  ---
+  duration_ms: 1255.064375
+  ...
+# Subtest: coin and bridge controls update visible results after a prediction
+ok 9 - coin and bridge controls update visible results after a prediction
+  ---
+  duration_ms: 64.419625
+  ...
+# Subtest: a changed prediction is recorded and spaced review grades its own new situation
+ok 10 - a changed prediction is recorded and spaced review grades its own new situation
+  ---
+  duration_ms: 95.040209
+  ...
+# Subtest: unavailable and corrupt storage do not prevent a fresh lesson
+ok 11 - unavailable and corrupt storage do not prevent a fresh lesson
+  ---
+  duration_ms: 3.56275
+  ...
+# Subtest: draft, first answer and transfer-review survive a storage round trip
+ok 12 - draft, first answer and transfer-review survive a storage round trip
+  ---
+  duration_ms: 1.45475
+  ...
+# Subtest: content requests deduplicate and cached lessons survive a network failure
+ok 13 - content requests deduplicate and cached lessons survive a network failure
+  ---
+  duration_ms: 7.383666
+  ...
+# Subtest: first-load network failure exposes an actionable error and can retry
+ok 14 - first-load network failure exposes an actionable error and can retry
+  ---
+  duration_ms: 0.349791
+  ...
+# Subtest: coin calculations count outcomes exactly and bound work per click
+ok 15 - coin calculations count outcomes exactly and bound work per click
+  ---
+  duration_ms: 0.431
+  ...
+# Subtest: Monty Hall enumeration and host rules
+ok 16 - Monty Hall enumeration and host rules
+  ---
+  duration_ms: 0.756708
+  ...
+# Subtest: bridge truth table, truncated graph and seasons agree with teaching conditions
+ok 17 - bridge truth table, truncated graph and seasons agree with teaching conditions
+  ---
+  duration_ms: 0.54675
+  ...
+# Subtest: diagonal speed is normalized and camera relative
+ok 18 - diagonal speed is normalized and camera relative
+  ---
+  duration_ms: 2.617333
+  ...
+# Subtest: 30 and 60 Hz movement cover identical distance
+ok 19 - 30 and 60 Hz movement cover identical distance
+  ---
+  duration_ms: 0.7275
+  ...
+# Subtest: buildings and edge block feet while the portal stays open
+ok 20 - buildings and edge block feet while the portal stays open
+  ---
+  duration_ms: 1.599375
+  ...
+# Subtest: large frame gaps cannot teleport through barriers
+ok 21 - large frame gaps cannot teleport through barriers
+  ---
+  duration_ms: 0.246334
+  ...
+# Subtest: six learning entries are reachable from home and each other
+ok 22 - six learning entries are reachable from home and each other
+  ---
+  duration_ms: 204.894417
+  ...
+# Subtest: gate and entire north bridge are directly traversable with clearance
+ok 23 - gate and entire north bridge are directly traversable with clearance
+  ---
+  duration_ms: 1.738417
+  ...
+# Subtest: A star paths around building sides can actually be walked
+ok 24 - A star paths around building sides can actually be walked
+  ---
+  duration_ms: 73.724583
+  ...
+# Subtest: void, non-finite clicks and wall shortcuts are rejected
+ok 25 - void, non-finite clicks and wall shortcuts are rejected
+  ---
+  duration_ms: 0.427292
+  ...
+# Subtest: 20 complete items, exactly four representatives, complete explanations and real-source metadata
+ok 26 - 20 complete items, exactly four representatives, complete explanations and real-source metadata
+  ---
+  duration_ms: 3.640458
+  ...
+# Subtest: representative simulation contracts remain compatible
+ok 27 - representative simulation contracts remain compatible
+  ---
+  duration_ms: 0.565875
+  ...
+# Subtest: rea01 independent coin: conditioning on five heads leaves the sixth probability at 1/2
+ok 28 - rea01 independent coin: conditioning on five heads leaves the sixth probability at 1/2
+  ---
+  duration_ms: 0.343542
+  ...
+# Subtest: rea02 Monty Hall: exhaustive weighted host actions give switch 2/3, stay 1/3
+ok 29 - rea02 Monty Hall: exhaustive weighted host actions give switch 2/3, stay 1/3
+  ---
+  duration_ms: 0.556666
+  ...
+# Subtest: rea03 every inventory state agrees with AND, inclusive OR and neither bridge rules
+ok 30 - rea03 every inventory state agrees with AND, inclusive OR and neither bridge rules
+  ---
+  duration_ms: 1.116541
+  ...
+# Subtest: rea04 graph: truncated-bar ratio, actual growth and percentage-point transfer differ
+ok 31 - rea04 graph: truncated-bar ratio, actual growth and percentage-point transfer differ
+  ---
+  duration_ms: 0.097167
+  ...
+# Subtest: rea05 implication is equivalent to contraposition, not converse or inverse
+ok 32 - rea05 implication is equivalent to contraposition, not converse or inverse
+  ---
+  duration_ms: 0.138417
+  ...
+# Subtest: rea06 exhaustive hidden faces: A and 7 are the unique minimum sufficient inspection set
+ok 33 - rea06 exhaustive hidden faces: A and 7 are the unique minimum sufficient inspection set
+  ---
+  duration_ms: 0.409416
+  ...
+# Subtest: rea07 all 24 permutations: one original solution, four transfer solutions
+ok 34 - rea07 all 24 permutations: one original solution, four transfer solutions
+  ---
+  duration_ms: 0.45175
+  ...
+# Subtest: rea08 all six label assignments: observation plus all-wrong labels gives unique arrangements
+ok 35 - rea08 all six label assignments: observation plus all-wrong labels gives unique arrangements
+  ---
+  duration_ms: 0.302125
+  ...
+# Subtest: rea09 pigeonhole minimum: enumerate all distributions of six and seven chips
+ok 36 - rea09 pigeonhole minimum: enumerate all distributions of six and seven chips
+  ---
+  duration_ms: 0.738875
+  ...
+# Subtest: rea10 32 hidden values can all be identified in five yes/no questions, four records insufficient
+ok 37 - rea10 32 hidden values can all be identified in five yes/no questions, four records insufficient
+  ---
+  duration_ms: 0.161459
+  ...
+# Subtest: rea11 mutually exclusive positive-probability events are dependent; overlapping example independent
+ok 38 - rea11 mutually exclusive positive-probability events are dependent; overlapping example independent
+  ---
+  duration_ms: 0.091625
+  ...
+# Subtest: rea12 confusion matrix is exhaustive and inverse probability uses the right denominator
+ok 39 - rea12 confusion matrix is exhaustive and inverse probability uses the right denominator
+  ---
+  duration_ms: 0.130125
+  ...
+# Subtest: rea13 enumerate ordered physical-ball draws with and without replacement
+ok 40 - rea13 enumerate ordered physical-ball draws with and without replacement
+  ---
+  duration_ms: 0.105
+  ...
+# Subtest: rea14 equal expectation does not imply equal dispersion or deadline guarantee
+ok 41 - rea14 equal expectation does not imply equal dispersion or deadline guarantee
+  ---
+  duration_ms: 0.047166
+  ...
+# Subtest: rea15 Simpson data: subgroup order reverses, equal weighting restores subgroup order
+ok 42 - rea15 Simpson data: subgroup order reverses, equal weighting restores subgroup order
+  ---
+  duration_ms: 0.038083
+  ...
+# Subtest: rea16 adding selected fans cannot identify the unobserved population opinion
+ok 43 - rea16 adding selected fans cannot identify the unobserved population opinion
+  ---
+  duration_ms: 0.074167
+  ...
+# Subtest: rea17 total probability weights the selection procedure, not just item counts
+ok 44 - rea17 total probability weights the selection procedure, not just item counts
+  ---
+  duration_ms: 0.045417
+  ...
+# Subtest: rea18 exact birthday complement: 22 below half, 23 above half; fixed-person event differs
+ok 45 - rea18 exact birthday complement: 22 below half, 23 above half; fixed-person event differs
+  ---
+  duration_ms: 0.072708
+  ...
+# Subtest: rea19 enumerate all 16 fair sequences: each exact sequence once, two-head event six times
+ok 46 - rea19 enumerate all 16 fair sequences: each exact sequence once, two-head event six times
+  ---
+  duration_ms: 0.128708
+  ...
+# Subtest: rea20 every Boolean state: De Morgan covers all failures and transfer reverses OR correctly
+ok 47 - rea20 every Boolean state: De Morgan covers all failures and transfer reverses OR correctly
+  ---
+  duration_ms: 0.062833
+  ...
+# Subtest: 20 delayed reviews are complete, have a distinct context from immediate application, and expose their conditions
+ok 48 - 20 delayed reviews are complete, have a distinct context from immediate application, and expose their conditions
+  ---
+  duration_ms: 0.364209
+  ...
+# Subtest: rea01 review: independent assignment preserves 1/2 after ten identical prior assignments
+ok 49 - rea01 review: independent assignment preserves 1/2 after ten identical prior assignments
+  ---
+  duration_ms: 0.422541
+  ...
+# Subtest: rea02 review: random inspection conditioned on normal gives 1/2, unlike informed host disclosure
+ok 50 - rea02 review: random inspection conditioned on normal gives 1/2, unlike informed host disclosure
+  ---
+  duration_ms: 0.103542
+  ...
+# Subtest: rea03 review: combined AND / inclusive OR query admits only C
+ok 51 - rea03 review: combined AND / inclusive OR query admits only C
+  ---
+  duration_ms: 0.066083
+  ...
+# Subtest: rea04 review: area encoding requires square-root radius, not linear radius
+ok 52 - rea04 review: area encoding requires square-root radius, not linear radius
+  ---
+  duration_ms: 0.035583
+  ...
+# Subtest: rea05 review: necessary encryption does not determine permission
+ok 53 - rea05 review: necessary encryption does not determine permission
+  ---
+  duration_ms: 0.056125
+  ...
+# Subtest: rea06 review: exactly one offered integer is a counterexample to universal nonnegativity
+ok 54 - rea06 review: exactly one offered integer is a counterexample to universal nonnegativity
+  ---
+  duration_ms: 1.422709
+  ...
+# Subtest: rea07 review: dependency graph enables inspection and notes in parallel after collection
+ok 55 - rea07 review: dependency graph enables inspection and notes in parallel after collection
+  ---
+  duration_ms: 0.273125
+  ...
+# Subtest: rea08 review: complete fault hypothesis set plus observations leaves only sensor failure
+ok 56 - rea08 review: complete fault hypothesis set plus observations leaves only sensor failure
+  ---
+  duration_ms: 0.054958
+  ...
+# Subtest: rea09 review: an injective 300-to-256 code assignment is impossible
+ok 57 - rea09 review: an injective 300-to-256 code assignment is impossible
+  ---
+  duration_ms: 0.077208
+  ...
+# Subtest: rea10 review: a constant first answer creates only eight possible four-answer records
+ok 58 - rea10 review: a constant first answer creates only eight possible four-answer records
+  ---
+  duration_ms: 0.053541
+  ...
+# Subtest: rea11 review: two independent fair signals permit simultaneous activation
+ok 59 - rea11 review: two independent fair signals permit simultaneous activation
+  ---
+  duration_ms: 0.058792
+  ...
+# Subtest: rea12 review: all-negative classifier achieves 99.8% accuracy but zero target detection
+ok 60 - rea12 review: all-negative classifier achieves 99.8% accuracy but zero target detection
+  ---
+  duration_ms: 0.031208
+  ...
+# Subtest: rea13 review: conditional presentation order has 18 candidates, six with A second
+ok 61 - rea13 review: conditional presentation order has 18 candidates, six with A second
+  ---
+  duration_ms: 0.090208
+  ...
+# Subtest: rea14 review: exact mean 30 is not the most common daily observation
+ok 62 - rea14 review: exact mean 30 is not the most common daily observation
+  ---
+  duration_ms: 0.04525
+  ...
+# Subtest: rea15 review: case mix permits opposite within-group order despite higher overall A
+ok 63 - rea15 review: case mix permits opposite within-group order despite higher overall A
+  ---
+  duration_ms: 0.0505
+  ...
+# Subtest: rea16 review: 100% response in current accounts does not identify former users satisfaction
+ok 64 - rea16 review: 100% response in current accounts does not identify former users satisfaction
+  ---
+  duration_ms: 0.036625
+  ...
+# Subtest: rea17 review: weighting team choice by size gives every person probability 1/10
+ok 65 - rea17 review: weighting team choice by size gives every person probability 1/10
+  ---
+  duration_ms: 0.055958
+  ...
+# Subtest: rea18 review: enumerate all unordered manuscript pairs, distinguish single-reference comparisons
+ok 66 - rea18 review: enumerate all unordered manuscript pairs, distinguish single-reference comparisons
+  ---
+  duration_ms: 0.097417
+  ...
+# Subtest: rea19 review: every one of 120 uniformly shuffled photo orders has the same exact-sequence probability
+ok 67 - rea19 review: every one of 120 uniformly shuffled photo orders has the same exact-sequence probability
+  ---
+  duration_ms: 0.95625
+  ...
+# Subtest: rea20 review: all eight three-state rows validate nested De Morgan and reject other choices
+ok 68 - rea20 review: all eight three-state rows validate nested De Morgan and reject other choices
+  ---
+  duration_ms: 0.350083
+  ...
+# (node:15183) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: 3D, customization, effects, movement and learning bootstrap together without runtime exceptions
+ok 69 - 3D, customization, effects, movement and learning bootstrap together without runtime exceptions
+  ---
+  duration_ms: 685.447875
+  ...
+# (node:15184) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: scene geometry and normals are finite and share a bounded material palette
+ok 70 - scene geometry and normals are finite and share a bounded material palette
+  ---
+  duration_ms: 40.92
+  ...
+# Subtest: the visible gate and bridge geometry leave the central walking corridor open
+ok 71 - the visible gate and bridge geometry leave the central walking corridor open
+  ---
+  duration_ms: 21.64075
+  ...
+# Subtest: velvet character has continuous surface, no fibres, and grounded feet in neutral pose
+ok 72 - velvet character has continuous surface, no fibres, and grounded feet in neutral pose
+  ---
+  duration_ms: 4.625708
+  ...
+1..72
+# tests 72
+# suites 0
+# pass 72
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 2237.124166
