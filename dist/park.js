@@ -1,4 +1,5 @@
 import * as THREE from './vendor/three.module.js';
+import {moveVector,moveOnGround} from './movement.js';
 const canvas=document.getElementById('park-canvas');
 let renderer;
 try{renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false,powerPreference:'high-performance'});}catch(e){document.body.classList.add('no-webgl');document.getElementById('park-status').textContent='이 기기에서는 3D 화면을 사용할 수 없어요. 퀴즈는 계속 풀 수 있어요.';}
@@ -49,7 +50,7 @@ for(let z of [9,3,-4])for(let side of [-1,1]){let x=Math.sin(z*.14)*1.5+side*3.5
 const lanterns=[];for(let i=0;i<24;i++){const g=new THREE.Group();g.position.set((random()-.5)*30,7+random()*9,(random()-.5)*20-4);scene.add(g);cylinder(.17,.2,.4,glow,0,0,0,g,8);cylinder(.19,.19,.025,gold,0,-.2,0,g,8);halo(0,0,0,'#ffcf93',1.6,g);lanterns.push({g,y:g.position.y,phase:random()*6})}
 // FLUFF-inspired companion: fur, glossy bean eyes, no animal ears or fixed smile.
 const fluff=new THREE.Group();fluff.position.set(2.6,1,8);scene.add(fluff);const furM=M('#e3deec',.97),body=ball(furM,0,0,0,.86,fluff);body.scale.multiply(new THREE.Vector3(1,.92,.85));const furGeo=new THREE.ConeGeometry(.012,.095,3);const fur=new THREE.InstancedMesh(furGeo,furM,1500);const dummy=new THREE.Object3D();for(let i=0;i<1500;i++){const y=1-2*(i+.5)/1500,a=i*2.39996,r=Math.sqrt(1-y*y),v=new THREE.Vector3(r*Math.cos(a),y,r*Math.sin(a));dummy.position.set(v.x*.86,v.y*.79,v.z*.73);dummy.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),v);dummy.scale.setScalar(.7+random()*.7);dummy.updateMatrix();fur.setMatrixAt(i,dummy.matrix)}fluff.add(fur);
-const eyes=[];for(let side of [-1,1]){let eye=ball(new THREE.MeshStandardMaterial({color:'#151721',roughness:.12}),side*.24,.08,.69,.115,fluff);eye.scale.multiply(new THREE.Vector3(.8,1.2,.6));eyes.push(eye);ball(new THREE.MeshBasicMaterial({color:'#ffffff'}),side*.24-.023,.12,.758,.025,fluff);let foot=ball(furM,side*.37,-.7,.15,.23,fluff);foot.scale.multiply(new THREE.Vector3(1,.6,1.2))}const tuft=ball(furM,.05,.78,-.05,.18,fluff);tuft.scale.multiply(new THREE.Vector3(.65,1.4,.6));fluff.rotation.y=-.15;light('#ffe1c7',10,2,3,10,7);halo(2.6,.1,8,'#c2b4ff',2);
+const eyes=[],feet=[];for(let side of [-1,1]){let eye=ball(new THREE.MeshStandardMaterial({color:'#151721',roughness:.12}),side*.24,.08,.69,.115,fluff);eye.scale.multiply(new THREE.Vector3(.8,1.2,.6));eyes.push(eye);ball(new THREE.MeshBasicMaterial({color:'#ffffff'}),side*.24-.023,.12,.758,.025,fluff);let foot=ball(furM,side*.37,-.7,.15,.23,fluff);foot.scale.multiply(new THREE.Vector3(1,.6,1.2));feet.push(foot)}const tuft=ball(furM,.05,.78,-.05,.18,fluff);tuft.scale.multiply(new THREE.Vector3(.65,1.4,.6));fluff.rotation.y=-.15;const companionLight=light('#ffe1c7',10,2,3,10,7),companionHalo=halo(2.6,.1,8,'#c2b4ff',2);
 // Tiny drifting particles and a distant moon.
 const pos=[];for(let i=0;i<200;i++)pos.push((random()-.5)*75,6+random()*35,(random()-.5)*65-12);const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));const stars=new THREE.Points(geo,new THREE.PointsMaterial({size:.07,color:'#dfd5ff',map:glowMap,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));scene.add(stars);ball(new THREE.MeshBasicMaterial({color:'#e1d5dc'}),-23,28,-40,2.4);halo(-23,28,-39,'#b2b9ef',15);
 // A vaulted gate, climbing gilded ribs and suspended star crests.
@@ -85,14 +86,100 @@ const skyUniforms={uTime:{value:0}};const sky=mesh(new THREE.SphereGeometry(110,
 // Merge static siblings by material. Keeps moving rides and tappable Fluff independent.
 function batchStatic(parent){const groups=new Map();for(const child of [...parent.children]){if(child===fluff||child===sky||child===lake||child.isInstancedMesh)continue;if(child.isGroup){batchStatic(child);continue}if(!child.isMesh||child.material.transparent||Array.isArray(child.material)||!child.geometry.attributes.normal||!child.geometry.attributes.uv)continue;const key=child.material.uuid;const list=groups.get(key)||[];list.push(child);groups.set(key,list)}for(const list of groups.values()){if(list.length<5)continue;const buffers={position:[],normal:[],uv:[]};let count=0;for(const m of list){m.updateMatrix();let g=m.geometry.index?m.geometry.toNonIndexed():m.geometry.clone();g.applyMatrix4(m.matrix);for(const key in buffers)buffers[key].push(g.attributes[key].array);count+=g.attributes.position.count;g.dispose();parent.remove(m)}const g=new THREE.BufferGeometry();for(const key in buffers){const size=key==='uv'?2:3,array=new Float32Array(count*size);let offset=0;for(const a of buffers[key]){array.set(a,offset);offset+=a.length}g.setAttribute(key,new THREE.BufferAttribute(array,size))}const combined=new THREE.Mesh(g,list[0].material);combined.castShadow=true;combined.receiveShadow=true;parent.add(combined)}}batchStatic(scene);
 
-let dragging=false,lastX=0,lastY=0,moved=0,calling=false,celebrateUntil=0;const reduce=matchMedia('(prefers-reduced-motion: reduce)');
-const pointers=new Map();let pinchDistance=0;const status=document.getElementById('park-status');
+// Books turn the walk into a knowledge trail. Each has its own field.
+const bookSpecs=[
+  {x:2.6,z:5.1,cat:'science',label:'과학',color:'#b9daff'},
+  {x:2.7,z:-7,cat:'philosophy',label:'철학자',color:'#d0baff'},
+  {x:-.6,z:-3.6,cat:'moral',label:'도덕과 판단',color:'#e5bad4'},
+  {x:11,z:3,cat:'art',label:'예술과 음악',color:'#ffcd9c'},
+  {x:6,z:10.8,cat:'nature',label:'동물과 환경',color:'#bce4cc'},
+  {x:-1.2,z:13.8,cat:'history',label:'역사와 문화',color:'#e4d59b'}
+];
+const books=bookSpecs.map(spec=>{
+  const root=new THREE.Group();root.position.set(spec.x,0,spec.z);scene.add(root);
+  cylinder(.72,.82,.12,stone,0,.08,0,root,32);
+  const ring=torus(.84,.025,new THREE.MeshBasicMaterial({color:spec.color}),0,.15,0,root);ring.rotation.x=-Math.PI/2;
+  const book=new THREE.Group();book.position.y=1.55;root.add(book);
+  for(const side of [-1,1]){const page=new THREE.Group();page.rotation.z=side*-.2;book.add(page);box(.54,.08,.72,M(spec.color),side*.28,0,0,page);box(.48,.08,.64,cream,side*.28,.065,0,page);for(let line=0;line<4;line++)box(.32,.007,.012,gold,side*.28,.112,-.21+line*.13,page);}
+  cylinder(.035,.035,.72,gold,0,0,0,book,8).rotation.x=Math.PI/2;
+  const sparkle=mesh(starGeo,new THREE.MeshBasicMaterial({color:spec.color}),0,2.25,0,root);sparkle.scale.setScalar(.35);
+  const aura=halo(0,1.5,0,spec.color,2.7,root);
+  return {...spec,root,book,ring,sparkle,aura};
+});
+const reduce=matchMedia('(prefers-reduced-motion: reduce)'),status=document.getElementById('park-status');
+const interactLabel=document.getElementById('interact-label'),interactButton=document.getElementById('open-quiz');
+const keys=new Set(),tapUntil=new Map(),pointers=new Map(),velocity=new THREE.Vector2(),joy=new THREE.Vector2();
+let nearby=null,celebrateUntil=0,follow=false,jumpY=0,jumpVelocity=0,landingAt=-100,walkPhase=0,activeTime=0;
+let lastX=0,lastY=0,moved=0,pinchDistance=0;
+const typing=e=>['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)||e.target.isContentEditable;
+const paused=()=>document.body.classList.contains('quiz-open');
+const keyDirections={KeyW:[0,-1],ArrowUp:[0,-1],KeyS:[0,1],ArrowDown:[0,1],KeyA:[-1,0],ArrowLeft:[-1,0],KeyD:[1,0],ArrowRight:[1,0]};
+function startJump(){if(paused()||jumpY>.01)return;jumpVelocity=6.1;}
+function clearControls(){keys.clear();tapUntil.clear();joy.set(0,0);velocity.set(0,0);pointers.clear();joyPointer=null;joystick.classList.remove('active');stick.style.transform='translate(-50%,-50%)';}
+window.addEventListener('keydown',e=>{
+  if(typing(e)||e.metaKey||e.ctrlKey||e.altKey||paused())return;
+  if(keyDirections[e.code]){e.preventDefault();document.activeElement?.blur();keys.add(e.code);if(!e.repeat)tapUntil.set(e.code,performance.now()+110);}
+  if(e.code==='Space'&&!(e.target.closest('button,summary,a'))){e.preventDefault();if(!e.repeat)startJump();}
+  if(e.code==='KeyE'&&!e.repeat){e.preventDefault();window.openParkKnowledge(nearby?.cat);}
+});
+window.addEventListener('keyup',e=>keys.delete(e.code));
+window.addEventListener('blur',clearControls);document.addEventListener('visibilitychange',()=>{if(document.hidden)clearControls()});
+// Thumbstick also exposes four directional buttons for keyboard/accessibility use.
+const joystick=document.getElementById('joystick'),stick=joystick.querySelector('.joystick-stick');let joyPointer=null;
+function setJoystick(e){const r=joystick.getBoundingClientRect(),dx=e.clientX-r.left-r.width/2,dy=e.clientY-r.top-r.height/2,range=34,len=Math.hypot(dx,dy),scale=Math.min(1,range/Math.max(1,len));joy.set(dx*scale/range,dy*scale/range);if(len<5)joy.set(0,0);stick.style.transform=`translate(calc(-50% + ${joy.x*range}px),calc(-50% + ${joy.y*range}px))`;}
+joystick.addEventListener('pointerdown',e=>{if(paused())return;e.preventDefault();joyPointer=e.pointerId;joystick.setPointerCapture(e.pointerId);joystick.classList.add('active');setJoystick(e)});
+joystick.addEventListener('pointermove',e=>{if(e.pointerId===joyPointer)setJoystick(e)});
+function releaseJoystick(e){if(e.pointerId!==joyPointer)return;joyPointer=null;joy.set(0,0);joystick.classList.remove('active');stick.style.transform='translate(-50%,-50%)'}
+joystick.addEventListener('pointerup',releaseJoystick);joystick.addEventListener('pointercancel',releaseJoystick);joystick.addEventListener('lostpointercapture',releaseJoystick);
+joystick.querySelectorAll('[data-move]').forEach(b=>b.addEventListener('click',e=>{if(e.detail===0){const code={up:'KeyW',down:'KeyS',left:'KeyA',right:'KeyD'}[b.dataset.move];tapUntil.set(code,performance.now()+220)}}));
+document.getElementById('jump').addEventListener('click',startJump);
 function pointDistance(){const p=[...pointers.values()];return p.length===2?Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y):0}
-canvas.addEventListener('pointerdown',e=>{pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});dragging=true;lastX=e.clientX;lastY=e.clientY;moved=0;if(pointers.size===2)pinchDistance=pointDistance();canvas.setPointerCapture(e.pointerId)});
-canvas.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===2){const d=pointDistance();targetDistance=Math.max(20,Math.min(48,targetDistance+(pinchDistance-d)*.045));pinchDistance=d;moved=100;return}const dx=e.clientX-lastX,dy=e.clientY-lastY;moved+=Math.abs(dx)+Math.abs(dy);targetYaw=Math.max(-.85,Math.min(.85,targetYaw-dx*.003));targetPitch=Math.max(.18,Math.min(.62,targetPitch+dy*.0018));lastX=e.clientX;lastY=e.clientY});
-canvas.addEventListener('pointerup',e=>{if(moved<8&&pointers.size===1){const rect=canvas.getBoundingClientRect(),ray=new THREE.Raycaster();ray.setFromCamera(new THREE.Vector2((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1),camera);if(ray.intersectObject(fluff,true).length){celebrateUntil=performance.now()+1600;status.textContent='플러프도 신났다.'}}pointers.delete(e.pointerId);dragging=pointers.size>0;if(dragging){const p=[...pointers.values()][0];lastX=p.x;lastY=p.y}});
-canvas.addEventListener('pointercancel',e=>{pointers.delete(e.pointerId);dragging=pointers.size>0});canvas.addEventListener('wheel',e=>{e.preventDefault();targetDistance=Math.max(20,Math.min(48,targetDistance+e.deltaY*.015))},{passive:false});
-window.parkCelebrate=()=>{celebrateUntil=performance.now()+1500};document.getElementById('call-fluff').onclick=()=>{calling=!calling;celebrateUntil=performance.now()+1000;document.getElementById('park-status').textContent=calling?'플러프 오는 중.':'플러프 산책 중.';document.getElementById('call-fluff').textContent=calling?'플러프 돌려보내기':'플러프 부르기'};document.getElementById('park-reset').onclick=()=>{targetYaw=.12;targetPitch=.32;targetDistance=innerWidth<650?36:29;document.getElementById('park-status').textContent='드래그해서 둘러보기 · 플러프를 눌러보세요'};
-const clock=new THREE.Clock();let raf,last=0;function animate(now){raf=requestAnimationFrame(animate);if(document.hidden||now-last<(document.body.classList.contains('quiz-open')?65:32))return;last=now;const t=clock.getElapsedTime(),still=reduce.matches||document.body.classList.contains('still');yaw+=(targetYaw-yaw)*.06;pitch+=(targetPitch-pitch)*.06;distance+=(targetDistance-distance)*.05;camera.position.set(Math.sin(yaw)*distance,3+Math.sin(pitch)*distance,Math.cos(yaw)*distance);camera.lookAt(target);if(!still){wheel.rotation.z=t*.08;gondolas.forEach(g=>g.rotation.z=-wheel.rotation.z);spinning.rotation.y=t*.16;seats.forEach((s,i)=>s.position.y=1.5+Math.sin(t*1.3+i)*.3);lanterns.forEach(({g,y,phase})=>{g.position.y=y+Math.sin(t*.5+phase)*.3;g.rotation.z=Math.sin(t*.4+phase)*.08});waterUniforms.uTime.value=t;skyUniforms.uTime.value=t;for(let i=0;i<fireCount;i++){const f=fireSeeds[i];fireData[i*3]=f.x+Math.sin(t*.3+f.p)*.6;fireData[i*3+1]=f.y+Math.sin(t*.8+f.p)*.4;fireData[i*3+2]=f.z+Math.cos(t*.4+f.p)*.6}fireGeo.attributes.position.needsUpdate=true;const jumping=now<celebrateUntil;fluff.position.x+=((calling?1.8:2.6+Math.sin(t*.22)*.5)-fluff.position.x)*.03;fluff.position.z+=((calling?11:8)-fluff.position.z)*.03;fluff.position.y=1+(jumping?Math.abs(Math.sin(t*9))*.6:Math.sin(t*2)*.035);fluff.rotation.z=jumping?Math.sin(t*8)*.12:Math.sin(t*.7)*.035;const blink=Math.sin(t*1.2)> .995? .12:1;eyes.forEach(e=>e.scale.y=.138*blink);stars.rotation.y=t*.002;if(calling&&Math.abs(fluff.position.z-11)<.05&&status.textContent==='플러프 오는 중.')status.textContent='플러프 도착. 눌러보세요.';}renderer.render(scene,camera)}
-let previousWidth=0;function resize(){const rect=canvas.getBoundingClientRect(),w=Math.max(1,rect.width),h=Math.max(1,rect.height);renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=innerWidth<650?52:44;camera.updateProjectionMatrix();if(Math.abs(previousWidth-innerWidth)>60){targetDistance=innerWidth<650?36:29;targetPitch=innerWidth<650?.36:.32;previousWidth=innerWidth}if(!calling)status.textContent=innerWidth<650?'한 손가락으로 회전 · 두 손가락으로 확대':'드래그해서 둘러보기 · 플러프를 눌러보세요'}resize();raf=requestAnimationFrame(animate);status.textContent=innerWidth<650?'한 손가락으로 회전 · 두 손가락으로 확대':'드래그해서 둘러보기 · 플러프를 눌러보세요';window.addEventListener('resize',resize);new ResizeObserver(resize).observe(canvas);
+canvas.addEventListener('pointerdown',e=>{if(paused())return;document.activeElement?.blur();pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});lastX=e.clientX;lastY=e.clientY;moved=0;if(pointers.size===2)pinchDistance=pointDistance();canvas.setPointerCapture(e.pointerId)});
+canvas.addEventListener('pointermove',e=>{if(!pointers.has(e.pointerId))return;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===2){const d=pointDistance();targetDistance=Math.max(16,Math.min(45,targetDistance+(pinchDistance-d)*.045));pinchDistance=d;moved=100;return}const dx=e.clientX-lastX,dy=e.clientY-lastY;moved+=Math.abs(dx)+Math.abs(dy);targetYaw-=dx*.003;targetPitch=Math.max(.25,Math.min(.72,targetPitch+dy*.0018));lastX=e.clientX;lastY=e.clientY});
+canvas.addEventListener('pointerup',e=>{if(moved<8&&pointers.size===1){const rect=canvas.getBoundingClientRect(),ray=new THREE.Raycaster();ray.setFromCamera(new THREE.Vector2((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1),camera);if(ray.intersectObject(fluff,true).length)startJump();else if(nearby&&ray.intersectObject(nearby.root,true).length)window.openParkKnowledge(nearby.cat)}pointers.delete(e.pointerId);if(pointers.size){const p=[...pointers.values()][0];lastX=p.x;lastY=p.y}});
+canvas.addEventListener('pointercancel',e=>pointers.delete(e.pointerId));canvas.addEventListener('wheel',e=>{e.preventDefault();targetDistance=Math.max(16,Math.min(45,targetDistance+e.deltaY*.015))},{passive:false});
+window.parkCelebrate=()=>{celebrateUntil=performance.now()+1200;emitMotes(fluff.position.x,1.2,fluff.position.z,30)};
+window.parkNearbyCategory=()=>nearby?.cat;
+document.getElementById('park-reset').onclick=()=>{follow=true;targetYaw=.12;targetPitch=.47;targetDistance=innerWidth<650?29:23;};
+window.addEventListener('lab:open',()=>{clearControls();if(nearby)emitMotes(nearby.x,1.6,nearby.z,42);else emitMotes(fluff.position.x,1.2,fluff.position.z,42)});
+window.addEventListener('lab:close',clearControls);
+// A single particle buffer for footsteps, landings and book discoveries.
+const moteCount=72,motePositions=new Float32Array(moteCount*3).fill(-100),moteStates=Array.from({length:moteCount},()=>({life:0}));
+const moteGeo=new THREE.BufferGeometry();moteGeo.setAttribute('position',new THREE.BufferAttribute(motePositions,3));
+const motes=new THREE.Points(moteGeo,new THREE.PointsMaterial({color:'#ffe6b6',size:.14,map:glowMap,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));scene.add(motes);let moteCursor=0,lastTrail=0;
+function emitMotes(x,y,z,count){if(reduce.matches||document.body.classList.contains('still'))return;for(let i=0;i<count;i++){const a=random()*Math.PI*2,s=count>5?1.5+random()*2:.2;const m=moteStates[moteCursor++%moteCount];Object.assign(m,{x,y,z,vx:Math.cos(a)*s,vy:1+random()*2,vz:Math.sin(a)*s,life:.6+random()*.5});}}
+function updateNearby(){
+  let candidate=null,nearest=2.5;for(const b of books){const d=Math.hypot(fluff.position.x-b.x,fluff.position.z-b.z);if(d<nearest){candidate=b;nearest=d;}}
+  if(candidate===nearby&&status.textContent)return;nearby=candidate;
+  interactLabel.textContent=nearby?`${nearby.label} 줍기`:'잡지식 줍기';interactButton.classList.toggle('near-book',!!nearby);
+  status.textContent=nearby?`${nearby.label} 책 발견 · ${innerWidth<650?'버튼을 눌러 펼치기':'E로 펼치기'}`:(innerWidth<650?'왼쪽 조이스틱으로 이동 · 책을 찾아보세요':'WASD로 이동 · 빛나는 책 가까이에서 E');
+}
+let lastFrame=0,previousWidth=0;
+function animate(now){requestAnimationFrame(animate);if(document.hidden){lastFrame=now;return}if(now-lastFrame<(paused()?40:innerWidth<650?28:16))return;
+  const dt=Math.min((now-lastFrame)/1000||.016,.05);lastFrame=now;activeTime+=dt;const t=activeTime,still=reduce.matches||document.body.classList.contains('still');
+  let ix=joy.x,iz=joy.y;for(const [code,direction] of Object.entries(keyDirections)){if(keys.has(code)||(tapUntil.get(code)||0)>now){ix+=direction[0];iz+=direction[1];}}
+  if(paused()){ix=0;iz=0;}
+  const input=moveVector(ix,iz,yaw),smooth=1-Math.exp(-dt*18);velocity.x+=(input.x*4.8-velocity.x)*smooth;velocity.y+=(input.z*4.8-velocity.y)*smooth;
+  if(Math.abs(velocity.x)+Math.abs(velocity.y)<.025)velocity.set(0,0);
+  const oldX=fluff.position.x,oldZ=fluff.position.z,next=moveOnGround({x:oldX,z:oldZ},{x:velocity.x,z:velocity.y},dt);
+  fluff.position.x=next.x;fluff.position.z=next.z;const travelled=Math.hypot(next.x-oldX,next.z-oldZ),walking=travelled>.001;
+  if(walking){if(!follow){follow=true;targetDistance=innerWidth<650?29:23;targetPitch=.47;}document.body.classList.add('has-walked');walkPhase+=travelled*4.2;const facing=Math.atan2(velocity.x,velocity.y);fluff.rotation.y+=Math.atan2(Math.sin(facing-fluff.rotation.y),Math.cos(facing-fluff.rotation.y))*Math.min(1,dt*12);if(t-lastTrail>.12){emitMotes(next.x,.13,next.z,2);lastTrail=t;}}
+  if(!paused()&&(jumpY>0||jumpVelocity>0)){jumpVelocity-=15*dt;jumpY+=jumpVelocity*dt;if(jumpY<=0){jumpY=0;jumpVelocity=0;landingAt=t;emitMotes(next.x,.13,next.z,14);}}
+  const celebrate=!still&&now<celebrateUntil,hop=celebrate?Math.abs(Math.sin(t*9))*.4:0,land=Math.max(0,1-(t-landingAt)/.22);
+  fluff.position.y=1+jumpY+hop+(!still&&walking?Math.abs(Math.sin(walkPhase))*.08:0);
+  fluff.scale.set(1+land*.09,1-land*.15,1+land*.09);fluff.rotation.z=!still&&walking?Math.sin(walkPhase)*.07:0;
+  feet.forEach((foot,i)=>{foot.position.z=.15+(!still&&walking?Math.sin(walkPhase+i*Math.PI)*.23:0);foot.position.y=-.7+(!still&&walking?Math.max(0,Math.cos(walkPhase+i*Math.PI))*.11:0)});
+  companionHalo.position.set(next.x,.12,next.z);companionHalo.scale.setScalar(Math.max(1,2-jumpY*.35));companionLight.position.set(next.x,3+jumpY,next.z+1);
+  const tx=follow?THREE.MathUtils.clamp(next.x*.72,-10,10):0,tz=follow?THREE.MathUtils.clamp(next.z*.65,-9,9):0;
+  target.x+=(tx-target.x)*(1-Math.exp(-dt*3));target.z+=(tz-target.z)*(1-Math.exp(-dt*3));target.y=follow?2.2:3;
+  yaw+=(targetYaw-yaw)*(1-Math.exp(-dt*5));pitch+=(targetPitch-pitch)*(1-Math.exp(-dt*5));distance+=(targetDistance-distance)*(1-Math.exp(-dt*3));
+  camera.position.set(target.x+Math.sin(yaw)*distance,target.y+Math.sin(pitch)*distance,target.z+Math.cos(yaw)*distance);camera.lookAt(target);
+  updateNearby();
+  if(!still){wheel.rotation.z=t*.08;gondolas.forEach(g=>g.rotation.z=-wheel.rotation.z);spinning.rotation.y=t*.16;seats.forEach((s,i)=>s.position.y=1.5+Math.sin(t*1.3+i)*.3);lanterns.forEach(({g,y,phase})=>{g.position.y=y+Math.sin(t*.5+phase)*.3;g.rotation.z=Math.sin(t*.4+phase)*.08});waterUniforms.uTime.value=t;skyUniforms.uTime.value=t;for(let i=0;i<fireCount;i++){const f=fireSeeds[i];fireData[i*3]=f.x+Math.sin(t*.3+f.p)*.6;fireData[i*3+1]=f.y+Math.sin(t*.8+f.p)*.4;fireData[i*3+2]=f.z+Math.cos(t*.4+f.p)*.6}fireGeo.attributes.position.needsUpdate=true;eyes.forEach(e=>e.scale.y=.138*(Math.sin(t*1.2)>.995?.12:1));stars.rotation.y=t*.002;}
+  books.forEach((b,i)=>{const isNear=b===nearby;b.book.position.y=1.55+(still?0:Math.sin(t*1.7+i)*.13);b.book.rotation.y=still?.25:Math.sin(t*.35+i)*.28;b.sparkle.rotation.z=still?0:t*.4;b.ring.scale.setScalar(isNear?1.18:1);b.aura.material.opacity=isNear?.65:.25;});
+  for(let i=0;i<moteCount;i++){const m=moteStates[i];if(m.life>0&&!still){m.life-=dt;m.x+=m.vx*dt;m.z+=m.vz*dt;m.y+=m.vy*dt;m.vy-=dt*3;motePositions.set([m.x,m.y,m.z],i*3)}else motePositions[i*3+1]=-100;}moteGeo.attributes.position.needsUpdate=true;
+  renderer.render(scene,camera);
+}
+function resize(){const rect=canvas.getBoundingClientRect(),w=Math.max(1,rect.width),h=Math.max(1,rect.height);renderer.setSize(w,h,false);renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<650?1.35:1.7));camera.aspect=w/h;camera.fov=innerWidth<650?52:44;camera.updateProjectionMatrix();if(Math.abs(previousWidth-innerWidth)>60){targetDistance=innerWidth<650?(follow?29:36):(follow?23:29);targetPitch=follow?.47:innerWidth<650?.36:.32;previousWidth=innerWidth}status.textContent='';updateNearby();}
+resize();requestAnimationFrame(animate);window.addEventListener('resize',resize);new ResizeObserver(resize).observe(canvas);
 }

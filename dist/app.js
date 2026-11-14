@@ -19,3 +19,9 @@ document.addEventListener('input',e=>{if(e.target.id==='search'){let n=0;documen
 document.querySelector('.brand').addEventListener('click',e=>{e.preventDefault();go('explore')});render();
 
 document.addEventListener('keydown',e=>{if(e.ctrlKey||e.metaKey||e.altKey||e.repeat||['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)||e.target.isContentEditable)return;if(page!=='explore'||document.getElementById('quiz-overlay')?.hidden)return;if(['1','2','3'].includes(e.key)&&picked===null){e.preventDefault();document.querySelector('[data-answer="'+(Number(e.key)-1)+'"]')?.click()}if(e.key==='ArrowRight'){e.preventDefault();document.querySelector('#next')?.click()}});
+
+window.startParkQuiz=function(category){
+  cat=categories.some(c=>c[0]===category)?category:'all';
+  const pool=questions.filter(q=>cat==='all'||q.cat===cat),unseen=pool.filter(q=>!(q.id in state.answers));
+  current=(unseen.length?unseen:pool)[Math.floor(Math.random()*(unseen.length||pool.length))];picked=null;go('explore');
+};
