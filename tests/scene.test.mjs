@@ -12,7 +12,7 @@ test('conservatory front and rear openings are clear through actual glazing and 
   const hits=ray.intersectObjects(physical,false);assert.equal(hits.length,0,hits[0]?.point?.toArray().join(','));
  }
 });
-test('velvet character has continuous surface, no fibres, and grounded feet in neutral pose',()=>{character.pose({still:true});character.group.updateMatrixWorld(true);let meshes=0;character.group.traverse(o=>{assert.ok(!o.isInstancedMesh);if(o.isMesh){meshes++;for(const v of o.geometry.attributes.position.array)assert.ok(Number.isFinite(v));}});assert.ok(meshes<15);for(const foot of character.feet){const b=new T.Box3().setFromObject(foot);assert.ok(Math.abs(b.min.y+.86)<.01);}character.group.position.y=.95;character.group.updateMatrixWorld(true);for(const foot of character.feet){const b=new T.Box3().setFromObject(foot);assert.ok(Math.abs(b.min.y-.09)<.01,'world feet rest on the path');}for(const yaw of [0,Math.PI/2,Math.PI]){character.group.rotation.y=yaw;const b=new T.Box3().setFromObject(character.group);assert.ok(b.getSize(new T.Vector3()).y<1.8);}});
+test('plush character has finite geometry and grounded feet in neutral pose',()=>{character.pose({still:true});character.group.updateMatrixWorld(true);let meshes=0;character.group.traverse(o=>{if(o.isMesh){meshes++;for(const v of o.geometry.attributes.position.array)assert.ok(Number.isFinite(v));}});assert.ok(meshes<30);for(const foot of character.feet){const b=new T.Box3().setFromObject(foot);assert.ok(Math.abs(b.min.y+.86)<.01);}character.group.position.y=.95;character.group.updateMatrixWorld(true);for(const foot of character.feet){const b=new T.Box3().setFromObject(foot);assert.ok(Math.abs(b.min.y-.09)<.01,'world feet rest on the path');}for(const yaw of [0,Math.PI/2,Math.PI]){character.group.rotation.y=yaw;const b=new T.Box3().setFromObject(character.group);assert.ok(b.getSize(new T.Vector3()).y<2.1);}});
 test('supporting feet remain grounded through walking, landing and customization',()=>{
  character.group.position.set(0,0,0);character.group.rotation.y=0;
  for(const roundness of [0,50,100])for(const landing of [0,.65,1])for(const phase of [0,.8,1.6,3.2,4.8]){
@@ -23,3 +23,9 @@ test('supporting feet remain grounded through walking, landing and customization
  }
 });
 fs.mkdirSync(path.resolve(root,'../qa'),{recursive:true});fs.writeFileSync(path.resolve(root,'../qa/scene-metrics.json'),JSON.stringify({environment:`Node ${process.version} ${os.platform()} ${os.arch()}`,measurement:'CPU scene geometry construction; no browser, WebGL or GPU rendering',sceneConstructionMs:+ms.toFixed(2),meshObjects:count,materials:materials.size,triangles,renderFPS:null,browserVisualVerification:'not available; separate CPU mesh renders are documented in qa-report.md'},null,2));
+
+test('fur responds to fluff and sunglasses can be toggled without removing other accessories',()=>{
+ const fur=character.group.getObjectByName('plush-fur'),glasses=character.group.getObjectByName('sunglasses');assert.ok(fur.isInstancedMesh);assert.ok(fur.count>=7000);
+ character.customize({fluff:50,sunglasses:false});const short=Array.from(fur.instanceMatrix.array);assert.equal(glasses.visible,false);
+ character.customize({fluff:100,sunglasses:true,accessory:'ribbon'});assert.equal(glasses.visible,true);assert.ok(short.some((v,i)=>v!==fur.instanceMatrix.array[i]));for(const v of fur.instanceMatrix.array)assert.ok(Number.isFinite(v));
+});

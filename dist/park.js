@@ -2,7 +2,7 @@ import * as T from './vendor/three.module.js';
 import {moveVector,moveOnGround} from './movement.js?v=park9';
 import {findPath} from './navigation.js?v=park9';
 import {rooms,islands,islandAt,surfaceHeight} from './world-layout.js';
-import {createCompanion} from './companion.js?v=park9';
+import {createCompanion} from './companion.js?v=fluff10';
 import {buildWorld} from './themepark-world.js?v=park9';
 import {createDiscoveryGate} from './discovery.js';
 const canvas=document.querySelector('#park-canvas'),status=document.querySelector('#park-status');
