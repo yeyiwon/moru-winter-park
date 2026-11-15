@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';import path from 'node:path';import os from 'node:os';
 const root=path.resolve(path.dirname(new URL(import.meta.url).pathname),'../dist');const noop=()=>{};const context=vm.createContext({console,Float32Array,Uint16Array,Uint32Array,Int32Array,Uint8Array,Math,Date,performance,document:{createElement:()=>({width:256,height:256,getContext:()=>({fillRect:noop,createRadialGradient:()=>({addColorStop:noop}),createLinearGradient:()=>({addColorStop:noop})})})}});const modules=new Map();
-async function mod(file){if(modules.has(file))return modules.get(file);const m=new vm.SourceTextModule(fs.readFileSync(file,'utf8'),{context,identifier:file});modules.set(file,m);await m.link(s=>mod(path.resolve(path.dirname(file),s)));return m;}
+async function mod(file){if(modules.has(file))return modules.get(file);const m=new vm.SourceTextModule(fs.readFileSync(file,'utf8'),{context,identifier:file});modules.set(file,m);await m.link(s=>mod(path.resolve(path.dirname(file),s.split('?')[0])));return m;}
 const w=await mod(path.join(root,'themepark-world.js'));await w.evaluate();const c=await mod(path.join(root,'companion.js'));await c.evaluate();const T=modules.get(path.join(root,'vendor/three.module.js')).namespace;const scene=new T.Scene();const start=performance.now(),world=w.namespace.buildWorld(scene),ms=performance.now()-start;scene.updateMatrixWorld(true);let count=0,triangles=0,materials=new Set();scene.traverse(o=>{if(o.isMesh){count++;triangles+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;materials.add(o.material.uuid);}});
 const character=c.namespace.createCompanion();
 test('scene geometry and normals are finite and share a bounded material palette',()=>{scene.traverse(o=>{if(o.isMesh)for(const [name,a]of Object.entries(o.geometry.attributes))for(const v of a.array)assert.ok(Number.isFinite(v),name);});assert.ok(materials.size<140);assert.ok(count<400);assert.equal(world.markers.length,10);for(const r of world.markers)assert.ok(Math.hypot(r.root.position.x-r.door.x,r.root.position.z-r.door.z)>1,'arrival does not overlap a plaque');});
@@ -24,8 +24,9 @@ test('supporting feet remain grounded through walking, landing and customization
 });
 fs.mkdirSync(path.resolve(root,'../qa'),{recursive:true});fs.writeFileSync(path.resolve(root,'../qa/scene-metrics.json'),JSON.stringify({environment:`Node ${process.version} ${os.platform()} ${os.arch()}`,measurement:'CPU scene geometry construction; no browser, WebGL or GPU rendering',sceneConstructionMs:+ms.toFixed(2),meshObjects:count,materials:materials.size,triangles,renderFPS:null,browserVisualVerification:'not available; separate CPU mesh renders are documented in qa-report.md'},null,2));
 
-test('fur responds to fluff and sunglasses can be toggled without removing other accessories',()=>{
- const fur=character.group.getObjectByName('plush-fur'),glasses=character.group.getObjectByName('sunglasses');assert.ok(fur.isInstancedMesh);assert.ok(fur.count>=7000);
- character.customize({fluff:50,sunglasses:false});const short=Array.from(fur.instanceMatrix.array);assert.equal(glasses.visible,false);
- character.customize({fluff:100,sunglasses:true,accessory:'ribbon'});assert.equal(glasses.visible,true);assert.ok(short.some((v,i)=>v!==fur.instanceMatrix.array[i]));for(const v of fur.instanceMatrix.array)assert.ok(Number.isFinite(v));
+test('fur responds to fluff and sunglasses are an optional wardrobe item',()=>{
+ const fresh=c.namespace.createCompanion();assert.equal(fresh.group.getObjectByName('sunglasses').visible,false);
+ const fur=character.group.getObjectByName('plush-fur'),glasses=character.group.getObjectByName('sunglasses');assert.ok(fur.isInstancedMesh);assert.ok(fur.count>=16000);
+ character.customize({fluff:50,accessory:'none'});const short=Array.from(fur.instanceMatrix.array);assert.equal(glasses.visible,false);
+ character.customize({fluff:100,accessory:'sunglasses'});assert.equal(glasses.visible,true);assert.ok(short.some((v,i)=>v!==fur.instanceMatrix.array[i]));for(const v of fur.instanceMatrix.array)assert.ok(Number.isFinite(v));
 });

@@ -1,6 +1,6 @@
-const CACHE='knowledge-park-v9-1';
+const CACHE='knowledge-park-v11-soft';
 const scripts=['app','studio','effects','park','learning-core','simulations','world-layout','movement','navigation','companion','world-art','themepark-world','discovery'];
-const CORE=['./','./index.html','./style.css?v=park9','./vendor/three.module.js',...scripts.flatMap(n=>['./'+n+'.js','./'+n+'.js?v=park9']),...['science','reasoning','humanities','perspectives'].map(n=>'./content/'+n+'.json')];
+const CORE=['./','./index.html','./style.css?v=soft11','./soft.css?v=soft11','./vendor/three.module.js',...scripts.flatMap(n=>['./'+n+'.js','./'+n+'.js?v=soft11']),...['science','reasoning','humanities','perspectives','everyday'].map(n=>'./content/'+n+'.json')];
 const assetPaths=new Set(CORE.map(p=>new URL(p,self.location.href).pathname));
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>(key.startsWith('knowledge-campus-')||key.startsWith('knowledge-park-'))&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
