@@ -1,3 +1,4 @@
+import {createSnowPaths} from './snow-path.js';
 import {findPath,clearSegment} from './navigation.js';
 import * as THREE from './vendor/three.module.js';
 import {islands,bridges,bridgeHeight,exhibits,surfaceHeight} from './world-layout.js';
@@ -109,20 +110,8 @@ export function buildArchipelago(api){
   for(const [x,z,angle]of [[-3.3,5.8,.2],[.6,6.6,0],[4.7,5.3,-.35]]){const bench=new THREE.Group();bench.position.set(x,0,z);bench.rotation.y=angle;theatre.add(bench);for(let j=0;j<4;j++)box(2.5,.09,.17,timber,0,.58,-.28+j*.18,bench);for(let j=0;j<3;j++)box(2.5,.14,.08,timber,0,.93+j*.17,-.36,bench);for(const side of [-1,1]){box(.1,.55,.6,roofMat,side*.95,.3,0,bench);box(.1,.9,.1,roofMat,side*.95,.85,-.34,bench);}box(2.55,.035,.2,bridgeSnow,0,1.34,-.36,bench);}
   // The old clock, gear wheels and decorative boats are intentionally removed.
   // Designed promenades and planted borders replace random grass and pebble rings.
-  const pathMat=M('#b4b5ad',1,0),pathEdge=M('#c7c9bd',1,0),soil=M('#2a3938',1),bedStone=M('#606771',.8);
-  const pavingMarks=new Set();
-  function promenade(points,width=2.6){
-    if(points.length<2)return;const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(p[0],0,p[1]))),position=[],uv=[],index=[];const steps=Math.max(24,Math.ceil(curve.getLength()*3));
-    for(let i=0;i<=steps;i++){const t=i/steps,p=curve.getPoint(t),d=curve.getTangent(t),n=new THREE.Vector3(-d.z,0,d.x).normalize().multiplyScalar(width/2);for(const side of [1,-1]){const x=p.x+n.x*side,z=p.z+n.z*side;position.push(x,surfaceHeight(x,z)+.018,z);}uv.push(0,t*12,1,t*12);if(i<steps){const v=i*2;index.push(v,v+2,v+1,v+1,v+2,v+3);}}
-    const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(position,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(index);geo.computeVertexNormals();const walk=mesh(geo,pathMat);walk.name='connected-promenade';
-    // Shallow joints and small edge blocks add scale without forming raised rails across junctions.
-    const length=curve.getLength();for(let d=.6;d<length-.4;d+=1.15){const p=curve.getPointAt(d/length),t=curve.getTangentAt(d/length),yaw=Math.atan2(t.x,t.z),key=Math.round(p.x*1.5)+'/'+Math.round(p.z*1.5);if(pavingMarks.has(key))continue;pavingMarks.add(key);
-     const joint=box(width-.2,.008,.025,jointMat,p.x,surfaceHeight(p.x,p.z)+.025,p.z);joint.rotation.y=yaw;
-     for(const side of [-1,1]){const x=p.x+t.z*side*(width/2-.12),z=p.z-t.x*side*(width/2-.12),edge=box(.22,.035,.96,pathEdge,x,surfaceHeight(x,z)+.025,z);edge.rotation.y=yaw;}
-     const stagger=box(.018,.008,1.03,jointMat,p.x+t.z*(pavingMarks.size%2?.38:-.38),surfaceHeight(p.x,p.z)+.027,p.z-t.x*(pavingMarks.size%2?.38:-.38));stagger.rotation.y=yaw;
-    }
-
-  }
+  const soil=M('#2a3938',1),bedStone=M('#606771',.8);
+  const promenade=createSnowPaths({root:scene,stone:[M('#a3adae',1,0),M('#adb6b4',1,0),M('#a7afac',1,0)],snow:bridgeSnow,heightAt:surfaceHeight});
   // Every branch reaches a bridge landing or a real front door. No decorative dead ends.
   const drawn=new Set();function connect(a,b){const route=findPath(a,b);if(!route.length)return;const key=[a.x,a.z,b.x,b.z].join('/');if(drawn.has(key))return;drawn.add(key);promenade([[a.x,a.z],...route.map(p=>[p.x,p.z])]);}
   for(const island of islands.slice(0,7)){

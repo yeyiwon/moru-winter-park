@@ -1,3 +1,4 @@
+import {createSnowPaths} from './snow-path.js';
 import * as T from './vendor/three.module.js';
 import {spa} from './resort-layout.js';
 
@@ -27,13 +28,11 @@ export function buildSpaResort(api){
  const sidePos=[],sideIdx=[];for(let ring=0;ring<5;ring++)for(let i=0;i<=128;i++){const a=i/128*Math.PI*2,r=spa.r*(1-ring*.095)*(1+.025*Math.sin(a*5+ring*.3)+.015*Math.sin(a*11)),y=ring===0?0:-ring*2.1+.35*Math.sin(a*4+ring);sidePos.push(Math.cos(a)*r,y,spa.z+Math.sin(a)*r);if(ring<4&&i<128){const n=ring*129+i;sideIdx.push(n,n+129,n+1,n+1,n+129,n+130);}}
  const sideGeo=new T.BufferGeometry();sideGeo.setAttribute('position',new T.Float32BufferAttribute(sidePos,3));sideGeo.setIndex(sideIdx);sideGeo.computeVertexNormals();mesh(sideGeo,rock);
  for(let i=0;i<34;i++){const a=i/34*Math.PI*2,r=spa.r-1,sz=1.4+rand()*1.5;const b=oval(i%3?rock:rockShade,Math.cos(a)*r,-1.9-rand()*3,spa.z+Math.sin(a)*r,sz,2+rand()*2,sz*.7);b.rotation.set(rand()*.2,a,rand()*.25);}
- function ribbon(points,width,mat,y=.12){const curve=new T.CatmullRomCurve3(points.map(([x,z])=>new T.Vector3(x,y,z))),v=[],uv=[],idx=[];for(let i=0;i<=64;i++){const t=i/64,p=curve.getPoint(t),d=curve.getTangent(t),n=new T.Vector3(-d.z,0,d.x).normalize().multiplyScalar(width*.5);v.push(p.x+n.x,p.y,p.z+n.z,p.x-n.x,p.y,p.z-n.z);uv.push(0,t,1,t);if(i<64){const k=i*2;idx.push(k,k+2,k+1,k+1,k+2,k+3);}}const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(v,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();mesh(g,mat);return curve;}
- // The paths fork once at a calm forecourt and arrive at real entrances.
- ribbon([[0,88],[0,96],[-.8,104],[0,110]],3.8,stoneLight);
- ribbon([[0,108],[-4,111],[-10,114],[-17.8,119],[-18,124]],3.2,stoneLight);
- ribbon([[-.4,108],[5,111.8],[10,114],[12,117]],3.4,stoneLight);
- const court=shape(outline(0,109,4.8,4,48,.025)),courtGeo=new T.ShapeGeometry(court);courtGeo.rotateX(-Math.PI/2);mesh(courtGeo,stoneLight,0,.135,0);
- for(let z=91;z<108;z+=2.7){const sx=Math.sin(z*.2)*.13;const tile=box(3.25,.024,.035,stone,sx,.15,z);tile.rotation.y=Math.sin(z)*.09;}
+ const paving=createSnowPaths({root,stone:[M('#b9b4a5',1,0),M('#b0aea1',1,0),M('#c2bdaf',1,0)],snow});
+ // Small interlocking stones continue through the junction instead of overlapping flat ribbons.
+ paving([[0,88],[0,96],[-.8,104],[0,110]],3.8);
+ paving([[0,108],[-4,111],[-10,114],[-17.8,119],[-18,124]],3.2);
+ paving([[-.4,108],[5,111.8],[10,114],[12,117]],3.4);
  function lantern(x,z,h=1.2){box(.48,.16,.48,stoneDark,x,.17,z);box(.17,h,.17,cedarDark,x,h/2+.2,z);box(.42,.5,.42,lamp,x,h+.2,z);for(const s of [-1,1])for(const t of [-1,1])box(.045,.57,.045,slate,x+s*.23,h+.2,z+t*.23);box(.64,.09,.64,slate,x,h+.51,z);box(.63,.06,.63,snow,x,h+.59,z);}
  for(const [x,z]of [[-2.6,96],[2.6,104],[-8,111],[-19.6,120],[8.6,112],[15.4,115],[-21.8,136],[1,136]])lantern(x,z,.9);
  // Stone terraces surround the water; pool shells stay below the deck.

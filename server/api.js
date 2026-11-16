@@ -23,8 +23,15 @@ export async function handleAPI(request,env){
   if(!result.meta?.changes)return json({error:'이 공간에는 12명이 있어요. 새 초대 공간을 만들어 주세요.'},409);
   const secure=url.protocol==='https:'?'; Secure':'';return json({id,room,name},200,{'Set-Cookie':`winter_session=${secret}; Path=/api; HttpOnly; SameSite=Lax${secure}; Max-Age=86400`});
  }
+ if(path==='/api/tree'&&request.method==='GET'){const room=url.searchParams.get('room')||'winter-plaza';if(!/^[a-zA-Z0-9_-]{8,48}$/.test(room))return json({error:'공간을 확인해 주세요.'},400);const rows=await env.DB.prepare('SELECT id,kind,color,angle,height FROM tree_decorations WHERE room=? ORDER BY created_at LIMIT 160').bind(room).all();return json({decorations:rows.results||[]});}
  const secret=token(request);if(!secret)return json({error:'먼저 함께 걷기에 입장해 주세요.'},401);const id=await digest(secret),self=await env.DB.prepare('SELECT id,room,name FROM visitors WHERE id=?').bind(id).first();if(!self)return json({error:'연결이 만료됐어요. 다시 입장해 주세요.'},401);
  if(path==='/api/leave'&&request.method==='POST'){await env.DB.prepare('DELETE FROM visitors WHERE id=?').bind(id).run();return json({ok:true});}
+ if(path==='/api/tree'&&request.method==='POST'){
+  const raw=await request.text();if(raw.length>1024)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);
+  if(!['ball','star'].includes(b.kind)||!['#cc6b73','#e5bb6b','#b8cfd1'].includes(b.color)||!Number.isFinite(b.angle)||!Number.isFinite(b.height)||b.height<3||b.height>27||Math.abs(b.angle)>Math.PI*2)return json({error:'장식 위치를 확인해 주세요.'},400);
+  const ornament=crypto.randomUUID(),result=await env.DB.prepare('INSERT INTO tree_decorations(id,room,author,kind,color,angle,height,created_at) SELECT ?,?,?,?,?,?,?,? WHERE (SELECT COUNT(*) FROM tree_decorations WHERE room=?)<160 AND NOT EXISTS (SELECT 1 FROM tree_decorations WHERE author=? AND created_at>?)').bind(ornament,self.room,id,b.kind,b.color,b.angle,b.height,now,self.room,id,now-1000).run();if(!result.meta?.changes)return json({error:'잠시 후 다시 시도해 주세요. 트리는 160개까지 꾸밀 수 있어요.'},429);return json({id:ornament});
+ }
+ if(path==='/api/tree'&&request.method==='DELETE'){const raw=await request.text();if(raw.length>256)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);await env.DB.prepare('DELETE FROM tree_decorations WHERE id=? AND room=? AND author=?').bind(String(b.id||''),self.room,id).run();return json({ok:true});}
  if(path==='/api/chat'&&request.method==='POST'){
   const raw=await request.text();if(raw.length>1024)return json({error:'말풍선은 160자까지 쓸 수 있어요.'},413);const b=JSON.parse(raw),message=String(b.message||'').normalize().replace(/[<>\u0000-\u001f]/g,'').trim();if(!message||message.length>160)return json({error:'1~160자로 이야기해 주세요.'},400);
   const result=await env.DB.prepare('UPDATE visitors SET chat=?,chat_at=?,seen=? WHERE id=? AND chat_at<?').bind(message,now,now,id,now-1500).run();if(!result.meta?.changes)return json({error:'잠깐 숨을 고르고 보내 주세요.'},429);return json({message,at:now,name:self.name});

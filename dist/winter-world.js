@@ -1,3 +1,4 @@
+import {createSnowPaths} from './snow-path.js';
 import {buildAlpineResort} from './alpine-resort.js';
 import {buildSpaResort} from './spa-resort.js';
 import {resortRides,resortDestinations,resortObstacles} from './resort-layout.js';
@@ -39,13 +40,13 @@ export function buildWinterWorld(api){
    }
   }
   if(!decorated)return;
-  const pts=[];for(let i=0;i<320;i++){const t=i/319,y=2.3+t*h*.82,a=t*Math.PI*2*7,r=h*.29*(1-t*.94);pts.push(new THREE.Vector3(x+Math.cos(a)*r,y,z+Math.sin(a)*r));if(i%2===0)ball(candle,x+Math.cos(a)*r,y,z+Math.sin(a)*r,.09,g);if(i%5===0){const ba=a+.14,br=r+.07;ball(i%2?berry:brass,x+Math.cos(ba)*br,y-.3,z+Math.sin(ba)*br,.3,g);rod([x+Math.cos(ba)*br,y,z+Math.sin(ba)*br],[x+Math.cos(ba)*br,y-.06,z+Math.sin(ba)*br],.008,brass,g);}}
+  const pts=[];for(let i=0;i<320;i++){const t=i/319,y=2.3+t*h*.82,a=t*Math.PI*2*7,r=h*.29*(1-t*.94);pts.push(new THREE.Vector3(x+Math.cos(a)*r,y,z+Math.sin(a)*r));if(i%2===0)ball(candle,x+Math.cos(a)*r,y,z+Math.sin(a)*r,.09,g);if(i%5===0){const ba=a+.14,br=r+.07;rod([x+Math.cos(ba)*br,y,z+Math.sin(ba)*br],[x+Math.cos(ba)*br,y-.06,z+Math.sin(ba)*br],.008,brass,g);}}
   mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),150,.012,4,false),brass,0,0,0,g);star(g,x,h*.96,z,1.1);
  }
  const tree=place(108,35,'winter-tree');
  cylinder(27,28,1.5,stone,0,-.75,0,tree,96);cylinder(27,27.6,.2,snow,0,0,0,tree,96);
- const arrival=box(3,.03,14,M('#b7c6c8',.95),0,.12,19,tree);cylinder(9.1,9.25,.16,darkStone,0,.08,0,tree,80);cylinder(9,9.1,.06,snow,0,.18,0,tree,80);fir(tree,0,0,32,true);
- const plaza=mesh(new THREE.RingGeometry(9.3,13,96),M('#b7c6c8',.95),0,.025,0,tree);plaza.rotation.x=-Math.PI/2;
+ const treePaths=createSnowPaths({root,stone:[M('#a1aaac',.98,0)],snow,heightAt:()=>.115});treePaths([[108,61],[108,54],[108,46]],3);cylinder(9.1,9.25,.16,darkStone,0,.08,0,tree,80);cylinder(9,9.1,.06,snow,0,.18,0,tree,80);fir(tree,0,0,32,true);
+ treePaths(Array.from({length:33},(_,i)=>[108+Math.cos(i/32*Math.PI*2)*11.2,35+Math.sin(i/32*Math.PI*2)*11.2]),3.2);
  for(let i=0;i<8;i++){const a=i*Math.PI/4+.2,x=Math.cos(a)*11.8,z=Math.sin(a)*11.8;const bench=new THREE.Group();bench.position.set(x,0,z);bench.rotation.y=-a+Math.PI/2;tree.add(bench);box(2.4,.15,.7,cedarLight,0,.55,0,bench);box(2.4,.65,.12,cedar,0,.95,-.3,bench);for(const side of [-1,1])box(.12,.55,.6,ink,side*.95,.27,0,bench);lantern(tree,Math.cos(a+.15)*12.2,.08,Math.sin(a+.15)*12.2);}
  for(let i=0;i<7;i++){const a=i*.85,r=8.2+rand()*.6,w=.35+rand()*.3,h=.3+rand()*.4,x=Math.cos(a)*r,z=Math.sin(a)*r;const gift=new THREE.Group();gift.position.set(x,.2,z);gift.rotation.y=a;tree.add(gift);box(w,h,w*.85,[berry,cedarLight,pine[1],ivory][i%4],0,h/2,0,gift);box(w+.015,.035,w*.85+.015,ribbon,0,h*.78,0,gift);box(.07,h+.02,w*.85+.025,ribbon,0,h/2,0,gift);for(const side of [-1,1]){const loop=torus(.08,.015,brass,side*.07,h+.04,0,gift);loop.scale.y=.6;loop.rotation.x=.3;}}
  target(tree,'tree',0,14,0,18,28,18);

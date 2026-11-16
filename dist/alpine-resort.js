@@ -1,3 +1,4 @@
+import {createSnowPaths} from './snow-path.js';
 import * as THREE from './vendor/three.module.js';
 import {alpine,alpineHeight,skiCenter,resortRides} from './resort-layout.js';
 
@@ -68,7 +69,7 @@ export function buildAlpineResort(api){
  for(const x of [-4,20]){const z=-350,y=alpineHeight(x,z);box(3,.16,.8,oak,x,y+.5,z,root);for(const side of [-1,1])box(.16,.45,.65,timber,x+side*1.1,y+.22,z,root);}
  // Low, snow-covered dismount apron follows ground directly beside the shared endpoint.
  const summit=liftPoints.at(-1);for(let j=0;j<4;j++){const z=summit[2]+j*.65,y=alpineHeight(summit[0],z);box(3.2,.09,.6,oak,summit[0],y+.045,z,root);}
- const trailToBase=Array.from({length:24},(_,i)=>{const t=i/23;return[-36+(8+36)*t,0,-188+Math.sin(t*Math.PI)*6+16*t];});ribbon(trailToBase,3.3,M('#b9c9cf',.94,0));
+ const trailToBase=Array.from({length:24},(_,i)=>{const t=i/23;return[-36+(8+36)*t,0,-188+Math.sin(t*Math.PI)*6+16*t];});createSnowPaths({root,stone:[M('#a1aaac',.98,0)],snow,heightAt:alpineHeight})(trailToBase.map(p=>[p[0],p[2]]),3.3);
 
  // Full-scale timber lodge: inset glazing, balcony rails, stone chimney and layered snow roof.
  const lodge=place(-40,-176,'alpine-base-lodge'),foundation=rockLight;

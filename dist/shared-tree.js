@@ -1,0 +1,23 @@
+import * as T from './vendor/three.module.js';
+export function createSharedTree(scene){
+ const root=new T.Group();root.name='community-tree-decorations';root.position.set(108,0,35);scene.add(root);
+ const material=new T.MeshStandardMaterial({color:'#ffffff',roughness:.28,metalness:.35});
+ const shape=new T.Shape();for(let i=0;i<10;i++){const a=i*Math.PI/5+Math.PI/2,r=i%2?.25:.58;i?shape.lineTo(Math.cos(a)*r,Math.sin(a)*r):shape.moveTo(Math.cos(a)*r,Math.sin(a)*r);}shape.closePath();
+ const meshes={ball:new T.InstancedMesh(new T.SphereGeometry(.43,16,12),material,160),star:new T.InstancedMesh(new T.ExtrudeGeometry(shape,{depth:.12,bevelEnabled:true,bevelSize:.035,bevelThickness:.035,bevelSegments:2}),material,160)};
+ for(const m of Object.values(meshes)){m.count=0;m.frustumCulled=false;root.add(m);}
+ const dummy=new T.Object3D(),tint=new T.Color();let signature='',kind='ball',color='#cc6b73',busy=false,lastAdded='',opened=false;
+ const tray=document.createElement('div');tray.id='tree-tools';tray.hidden=true;tray.setAttribute('role','group');tray.setAttribute('aria-label','트리 장식');
+ tray.innerHTML='<div class="tree-palette"><button data-kind="ball" aria-label="볼 장식" aria-pressed="true">●</button><button data-kind="star" aria-label="별 장식" aria-pressed="false">✦</button><i></i><button data-color="#cc6b73" style="--swatch:#cc6b73" aria-label="로즈" aria-pressed="true"></button><button data-color="#e5bb6b" style="--swatch:#e5bb6b" aria-label="골드" aria-pressed="false"></button><button data-color="#b8cfd1" style="--swatch:#b8cfd1" aria-label="아이스" aria-pressed="false"></button><button data-add aria-label="장식 달기">＋</button><button data-undo aria-label="마지막 장식 취소" disabled>↶</button><button data-close aria-label="꾸미기 닫기">×</button></div><p role="status">트리를 눌러 달기</p>';
+ document.body.append(tray);const status=tray.querySelector('p');
+ const room=()=>window.sharedRoom?.()||new URL(location.href).searchParams.get('room')||'winter-plaza';
+ function render(items){const next=JSON.stringify(items);if(next===signature)return;signature=next;const counts={ball:0,star:0};for(const item of items){const m=meshes[item.kind];if(!m||counts[item.kind]>=160)continue;const t=(item.height-2.3)/(32*.82),r=32*.29*(1-t*.94)+.25;dummy.position.set(Math.cos(item.angle)*r,item.height,Math.sin(item.angle)*r);dummy.rotation.set(0,Math.PI/2-item.angle,0);dummy.updateMatrix();const index=counts[item.kind]++;m.setMatrixAt(index,dummy.matrix);m.setColorAt(index,tint.set(item.color));}for(const [key,m]of Object.entries(meshes)){m.count=counts[key];m.instanceMatrix.needsUpdate=true;if(m.instanceColor)m.instanceColor.needsUpdate=true;}}
+ async function sync(){if(document.hidden)return;try{const r=await fetch('/api/tree?room='+encodeURIComponent(room()),{signal:AbortSignal.timeout(8000)});if(r.ok)render((await r.json()).decorations);}catch{}}
+ async function mutate(method,body){const response=await fetch('/api/tree',{method,headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal:AbortSignal.timeout(8000)}),data=await response.json();if(!response.ok)throw Error(data.error||'연결을 확인해 주세요.');return data;}
+ async function add(angle,height){if(!opened||busy)return;busy=true;status.textContent='';try{await window.joinSharedActivity();const data=await mutate('POST',{kind,color,angle,height});lastAdded=data.id;tray.querySelector('[data-undo]').disabled=false;await sync();status.textContent='트리를 눌러 달기';}catch(e){status.textContent=e.message;}finally{busy=false;}}
+ window.placeTreeDecoration=point=>add(Math.atan2(point.z-35,point.x-108),Math.max(3,Math.min(27,point.y)));
+ window.treeDecorationActive=()=>opened;
+ tray.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.kind){kind=b.dataset.kind;tray.querySelectorAll('[data-kind]').forEach(n=>n.setAttribute('aria-pressed',n===b));}else if(b.dataset.color){color=b.dataset.color;tray.querySelectorAll('[data-color]').forEach(n=>n.setAttribute('aria-pressed',n===b));}else if(b.hasAttribute('data-add')){const p=window.labPlayerState||{x:108,z:53};add(Math.atan2(p.z-35,p.x-108),5+Math.random()*19);}else if(b.hasAttribute('data-undo')&&lastAdded&&!busy){busy=true;try{await mutate('DELETE',{id:lastAdded});lastAdded='';b.disabled=true;await sync();}catch(e){status.textContent=e.message;}finally{busy=false;}}else if(b.hasAttribute('data-close')){opened=false;tray.hidden=true;}});
+ window.addEventListener('lab:tree-open',()=>{opened=true;tray.hidden=false;status.textContent='트리를 눌러 달기';sync();});
+ window.addEventListener('keydown',e=>{if(e.key==='Escape'){opened=false;tray.hidden=true;}});
+ setInterval(sync,2000);sync();return{update(x,z){if(opened&&Math.hypot(x-108,z-35)>38){opened=false;tray.hidden=true;}}};
+}

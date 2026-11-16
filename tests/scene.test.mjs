@@ -36,3 +36,6 @@ test('Santa hat and ski boots are independent optional equipment',()=>{const pet
 test('hat, goggles and board coexist and the lift pose rests the body above the seat',()=>{
  const pet=c.namespace.createCompanion();pet.customize({accessory:'santa,goggles,board'});assert.equal(pet.winterReady,true);for(const name of ['santa-hat','ski-goggles','snowboard-equipment'])assert.equal(pet.group.getObjectByName(name).visible,true);assert.equal(pet.group.getObjectByName('ski-equipment').visible,false);pet.pose({mode:'lift'});for(const foot of pet.feet){assert.ok(foot.position.z>.6);assert.ok(foot.position.y>-.6);}pet.customize({accessory:'none'});assert.equal(pet.winterReady,false);
 });
+
+const footprintModule=await mod(path.join(root,'footprints.js'));await footprintModule.evaluate();
+test('snow footsteps alternate, expire and stay off bridges and interior floors',()=>{const snowScene=new T.Scene(),f=footprintModule.namespace.createFootprints(snowScene),marks=snowScene.getObjectByName('temporary-snow-footprints');f.walk(10,10,0,.8,1);f.walk(10,11,0,.8,2);f.update(2);assert.equal(marks.visible,true);const a=new T.Matrix4(),b=new T.Matrix4();marks.getMatrixAt(0,a);marks.getMatrixAt(1,b);assert.ok((a.elements[12]-10)*(b.elements[12]-10)<0);f.update(10);assert.equal(marks.visible,false);f.walk(12,124,0,.8,11);f.update(11);assert.equal(marks.visible,false);});
