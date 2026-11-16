@@ -1,3 +1,4 @@
+import {selectedItems} from './wardrobe.js';
 import * as THREE from './vendor/three.module.js';
 // Short, dense down follows the body; face trimming blends radially around each eye.
 export function createCompanion({detail='full'}={}){
@@ -45,6 +46,12 @@ export function createCompanion({detail='full'}={}){
   const glint=orb(new THREE.MeshBasicMaterial({color:'#8a9ba9'}),side*.245-.045,.18,.785,.07,.012,.006,glasses);glint.rotation.z=-.35;
  }
  const bridge=new THREE.Mesh(new THREE.CapsuleGeometry(.025,.12,4,8),frameMat);bridge.rotation.z=Math.PI/2;bridge.position.set(0,.16,.73);glasses.add(bridge);
+ const goggles=new THREE.Group();goggles.name='ski-goggles';shape.add(goggles);
+ const strap=new THREE.Mesh(new THREE.TorusGeometry(.70,.026,6,40),frameMat);strap.rotation.x=Math.PI/2;strap.position.y=.1;goggles.add(strap);
+ const goggleFrame=new THREE.MeshStandardMaterial({color:'#e7dcd0',roughness:.85}),goggleLens=new THREE.MeshPhysicalMaterial({color:'#618b9f',roughness:.14,metalness:.18,clearcoat:1});
+ for(const side of [-1,1]){orb(goggleFrame,side*.225,.09,.715,.215,.16,.055,goggles);orb(goggleLens,side*.225,.09,.758,.178,.124,.025,goggles);const glint=orb(whiteGlint(),side*.225-.035,.13,.782,.045,.008,.005,goggles);glint.rotation.z=-.3;}
+ orb(goggleFrame,0,.11,.73,.075,.024,.028,goggles);
+ function whiteGlint(){return new THREE.MeshBasicMaterial({color:'#c6e0e9'});}
  const accents=new THREE.Group();shape.add(accents);
  const pin=new THREE.Shape();for(let i=0;i<10;i++){const a=i*Math.PI/5+Math.PI/2,r=i%2?.075:.16;i?pin.lineTo(Math.cos(a)*r,Math.sin(a)*r):pin.moveTo(Math.cos(a)*r,Math.sin(a)*r);}pin.closePath();const brooch=new THREE.Mesh(new THREE.ExtrudeGeometry(pin,{depth:.025,bevelEnabled:true,bevelSize:.012,bevelThickness:.012,bevelSegments:3}),new THREE.MeshStandardMaterial({color:'#c5a578',metalness:.65,roughness:.3}));brooch.position.set(.43,.47,.4);brooch.rotation.z=-.2;accents.add(brooch);brooch.visible=false;
  const ribbon=new THREE.Group();ribbon.position.set(-.4,.5,.35);ribbon.rotation.z=.2;accents.add(ribbon);const satin=new THREE.MeshPhysicalMaterial({color:'#9684b2',roughness:.7,sheen:1});for(const side of [-1,1]){const loop=orb(satin,side*.11,0,0,.13,.085,.045,ribbon);loop.rotation.z=side*.35;}orb(satin,0,0,.035,.045,.06,.04,ribbon);ribbon.visible=false;
@@ -57,13 +64,17 @@ export function createCompanion({detail='full'}={}){
  const boots=[];for(const foot of feet){const boot=orb(red,0,.13,-.06,1.1,1.18,1.04,foot);boot.visible=false;boots.push(boot);}
  const skis=new THREE.Group();skis.name='ski-equipment';shape.add(skis);
  const skiMat=new THREE.MeshStandardMaterial({color:'#a44b4f',roughness:.4,metalness:.15});for(const side of [-1,1]){const ski=new THREE.Mesh(new THREE.BoxGeometry(.16,.045,1.65),skiMat);ski.position.set(side*.27,-.87,.12);skis.add(ski);const tip=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(side*.27,-.87,.92),new THREE.Vector3(side*.27,-.85,1.02),new THREE.Vector3(side*.27,-.77,1.13)]),8,.07,5,false),skiMat);tip.scale.y=1;skis.add(tip);}
+ const board=new THREE.Group();board.name='snowboard-equipment';shape.add(board);
+ const deck=new THREE.Mesh(new THREE.CapsuleGeometry(.34,1.35,4,12),skiMat);deck.rotation.x=Math.PI/2;deck.scale.z=.12;deck.position.set(0,-.86,.12);board.add(deck);
+ for(const side of [-1,1]){const binding=new THREE.Mesh(new THREE.BoxGeometry(.23,.1,.34),frameMat);binding.position.set(side*.27,-.79,.12);board.add(binding);}
  const sled=new THREE.Group();sled.name='sled-equipment';shape.add(sled);const wood=new THREE.MeshStandardMaterial({color:'#ad815c',roughness:.85});for(let i=0;i<5;i++){const slat=new THREE.Mesh(new THREE.BoxGeometry(.8,.055,.18),wood);slat.position.set(0,-.88,-.36+i*.2);sled.add(slat);}for(const side of [-1,1]){const runner=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(side*.4,-1.02,-.65),new THREE.Vector3(side*.4,-1.02,.55),new THREE.Vector3(side*.4,-.8,.77)]),14,.035,6,false),skiMat);sled.add(runner);}
- function equip(kind='none'){skis.visible=kind==='ski';sled.visible=kind==='sled';boots.forEach(b=>b.visible=kind==='ski');}equip();
+ let wardrobeGear='none',equipped='none';function equip(kind=wardrobeGear){equipped=kind;skis.visible=kind==='ski';board.visible=kind==='board';sled.visible=kind==='sled';boots.forEach(b=>b.visible=kind==='ski'||kind==='board');}equip();
  let roundness=0;
- function customize(o){velvet.color.set(o.fur||'#f4eee5');fibreMaterial.color.copy(velvet.color);groom(o.fluff??100);glasses.visible=o.accessory==='sunglasses';roundness=((o.roundness??50)-50)/500;shape.scale.set(1+roundness,1-roundness*.5,1);brooch.visible=o.accessory==='star';ribbon.visible=o.accessory==='ribbon';santa.visible=o.accessory==='santa';}
- function pose({phase=0,walking=false,time=0,landing=0,still=false,look=0}={}){
+ function customize(o){const items=selectedItems(o.accessory);wardrobeGear=items.includes('board')?'board':items.includes('ski')?'ski':'none';equip();goggles.visible=items.includes('goggles');velvet.color.set(o.fur||'#f4eee5');fibreMaterial.color.copy(velvet.color);groom(o.fluff??100);glasses.visible=items.includes('sunglasses');roundness=((o.roundness??50)-50)/500;shape.scale.set(1+roundness,1-roundness*.5,1);brooch.visible=items.includes('star');ribbon.visible=items.includes('ribbon');santa.visible=items.includes('santa');}
+ function pose({phase=0,walking=false,time=0,landing=0,still=false,look=0,mode='',lean=0,tilt=0}={}){
+  group.rotation.x=mode==='ski'?tilt:0;
   const swing=walking&&!still?Math.sin(phase):0;
-  group.rotation.z=still?0:-swing*.065;
+  group.rotation.z=mode==='ski'?-lean*.2:still?0:-swing*.065;
   const bounce=still?0:walking?Math.sin(phase*2)*.035:Math.sin(time*2.2)*.009;
   shape.scale.set(1+roundness+landing*.11-bounce*.5,1-roundness*.5-landing*.16+bounce,1+landing*.08);
   feet.forEach((f,i)=>{const ph=phase+i*Math.PI;f.position.z=.14+(walking&&!still?Math.sin(ph)*.2:0);f.position.y=-.74+(walking&&!still?Math.max(0,Math.cos(ph))*.11:0);});
@@ -71,8 +82,13 @@ export function createCompanion({detail='full'}={}){
   const sin=Math.sin(group.rotation.z),cos=Math.cos(group.rotation.z);
   const lowest=Math.min(...feet.map(f=>f.position.x*shape.scale.x*sin+f.position.y*shape.scale.y*cos-Math.hypot(f.scale.x*shape.scale.x*sin,f.scale.y*shape.scale.y*cos)));
   shape.position.y=(-.86-lowest)/cos;
+  if(mode==='lift'){
+   group.rotation.z=0;shape.position.y=0;shape.rotation.x=-.06;
+   feet.forEach(f=>{f.position.y=-.5;f.position.z=.65;});
+   skis.position.set(0,.3,.52);board.position.set(0,.3,.52);
+  }else{shape.rotation.x=0;skis.position.set(0,0,0);board.position.set(0,0,0);}
   const blink=still?1:((time%5.7)>5.5?Math.max(.06,Math.abs((time%5.7)-5.6)*10):1);
   eyes.forEach((e,i)=>{e.scale.y=.094*blink;e.position.x=(i?1:-1)*.205+Math.max(-.025,Math.min(.025,look));});
  }
- customize({});return{group,eyes,feet,customize,pose,equip};
+ customize({});return{group,eyes,feet,customize,pose,equip,get gear(){return wardrobeGear;},get winterReady(){return ['ski','board'].includes(equipped)&&boots.every(b=>b.visible);}};
 }

@@ -1,5 +1,6 @@
+import {findPath,clearSegment} from './navigation.js';
 import * as THREE from './vendor/three.module.js';
-import {islands,bridges,bridgeHeight} from './world-layout.js';
+import {islands,bridges,bridgeHeight,exhibits,surfaceHeight} from './world-layout.js';
 
 export function buildArchipelago(api){
   const {scene,mesh,ball,cylinder,box,rod,torus,halo,M,glowMap}=api;
@@ -17,13 +18,13 @@ export function buildArchipelago(api){
     for(let j=0;j<8;j++){const a=rand()*Math.PI*2,r=island.r*.75,x=island.x+Math.cos(a)*r,z=island.z+Math.sin(a)*r;const stone=mesh(new THREE.IcosahedronGeometry(.7+rand(),1),M('#78848c'),x,-1.7-rand()*3,z);stone.scale.set(1,2,1);}
     for(let j=0;j<4;j++){const a=j*Math.PI/2+.6;const mist=halo(island.x+Math.cos(a)*island.r,-5,island.z+Math.sin(a)*island.r,island.color,22);mist.material.opacity=.075;}
   }
-  for(const island of islands.slice(1))terrain(island);
+  for(const island of islands.slice(1,7))terrain(island);
   // Narrow sky bridges have detailed timber, warm edge lights and brass railings.
   // Six arched promenades: continuous wood deck, stone edge, curved brass rail.
   const deckMaterial=M('#687987',.85),edgeMaterial=M('#9baab4',.88),plankGeo=new THREE.BoxGeometry(4.2,.18,.51),planks=[];
   for(const [a,b] of bridges){const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz),ux=dx/len,uz=dz/len,start=a.r-1,end=len-b.r+1;
    const at=(d,side=0)=>new THREE.Vector3(a.x+ux*d+uz*side,bridgeHeight(a.x+ux*d,a.z+uz*d),a.z+uz*d-ux*side);
-   for(let d=start;d<end;d+=.54){const p=at(d);planks.push({p,yaw:Math.atan2(ux,uz),tilt:Math.cos((d-start)/(end-start)*Math.PI)*1.35*Math.PI/(end-start)});}
+   for(let d=start;d<end;d+=.54){const p=at(d);planks.push({p,yaw:Math.atan2(ux,uz),tilt:Math.cos((d-start)/(end-start)*Math.PI)*.35*Math.PI/(end-start)});}
    for(const side of [-1,1]){const rail=[],edge=[];for(let j=0;j<=40;j++){const p=at(start+(end-start)*j/40,side*2.2);edge.push(p.clone());rail.push(p.clone().add(new THREE.Vector3(0,.95,0)));}
     mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(edge),48,.12,8,false),edgeMaterial);mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(rail),48,.045,7,false),gold);
     for(let d=start;d<=end;d+=2.1){const p=at(d,side*2.2);rod(p.toArray(),p.clone().add(new THREE.Vector3(0,.95,0)).toArray(),.045,gold);ball(M('#e6eceb',.98),p.x,p.y+.99,p.z,.105);if(Math.floor((d-start)/2.1)%3===0)halo(p.x,p.y+1.1,p.z,'#e3cda8',.7);}
@@ -96,20 +97,22 @@ export function buildArchipelago(api){
   for(let j=0;j<3;j++){const gear=new THREE.Group();gear.position.set(-4+j*4,3+j*.8,-1);harbour.add(gear);torus(1.1,.13,gold,0,0,0,gear);for(let k=0;k<16;k++){const a=k/16*Math.PI*2;const cog=box(.2,.25,.2,gold,Math.cos(a)*1.2,Math.sin(a)*1.2,0,gear);cog.rotation.z=a-Math.PI/2;}for(let k=0;k<6;k++){const a=k/6*Math.PI*2;rod([0,0,0],[Math.cos(a),Math.sin(a),0],.04,gold,gear);}rotations.push({g:gear,s:(j%2?-1:1)*.1});}
   for(const side of [-1,1]){const boat=new THREE.Group();boat.position.set(side*8,.5,4);harbour.add(boat);const hull=ball(M('#9f8190'),0,0,0,1.1,boat);hull.scale.set(1.6,.3,.6);rod([0,0,0],[0,3.2,0],.05,gold,boat);const sail=new THREE.Shape();sail.moveTo(0,.5);sail.lineTo(0,3);sail.lineTo(1.4,.7);sail.closePath();mesh(new THREE.ShapeGeometry(sail),new THREE.MeshStandardMaterial({color:'#e3d1bb',side:THREE.DoubleSide}),0,0,0,boat);}
   // Designed promenades and planted borders replace random grass and pebble rings.
-  const pathMat=M('#c4b9ba',.9),pathEdge=M('#b8a68b',.54,.2),soil=M('#2a3938',1),bedStone=M('#606771',.8);
-  function promenade(points,width=2.7){const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(p[0],.055,p[1]))),position=[],uv=[],index=[],left=[],right=[];const steps=64;for(let i=0;i<=steps;i++){const t=i/steps,p=curve.getPoint(t),d=curve.getTangent(t),n=new THREE.Vector3(-d.z,0,d.x).normalize().multiplyScalar(width/2);position.push(p.x+n.x,p.y,p.z+n.z,p.x-n.x,p.y,p.z-n.z);uv.push(0,t*12,1,t*12);left.push(p.clone().add(n));right.push(p.clone().sub(n));if(i<steps){const v=i*2;index.push(v,v+2,v+1,v+1,v+2,v+3);}}const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(position,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(index);geo.computeVertexNormals();mesh(geo,pathMat);for(const points of [left,right])mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),64,.035,5,false),pathEdge);}
+  const pathMat=M('#bac7c9',.98),pathEdge=M('#8d9fa3',.94,.02),soil=M('#2a3938',1),bedStone=M('#606771',.8);
+  function promenade(points,width=2.6){
+    if(points.length<2)return;const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(p[0],0,p[1]))),position=[],uv=[],index=[];const steps=Math.max(24,Math.ceil(curve.getLength()*3));
+    for(let i=0;i<=steps;i++){const t=i/steps,p=curve.getPoint(t),d=curve.getTangent(t),n=new THREE.Vector3(-d.z,0,d.x).normalize().multiplyScalar(width/2);for(const side of [1,-1]){const x=p.x+n.x*side,z=p.z+n.z*side;position.push(x,surfaceHeight(x,z)+.018,z);}uv.push(0,t*12,1,t*12);if(i<steps){const v=i*2;index.push(v,v+2,v+1,v+1,v+2,v+3);}}
+    const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(position,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(index);geo.computeVertexNormals();const walk=mesh(geo,pathMat);walk.name='connected-promenade';
+  }
+  // Every branch reaches a bridge landing or a real front door. No decorative dead ends.
+  const drawn=new Set();function connect(a,b){const route=findPath(a,b);if(!route.length)return;const key=[a.x,a.z,b.x,b.z].join('/');if(drawn.has(key))return;drawn.add(key);promenade([[a.x,a.z],...route.map(p=>[p.x,p.z])]);}
+  for(const island of islands.slice(0,7)){
+    const hub=island.spawn;for(const [a,b]of bridges){const other=a===island?b:b===island?a:null;if(!other)continue;const len=Math.hypot(other.x-island.x,other.z-island.z),r=island.r-1.1;connect(hub,{x:island.x+(other.x-island.x)/len*r,z:island.z+(other.z-island.z)/len*r});}
+    for(const e of exhibits.filter(e=>e.island===island.id))connect(hub,e);
+  }
   function planter(parent,x,z,rx,rz,color){const base=cylinder(1,1.03,.19,bedStone,x,.1,z,parent,40);base.scale.set(rx,1,rz);const inside=cylinder(.91,.91,.035,soil,x,.21,z,parent,40);inside.scale.set(rx,1,rz);const bloom=M(color,.92,0),foliage=M('#4b6d64',.98,0);for(const [dx,dz,scale] of [[-.38,.08,.48],[.16,-.24,.6],[.45,.26,.35]]){const bush=mesh(canopyGeo,foliage,x+dx*rx,.37,z+dz*rz,parent);bush.scale.set(rx*scale,.26,rz*scale);}for(const [dx,dz,h] of [[-.43,-.15,.65],[-.12,.34,.61],[.23,-.39,.71],[.54,.12,.62],[.02,-.01,.78]]){const fx=x+dx*rx,fz=z+dz*rz;rod([fx,.22,fz],[fx,h,fz],.014,foliage,parent);for(let j=0;j<5;j++){const a=j*Math.PI*2/5,petal=ball(bloom,fx+Math.cos(a)*.075,h,fz+Math.sin(a)*.075,.069,parent);petal.scale.set(1,.45,.9);}ball(ivory,fx,h+.025,fz,.038,parent);}}
   for(const [x,z] of [[-3.7,-2.8],[3.7,-2.8],[-3.8,2.7],[3.8,2.7]])planter(garden,x,z,.85,1.05,'#d0b6d1');
-  const pathSpecs={
-    science:[[[0,15],[0,10],[-5,7],[-6,4],[-5,-1]],[[0,10],[5,8],[8,3],[7,-3]]],
-    law:[[[-13,8],[-8,7],[-6,3],[-4,1]],[[13,8],[8,7],[6,5],[5,1]]],
-    philosophy:[[[-13,-8],[-7,-5],[-2,-3],[2,0],[5,5],[13,8]]],
-    nature:[[[0,-16],[0,-11],[-5,-8],[-7,-3],[-7,4],[0,10]],[[0,-11],[5,-8],[7,-2],[7,5],[0,10]]],
-    art:[[[13,-8],[9,-4],[8,2],[4,6],[0,8],[-6,5],[-13,-8]]],
-    history:[[[13,8],[8,6],[6,3],[5,0]],[[5,3],[0,6],[-6,5],[-10,0],[-13,-8]]]
-  };
-  for(const island of islands.slice(1)){
-    const g=groupAt(island);for(const route of pathSpecs[island.id])promenade(route.map(([x,z])=>[island.x+x,island.z+z]));
+  for(const island of islands.slice(1,7)){
+    const g=groupAt(island);
     const positions={science:[[-10,-6,2,1.2]],law:[[-8,-5,1.4,2.2],[8,-5,1.7,1.3]],philosophy:[[-9,-4,1.5,2],[9,5,1.8,1.2]],nature:[[-10,-6,1.7,2.6],[9,7,2.2,1.5],[9,-5,1.3,2]],art:[[-10,-4,1.6,1.1],[10,3,1.5,1]],history:[[-10,-6,1.8,1.1],[10,4,1.4,2]]}[island.id];
     for(const [x,z,rx,rz] of positions)planter(g,x,z,rx,rz,island.color);
     for(const [x,z] of (island.id==='nature'?[[-12,-2],[10,-8]]:island.id==='philosophy'?[]:[[-11,-7]]))tree(g,x,z,3.2,island.id==='nature'?'#619781':'#71788e');
