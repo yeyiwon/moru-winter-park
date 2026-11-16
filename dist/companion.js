@@ -47,11 +47,30 @@ export function createCompanion({detail='full'}={}){
  }
  const bridge=new THREE.Mesh(new THREE.CapsuleGeometry(.025,.12,4,8),frameMat);bridge.rotation.z=Math.PI/2;bridge.position.set(0,.16,.73);glasses.add(bridge);
  const goggles=new THREE.Group();goggles.name='ski-goggles';shape.add(goggles);
- const strap=new THREE.Mesh(new THREE.TorusGeometry(.70,.026,6,40),frameMat);strap.rotation.x=Math.PI/2;strap.position.y=.1;goggles.add(strap);
- const goggleFrame=new THREE.MeshStandardMaterial({color:'#e7dcd0',roughness:.85}),goggleLens=new THREE.MeshPhysicalMaterial({color:'#618b9f',roughness:.14,metalness:.18,clearcoat:1});
- for(const side of [-1,1]){orb(goggleFrame,side*.225,.09,.715,.215,.16,.055,goggles);orb(goggleLens,side*.225,.09,.758,.178,.124,.025,goggles);const glint=orb(whiteGlint(),side*.225-.035,.13,.782,.045,.008,.005,goggles);glint.rotation.z=-.3;}
- orb(goggleFrame,0,.11,.73,.075,.024,.028,goggles);
- function whiteGlint(){return new THREE.MeshBasicMaterial({color:'#c6e0e9'});}
+ // One curved panoramic lens, a shallow nose relief and a wide textile strap.
+ const strap=new THREE.Mesh(new THREE.CylinderGeometry(.745,.745,.135,48,1,true),frameMat);strap.scale.z=.91;strap.position.y=.1;goggles.add(strap);
+ const goggleFrame=new THREE.MeshStandardMaterial({color:'#ece5d8',roughness:.86}),goggleLens=new THREE.MeshPhysicalMaterial({color:'#ffffff',vertexColors:true,roughness:.12,metalness:.55,clearcoat:1,clearcoatRoughness:.1});
+ const lensOutline=new THREE.Shape();lensOutline.moveTo(-.53,.13);lensOutline.quadraticCurveTo(-.53,.29,-.33,.30);lensOutline.quadraticCurveTo(0,.34,.33,.30);lensOutline.quadraticCurveTo(.53,.29,.53,.13);lensOutline.quadraticCurveTo(.53,-.08,.32,-.105);lensOutline.lineTo(.13,-.115);lensOutline.quadraticCurveTo(.075,-.115,.055,-.055);lensOutline.quadraticCurveTo(0,.015,-.055,-.055);lensOutline.quadraticCurveTo(-.075,-.115,-.13,-.115);lensOutline.lineTo(-.32,-.105);lensOutline.quadraticCurveTo(-.53,-.08,-.53,.13);lensOutline.closePath();
+ const lensDepth=(x,y)=>.79-.13*(x/.55)**2-.035*((y-.1)/.24)**2;
+ function curveLens(geometry,scale,depth){const p=geometry.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i)*scale,y=(p.getY(i)-.1)*scale+.1;p.setXYZ(i,x,y,p.getZ(i)+lensDepth(x,y)+depth);}geometry.computeVertexNormals();return geometry;}
+ const gasket=new THREE.Mesh(curveLens(new THREE.ExtrudeGeometry(lensOutline,{depth:.018,bevelEnabled:true,bevelSize:.023,bevelThickness:.012,bevelSegments:2,curveSegments:16}),1,-.045),goggleFrame);goggles.add(gasket);
+ // Interior subdivisions retain the lens's spherical bulge across the broad, uninterrupted face.
+ function lensSurface(){const source=new THREE.ShapeGeometry(lensOutline,24),vertices=[];const p=source.attributes.position,idx=source.index.array;
+  function split(a,b,c,n){if(!n){vertices.push(...a,...b,...c);return;}const ab=a.map((v,i)=>(v+b[i])/2),bc=b.map((v,i)=>(v+c[i])/2),ca=c.map((v,i)=>(v+a[i])/2);split(a,ab,ca,n-1);split(ab,b,bc,n-1);split(ca,bc,c,n-1);split(ab,bc,ca,n-1);}
+  for(let i=0;i<idx.length;i+=3)split([p.getX(idx[i]),p.getY(idx[i]),0],[p.getX(idx[i+1]),p.getY(idx[i+1]),0],[p.getX(idx[i+2]),p.getY(idx[i+2]),0],2);source.dispose();const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));return geometry;
+ }
+ const lensGeometry=curveLens(lensSurface(),.955,0),lensColors=[];
+ for(let i=0;i<lensGeometry.attributes.position.count;i++){const y=lensGeometry.attributes.position.getY(i),c=new THREE.Color('#c79d79').lerp(new THREE.Color('#527e94'),THREE.MathUtils.smoothstep(y,-.12,.28));lensColors.push(c.r,c.g,c.b);const x=lensGeometry.attributes.position.getX(i),n=new THREE.Vector3(.26*x/(.55*.55),.07*(y-.1)/(.24*.24),1).normalize();lensGeometry.attributes.normal.setXYZ(i,n.x,n.y,n.z);}lensGeometry.setAttribute('color',new THREE.Float32BufferAttribute(lensColors,3));const panoramicLens=new THREE.Mesh(lensGeometry,goggleLens);panoramicLens.name='panoramic-goggle-lens';goggles.add(panoramicLens);
+ const reflectionCurve=new THREE.CatmullRomCurve3([new THREE.Vector3(-.36,.21,lensDepth(-.36,.21)+.008),new THREE.Vector3(-.19,.25,lensDepth(-.19,.25)+.008),new THREE.Vector3(.02,.26,lensDepth(.02,.26)+.008)]);goggles.add(new THREE.Mesh(new THREE.TubeGeometry(reflectionCurve,16,.008,4,false),new THREE.MeshBasicMaterial({color:'#e8f5f0',transparent:true,opacity:.55})));
+ // A rounded matte shell follows the existing head silhouette rather than changing the pet.
+ const helmet=new THREE.Group();helmet.name='ski-helmet';shape.add(helmet);
+ const shellMat=new THREE.MeshStandardMaterial({color:'#e8e3d8',roughness:.92}),paddingMat=new THREE.MeshStandardMaterial({color:'#343b42',roughness:1});
+ const shell=new THREE.Mesh(new THREE.SphereGeometry(1,40,24,0,Math.PI*2,0,1.5),shellMat);shell.position.y=.23;shell.scale.set(.79,.72,.70);shell.castShadow=true;helmet.add(shell);
+ orb(shellMat,0,.36,.64,.5,.045,.14,helmet);
+ const pads=new THREE.InstancedMesh(new THREE.SphereGeometry(1,16,12),paddingMat,2);helmet.add(pads);
+ for(let i=0;i<2;i++){dummy.position.set((i?1:-1)*.72,.22,-.05);dummy.rotation.set(0,0,0);dummy.scale.set(.12,.25,.24);dummy.updateMatrix();pads.setMatrixAt(i,dummy.matrix);}
+ const vents=new THREE.InstancedMesh(new THREE.BoxGeometry(.042,.009,.13),paddingMat,12);helmet.add(vents);let ventIndex=0;
+ for(const x of [-.36,-.18,.18,.36])for(const z of [-.22,.08,.36]){const y=.23+.72*Math.sqrt(1-(x/.79)**2-(z/.70)**2);dummy.position.set(x,y+.007,z);dummy.quaternion.setFromUnitVectors(up,new THREE.Vector3(x/(.79*.79),(y-.23)/(.72*.72),z/(.70*.70)).normalize());dummy.scale.set(1,1,1);dummy.updateMatrix();vents.setMatrixAt(ventIndex++,dummy.matrix);}
  const accents=new THREE.Group();shape.add(accents);
  const pin=new THREE.Shape();for(let i=0;i<10;i++){const a=i*Math.PI/5+Math.PI/2,r=i%2?.075:.16;i?pin.lineTo(Math.cos(a)*r,Math.sin(a)*r):pin.moveTo(Math.cos(a)*r,Math.sin(a)*r);}pin.closePath();const brooch=new THREE.Mesh(new THREE.ExtrudeGeometry(pin,{depth:.025,bevelEnabled:true,bevelSize:.012,bevelThickness:.012,bevelSegments:3}),new THREE.MeshStandardMaterial({color:'#c5a578',metalness:.65,roughness:.3}));brooch.position.set(.43,.47,.4);brooch.rotation.z=-.2;accents.add(brooch);brooch.visible=false;
  const ribbon=new THREE.Group();ribbon.position.set(-.4,.5,.35);ribbon.rotation.z=.2;accents.add(ribbon);const satin=new THREE.MeshPhysicalMaterial({color:'#9684b2',roughness:.7,sheen:1});for(const side of [-1,1]){const loop=orb(satin,side*.11,0,0,.13,.085,.045,ribbon);loop.rotation.z=side*.35;}orb(satin,0,0,.035,.045,.06,.04,ribbon);ribbon.visible=false;
@@ -65,7 +84,7 @@ export function createCompanion({detail='full'}={}){
  const skis=new THREE.Group();skis.name='ski-equipment';shape.add(skis);
  const skiMat=new THREE.MeshStandardMaterial({color:'#a44b4f',roughness:.4,metalness:.15});for(const side of [-1,1]){const ski=new THREE.Mesh(new THREE.BoxGeometry(.16,.045,1.65),skiMat);ski.position.set(side*.27,-.87,.12);skis.add(ski);const tip=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(side*.27,-.87,.92),new THREE.Vector3(side*.27,-.85,1.02),new THREE.Vector3(side*.27,-.77,1.13)]),8,.07,5,false),skiMat);tip.scale.y=1;skis.add(tip);}
  const board=new THREE.Group();board.name='snowboard-equipment';shape.add(board);
- const deck=new THREE.Mesh(new THREE.CapsuleGeometry(.34,1.35,4,12),skiMat);deck.rotation.x=Math.PI/2;deck.scale.z=.12;deck.position.set(0,-.86,.12);board.add(deck);
+ const deck=new THREE.Mesh(new THREE.CapsuleGeometry(.34,1.35,4,12),skiMat);deck.rotation.set(Math.PI/2,0,Math.PI/2);deck.scale.z=.12;deck.position.set(0,-.86,.12);board.add(deck);
  for(const side of [-1,1]){const binding=new THREE.Mesh(new THREE.BoxGeometry(.23,.1,.34),frameMat);binding.position.set(side*.27,-.79,.12);board.add(binding);}
  const sled=new THREE.Group();sled.name='sled-equipment';shape.add(sled);const wood=new THREE.MeshStandardMaterial({color:'#ad815c',roughness:.85});for(let i=0;i<5;i++){const slat=new THREE.Mesh(new THREE.BoxGeometry(.8,.055,.18),wood);slat.position.set(0,-.88,-.36+i*.2);sled.add(slat);}for(const side of [-1,1]){const runner=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(side*.4,-1.02,-.65),new THREE.Vector3(side*.4,-1.02,.55),new THREE.Vector3(side*.4,-.8,.77)]),14,.035,6,false),skiMat);sled.add(runner);}
  const bathTowel=new THREE.Group();bathTowel.name='bath-towel';shape.add(bathTowel);
@@ -75,9 +94,9 @@ export function createCompanion({detail='full'}={}){
  let appearanceItems=[],relaxing=false;
  let wardrobeGear='none',equipped='none';function equip(kind=wardrobeGear){equipped=kind;skis.visible=kind==='ski';board.visible=kind==='board';sled.visible=kind==='sled';boots.forEach(b=>b.visible=kind==='ski'||kind==='board');}equip();
  let roundness=0;
- function customize(o){const items=selectedItems(o.accessory);appearanceItems=items;wardrobeGear=items.includes('board')?'board':items.includes('ski')?'ski':'none';equip();goggles.visible=items.includes('goggles');velvet.color.set(o.fur||'#f4eee5');fibreMaterial.color.copy(velvet.color);groom(o.fluff??100);glasses.visible=items.includes('sunglasses');roundness=((o.roundness??50)-50)/500;shape.scale.set(1+roundness,1-roundness*.5,1);brooch.visible=items.includes('star');ribbon.visible=items.includes('ribbon');santa.visible=items.includes('santa');}
+ function customize(o){const items=selectedItems(o.accessory);appearanceItems=items;wardrobeGear=items.includes('board')?'board':items.includes('ski')?'ski':'none';equip();goggles.visible=items.includes('goggles');velvet.color.set(o.fur||'#f4eee5');fibreMaterial.color.copy(velvet.color);groom(o.fluff??100);glasses.visible=items.includes('sunglasses');roundness=((o.roundness??50)-50)/500;shape.scale.set(1+roundness,1-roundness*.5,1);brooch.visible=items.includes('star');ribbon.visible=items.includes('ribbon');santa.visible=items.includes('santa');helmet.visible=items.includes('helmet');}
  function pose({phase=0,walking=false,time=0,landing=0,still=false,look=0,mode='',lean=0,tilt=0}={}){
-  const spa=['bath','sauna','lie','tea'].includes(mode);if(spa!==relaxing){relaxing=spa;equip(spa?'none':wardrobeGear);}bathTowel.visible=spa;teaCup.visible=mode==='tea';santa.visible=!spa&&appearanceItems.includes('santa');goggles.visible=!spa&&appearanceItems.includes('goggles');glasses.visible=!spa&&appearanceItems.includes('sunglasses');group.rotation.x=mode==='lie'?-Math.PI/2:mode==='ski'?tilt:0;
+  const spa=['bath','sauna','lie','tea'].includes(mode);if(spa!==relaxing){relaxing=spa;equip(spa?'none':wardrobeGear);}bathTowel.visible=spa;teaCup.visible=mode==='tea';santa.visible=!spa&&appearanceItems.includes('santa');helmet.visible=!spa&&appearanceItems.includes('helmet');goggles.visible=!spa&&appearanceItems.includes('goggles');glasses.visible=!spa&&appearanceItems.includes('sunglasses');group.rotation.x=mode==='lie'?-Math.PI/2:mode==='ski'?tilt:0;
   const swing=walking&&!still?Math.sin(phase):0;
   group.rotation.z=mode==='ski'?-lean*.2:still?0:-swing*.065;
   const bounce=still?0:walking?Math.sin(phase*2)*.035:Math.sin(time*2.2)*.009;

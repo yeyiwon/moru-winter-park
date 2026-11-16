@@ -25,6 +25,10 @@ export async function handleAPI(request,env){
  }
  const secret=token(request);if(!secret)return json({error:'먼저 함께 걷기에 입장해 주세요.'},401);const id=await digest(secret),self=await env.DB.prepare('SELECT id,room,name FROM visitors WHERE id=?').bind(id).first();if(!self)return json({error:'연결이 만료됐어요. 다시 입장해 주세요.'},401);
  if(path==='/api/leave'&&request.method==='POST'){await env.DB.prepare('DELETE FROM visitors WHERE id=?').bind(id).run();return json({ok:true});}
+ if(path==='/api/chat'&&request.method==='POST'){
+  const raw=await request.text();if(raw.length>1024)return json({error:'말풍선은 160자까지 쓸 수 있어요.'},413);const b=JSON.parse(raw),message=String(b.message||'').normalize().replace(/[<>\u0000-\u001f]/g,'').trim();if(!message||message.length>160)return json({error:'1~160자로 이야기해 주세요.'},400);
+  const result=await env.DB.prepare('UPDATE visitors SET chat=?,chat_at=?,seen=? WHERE id=? AND chat_at<?').bind(message,now,now,id,now-1500).run();if(!result.meta?.changes)return json({error:'잠깐 숨을 고르고 보내 주세요.'},429);return json({message,at:now,name:self.name});
+ }
  if(path==='/api/presence'&&request.method==='POST'){
   const raw=await request.text();if(raw.length>2048)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);
   const restOK=b.mode==='rest'&&Object.values(restSeats).some(p=>Math.hypot(b.x-p.x,b.z-p.z)<.15&&Math.abs(b.y-p.y)<.15);
@@ -32,7 +36,7 @@ export async function handleAPI(request,env){
   if(!Number.isFinite(b.x)||!Number.isFinite(b.z)||!Number.isFinite(b.yaw)||!Number.isFinite(b.y)||!(groundOK||restOK||spaPositionValid(b.x,b.y,b.z,b.mode)||resortRidePosition(b.x,b.y,b.z,b.mode)))return json({error:'이동 위치를 확인해 주세요.'},400);
   const color=/^#[0-9a-f]{6}$/i.test(b.color)?b.color:'#f4eee5',accessory=normalizeWardrobe(b.accessory),gesture=b.gesture==='wave'?'wave':'';
   await env.DB.prepare('UPDATE visitors SET x=?,z=?,yaw=?,y=?,mode=?,color=?,accessory=?,seen=?,gesture=?,gesture_at=? WHERE id=? AND seen<=?').bind(b.x,b.z,b.yaw,b.y,['lift','summit','ski','sled','rest','bath','sauna','lie','tea'].includes(b.mode)?b.mode:'',color,accessory,now,gesture,gesture?now:0,id,now-500).run();
-  const people=await env.DB.prepare('SELECT id,name,color,accessory,x,z,yaw,y,mode,gesture,gesture_at AS gestureAt FROM visitors WHERE room=? AND seen>? AND id<>? ORDER BY seen DESC LIMIT 11').bind(self.room,now-age,id).all();return json({people:people.results||[],count:(people.results?.length||0)+1});
+  const people=await env.DB.prepare('SELECT id,name,color,accessory,x,z,yaw,y,mode,gesture,gesture_at AS gestureAt,chat,chat_at AS chatAt FROM visitors WHERE room=? AND seen>? AND id<>? ORDER BY seen DESC LIMIT 11').bind(self.room,now-age,id).all();return json({people:people.results||[],count:(people.results?.length||0)+1});
  }
  return json({error:'지원하지 않는 요청입니다.'},404);
  }catch(e){if(e instanceof SyntaxError)return json({error:'잘못된 요청입니다.'},400);return json({error:'공유 공간에 연결할 수 없어요. 잠시 뒤 다시 시도해 주세요.'},503);}

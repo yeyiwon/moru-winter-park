@@ -62,6 +62,9 @@ export function buildAlpineResort(api){
  const rideChair=chair();rideChair.name='alpine-personal-chair';rideChair.visible=false;rideChair.position.copy(pathPoint(0));
  function station(point,name){const [x,seat,z]=point,y=alpineHeight(x,z),g=place(x+2,z,name,y);for(const side of [-1,1]){rod([side*3.5,0,-1.2],[side*3.5,5.1,-1.2],.12,ink,g);rod([side*3.5,0,1.2],[side*3.5,5.1,1.2],.12,ink,g);}box(8,.23,4.2,ink,0,5.2,0,g);box(8.2,.12,4.35,snow,0,5.38,0,g);const wheel=torus(.83,.08,metal,0,seat-y+3.1,0,g);wheel.rotation.x=Math.PI/2;box(4.3,.12,3.6,oak,0,.06,0,g);for(const side of [-1,1]){rod([side*2.1,.13,-1.5],[side*2.1,1.05,-1.5],.035,metal,g);rod([side*2.1,1.05,-1.5],[side*2.1,1.05,1.5],.035,metal,g);}return g;}
  station(liftPoints[0],'alpine-base-terminal');station(liftPoints.at(-1),'alpine-summit-terminal');
+ // Broad summit terrace belongs to the actual terrain, with an open downhill edge.
+ for(let i=0;i<=22;i++){const a=Math.PI*.12+i/22*Math.PI*1.75,x=8+Math.cos(a)*18,z=-348+Math.sin(a)*18;if(z>-334)continue;const y=alpineHeight(x,z);rod([x,y,z],[x,y+1.1,z],.055,timber,root);if(i){const b=a-Math.PI*1.75/22,px=8+Math.cos(b)*18,pz=-348+Math.sin(b)*18;rod([px,alpineHeight(px,pz)+1.05,pz],[x,y+1.05,z],.045,oak,root);}}
+ for(const x of [-4,20]){const z=-350,y=alpineHeight(x,z);box(3,.16,.8,oak,x,y+.5,z,root);for(const side of [-1,1])box(.16,.45,.65,timber,x+side*1.1,y+.22,z,root);}
  // Low, snow-covered dismount apron follows ground directly beside the shared endpoint.
  const summit=liftPoints.at(-1);for(let j=0;j<4;j++){const z=summit[2]+j*.65,y=alpineHeight(summit[0],z);box(3.2,.09,.6,oak,summit[0],y+.045,z,root);}
  const trailToBase=Array.from({length:24},(_,i)=>{const t=i/23;return[-36+(8+36)*t,0,-188+Math.sin(t*Math.PI)*6+16*t];});ribbon(trailToBase,3.3,M('#b9c9cf',.94,0));

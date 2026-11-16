@@ -8,7 +8,7 @@ for(const [key,min,max] of [['brightness',55,150],['fluff',50,100],['roundness',
 appearance.accessory=normalizeWardrobe(appearance.accessory);
 delete appearance.sunglasses;
 window.labAppearance=appearance;
-window.addEventListener('lab:equip-winter',()=>{let items=selectedItems(appearance.accessory);if(!items.some(v=>['ski','board'].includes(v)))items.push('ski');if(!items.some(v=>['sunglasses','goggles'].includes(v)))items.push('goggles');appearance.accessory=normalizeWardrobe(items.join(','));update();});
+window.addEventListener('lab:equip-winter',()=>{let items=selectedItems(appearance.accessory);if(!items.some(v=>['ski','board'].includes(v)))items.push('ski');if(!items.some(v=>['sunglasses','goggles'].includes(v)))items.push('goggles');if(!items.includes('helmet')){items=items.filter(v=>v!=='santa');items.push('helmet');}appearance.accessory=normalizeWardrobe(items.join(','));update();});
 const studio=document.getElementById('studio'),tabs=[...studio.querySelectorAll('[data-studio]')];
 function update(){
   document.documentElement.style.setProperty('--light',appearance.light);

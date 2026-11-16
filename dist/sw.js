@@ -1,6 +1,6 @@
-const CACHE='knowledge-park-v15-warm';
+const CACHE='knowledge-park-v16-gameplay';
 const scripts=['app','studio','effects','park','learning-core','simulations','world-layout','movement','navigation','companion','wardrobe','spa-experience','world-art','themepark-world','discovery','winter-sky','winter-world','resort-layout','alpine-resort','spa-resort','world-time','winter-experience','winter-rides','visitors','weather-clock','social'];
-const CORE=['./','./index.html','./style.css?v=warm15','./soft.css?v=warm15','./winter.css?v=warm15','./vendor/three.module.js',...scripts.flatMap(n=>['./'+n+'.js','./'+n+'.js?v=warm15']),...['science','reasoning','humanities','perspectives','everyday'].map(n=>'./content/'+n+'.json')];
+const CORE=['./','./index.html','./style.css?v=game16','./soft.css?v=game16','./winter.css?v=game16','./vendor/three.module.js',...scripts.flatMap(n=>['./'+n+'.js','./'+n+'.js?v=game16']),...['science','reasoning','humanities','perspectives','everyday'].map(n=>'./content/'+n+'.json')];
 const assetPaths=new Set(CORE.map(p=>new URL(p,self.location.href).pathname));
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>(key.startsWith('knowledge-campus-')||key.startsWith('knowledge-park-'))&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));
