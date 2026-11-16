@@ -1,3 +1,4 @@
+import {isOwner,passwordHash,constantEqual,hex} from './invitations.js';
 import {normalizeWardrobe} from '../dist/wardrobe.js';
 import {resortRidePosition,restSeats,spaPositionValid} from '../dist/resort-layout.js';
 import {surfaceHeight} from '../dist/world-layout.js';
@@ -9,12 +10,34 @@ function token(request){return /(?:^|;\s*)winter_session=([a-f0-9]{64})(?:;|$)/.
 export async function handleAPI(request,env){
  const url=new URL(request.url),path=url.pathname;if(!path.startsWith('/api/'))return null;
  if(path==='/api/health')return json({ok:true,multiplayer:!!env.DB});
- if(!env.DB)return json({error:'함께 걷기 연결을 준비하고 있어요.'},503);
+ if(!env.DB)return json({error:'공간 연결을 준비하고 있어요.'},503);
  if(request.method!=='GET'&&(request.headers.get('origin')!==url.origin||request.headers.get('sec-fetch-site')==='cross-site'))return json({error:'다른 사이트에서는 변경할 수 없습니다.'},403);
  const now=Date.now();
  try{
+ if(path==='/api/access'&&request.method==='GET'){
+  const admin=await isOwner(request,env),secret=token(request),self=secret?await env.DB.prepare('SELECT name,room FROM visitors WHERE id=?').bind(await digest(secret)).first():null;
+  return json({admin,signedIn:!!request.headers.get('oai-authenticated-user-id'),session:self||null});
+ }
+ if(path==='/api/invite'&&request.method==='POST'){
+  if(!await isOwner(request,env))return json({error:'관리자만 초대 링크를 만들 수 있습니다.'},403);
+  const raw=await request.text();if(raw.length>1024)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);
+  if(typeof b.password!=='string'||b.password.length<4||b.password.length>128)return json({error:'비밀번호는 4~128자로 정해 주세요.'},400);
+  const room=crypto.randomUUID().replaceAll('-',''),salt=hex(crypto.getRandomValues(new Uint8Array(16))),hash=await passwordHash(b.password,salt);
+  await env.DB.prepare('INSERT INTO invite_rooms(id,salt,password_hash,created_at) VALUES(?,?,?,?)').bind(room,salt,hash,now).run();
+  return json({room,url:url.origin+'/?room='+room});
+ }
  if(path==='/api/join'&&request.method==='POST'){
   const raw=await request.text();if(raw.length>2048)return json({error:'요청이 너무 큽니다.'},413);const body=JSON.parse(raw),room=String(body.room||'winter-plaza');if(!/^[a-zA-Z0-9_-]{8,48}$/.test(room))return json({error:'초대 주소를 확인해 주세요.'},400);
+  const admin=await isOwner(request,env),invitation=await env.DB.prepare('SELECT salt,password_hash FROM invite_rooms WHERE id=?').bind(room).first();
+  if(!admin){
+   if(!invitation)return json({error:'유효한 초대 링크로 입장해 주세요.'},403);
+   const address=request.headers.get('cf-connecting-ip')||request.headers.get('x-real-ip')||'anonymous',attemptId=await digest(room+':'+address);
+   await env.DB.prepare('DELETE FROM invite_attempts WHERE reset_at<?').bind(now).run();
+   await env.DB.prepare('INSERT INTO invite_attempts(id,attempts,reset_at) VALUES(?,1,?) ON CONFLICT(id) DO UPDATE SET attempts=attempts+1').bind(attemptId,now+60000).run();
+   const attempt=await env.DB.prepare('SELECT attempts FROM invite_attempts WHERE id=?').bind(attemptId).first();
+   if(attempt.attempts>6)return json({error:'입력 횟수를 초과했어요. 1분 뒤 다시 시도해 주세요.'},429);
+   if(typeof body.password!=='string'||body.password.length>128||!constantEqual(await passwordHash(body.password,invitation.salt),invitation.password_hash))return json({error:'비밀번호를 확인해 주세요.'},403);
+  }else if(room!=='winter-plaza'&&!invitation)return json({error:'초대 공간을 찾을 수 없습니다.'},404);
   const name=String(body.name||'겨울 손님').normalize().replace(/[<>\u0000-\u001f]/g,'').trim().slice(0,16)||'겨울 손님';
   await env.DB.prepare('DELETE FROM visitors WHERE seen < ?').bind(now-60000).run();
   const secret=Array.from(crypto.getRandomValues(new Uint8Array(32))).map(v=>v.toString(16).padStart(2,'0')).join(''),id=await digest(secret);
@@ -23,8 +46,9 @@ export async function handleAPI(request,env){
   if(!result.meta?.changes)return json({error:'이 공간에는 12명이 있어요. 새 초대 공간을 만들어 주세요.'},409);
   const secure=url.protocol==='https:'?'; Secure':'';return json({id,room,name},200,{'Set-Cookie':`winter_session=${secret}; Path=/api; HttpOnly; SameSite=Lax${secure}; Max-Age=86400`});
  }
- if(path==='/api/tree'&&request.method==='GET'){const room=url.searchParams.get('room')||'winter-plaza';if(!/^[a-zA-Z0-9_-]{8,48}$/.test(room))return json({error:'공간을 확인해 주세요.'},400);const rows=await env.DB.prepare('SELECT id,kind,color,angle,height FROM tree_decorations WHERE room=? ORDER BY created_at LIMIT 160').bind(room).all();return json({decorations:rows.results||[]});}
- const secret=token(request);if(!secret)return json({error:'먼저 함께 걷기에 입장해 주세요.'},401);const id=await digest(secret),self=await env.DB.prepare('SELECT id,room,name FROM visitors WHERE id=?').bind(id).first();if(!self)return json({error:'연결이 만료됐어요. 다시 입장해 주세요.'},401);
+ const secret=token(request);if(!secret)return json({error:'초대 링크로 입장해 주세요.'},401);const id=await digest(secret),self=await env.DB.prepare('SELECT id,room,name FROM visitors WHERE id=?').bind(id).first();if(!self)return json({error:'연결이 만료됐어요. 다시 입장해 주세요.'},401);
+ if(path==='/api/tree'&&request.method==='GET'){const rows=await env.DB.prepare('SELECT id,kind,color,angle,height FROM tree_decorations WHERE room=? ORDER BY created_at LIMIT 160').bind(self.room).all();return json({decorations:rows.results||[]});}
+ if(path==='/api/name'&&request.method==='POST'){const raw=await request.text();if(raw.length>256)return json({error:'닉네임은 16자까지 입력하세요.'},413);const name=String(JSON.parse(raw).name||'').normalize().replace(/[<>\u0000-\u001f]/g,'').trim();if(!name||name.length>16)return json({error:'닉네임은 1~16자로 입력하세요.'},400);await env.DB.prepare('UPDATE visitors SET name=? WHERE id=?').bind(name,id).run();return json({name});}
  if(path==='/api/leave'&&request.method==='POST'){await env.DB.prepare('DELETE FROM visitors WHERE id=?').bind(id).run();return json({ok:true});}
  if(path==='/api/tree'&&request.method==='POST'){
   const raw=await request.text();if(raw.length>1024)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);

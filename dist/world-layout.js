@@ -1,21 +1,21 @@
 import {alpineHeight,resortGround} from './resort-layout.js';
 export const islands=[
-  {id:'park',name:'별빛 놀이공원',subject:'도덕과 판단',x:0,z:0,r:32,color:'#c9adff',spawn:{x:0,z:30}},
-  {id:'science',name:'유리별 관측소',subject:'과학 · 수학과 논리',x:0,z:-53,r:16,color:'#97d6f2',spawn:{x:0,z:-44}},
-  {id:'law',name:'달빛 기록원',subject:'법과 사회 · 생명윤리',x:46,z:-27,r:16,color:'#eac795',spawn:{x:40,z:-22}},
-  {id:'philosophy',name:'고요한 숲',subject:'철학자',x:46,z:27,r:16,color:'#c3aff1',spawn:{x:39,z:23}},
-  {id:'nature',name:'숨쉬는 정원',subject:'동물과 환경',x:0,z:53,r:17,color:'#a0dfbd',spawn:{x:0,z:44}},
-  {id:'art',name:'눈빛 음악 정원',subject:'예술과 음악',x:-46,z:27,r:16,color:'#e9afc8',spawn:{x:-39,z:23}},
-  {id:'history',name:'기억의 산책길',subject:'역사와 문화 · 세상과 언어',x:-46,z:-27,r:16,color:'#edc88d',spawn:{x:-39,z:-23}},
+  {id:'park',name:'별빛 놀이공원',subject:'관람차 · 회전목마',x:0,z:0,r:32,color:'#c9adff',spawn:{x:0,z:30}},
+  {id:'science',hidden:true,name:'유리별 관측소',subject:'망원경 · 별빛',x:0,z:-53,r:16,color:'#97d6f2',spawn:{x:0,z:-44}},
+  {id:'law',hidden:true,name:'달빛 기록원',subject:'법과 사회 · 생명윤리',x:46,z:-27,r:16,color:'#eac795',spawn:{x:40,z:-22}},
+  {id:'philosophy',name:'별빛 퀴즈',subject:'가볍게 맞히는 잡지식',x:46,z:27,r:16,color:'#c3aff1',spawn:{x:39,z:23}},
+  {id:'nature',name:'오로라 온실',subject:'빛과 꽃',x:0,z:53,r:17,color:'#a0dfbd',spawn:{x:0,z:44}},
+  {id:'art',hidden:true,name:'진주빛 음악당',subject:'음악과 반짝임',x:-46,z:27,r:16,color:'#e9afc8',spawn:{x:-39,z:23}},
+  {id:'history',hidden:true,name:'기억의 산책길',subject:'역사와 문화 · 세상과 언어',x:-46,z:-27,r:16,color:'#edc88d',spawn:{x:-39,z:-23}},
   {id:'alpine',name:'설빛 산악 리조트',subject:'스키 · 리프트 · 눈썰매',x:0,z:-260,r:144,color:'#a8c8d7',spawn:{x:8,z:-172}},
   {id:'wish',name:'소원나무 섬',subject:'크리스마스 · 산책',x:108,z:35,r:27,color:'#d7be91',spawn:{x:108,z:53}},
   {id:'spa',name:'설림 온천 마을',subject:'노천 온천 · 편백 휴양관',x:0,z:119,r:31,color:'#b5cdc0',spawn:{x:0,z:96}}
 ];
-export const bridges=[[islands[0],islands[1]],[islands[0],islands[2]],[islands[2],islands[3]],[islands[0],islands[4]],[islands[4],islands[5]],[islands[5],islands[6]],[islands[1],islands[7]],[islands[4],islands[9]],[islands[3],islands[8]]];
+export const bridges=[[islands[0],islands[3]],[islands[0],islands[4]],[islands[0],islands[7]],[islands[4],islands[9]],[islands[3],islands[8]]];
 export function bridgeHeight(x,z){for(const [a,b] of bridges){const length=Math.hypot(b.x-a.x,b.z-a.z),d=((x-a.x)*(b.x-a.x)+(z-a.z)*(b.z-a.z))/length,start=a.r-1,end=length-b.r+1;if(d>=start&&d<=end&&segmentDistance(x,z,a,b)<2.7)return .09+Math.sin((d-start)/(end-start)*Math.PI)*.35;}return .09;}
 export function segmentDistance(x,z,a,b){const dx=b.x-a.x,dz=b.z-a.z,t=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/(dx*dx+dz*dz)));return Math.hypot(x-a.x-t*dx,z-a.z-t*dz);}
-export function terrainAt(x,z){return islands.some(i=>Math.hypot(x-i.x,z-i.z)<=i.r-1.3)||bridges.some(([a,b])=>segmentDistance(x,z,a,b)<1.65);}
-export function islandAt(x,z){return islands.find(i=>Math.hypot(x-i.x,z-i.z)<i.r+1);}
+export function terrainAt(x,z){return islands.some(i=>!i.hidden&&Math.hypot(x-i.x,z-i.z)<=i.r-1.3)||bridges.some(([a,b])=>segmentDistance(x,z,a,b)<1.65);}
+export function islandAt(x,z){return islands.find(i=>!i.hidden&&Math.hypot(x-i.x,z-i.z)<i.r+1);}
 
 // Learning functions remain independent of the seven visual island identities.
 export const rooms=[

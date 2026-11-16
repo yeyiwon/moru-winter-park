@@ -29,6 +29,13 @@
       "when": 1794830310654,
       "tag": "0003_equal_swordsman",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "6",
+      "when": 1794833131258,
+      "tag": "0004_tearful_landau",
+      "breakpoints": true
     }
   ]
 }

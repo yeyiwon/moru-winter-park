@@ -33,7 +33,13 @@ export function buildSpaResort(api){
  paving([[0,88],[0,96],[-.8,104],[0,110]],3.8);
  paving([[0,108],[-4,111],[-10,114],[-17.8,119],[-18,124]],3.2);
  paving([[-.4,108],[5,111.8],[10,114],[12,117]],3.4);
- function lantern(x,z,h=1.2){box(.48,.16,.48,stoneDark,x,.17,z);box(.17,h,.17,cedarDark,x,h/2+.2,z);box(.42,.5,.42,lamp,x,h+.2,z);for(const s of [-1,1])for(const t of [-1,1])box(.045,.57,.045,slate,x+s*.23,h+.2,z+t*.23);box(.64,.09,.64,slate,x,h+.51,z);box(.63,.06,.63,snow,x,h+.59,z);}
+ function lantern(x,z,h=1.2){
+  mesh(new T.CylinderGeometry(.25,.32,.18,12),stoneDark,x,.18,z);box(.13,h,.13,cedarDark,x,h/2+.2,z);
+  const shade=[new T.Vector2(.16,0),new T.Vector2(.24,.1),new T.Vector2(.245,.34),new T.Vector2(.17,.5)];mesh(new T.LatheGeometry(shade,16),lamp,x,h-.03,z);
+  for(let j=0;j<8;j++){const a=j*Math.PI/4;rod([x+Math.cos(a)*.25,h-.04,z+Math.sin(a)*.25],[x+Math.cos(a)*.25,h+.47,z+Math.sin(a)*.25],.018,cedarDark);}
+  for(const y of [h+.02,h+.23,h+.46]){const ring=mesh(new T.TorusGeometry(.252,.017,5,24),brass,x,y,z);ring.rotation.x=Math.PI/2;}
+  const cap=[new T.Vector2(.035,.2),new T.Vector2(.15,.16),new T.Vector2(.25,.06),new T.Vector2(.37,0)];mesh(new T.LatheGeometry(cap,16),cedarDark,x,h+.5,z);mesh(new T.LatheGeometry(cap.map(v=>new T.Vector2(v.x*.94,v.y+.045)),16),snow,x,h+.5,z);oval(brass,x,h+.75,z,.05,.07,.05);
+ }
  for(const [x,z]of [[-2.6,96],[2.6,104],[-8,111],[-19.6,120],[8.6,112],[15.4,115],[-21.8,136],[1,136]])lantern(x,z,.9);
  // Stone terraces surround the water; pool shells stay below the deck.
  for(let poolIndex=0;poolIndex<pools.length;poolIndex++){
@@ -52,7 +58,7 @@ export function buildSpaResort(api){
  for(let i=0;i<10;i++){const a=i*2.4,x=-17.7+Math.cos(a)*(1.5+rand()),z=136+Math.sin(a)*1.2,h=.8+rand()*2.1;const b=oval(i%3?rock:rockShade,x,h*.4,z,1.15+rand()*.5,h,1.05+rand()*.4);b.rotation.y=a;oval(snow,x,h*1.35,z,.85,.14,.7);}
  const fallMat=new T.MeshPhysicalMaterial({color:'#b4d9ce',transparent:true,opacity:.62,roughness:.18,metalness:0,depthWrite:false});
  for(let i=0;i<3;i++){const curve=new T.CatmullRomCurve3([new T.Vector3(-18.7+i*.18,2.8,135.1),new T.Vector3(-18.7+i*.18,2.1,134.7),new T.Vector3(-18.9+i*.17,.08,134)]);const fall=mesh(new T.TubeGeometry(curve,20,.045,5,false),fallMat);moving.add(fall);}
- for(const [x,z]of [[-3.4,116.8],[-1.8,117.4]]){box(.85,.14,.75,cedarDark,x,.21,z);box(.6,.5,.08,stoneDark,x,.47,z+.3);rod([x,.4,z+.28],[x,.82,z+.28],.035,brass);rod([x,.82,z+.28],[x,.82,z+.04],.035,brass);const bucket=mesh(new T.CylinderGeometry(.23,.2,.3,16),cedarLight,x,.42,z-.1);for(let j=0;j<12;j++){const a=j*Math.PI/6;box(.018,.28,.018,cedarDark,x+Math.cos(a)*.215,.42,z-.1+Math.sin(a)*.215);}bucket.rotation.y=.2;}
+ for(const [x,z]of [[-3.4,116.8],[-1.8,117.4]]){box(.85,.14,.75,cedarDark,x,.21,z);box(.6,.5,.08,stoneDark,x,.47,z+.3);rod([x,.4,z+.28],[x,.82,z+.28],.035,brass);rod([x,.82,z+.28],[x,.82,z+.04],.035,brass);cedarBucket(x,.28,z-.1,.23);}
  // Spacious 18 × 16 m timber pavilion, rendered as an architectural cutaway.
  box(18.4,.3,16.4,stoneDark,12,.14,125);box(18,.08,16,cedar,12,.3,125);
  for(let i=0;i<60;i++)box(.017,.012,15.9,cedarDark,3.1+i*.3,.347,125);
@@ -95,6 +101,29 @@ export function buildSpaResort(api){
  for(const side of [-1,1])rod([-10+side*1.35,.65,117.3],[-10+side*1.35,-.1,119.5],.045,brass);
  // Low privacy screens frame the garden without closing the approach.
  for(const [cx,cz,n] of [[-22,122,5],[-8,133,8]])for(let i=0;i<n;i++){box(.12,1.9,.13,cedarDark,cx+i*.34,1.05,cz);if(i===0||i===n-1)oval(snow,cx+i*.34,2.04,cz,.14,.07,.15);}
+ // Hollow wooden bathing tools, rather than capped cylinders, sit on existing ledges.
+ function cedarBucket(x,y,z,r=.3){
+  const h=r*1.25,profile=[new T.Vector2(r*.76,0),new T.Vector2(r,.055),new T.Vector2(r,h),new T.Vector2(r*.87,h),new T.Vector2(r*.75,.065),new T.Vector2(0,.065),new T.Vector2(0,0)];mesh(new T.LatheGeometry(profile,20),cedarLight,x,y,z);
+  for(let j=0;j<16;j++){const a=j*Math.PI/8;rod([x+Math.cos(a)*r*.82,y+.035,z+Math.sin(a)*r*.82],[x+Math.cos(a)*r*.995,y+h-.015,z+Math.sin(a)*r*.995],.006,cedarDark);}
+  for(const yy of [.08,h-.055]){const ring=mesh(new T.TorusGeometry(r*(.82+yy/h*.18),.015,5,28),brass,x,y+yy,z);ring.rotation.x=Math.PI/2;}
+  const handle=new T.CatmullRomCurve3([new T.Vector3(x-r*.9,y+h*.78,z),new T.Vector3(x-r*.75,y+h+.28,z),new T.Vector3(x+r*.75,y+h+.28,z),new T.Vector3(x+r*.9,y+h*.78,z)]);mesh(new T.TubeGeometry(handle,20,.018,6,false),cedarDark);
+  const waterDisk=mesh(new T.CircleGeometry(r*.82,24),water,x,y+h*.7,z);waterDisk.rotation.x=-Math.PI/2;moving.add(waterDisk);
+  const scoopProfile=[new T.Vector2(0,0),new T.Vector2(r*.3,.01),new T.Vector2(r*.47,.075),new T.Vector2(r*.46,.12),new T.Vector2(r*.37,.115),new T.Vector2(r*.24,.045),new T.Vector2(0,.035)];mesh(new T.LatheGeometry(scoopProfile,16),cedarLight,x+r*.15,y+h+.015,z-r*.08);rod([x+r*.15,y+h+.1,z-r*.08],[x+r*.15,y+h+.14,z+r*1.8],.018,cedarDark);
+ }
+ for(const [x,y,z,r]of [[-7.1,.43,116.25,.3],[-18.1,.43,124.8,.27],[-23.7,.39,132,.28],[14.15,.35,131.3,.33]])cedarBucket(x,y,z,r);
+ function foldedTowel(x,y,z,w=.7,d=.48){
+  const shape=new T.Shape(),hh=.075;shape.moveTo(-w/2+.035,-hh/2);shape.lineTo(w/2-.035,-hh/2);shape.quadraticCurveTo(w/2,0,w/2-.035,hh/2);shape.lineTo(-w/2+.035,hh/2);shape.quadraticCurveTo(-w/2,0,-w/2+.035,-hh/2);shape.closePath();const geo=new T.ExtrudeGeometry(shape,{depth:d,bevelEnabled:true,bevelSize:.012,bevelThickness:.015,bevelSegments:2,curveSegments:4});geo.translate(0,0,-d/2);
+  for(let j=0;j<3;j++){mesh(geo,cloth,x+j*.015,y+j*.075,z);for(const side of [-1,1])box(w*.92,.012,.023,cedarLight,x+j*.015,y+j*.075+.044,z+side*(d/2-.045));}
+ }
+ for(const [x,y,z]of [[-8.1,.48,116.35],[-17.7,.48,122.9],[5.5,.39,119.8],[19.5,.39,131.5]])foldedTowel(x,y,z);
+ // A carved rinse basin and a cedar wash shelf share the garden's materials.
+ const basinProfile=[new T.Vector2(.28,0),new T.Vector2(.44,.1),new T.Vector2(.47,.35),new T.Vector2(.38,.36),new T.Vector2(.31,.18),new T.Vector2(0,.14),new T.Vector2(0,0)];oval(stoneDark,-.9,.29,114.4,.6,.2,.52);mesh(new T.LatheGeometry(basinProfile,28),stoneLight,-.9,.44,114.4);const basinWater=mesh(new T.CircleGeometry(.34,28),water,-.9,.68,114.4);basinWater.rotation.x=-Math.PI/2;moving.add(basinWater);const spout=new T.CatmullRomCurve3([new T.Vector3(-.9,.45,114),new T.Vector3(-.9,1.02,114),new T.Vector3(-.9,1.08,114.25),new T.Vector3(-.9,.95,114.28)]);mesh(new T.TubeGeometry(spout,20,.026,7,false),brass);oval(brass,-.68,.88,114,.045,.025,.07);
+ function washBottle(x,y,z,r=.055){mesh(new T.CylinderGeometry(r*.75,r,.18,12),stoneLight,x,y+.09,z);mesh(new T.CylinderGeometry(r*.48,r*.6,.055,10),cedarDark,x,y+.2,z);rod([x,y+.25,z],[x+r,y+.25,z],.012,brass);box(r*1.1,.07,.012,cloth,x,y+.1,z+r*.94);}
+ for(const [x,z]of [[-3.65,117],[-3.48,117],[-2,117.6],[-1.82,117.6]])washBottle(x,.29,z);
+ for(const [x,z]of [[2.1,118.8],[22,118.8],[-3.4,114.7]]){
+  mesh(new T.CylinderGeometry(.31,.23,.45,16),stoneLight,x,.37,z);mesh(new T.CylinderGeometry(.27,.27,.018,16),stoneDark,x,.605,z);
+  for(let j=0;j<10;j++){const a=j*2.399,h=.4+(j%3)*.15,reach=.25+(j%2)*.12;rod([x,.6,z],[x+Math.cos(a)*reach,.6+h,z+Math.sin(a)*reach],.012,green);for(let k=0;k<3;k++){const u=.4+k*.25,leaf=oval(j%2?green:greenLight,x+Math.cos(a)*reach*u,.6+h*u,z+Math.sin(a)*reach*u,.17,.035,.075);leaf.rotation.set(.25,a,-.25);}}
+ }
  target('onsen',-10,.7,124,14.8,1.5,12.8);target('sauna',12,2.2,125,18,4.3,16);
  // Merge opaque static geometry by material while keeping water and vapour separate.
  root.updateMatrixWorld(true);const groups=new Map();root.traverse(o=>{if(!o.isMesh||o.userData.snowTrail||moving.has(o)||Array.isArray(o.material))return;const key=o.material.uuid;if(!groups.has(key))groups.set(key,{material:o.material,items:[]});groups.get(key).items.push(o);});

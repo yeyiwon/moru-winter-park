@@ -13,6 +13,14 @@ window.labSound=(kind)=>{
  notes.forEach((f,i)=>{const o=audio.createOscillator(),g=audio.createGain(),when=start+i*.065,quiet=kind==='step'?.012:kind==='land'?.025:.075;o.type='sine';o.frequency.setValueAtTime(f,when);if(kind==='move'||kind==='step')o.frequency.exponentialRampToValueAtTime(f*.6,when+.18);g.gain.setValueAtTime(0,when);g.gain.linearRampToValueAtTime(quiet,when+.012);g.gain.exponentialRampToValueAtTime(.0001,when+(kind==='correct'?.65:.36));o.connect(g);g.connect(master);o.start(when);o.stop(when+.7);});
  if(kind==='open'||kind==='travel'){const length=Math.floor(audio.sampleRate*.18),buffer=audio.createBuffer(1,length,audio.sampleRate),data=buffer.getChannelData(0);for(let i=0;i<length;i++)data[i]=(Math.random()*2-1)*Math.sin(i/length*Math.PI);const n=audio.createBufferSource(),filter=audio.createBiquadFilter(),g=audio.createGain();n.buffer=buffer;filter.type='lowpass';filter.frequency.setValueAtTime(1800,start);filter.frequency.exponentialRampToValueAtTime(300,start+.18);g.gain.value=.035;n.connect(filter);filter.connect(g);g.connect(master);n.start();}
 };
+// One looping noise source, filtered continuously by speed and edge pressure.
+let glide=null;
+window.labSkiSound=({active=false,speed=0,lean=0,brake=false}={})=>{
+ if(!audio||audio.state!=='running')return;
+ if(active&&sound&&!glide){const buffer=audio.createBuffer(1,audio.sampleRate*2,audio.sampleRate),data=buffer.getChannelData(0);let previous=0;for(let i=0;i<data.length;i++){previous=previous*.6+(Math.random()*2-1)*.4;data[i]=previous;}const source=audio.createBufferSource(),filter=audio.createBiquadFilter(),gain=audio.createGain();source.buffer=buffer;source.loop=true;filter.type='bandpass';filter.Q.value=.55;gain.gain.value=0;source.connect(filter).connect(gain).connect(master);source.start();glide={source,filter,gain};}
+ if(!glide)return;const intensity=active&&sound&&!document.hidden?Math.min(1,speed/20):0,edge=Math.min(1,Math.abs(lean)+(brake?.8:0));glide.gain.gain.setTargetAtTime(intensity*(.14+edge*.14),audio.currentTime,.1);glide.filter.frequency.setTargetAtTime(420+intensity*1100+edge*1500,audio.currentTime,.12);
+};
+window.addEventListener('lab:pause',()=>window.labSkiSound());window.addEventListener('blur',()=>window.labSkiSound());document.addEventListener('visibilitychange',()=>{if(document.hidden)window.labSkiSound();});
 let activeTones=[];
 window.labTone=async kind=>{
  if(!sound||volume===0)return false;unlock();if(!audio)return false;

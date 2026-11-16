@@ -1,27 +1,99 @@
 import {createSpaController} from './spa-experience.js';
-import {restSeats} from './resort-layout.js';
+import {alpineHeight,restSeats,skiRuns,summitFacilities} from './resort-layout.js';
 import {createRideController} from './winter-rides.js';
-const copy={
- tree:['WINTER WISHES','가지마다 눈과 작은 불빛. 오늘은 어떤 순간을 오래 간직하고 싶나요?'],
- ski:['ALPINE CLUB','부츠와 스키를 착용하고 리프트에 올라요. 정상에서 출발해 A·D 또는 ←·→로 조향하고 S·↓로 감속해요. 터치에서는 이동 패드를 써요.'],
- sled:['SNOW PLAY','작은 나무 썰매에 올라, 눈길을 따라 미끄러져요.'],
- onsen:['WARM WATER','김이 피어오르는 물에 몸을 담가요. 탕 안에서는 천천히 움직일 수 있고, 언제든 나올 수 있어요.'],
- sauna:['CEDAR ROOM','맨발로 들어와 편백 벤치에 앉거나, 폭신한 매트에 누워요. 찻자리에는 따뜻한 차도 준비했어요.'],
- classical:['PIANO SALON','작은 그랜드 피아노 곁에서 잔잔한 아르페지오를 들어요.'],
- gallery:['WINTER GALLERY','세 개의 작은 추상화. 같은 모양도 색과 배치에 따라 다르게 느껴져요.'],
- ethics:['THOUGHTFUL CORNER','법이 허용하는 것과 옳다고 생각하는 것은 언제 같고, 언제 다를까요?'],
- healing:['SLOW MOMENT','네 박자 들이쉬고, 여섯 박자 내쉬기. 편안한 속도로 쉬어가요.']};
+
 export function createWinterExperience(winter,companion,travel){
- const spa=createSpaController(),rides=createRideController(winter.rides),card=document.querySelector('#place-card'),actions=document.querySelector('#place-actions'),hud=document.querySelector('#ride-hud'),label=document.querySelector('#ride-label');let place=null,rest=null,lastMode='',nearLift=false,anchor=null,actionKeys=[],audio=null,musicTimer=null;
- function button(text,fn){const b=document.createElement('button'),key=['E','F','G','H'][actionKeys.length]||'';const k=document.createElement('kbd');k.textContent=key;b.append(k,document.createTextNode(text));b.setAttribute('aria-label',text);b.onclick=fn;actionKeys.push(fn);actions.append(b);}
- function wake(){if(!rest&&!['sauna','lie','tea'].includes(spa.kind))return false;spa.stop();rest=null;companion.equip();document.body.classList.remove('spa-active');hud.hidden=true;card.hidden=true;window.dispatchEvent(new Event('lab:stand'));return true;}
- function stop(){spa.stop();document.body.classList.remove('spa-active');document.querySelector('#stop-ride').textContent='내리기';rides.stop();rest=null;companion.equip();winter.rideChair.visible=false;hud.hidden=true;travel(place?.id==='sled'?'sled':place?.id||'ski',false);}
- function start(kind){spa.stop();rest=null;if(kind!=='sled'){window.dispatchEvent(new Event('lab:equip-winter'));companion.equip(companion.gear);if(!companion.winterReady)return;}if(rides.start(kind)){if(kind==='sled')companion.equip('sled');card.hidden=true;hud.hidden=false;lastMode='';}}
- function relax(kind){rides.stop();rest=null;if(!spa.start(kind))return;companion.equip('none');card.hidden=true;hud.hidden=false;document.body.classList.add('spa-active');document.querySelector('#stop-ride').textContent=kind.includes('bath')?'탕에서 나오기':'일어나기';}
- function piano(){if(!musicTimer&&(document.querySelector('#sound').getAttribute('aria-checked')==='false'||!(window.AudioContext||window.webkitAudioContext))){document.querySelector('#place-description').textContent='소리 설정을 켜고 다시 눌러 주세요. 이 브라우저가 소리 재생을 지원해야 해요.';return;}if(musicTimer){clearInterval(musicTimer);musicTimer=null;audio?.close();audio=null;show(place.id);return;}audio=new(window.AudioContext||window.webkitAudioContext)();audio.resume();let beat=0;const notes=[60,64,67,72,67,64,57,60,64,69,64,60,53,57,60,65,60,57,55,59,62,67,62,59];const play=()=>{if(document.querySelector('#sound').getAttribute('aria-checked')==='false'){clearInterval(musicTimer);musicTimer=null;audio?.close();audio=null;return;}const volume=Number(document.querySelector('#sound-volume').value)/100;const freq=440*2**((notes[beat++%notes.length]-69)/12);for(const [ratio,gain]of [[1,.09],[2,.035],[3,.012]]){const osc=audio.createOscillator(),amp=audio.createGain();osc.frequency.value=freq*ratio;amp.gain.setValueAtTime(Math.max(.0001,gain*volume),audio.currentTime);amp.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+2);osc.connect(amp).connect(audio.destination);osc.start();osc.stop(audio.currentTime+2);}};play();musicTimer=setInterval(play,420);show(place.id);}
- function show(id){place=winter.destinations.find(p=>p.id===id);if(!place)return;const [kind,description]=copy[id];document.querySelector('#place-kind').textContent='';document.querySelector('#place-name').textContent=place.name;document.querySelector('#place-description').textContent=description;actions.replaceChildren();actionKeys=[];if(id==='ski'){if(rides.mode==='summit')button('슬로프 내려가기',()=>start('ski'));else button('장비 착용하고 리프트 타기',()=>start('lift'));}else if(id==='sled')button('썰매 타기',()=>start('sled'));else if(id==='classical')button(musicTimer?'피아노 멈추기':'피아노 듣기',piano);else if(id==='onsen'){button('노천탕에 들어가기',()=>relax('bath'));button('작은 온천에 들어가기',()=>relax('smallbath'));}else if(id==='sauna'){button('실내로 들어가기',()=>{travel('sauna',false);window.enterSpaInterior?.();});button('편백 벤치에 앉기',()=>relax('sauna'));button('따뜻한 매트에 눕기',()=>relax('lie'));button('차 한 잔 마시기',()=>relax('tea'));}else if(id==='healing')button('잠깐 쉬기',()=>{rides.stop();companion.equip('none');rest=restSeats.healing;card.hidden=true;hud.hidden=false;label.textContent='천천히 숨을 고르는 중';});if(id==='tree')button('트리 꾸미기',()=>window.dispatchEvent(new Event('lab:tree-open')));if(['ethics','gallery','classical'].includes(id))button(id==='tree'?'작은 발견 펼치기':'생각 펼치기',()=>window.openWinterReading?.(id));card.hidden=false;anchor={x:place.x,y:2.7,z:place.z};}
- const touch={};for(const b of document.querySelectorAll('[data-ski]')){const clear=()=>delete touch[b.dataset.ski];b.onpointerdown=e=>{e.preventDefault();b.setPointerCapture?.(e.pointerId);touch[b.dataset.ski]=true;};b.onpointerup=clear;b.onpointercancel=clear;b.onlostpointercapture=clear;}window.addEventListener('blur',()=>{for(const k in touch)delete touch[k];});
- window.addEventListener('keydown',e=>{if(e.repeat||e.metaKey||e.ctrlKey||document.body.classList.contains('studio-open')||document.body.classList.contains('quiz-open')||e.target.closest?.('input,textarea,select,[contenteditable=true]'))return;const n=['KeyE','KeyF','KeyG','KeyH'].indexOf(e.code);if(n>=0&&!card.hidden&&actionKeys[n]){e.preventDefault();actionKeys[n]();}});
- document.querySelector('#close-place').onclick=()=>card.hidden=true;document.querySelector('#stop-ride').onclick=stop;
- return{rides,show,wake,proximity(x,z){if(rides.mode==='summit'){anchor={x,y:(window.labPlayerState?.y||0)+2.2,z};return;}if(spa.active||rides.mode||rest){card.hidden=true;return;}const points=[...winter.destinations.map(p=>({...p,r:4.2})),{id:'ski',x:-36,z:-185,r:5},{id:'sauna',x:12,z:123,r:9},{id:'onsen',x:-18,z:128,r:5}];const near=points.filter(p=>Math.hypot(x-p.x,z-p.z)<p.r).sort((a,b)=>Math.hypot(x-a.x,z-a.z)-Math.hypot(x-b.x,z-b.z))[0];if(!near){card.hidden=true;return;}if(card.hidden||place?.id!==near.id)show(near.id);anchor={x:near.x,y:2.5,z:near.z};},get anchor(){return anchor;},cancel(){spa.stop();document.body.classList.remove('spa-active');document.querySelector('#stop-ride').textContent='내리기';rides.stop();rest=null;companion.equip();winter.rideChair.visible=false;hud.hidden=true;card.hidden=true;},get active(){return!!rides.mode||!!rest||spa.active;},update(dt,input){if(Math.hypot(input?.x||0,input?.z||0)>.15&&wake())return null;const result=spa.active?spa.update(dt,input):rest?{...rest,mode:'rest'}:rides.update(dt,{...input,steer:(input?.steer||0)+(touch.right?1:0)-(touch.left?1:0),push:input?.push||touch.push,brake:input?.brake||touch.brake});if(spa.active&&result)label.textContent=result.label+' · '+Math.floor(result.elapsed)+'초';winter.rideChair.visible=rides.mode==='lift';if(winter.rideChair.visible&&result){winter.rideChair.position.set(result.x,result.y-.82,result.z);winter.rideChair.rotation.set(0,result.yaw,0);}if(rides.mode!==lastMode){lastMode=rides.mode;if(lastMode==='summit'){show('ski');label.textContent='정상 도착';}else if(lastMode)label.textContent={lift:'리프트로 정상까지',ski:'스키',sled:'눈썰매 타는 중'}[lastMode];}document.querySelector('#ski-controls').hidden=rides.mode!=='ski';if(result?.mode==='ski')label.textContent=result.launched?`${Math.round(result.speed*3.6)} km/h · ${result.raceTime.toFixed(1)}초 · A D 조향 / S 감속`:'W / ↑ 출발';if(result?.finished){companion.equip();hud.hidden=true;show(place.id);if(result.raceTime){let best=Infinity;try{best=Number(localStorage.getItem('lab-ski-best'))||Infinity;best=Math.min(best,result.raceTime);localStorage.setItem('lab-ski-best',String(best));}catch{}document.querySelector('#place-description').textContent=`완주 ${result.raceTime.toFixed(1)}초 · 이 기기 최고 기록 ${best.toFixed(1)}초`; }}return result;}};
+ const spa=createSpaController(),rides=createRideController(winter.rides);
+ const card=document.querySelector('#place-card'),actions=document.querySelector('#place-actions');
+ const hud=document.querySelector('#ride-hud'),label=document.querySelector('#ride-label'),stopButton=document.querySelector('#stop-ride');
+ let place=null,rest=null,lastMode='',anchor=null,actionKeys=[],gesture='',gestureTime=0;
+ function button(text,fn){
+  const b=document.createElement('button'),k=document.createElement('kbd');
+  k.textContent=['E','F','G','H'][actionKeys.length]||'';
+  b.append(k,document.createTextNode(text));b.setAttribute('aria-label',text);b.onclick=fn;actionKeys.push(fn);actions.append(b);
+ }
+ function clearGesture(){gesture='';gestureTime=0;}
+ function wake(){
+  if(gesture){clearGesture();return true;}
+  if(!rest&&!['sauna','lie','tea'].includes(spa.kind))return false;
+  spa.stop();rest=null;companion.equip();document.body.classList.remove('spa-active');hud.hidden=true;card.hidden=true;window.dispatchEvent(new Event('lab:stand'));return true;
+ }
+ function cancel(){
+  spa.stop();clearGesture();document.body.classList.remove('spa-active');stopButton.textContent='내리기';rides.stop();rest=null;companion.equip();winter.rideChair.visible=false;hud.hidden=true;card.hidden=true;
+ }
+ function stop(){const destination=rides.mode==='sled'?'sled':spa.active?(spa.kind.includes('bath')?'onsen':'sauna'):rest?'healing':'ski';cancel();travel(destination,false);}
+ function start(kind,runId){
+  spa.stop();rest=null;clearGesture();
+  if(kind!=='sled'){window.dispatchEvent(new Event('lab:equip-winter'));companion.equip(companion.gear);if(!companion.winterReady)return;}
+  if(rides.start(kind,runId)){if(kind==='sled')companion.equip('sled');card.hidden=true;hud.hidden=false;lastMode='';stopButton.textContent='내리기';}
+ }
+ function relax(kind){
+  rides.stop();rest=null;clearGesture();if(!spa.start(kind))return;
+  companion.equip('none');card.hidden=true;hud.hidden=false;document.body.classList.add('spa-active');stopButton.textContent=kind.includes('bath')?'탕에서 나오기':'일어나기';
+ }
+ function show(id,activity='bath'){
+  place=winter.destinations.find(p=>p.id===id)||summitFacilities.find(p=>p.id===id)||(id==='summit-start'?{id,name:'슬로프 입구',x:-8,z:-333}:null);
+  if(!place)return;
+  document.querySelector('#place-kind').textContent='';document.querySelector('#place-name').textContent=place.name;
+  document.querySelector('#place-description').textContent='';actions.replaceChildren();actionKeys=[];card.dataset.activity=activity;
+  if(id==='quiz')button('퀴즈 시작',()=>window.openQuickQuiz?.());
+  else if(id==='ski')button('리프트 타기',()=>start('lift'));
+  else if(id==='summit-start')for(const run of skiRuns)button(run.name,()=>start('ski',run.id));
+  else if(id==='sled')button('썰매 타기',()=>start('sled'));
+  else if(id==='onsen')button('탕에 들어가기',()=>relax(activity));
+  else if(id==='sauna'){
+   button('실내로 들어가기',()=>{travel('sauna',false);window.enterSpaInterior?.();});
+   button('벤치에 앉기',()=>relax('sauna'));button('매트에 눕기',()=>relax('lie'));button('차 마시기',()=>relax('tea'));
+  }else if(id==='healing')button('쉬기',()=>{rides.stop();companion.equip('none');rest=restSeats.healing;card.hidden=true;hud.hidden=false;stopButton.textContent='일어나기';label.textContent='휴식 중 · 이동하면 일어납니다';});
+  else if(id==='tree')button('트리 꾸미기',()=>window.dispatchEvent(new Event('lab:tree-open')));
+  else if(id==='restroom')button('문 열기 / 닫기',()=>winter.toggleRestroom?.());
+  else if(['odeng','marshmallow','campfire'].includes(id))button({odeng:'어묵 먹기',marshmallow:'마시멜로 먹기',campfire:'몸 녹이기'}[id],()=>{gesture=id==='campfire'?'warm':'snack';gestureTime=id==='campfire'?60:6;card.hidden=true;});
+  card.hidden=false;anchor={x:place.x,y:rides.mode==='summit'?alpineHeight(place.x,place.z)+2.5:2.7,z:place.z};
+ }
+ const touch={};
+ for(const b of document.querySelectorAll('[data-ski]')){
+  const clear=()=>delete touch[b.dataset.ski];b.onpointerdown=e=>{e.preventDefault();b.setPointerCapture?.(e.pointerId);touch[b.dataset.ski]=true;};b.onpointerup=clear;b.onpointercancel=clear;b.onlostpointercapture=clear;
+ }
+ window.addEventListener('blur',()=>{for(const k in touch)delete touch[k];});
+ window.addEventListener('keydown',e=>{
+  if(e.repeat||e.metaKey||e.ctrlKey||document.body.classList.contains('studio-open')||document.body.classList.contains('quiz-open')||e.target.closest?.('input,textarea,select,[contenteditable=true]'))return;
+  const n=['KeyE','KeyF','KeyG','KeyH'].indexOf(e.code);if(n>=0&&!card.hidden&&actionKeys[n]){e.preventDefault();actionKeys[n]();}
+ });
+ document.querySelector('#close-place').onclick=()=>card.hidden=true;stopButton.onclick=stop;
+ return{rides,show,wake,cancel,get anchor(){return anchor;},get active(){return!!rides.mode||!!rest||spa.active;},
+  proximity(x,z){
+   if(gesture||spa.active||rides.mode&&rides.mode!=='summit'||rest){card.hidden=true;return;}
+   const points=rides.mode==='summit'?[...summitFacilities.map(p=>({...p,r:4})),{id:'summit-start',x:-8,z:-333,r:7}]:[
+    ...winter.destinations.filter(p=>p.id!=='onsen').map(p=>({...p,r:4.2})),{id:'ski',x:-36,z:-185,r:5},{id:'sauna',x:12,z:123,r:9},
+    {id:'onsen',activity:'bath',x:-10,z:116,r:4.8},{id:'onsen',activity:'smallbath',x:-19,z:128.5,r:4}
+   ];
+   const near=points.filter(p=>Math.hypot(x-p.x,z-p.z)<p.r).sort((a,b)=>Math.hypot(x-a.x,z-a.z)-Math.hypot(x-b.x,z-b.z))[0];
+   if(!near){card.hidden=true;return;}
+   if(card.hidden||place?.id!==near.id||(near.activity&&card.dataset.activity!==near.activity))show(near.id,near.activity);
+   anchor={x:near.x,y:(rides.mode==='summit'?alpineHeight(near.x,near.z):0)+2.5,z:near.z};
+  },
+  update(dt,input){
+   const moving=Math.hypot(input?.x||0,input?.z||0)>.15;
+   if(moving){if(gesture)clearGesture();else if(wake())return null;}
+   if(gesture){gestureTime-=dt;if(gestureTime<=0)clearGesture();}
+   const result=spa.active?spa.update(dt,input):rest?{...rest,mode:'rest'}:rides.update(dt,{...input,steer:(input?.steer||0)+(touch.right?1:0)-(touch.left?1:0),push:input?.push||touch.push,brake:input?.brake||touch.brake});
+   if(result&&gesture){result.gesture=gesture;result.view=place?.view;}
+   if(spa.active&&result)label.textContent=result.label+' · '+Math.floor(result.elapsed)+'초';
+   winter.rideChair.visible=rides.mode==='lift';
+   if(winter.rideChair.visible&&result){winter.rideChair.position.set(result.x,result.y-.82,result.z);winter.rideChair.rotation.set(0,result.yaw,0);}
+   if(rides.mode!==lastMode){
+    lastMode=rides.mode;
+    if(lastMode==='summit'){card.hidden=true;label.textContent='정상 · WASD 이동';stopButton.textContent='산 아래로';}
+    else if(lastMode)label.textContent={lift:'리프트',ski:'스키',sled:'눈썰매'}[lastMode];
+   }
+   if(result?.mode==='summit')label.textContent=gesture?`${place.name} · 이동하면 멈춥니다`:'정상 · WASD 이동';
+   document.querySelector('#ski-controls').hidden=rides.mode!=='ski';
+   if(result?.mode==='ski')label.textContent=result.launched?`${skiRuns.find(r=>r.id===result.runId).name} · ${Math.round(result.speed*3.6)} km/h · ${result.raceTime.toFixed(1)}초`:'W / ↑ 출발 · A D 조향 · S 감속';
+   if(result?.finished){
+    companion.equip();hud.hidden=true;card.hidden=true;
+    if(result.raceTime){let best=Infinity;try{const key='lab-ski-best-'+result.runId;best=Math.min(Number(localStorage.getItem(key))||Infinity,result.raceTime);localStorage.setItem(key,String(best));}catch{}label.textContent=`완주 ${result.raceTime.toFixed(1)}초 · 최고 ${best.toFixed(1)}초`;hud.hidden=false;stopButton.textContent='리프트로';}
+   }
+   return result;
+  }
+ };
 }

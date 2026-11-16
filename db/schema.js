@@ -5,3 +5,6 @@ export const visitors=sqliteTable('visitors',{
 export const treeDecorations=sqliteTable('tree_decorations',{
  id:text('id').primaryKey(),room:text('room').notNull(),author:text('author').notNull(),kind:text('kind').notNull(),color:text('color').notNull(),angle:real('angle').notNull(),height:real('height').notNull(),createdAt:integer('created_at').notNull()
 },t=>[index('tree_decorations_room').on(t.room)]);
+export const spaceOwner=sqliteTable('space_owner',{id:text('id').primaryKey(),userId:text('user_id').notNull()});
+export const inviteRooms=sqliteTable('invite_rooms',{id:text('id').primaryKey(),salt:text('salt').notNull(),passwordHash:text('password_hash').notNull(),createdAt:integer('created_at').notNull()});
+export const inviteAttempts=sqliteTable('invite_attempts',{id:text('id').primaryKey(),attempts:integer('attempts').notNull(),resetAt:integer('reset_at').notNull()});
