@@ -65,3 +65,5 @@ initialize();if('serviceWorker'in navigator)navigator.serviceWorker.register('./
 const soundTool=document.querySelector('#sound-experiment');window.openSoundExperiment=()=>{worldTool.hidden=true;window.dispatchEvent(new Event('lab:pause'));soundTool.hidden=false;soundTool.querySelector('[data-world-tone]').focus();};document.querySelector('#close-sound-experiment').onclick=()=>soundTool.hidden=true;document.querySelector('#world-sound-question').onclick=()=>{soundTool.hidden=true;start('per08');};soundTool.querySelectorAll('[data-world-tone]').forEach(b=>b.onclick=async()=>{const ok=await window.labTone?.(b.dataset.worldTone);document.querySelector('#world-sound-result').textContent=ok?'기본 음높이는 같고, 배음 구성이 달라요.':'설정에서 효과음을 켜고 다시 들어 주세요.';});
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape'&&(!worldTool.hidden||!soundTool.hidden)){worldTool.hidden=true;soundTool.hidden=true;document.querySelector('#park-canvas').focus({preventScroll:true});}});
+
+window.openWinterReading=id=>{const fields={classical:'음악',gallery:'미술',ethics:'윤리'};search=fields[id]||'';room='all';featured=false;catalog();};

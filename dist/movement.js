@@ -1,6 +1,7 @@
 import {terrainAt} from './world-layout.js';
 // Pure ground movement shared by keyboard, touch and click navigation.
 export const obstacles = [
+ {x:9,z:11,r:2.4},{x:10,z:-55,w:3.2,d:7.2},{x:7,z:-44.8,w:1.5,d:1.15},{x:14,z:-53,w:.9,d:5.5},{x:-10,z:56,r:3.2},{x:9,z:53.8,w:2.65,d:.2},{x:6.5,z:56,w:.2,d:2.2},{x:11.5,z:56,w:.2,d:2.2},{x:-53,z:22,r:1.5},{x:-48,z:36.2,w:3.6,d:.2},{x:46,z:-20,r:.8},
   {x:7.1,z:-3.2,r:3.9}, {x:-7.8,z:-5,r:2.9},
   {x:-3.55,z:-14,w:2.1,d:1.6},{x:3.55,z:-14,w:2.1,d:1.6},
   {x:-5.4,z:-14,r:1.5},{x:5.4,z:-14,r:1.6},{x:-3.4,z:-16,r:1.35},{x:3.4,z:-16.5,r:1.5},

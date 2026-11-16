@@ -1,6 +1,6 @@
-const CACHE='knowledge-park-v11-soft';
-const scripts=['app','studio','effects','park','learning-core','simulations','world-layout','movement','navigation','companion','world-art','themepark-world','discovery'];
-const CORE=['./','./index.html','./style.css?v=soft11','./soft.css?v=soft11','./vendor/three.module.js',...scripts.flatMap(n=>['./'+n+'.js','./'+n+'.js?v=soft11']),...['science','reasoning','humanities','perspectives','everyday'].map(n=>'./content/'+n+'.json')];
+const CACHE='knowledge-park-v12-winter';
+const scripts=['app','studio','effects','park','learning-core','simulations','world-layout','movement','navigation','companion','world-art','themepark-world','discovery','winter-sky','winter-world','world-time','winter-experience','winter-rides','visitors','weather-clock','social'];
+const CORE=['./','./index.html','./style.css?v=winter12','./soft.css?v=winter12','./winter.css?v=winter12','./vendor/three.module.js',...scripts.flatMap(n=>['./'+n+'.js','./'+n+'.js?v=winter12']),...['science','reasoning','humanities','perspectives','everyday'].map(n=>'./content/'+n+'.json')];
 const assetPaths=new Set(CORE.map(p=>new URL(p,self.location.href).pathname));
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>(key.startsWith('knowledge-campus-')||key.startsWith('knowledge-park-'))&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));

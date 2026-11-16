@@ -1,0 +1,3 @@
+import {handleAPI} from './api.js';
+import assets from '../.winter-build/assets.js';
+export default {async fetch(request,env){const api=await handleAPI(request,env);if(api)return api;const path=new URL(request.url).pathname;const asset=assets[path==='/'?'/index.html':path];if(!asset)return new Response('Not found',{status:404});if(!['GET','HEAD'].includes(request.method))return new Response('Method not allowed',{status:405});return new Response(request.method==='HEAD'?null:asset.body,{headers:{'Content-Type':asset.type,'Cache-Control':'public,max-age=0,must-revalidate','X-Content-Type-Options':'nosniff'}});}};

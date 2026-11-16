@@ -1,5 +1,5 @@
 import * as THREE from './vendor/three.module.js';
-import {islands,bridges} from './world-layout.js';
+import {islands,bridges,bridgeHeight} from './world-layout.js';
 
 export function buildArchipelago(api){
   const {scene,mesh,ball,cylinder,box,rod,torus,halo,M,glowMap}=api;
@@ -9,7 +9,7 @@ export function buildArchipelago(api){
   function noiseTexture(){const c=document.createElement('canvas');c.width=c.height=128;const ctx=c.getContext('2d');ctx.fillStyle='#d4d6d7';ctx.fillRect(0,0,128,128);for(let i=0;i<8;i++){const x=(i*47)%128,y=(i*67)%128,g=ctx.createRadialGradient(x,y,0,x,y,46);g.addColorStop(0,'#9aa6ad30');g.addColorStop(1,'#9aa6ad00');ctx.fillStyle=g;ctx.fillRect(0,0,128,128);}const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2,2);return t;}
   const grain=noiseTexture();
   function terrain(island){
-    const mat=M(island.id==='nature'?'#729784':'#8a9191',.96);mat.map=grain;mat.bumpScale=0;
+    const mat=M(island.id==='nature'?'#c9d9d4':'#d7e3dd',.96);mat.map=grain;mat.bumpScale=0;
     const top=cylinder(island.r,island.r-.3,.25,mat,island.x,-.15,island.z,scene,96);top.name='island-ground';const edge=top.geometry.attributes.position;for(let i=0;i<edge.count;i++){const x=edge.getX(i),z=edge.getZ(i),a=Math.atan2(z,x),scale=1+.025*Math.sin(a*5)+.022*Math.sin(a*9+.6);edge.setX(i,x*scale);edge.setZ(i,z*scale);}top.geometry.computeVertexNormals();
     const rockGeo=new THREE.CylinderGeometry(island.r-.2,island.r*.55,6,64,5);const p=rockGeo.attributes.position;
     for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),a=Math.atan2(z,x),v=1+.025*Math.sin(a*9+y*2)+.04*Math.sin(a*5-y);p.setXYZ(i,x*v,y,z*v);}rockGeo.computeVertexNormals();
@@ -19,17 +19,18 @@ export function buildArchipelago(api){
   }
   for(const island of islands.slice(1))terrain(island);
   // Narrow sky bridges have detailed timber, warm edge lights and brass railings.
-  const plankMaterial=M('#67616b',.88),plankGeo=new THREE.BoxGeometry(4.8,.16,.62),planks=[];
-  for(const [a,b] of bridges){
-    const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz),ux=dx/len,uz=dz/len,start=a.r-1,end=len-b.r+1;
-    for(let d=start;d<end;d+=.69)planks.push({x:a.x+ux*d,z:a.z+uz*d,yaw:Math.atan2(ux,uz)});
-    for(const side of [-1,1]){
-      const x1=a.x+ux*start+uz*side*2.6,z1=a.z+uz*start-ux*side*2.6,x2=a.x+ux*end+uz*side*2.6,z2=a.z+uz*end-ux*side*2.6;
-      rod([x1,.85,z1],[x2,.85,z2],.035,gold);rod([x1,.28,z1],[x2,.28,z2],.025,gold);
-      for(let d=start;d<=end;d+=3){const x=a.x+ux*d+uz*side*2.6,z=a.z+uz*d-ux*side*2.6;rod([x,.05,z],[x,.96,z],.06,gold);ball(new THREE.MeshBasicMaterial({color:a.color}),x,1.01,z,.075);}
-    }
+  // Six arched promenades: continuous wood deck, stone edge, curved brass rail.
+  const deckMaterial=M('#687987',.85),edgeMaterial=M('#9baab4',.88),plankGeo=new THREE.BoxGeometry(4.2,.18,.51),planks=[];
+  for(const [a,b] of bridges){const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz),ux=dx/len,uz=dz/len,start=a.r-1,end=len-b.r+1;
+   const at=(d,side=0)=>new THREE.Vector3(a.x+ux*d+uz*side,bridgeHeight(a.x+ux*d,a.z+uz*d),a.z+uz*d-ux*side);
+   for(let d=start;d<end;d+=.54){const p=at(d);planks.push({p,yaw:Math.atan2(ux,uz),tilt:Math.cos((d-start)/(end-start)*Math.PI)*1.35*Math.PI/(end-start)});}
+   for(const side of [-1,1]){const rail=[],edge=[];for(let j=0;j<=40;j++){const p=at(start+(end-start)*j/40,side*2.2);edge.push(p.clone());rail.push(p.clone().add(new THREE.Vector3(0,.95,0)));}
+    mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(edge),48,.12,8,false),edgeMaterial);mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(rail),48,.045,7,false),gold);
+    for(let d=start;d<=end;d+=2.1){const p=at(d,side*2.2);rod(p.toArray(),p.clone().add(new THREE.Vector3(0,.95,0)).toArray(),.045,gold);ball(M('#e6eceb',.98),p.x,p.y+.99,p.z,.105);if(Math.floor((d-start)/2.1)%3===0)halo(p.x,p.y+1.1,p.z,'#e3cda8',.7);}
+    const support=edge.map(p=>p.clone().add(new THREE.Vector3(0,-.45,0)));mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(support),48,.16,8,false),deckMaterial);
+   }
   }
-  const bridgeMesh=new THREE.InstancedMesh(plankGeo,plankMaterial,planks.length),dummy=new THREE.Object3D();planks.forEach((p,i)=>{dummy.position.set(p.x,.02,p.z);dummy.rotation.set(0,p.yaw,0);dummy.updateMatrix();bridgeMesh.setMatrixAt(i,dummy.matrix)});bridgeMesh.receiveShadow=true;scene.add(bridgeMesh);
+  const bridgeMesh=new THREE.InstancedMesh(plankGeo,deckMaterial,planks.length),dummy=new THREE.Object3D();planks.forEach(({p,yaw,tilt},i)=>{dummy.position.copy(p);dummy.position.y-=.02;dummy.rotation.set(0,yaw,0);dummy.rotateX(-tilt);dummy.updateMatrix();bridgeMesh.setMatrixAt(i,dummy.matrix)});bridgeMesh.receiveShadow=true;scene.add(bridgeMesh);
   function groupAt(i,x=0,z=0){const g=new THREE.Group();g.position.set(i.x+x,0,i.z+z);scene.add(g);return g;}
   function ringFloor(parent,r,mat){cylinder(r,r+.2,.22,mat,0,.1,0,parent,64);const ring=torus(r-.1,.04,gold,0,.23,0,parent);ring.rotation.x=-Math.PI/2;}
   function arch(parent,x,z,h,w,color){
@@ -39,7 +40,15 @@ export function buildArchipelago(api){
   }
   const canopyGeo=new THREE.SphereGeometry(1,32,24),cp=canopyGeo.attributes.position;
   for(let i=0;i<cp.count;i++){const x=cp.getX(i),y=cp.getY(i),z=cp.getZ(i),r=1+.065*Math.sin(x*4+y*3)*Math.cos(z*4)+.025*Math.sin(y*8+z*3);cp.setXYZ(i,x*r,y*r,z*r);}canopyGeo.computeVertexNormals();
+  const winterCapGeo=new THREE.SphereGeometry(1,12,8);
   function tree(parent,x,z,height,color){
+    if(color!=='#77a28b'){
+      const g=new THREE.Group();g.position.set(x,0,z);parent.add(g);const green=M('#355953',.98,0),snow=M('#e2e9e6',1,0);cylinder(.07,.14,height*.85,bark,0,height*.425,0,g,10);
+      for(let tier=0;tier<6;tier++){const y=height*(.24+tier*.12),r=height*(.29-tier*.038);const crown=cylinder(.015,r,height*.32,green,0,y,0,g,16);crown.rotation.y=tier*.6;
+        for(let branch=0;branch<5;branch++){const a=branch*Math.PI*2/5+tier*.8,reach=r*.7;rod([0,y-.07,0],[Math.cos(a)*reach,y-.13,Math.sin(a)*reach],.024,bark,g);const cap=mesh(winterCapGeo,snow,Math.cos(a)*reach*.75,y+.015,Math.sin(a)*reach*.75,g);cap.scale.set(r*.43,height*.038,r*.28);cap.rotation.y=-a;}}
+      return g;
+    }
+
     const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=(x>0?-.6:.35)+(z>0?.25:-.2);parent.add(g);const trunk=[new THREE.Vector3(0,0,0),new THREE.Vector3(-.1,height*.36,.03),new THREE.Vector3(.12,height*.72,0)];mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(trunk),18,.13,9,false),bark,0,0,0,g);
     for(const [dx,dy,dz,scale] of [[-.52,.68,.06,1],[.46,.86,-.12,.84],[.39,.59,.51,.64]]){const points=[new THREE.Vector3(0,height*.32,0),new THREE.Vector3(dx*.8,height*dy*.85,dz*.8),new THREE.Vector3(dx,height*dy,dz)];mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),12,.065,7,false),bark,0,0,0,g);const crown=mesh(canopyGeo,M(color,.96,0),dx,height*dy,dz,g);crown.scale.set(height*.33*scale,height*.23*scale,height*.3*scale);crown.rotation.set(rand()*.25,rand()*2,rand()*.2);
     for(let i=0;i<5;i++){const a=i*2.4+rand()*.5,lobe=mesh(canopyGeo,M(color,.96,0),dx+Math.cos(a)*height*.17*scale,height*dy+(rand()-.4)*height*.18,dz+Math.sin(a)*height*.16*scale,g);lobe.scale.set(height*.16*scale,height*.14*scale,height*.16*scale);}}
@@ -101,11 +110,11 @@ export function buildArchipelago(api){
   };
   for(const island of islands.slice(1)){
     const g=groupAt(island);for(const route of pathSpecs[island.id])promenade(route.map(([x,z])=>[island.x+x,island.z+z]));
-    const positions={science:[[-10,-6,2,1.2],[10,2,1.5,2]],law:[[-8,-5,1.4,2.2],[8,-5,1.7,1.3]],philosophy:[[-9,-4,1.5,2],[9,5,1.8,1.2]],nature:[[-10,-6,1.7,2.6],[9,7,2.2,1.5],[9,-5,1.3,2]],art:[[-10,-4,1.6,1.1],[10,3,1.5,1]],history:[[-10,-6,1.8,1.1],[10,4,1.4,2]]}[island.id];
+    const positions={science:[[-10,-6,2,1.2]],law:[[-8,-5,1.4,2.2],[8,-5,1.7,1.3]],philosophy:[[-9,-4,1.5,2],[9,5,1.8,1.2]],nature:[[-10,-6,1.7,2.6],[9,7,2.2,1.5],[9,-5,1.3,2]],art:[[-10,-4,1.6,1.1],[10,3,1.5,1]],history:[[-10,-6,1.8,1.1],[10,4,1.4,2]]}[island.id];
     for(const [x,z,rx,rz] of positions)planter(g,x,z,rx,rz,island.color);
     for(const [x,z] of (island.id==='nature'?[[-12,-2],[10,-8]]:island.id==='philosophy'?[]:[[-11,-7]]))tree(g,x,z,3.2,island.id==='nature'?'#619781':'#71788e');
     const lampMat=new THREE.MeshBasicMaterial({color:'#f4d5ab'});
-    for(const [x,z] of (island.id==='nature'?[[-5,-9],[6,6]]:island.id==='art'?[[8,3],[-7,4]]:[[-5,8],[8,2]])){cylinder(.055,.11,1.65,gold,x,.82,z,g,10);cylinder(.16,.19,.33,lampMat,x,1.8,z,g,8);cylinder(0,.25,.19,gold,x,2.06,z,g,8);halo(x,1.8,z,'#f8d6a8',1.6,g);}
+    for(const [x,z] of (island.id==='science'?[[-5,8]]:island.id==='nature'?[[-5,-9],[6,6]]:island.id==='art'?[[8,3],[-7,4]]:[[-5,8],[8,2]])){cylinder(.055,.11,1.65,gold,x,.82,z,g,10);cylinder(.16,.19,.33,lampMat,x,1.8,z,g,8);cylinder(0,.25,.19,gold,x,2.06,z,g,8);halo(x,1.8,z,'#f8d6a8',1.6,g);}
   }
   // Observatory windows, concentric instrument markings and crystal clusters.
   const windowMaterial=new THREE.MeshBasicMaterial({color:'#9cc6da'});for(let j=0;j<18;j++){const a=j/18*Math.PI*2,x=Math.cos(a)*4.03,z=Math.sin(a)*4.03;const window=box(.4,.65,.035,windowMaterial,x,1,z,observatory);window.rotation.y=-a+Math.PI/2;}

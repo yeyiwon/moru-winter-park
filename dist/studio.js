@@ -4,7 +4,7 @@ let saved={};try{saved=JSON.parse(localStorage.getItem('lab-appearance-v2'))||{}
 const validColor=v=>/^#[0-9a-f]{6}$/i.test(v);
 const appearance={...defaults,...saved};for(const key of ['light','fur'])if(!validColor(appearance[key]))appearance[key]=defaults[key];
 for(const [key,min,max] of [['brightness',55,150],['fluff',50,100],['roundness',0,100]])appearance[key]=Number.isFinite(+appearance[key])?Math.min(max,Math.max(min,+appearance[key])):defaults[key];
-if(!['none','star','ribbon','sunglasses'].includes(appearance.accessory))appearance.accessory='none';
+if(!['none','star','ribbon','sunglasses','santa'].includes(appearance.accessory))appearance.accessory='none';
 delete appearance.sunglasses;
 window.labAppearance=appearance;
 const studio=document.getElementById('studio'),tabs=[...studio.querySelectorAll('[data-studio]')];
@@ -17,9 +17,9 @@ function update(){
   try{localStorage.setItem('lab-appearance-v2',JSON.stringify(appearance));}catch{document.querySelector('.studio-saved').textContent='설정을 저장할 수 없습니다. 이 화면에서는 계속 적용됩니다.';}
 }
 function selectTab(id){for(const b of tabs){const active=b.dataset.studio===id;b.setAttribute('aria-selected',active);b.tabIndex=active?0:-1;document.getElementById('pane-'+b.dataset.studio).hidden=!active;}window.labPreviewVisible=studio.open&&id==='fluff';window.dispatchEvent(new Event('lab:preview'));}
-function openStudio(tab){document.getElementById('park-menu').open=false;window.dismissParkDiscovery?.();studio.showModal();document.body.classList.add('studio-open');selectTab(tab);window.dispatchEvent(new Event('lab:pause'));window.labSound?.('open');}
+function openStudio(tab){document.getElementById('park-menu').open=false;window.dismissParkDiscovery?.();if(!studio.open)studio.showModal();document.body.classList.add('studio-open');selectTab(tab);window.dispatchEvent(new Event('lab:pause'));window.labSound?.('open');}
 function closeStudio(){studio.close();}
-document.getElementById('open-map').onclick=()=>openStudio('map');document.getElementById('open-wardrobe').onclick=()=>openStudio('fluff');document.getElementById('open-settings').onclick=()=>openStudio('light');document.getElementById('close-studio').onclick=closeStudio;
+document.getElementById('open-social').onclick=()=>openStudio('social');document.getElementById('open-map').onclick=()=>openStudio('map');document.getElementById('open-wardrobe').onclick=()=>openStudio('fluff');document.getElementById('open-settings').onclick=()=>openStudio('light');document.getElementById('close-studio').onclick=closeStudio;
 studio.addEventListener('close',()=>{document.body.classList.remove('studio-open');window.labPreviewVisible=false;window.dispatchEvent(new Event('lab:preview'));document.querySelector('#park-menu summary').focus({preventScroll:true});window.labSound?.('close');});
 studio.addEventListener('click',e=>{if(e.target===studio){const r=studio.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeStudio();}const b=e.target.closest('button');if(!b)return;if(b.dataset.studio){selectTab(b.dataset.studio);window.labSound?.('select');}for(const key of ['light','fur','accessory'])if(b.dataset[key]){appearance[key]=b.dataset[key];update();window.labSound?.('select');}});
 studio.querySelector('[role=tablist]').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const current=tabs.indexOf(document.activeElement),index=e.key==='Home'?0:e.key==='End'?tabs.length-1:(current+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;selectTab(tabs[index].dataset.studio);tabs[index].focus();});
@@ -31,3 +31,7 @@ map.innerHTML='<svg class="map-lines" viewBox="0 0 100 100" preserveAspectRatio=
 map.addEventListener('click',e=>{const b=e.target.closest('[data-island]');if(b&&window.travelToIsland){closeStudio();window.travelToIsland(b.dataset.island);}});
 window.addEventListener('lab:region',e=>map.querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',b.dataset.island===e.detail?'location':'false')));
 update();
+
+window.addEventListener('keydown',e=>{if(e.code!=='KeyM'||e.repeat||e.metaKey||e.ctrlKey||e.altKey||e.target.closest?.('input,textarea,select,[contenteditable=true]')||document.querySelector('#learning').open)return;e.preventDefault();if(studio.open&&!document.querySelector('#pane-map').hidden)closeStudio();else openStudio('map');});
+function fillPlaces(){const box=document.querySelector('#winter-places');box.replaceChildren();for(const place of window.labWinter?.destinations||[]){const b=document.createElement('button');b.textContent=place.name;b.onclick=()=>{closeStudio();window.travelToPlace?.(place.id)};box.append(b);}}
+window.addEventListener('lab:winter-ready',fillPlaces);fillPlaces();

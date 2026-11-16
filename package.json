@@ -2,10 +2,16 @@
   "name": "knowledge-lab",
   "private": true,
   "scripts": {
-    "test": "node --experimental-vm-modules --test tests/*.test.mjs"
+    "test": "node --experimental-vm-modules --test tests/*.test.mjs",
+    "build": "node scripts/build-worker.mjs",
+    "dev": "node scripts/dev-server.mjs",
+    "db:generate": "drizzle-kit generate"
   },
   "devDependencies": {
-    "jsdom": "26.1.0"
+    "jsdom": "26.1.0",
+    "esbuild": "^0.25.0",
+    "drizzle-kit": "^0.31.0",
+    "drizzle-orm": "^0.44.0"
   },
   "type": "module"
 }

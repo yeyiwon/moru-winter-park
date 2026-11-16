@@ -7,7 +7,8 @@ export const islands=[
   {id:'art',name:'울림 극장',subject:'예술과 음악',x:-46,z:27,r:16,color:'#e9afc8',spawn:{x:-39,z:23}},
   {id:'history',name:'시간의 항구',subject:'역사와 문화 · 세상과 언어',x:-46,z:-27,r:16,color:'#edc88d',spawn:{x:-39,z:-23}}
 ];
-export const bridges=[...islands.slice(1).map(i=>[islands[0],i]),...islands.slice(1).map((i,n)=>[i,islands[1+(n+1)%6]])];
+export const bridges=[[islands[0],islands[1]],[islands[0],islands[2]],[islands[2],islands[3]],[islands[0],islands[4]],[islands[4],islands[5]],[islands[5],islands[6]]];
+export function bridgeHeight(x,z){for(const [a,b] of bridges){const length=Math.hypot(b.x-a.x,b.z-a.z),d=((x-a.x)*(b.x-a.x)+(z-a.z)*(b.z-a.z))/length,start=a.r-1,end=length-b.r+1;if(d>=start&&d<=end&&segmentDistance(x,z,a,b)<2.7)return .09+Math.sin((d-start)/(end-start)*Math.PI)*1.35;}return .09;}
 export function segmentDistance(x,z,a,b){const dx=b.x-a.x,dz=b.z-a.z,t=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/(dx*dx+dz*dz)));return Math.hypot(x-a.x-t*dx,z-a.z-t*dz);}
 export function terrainAt(x,z){return islands.some(i=>Math.hypot(x-i.x,z-i.z)<=i.r-1.3)||bridges.some(([a,b])=>segmentDistance(x,z,a,b)<1.65);}
 export function islandAt(x,z){return islands.find(i=>Math.hypot(x-i.x,z-i.z)<i.r+1);}
@@ -34,4 +35,4 @@ export const exhibits=[
 {id:'harbour-memory',room:'memory',island:'history',name:'항구 · 기억 서재',x:-52,z:-23,color:'#aac9d0',review:true}
 ];
 
-export function surfaceHeight(x,z){let h=.09;for(const [cx,cz,r]of [[47,-30,5.5],[0,53,4.7],[-46,25,6],[-45,-29,4]]){const d=Math.hypot(x-cx,z-cz),t=Math.max(0,Math.min(1,(r+.2-d)/.6));h=Math.max(h,.09+.13*t);}return h;}
+export function surfaceHeight(x,z){let h=bridgeHeight(x,z);for(const [cx,cz,r]of [[47,-30,5.5],[0,53,4.7],[-46,25,6],[-45,-29,4]]){const d=Math.hypot(x-cx,z-cz),t=Math.max(0,Math.min(1,(r+.2-d)/.6));h=Math.max(h,.09+.13*t);}return h;}

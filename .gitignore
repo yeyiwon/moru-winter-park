@@ -3,3 +3,7 @@ qa/asset-review/*.json
 qa/asset-review/*.blend
 qa/asset-review/*.blend1
 qa/asset-review/*.json.tmp
+
+.winter-build/
+dist/server/
+dist/.openai/

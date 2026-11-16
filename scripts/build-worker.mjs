@@ -1,0 +1,6 @@
+import fs from 'node:fs';import path from 'node:path';import {build} from 'esbuild';
+const types={'.html':'text/html; charset=utf-8','.css':'text/css; charset=utf-8','.js':'text/javascript; charset=utf-8','.json':'application/json','.txt':'text/plain','.svg':'image/svg+xml'};const assets={};
+function visit(dir){for(const entry of fs.readdirSync(dir,{withFileTypes:true})){if(entry.name==='server'||entry.name==='.openai')continue;const full=path.join(dir,entry.name);if(entry.isDirectory())visit(full);else{const type=types[path.extname(full)];if(type)assets['/'+path.relative('dist',full).split(path.sep).join('/')]={type,body:fs.readFileSync(full,'utf8')};}}}
+visit('dist');fs.mkdirSync('.winter-build',{recursive:true});fs.writeFileSync('.winter-build/assets.js','export default '+JSON.stringify(assets)+';');
+await build({entryPoints:['server/worker.js'],bundle:true,format:'esm',platform:'browser',target:'es2022',outfile:'dist/server/index.js',minify:true});
+fs.mkdirSync('dist/.openai',{recursive:true});fs.copyFileSync('.openai/hosting.json','dist/.openai/hosting.json');fs.cpSync('drizzle','dist/.openai/drizzle',{recursive:true});console.log('Built worker with '+Object.keys(assets).length+' static assets.');
