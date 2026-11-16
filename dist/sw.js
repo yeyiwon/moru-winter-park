@@ -1,6 +1,6 @@
-const CACHE='knowledge-park-v18-shared';
+const CACHE='knowledge-park-v19-alpine';
 const scripts=['app','studio','effects','park','learning-core','simulations','world-layout','movement','navigation','companion','wardrobe','spa-experience','world-art','themepark-world','discovery','winter-sky','winter-world','resort-layout','alpine-resort','spa-resort','world-time','winter-experience','winter-rides','visitors','weather-clock','social','footprints','snow-path','shared-tree'];
-const CORE=['./','./index.html','./style.css?v=winter18','./soft.css?v=winter18','./winter.css?v=winter18','./vendor/three.module.js',...scripts.flatMap(n=>['./'+n+'.js','./'+n+'.js?v=winter18']),...['science','reasoning','humanities','perspectives','everyday'].map(n=>'./content/'+n+'.json')];
+const CORE=['./','./index.html','./style.css?v=alpine19','./soft.css?v=alpine19','./winter.css?v=alpine19','./vendor/three.module.js',...scripts.flatMap(n=>['./'+n+'.js','./'+n+'.js?v=alpine19']),...['science','reasoning','humanities','perspectives','everyday'].map(n=>'./content/'+n+'.json')];
 const assetPaths=new Set(CORE.map(p=>new URL(p,self.location.href).pathname));
 self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(CORE)).then(()=>self.skipWaiting())));
 self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>(key.startsWith('knowledge-campus-')||key.startsWith('knowledge-park-'))&&key!==CACHE).map(key=>caches.delete(key)))).then(()=>self.clients.claim())));

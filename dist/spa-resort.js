@@ -29,7 +29,7 @@ export function buildSpaResort(api){
  const sideGeo=new T.BufferGeometry();sideGeo.setAttribute('position',new T.Float32BufferAttribute(sidePos,3));sideGeo.setIndex(sideIdx);sideGeo.computeVertexNormals();mesh(sideGeo,rock);
  for(let i=0;i<34;i++){const a=i/34*Math.PI*2,r=spa.r-1,sz=1.4+rand()*1.5;const b=oval(i%3?rock:rockShade,Math.cos(a)*r,-1.9-rand()*3,spa.z+Math.sin(a)*r,sz,2+rand()*2,sz*.7);b.rotation.set(rand()*.2,a,rand()*.25);}
  const paving=createSnowPaths({root,stone:[M('#b9b4a5',1,0),M('#b0aea1',1,0),M('#c2bdaf',1,0)],snow});
- // Small interlocking stones continue through the junction instead of overlapping flat ribbons.
+ // Compacted snow branches share one softly blended field through the junction.
  paving([[0,88],[0,96],[-.8,104],[0,110]],3.8);
  paving([[0,108],[-4,111],[-10,114],[-17.8,119],[-18,124]],3.2);
  paving([[-.4,108],[5,111.8],[10,114],[12,117]],3.4);
@@ -97,7 +97,7 @@ export function buildSpaResort(api){
  for(const [cx,cz,n] of [[-22,122,5],[-8,133,8]])for(let i=0;i<n;i++){box(.12,1.9,.13,cedarDark,cx+i*.34,1.05,cz);if(i===0||i===n-1)oval(snow,cx+i*.34,2.04,cz,.14,.07,.15);}
  target('onsen',-10,.7,124,14.8,1.5,12.8);target('sauna',12,2.2,125,18,4.3,16);
  // Merge opaque static geometry by material while keeping water and vapour separate.
- root.updateMatrixWorld(true);const groups=new Map();root.traverse(o=>{if(!o.isMesh||moving.has(o)||Array.isArray(o.material))return;const key=o.material.uuid;if(!groups.has(key))groups.set(key,{material:o.material,items:[]});groups.get(key).items.push(o);});
+ root.updateMatrixWorld(true);const groups=new Map();root.traverse(o=>{if(!o.isMesh||o.userData.snowTrail||moving.has(o)||Array.isArray(o.material))return;const key=o.material.uuid;if(!groups.has(key))groups.set(key,{material:o.material,items:[]});groups.get(key).items.push(o);});
  for(const {material,items}of groups.values()){if(items.length<2)continue;const chunks={position:[],normal:[],uv:[]};let count=0;for(const o of items){let g=o.geometry.clone().applyMatrix4(o.matrixWorld);if(g.index){const old=g;g=g.toNonIndexed();old.dispose();}if(!g.attributes.normal)g.computeVertexNormals();const size=g.attributes.position.count;chunks.position.push(g.attributes.position.array);chunks.normal.push(g.attributes.normal.array);chunks.uv.push(g.attributes.uv?.array||new Float32Array(size*2));count+=size;g.dispose();o.removeFromParent();}const g=new T.BufferGeometry();for(const key of Object.keys(chunks)){const size=key==='uv'?2:3,out=new Float32Array(count*size);let at=0;for(const chunk of chunks[key]){out.set(chunk,at);at+=chunk.length;}g.setAttribute(key,new T.BufferAttribute(out,size));}g.computeBoundingSphere();mesh(g,material);}
  return{root,interactive,update(time,still){for(const {s,x,z,phase}of steam){const t=still?.4:(time*.075+phase)%1;s.position.set(x+(still?0:Math.sin(time*.12+phase)*.3),.25+t*3.5,z);s.scale.set(2.5+t*2.4,1.7+t*2.1,1);s.material.opacity=Math.sin(t*Math.PI)*.32;}}};
 }

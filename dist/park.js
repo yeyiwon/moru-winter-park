@@ -4,11 +4,11 @@ import {createWinterSky} from './winter-sky.js';
 import {createWinterExperience} from './winter-experience.js';
 import {createVisitors} from './visitors.js';
 import * as T from './vendor/three.module.js';
-import {moveVector,moveOnGround,canStandAt} from './movement.js?v=winter18';
-import {findPath} from './navigation.js?v=winter18';
+import {moveVector,moveOnGround,canStandAt} from './movement.js?v=alpine19';
+import {findPath} from './navigation.js?v=alpine19';
 import {rooms,islands,islandAt,surfaceHeight} from './world-layout.js';
-import {createCompanion} from './companion.js?v=winter18';
-import {buildWorld} from './themepark-world.js?v=winter18';
+import {createCompanion} from './companion.js?v=alpine19';
+import {buildWorld} from './themepark-world.js?v=alpine19';
 import {createDiscoveryGate} from './discovery.js';
 const canvas=document.querySelector('#park-canvas'),status=document.querySelector('#park-status');
 let renderer;try{renderer=new T.WebGLRenderer({canvas,antialias:true,powerPreference:'high-performance'});}catch{document.body.classList.add('no-webgl');status.textContent='3D 화면을 사용할 수 없습니다. 바로 학습하기는 계속 이용할 수 있어요.';}
