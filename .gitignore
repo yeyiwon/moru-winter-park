@@ -7,3 +7,7 @@ qa/asset-review/*.json.tmp
 .winter-build/
 dist/server/
 dist/.openai/
+
+.vercel/
+web-dist/
+.env*

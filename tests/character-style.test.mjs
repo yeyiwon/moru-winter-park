@@ -13,12 +13,12 @@ test('head and expression slots coexist, replace peers, and preserve helmet auto
   assert.equal(toggleItem('eyes-flat','eyes-flat'),'none');assert.equal(toggleItem('cat-ears,eyes-round','none'),'none');
 });
 
-test('plush ear concepts share one bounded mesh, follow fur color, and clear spa headwear',()=>{
+test('plush ear concepts share one bounded mesh, keep independent black color, and clear spa headwear',()=>{
   const pet=createCompanion({detail:'remote'}),headband=pet.group.getObjectByName('plush-ear-headband'),geometries=new Set();let meshes=0;
-  pet.group.traverse(object=>{if(object.isMesh)meshes++;});assert.ok(meshes<55);
+  pet.group.traverse(object=>{if(object.isMesh)meshes++;});assert.ok(meshes<60);
   for(const accessory of ['bunny-ears','cat-ears','bear-ears']){
     pet.customize({accessory,fur:'#e6c4de'});pet.pose({still:true});assert.equal(headband.visible,true);assert.equal(headband.userData.kind,accessory);geometries.add(headband.geometry);
-    assert.equal(headband.material[0].color.getHexString(),'e6c4de');
+    assert.equal(headband.material[0].color.getHexString(),'17181e');
     for(const attribute of Object.values(headband.geometry.attributes))for(const value of attribute.array)assert.ok(Number.isFinite(value));
     const box=new T.Box3().setFromObject(pet.group);assert.ok(box.getSize(new T.Vector3()).y<3.2);
   }

@@ -1,9 +1,10 @@
 import {readFileSync} from 'node:fs';
 const source=name=>readFileSync(new URL('../dist/'+name,import.meta.url),'utf8');
 const data=s=>'data:text/javascript;base64,'+Buffer.from(s).toString('base64');
+const parkUrl=data(source('park-layout.js'));
 const resortUrl=data(source('resort-layout.js'));
 const layoutUrl=data(source('world-layout.js').replace("'./resort-layout.js'",JSON.stringify(resortUrl)));
-const movementUrl=data(source('movement.js').replace("'./resort-layout.js'",JSON.stringify(resortUrl)).replace("'./world-layout.js'",JSON.stringify(layoutUrl)));
+const movementUrl=data(source('movement.js').replace("'./park-layout.js'",JSON.stringify(parkUrl)).replace("'./resort-layout.js'",JSON.stringify(resortUrl)).replace("'./world-layout.js'",JSON.stringify(layoutUrl)));
 const navigationUrl=data(source('navigation.js').replace("'./movement.js'",JSON.stringify(movementUrl)));
 export const layout=await import(layoutUrl);
 export const movement=await import(movementUrl);

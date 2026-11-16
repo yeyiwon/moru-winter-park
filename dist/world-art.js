@@ -1,3 +1,4 @@
+import {parkWalkways} from './park-layout.js';
 import {createSnowPaths} from './snow-path.js';
 import {createAuroraLandmarks} from './aurora-landmarks.js';
 import {findPath,clearSegment} from './navigation.js';
@@ -66,11 +67,15 @@ export function buildArchipelago(api){
   const canopyGeo=new THREE.SphereGeometry(1,32,24),cp=canopyGeo.attributes.position;
   for(let i=0;i<cp.count;i++){const x=cp.getX(i),y=cp.getY(i),z=cp.getZ(i),r=1+.065*Math.sin(x*4+y*3)*Math.cos(z*4)+.025*Math.sin(y*8+z*3);cp.setXYZ(i,x*r,y*r,z*r);}canopyGeo.computeVertexNormals();
   const winterCapGeo=new THREE.SphereGeometry(1,12,8);
+  function boughGeometry(frost=false){const positions=[],uv=[],indices=[],steps=16;for(let i=0;i<=steps;i++){const t=i/steps,u=frost?.12+t*.83:t,w=Math.sin(u*Math.PI)*.24*(1-u*.45)*(i%2?.83:1),y=.08*Math.sin(u*Math.PI)-u*u*.1;for(let j=0;j<4;j++){const lateral=(j===0?-w:j===2?w:0)*(frost?.68:1);positions.push(u,y+(j===1?.05*(1-u):j===3?-.025:0)+(frost?.022:0),lateral);uv.push(t,j/3);}if(i<steps)for(let j=0;j<(frost?2:4);j++){const a=i*4+j,b=i*4+(j+1)%4;indices.push(a,b,a+4,b,b+4,a+4);}}const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(indices);geo.computeVertexNormals();return geo;}
+  const firBough=boughGeometry(),firFrost=boughGeometry(true);
   function tree(parent,x,z,height,color){
     if(color!=='#77a28b'){
       const g=new THREE.Group();g.position.set(x,0,z);parent.add(g);const green=M('#355953',.98,0),snow=M('#e2e9e6',1,0);cylinder(.07,.14,height*.85,bark,0,height*.425,0,g,10);
-      for(let tier=0;tier<6;tier++){const y=height*(.24+tier*.12),r=height*(.29-tier*.038);const crown=cylinder(.015,r,height*.32,green,0,y,0,g,16);crown.rotation.y=tier*.6;
-        for(let branch=0;branch<5;branch++){const a=branch*Math.PI*2/5+tier*.8,reach=r*.7;rod([0,y-.07,0],[Math.cos(a)*reach,y-.13,Math.sin(a)*reach],.024,bark,g);const cap=mesh(winterCapGeo,snow,Math.cos(a)*reach*.75,y+.015,Math.sin(a)*reach*.75,g);cap.scale.set(r*.43,height*.038,r*.28);cap.rotation.y=-a;}}
+      for(let tier=0;tier<8;tier++){const y=height*(.2+tier*.1),r=height*(.3-tier*.035);cylinder(.005,r*.38,height*.16,green,0,y+height*.03,0,g,10);
+        for(let branch=0;branch<7;branch++){const a=branch*Math.PI*2/7+tier*2.399,reach=r*(.92+.08*Math.sin(branch*3+tier));rod([0,y-.045,0],[Math.cos(a)*reach*.83,y-reach*.07,Math.sin(a)*reach*.83],.017,bark,g);for(const [geometry,mat]of [[firBough,green],[firFrost,snow]]){const leaf=mesh(geometry,mat,0,y,0,g);leaf.scale.setScalar(reach);leaf.rotation.y=-a;}
+         for(const side of [-1,1]){const leaf=mesh(firBough,green,Math.cos(a)*reach*.4,y+reach*.02,Math.sin(a)*reach*.4,g);leaf.scale.setScalar(reach*.42);leaf.rotation.y=-a+side*.65;}}
+      }
       return g;
     }
 
@@ -86,6 +91,7 @@ export function buildArchipelago(api){
   // Designed promenades and planted borders replace random grass and pebble rings.
   const soil=M('#2a3938',1),bedStone=M('#606771',.8);
   const promenade=createSnowPaths({root:scene,stone:[M('#a3adae',1,0),M('#adb6b4',1,0),M('#a7afac',1,0)],snow:bridgeSnow,heightAt:surfaceHeight});
+  for(const route of parkWalkways)promenade(route.points,route.width);
   // Every branch reaches a bridge landing or a real front door. No decorative dead ends.
   const drawn=new Set();function connect(a,b){const route=findPath(a,b);if(!route.length)return;const key=[a.x,a.z,b.x,b.z].join('/');if(drawn.has(key))return;drawn.add(key);promenade([[a.x,a.z],...route.map(p=>[p.x,p.z])]);}
   for(const island of islands.slice(0,7).filter(island=>!island.hidden)){

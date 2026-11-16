@@ -1,0 +1,70 @@
+import * as T from './vendor/three.module.js';
+
+// The server kinds stay separate from the two shared finishes and their settings.
+export function createTreeOrnamentMeshes(root){
+ const capacity=160,kinds=['ball','star','bell','bow','moon','icicle'];
+ const jewel=new T.MeshPhysicalMaterial({color:'#ffffff',roughness:.2,metalness:.18,clearcoat:1,iridescence:.9,iridescenceIOR:1.32,emissive:'#ffe8d7',emissiveIntensity:.075});
+ const gold=new T.MeshStandardMaterial({color:'#ffe7b2',roughness:.25,metalness:.64,emissive:'#c78643',emissiveIntensity:.045});
+ function joined(parts){
+  const arrays={position:[],normal:[],uv:[]};
+  for(const part of parts){const geo=part.index?part.toNonIndexed():part;if(!geo.attributes.normal)geo.computeVertexNormals();for(const name in arrays){const attribute=geo.attributes[name];if(attribute)for(const value of attribute.array)arrays[name].push(value);else for(let i=0;i<geo.attributes.position.count*2;i++)arrays[name].push(0);}if(geo!==part)geo.dispose();part.dispose();}
+  const geo=new T.BufferGeometry();for(const name in arrays)geo.setAttribute(name,new T.Float32BufferAttribute(arrays[name],name==='uv'?2:3));geo.computeBoundingSphere();return geo;
+ }
+ function tube(points,radius=.014,segments=24){return new T.TubeGeometry(new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p))),segments,radius,5,false);}
+ function hoop(radius,y,tubeRadius=.013){const geo=new T.TorusGeometry(radius,tubeRadius,5,32);geo.rotateX(Math.PI/2);geo.translate(0,y,0);return geo;}
+ function hanger(y){return [new T.CylinderGeometry(.07,.1,.1,10).translate(0,y,0),new T.TorusGeometry(.085,.014,5,24).translate(0,y+.13,0)];}
+ function faceted(geo){const out=geo.index?geo.toNonIndexed():geo;if(out!==geo)geo.dispose();out.computeVertexNormals();return out;}
+ function extruded(shape,depth=.1,bevel=.035){const geo=new T.ExtrudeGeometry(shape,{depth,bevelEnabled:true,bevelSize:bevel,bevelThickness:bevel,bevelSegments:3,curveSegments:14});geo.translate(0,0,-depth/2);return geo;}
+
+ const ball=faceted(new T.IcosahedronGeometry(.43,1));ball.scale(1,1.1,1);
+ const ballFrame=joined([...hanger(.5),hoop(.435,0)]);
+
+ const starPositions=[],starUvs=[];
+ for(let i=0;i<16;i++){
+  const a=i*Math.PI/8+Math.PI/2,b=(i+1)*Math.PI/8+Math.PI/2,r=i%2?.17:i%4?.4:.61,s=(i+1)%2?.17:(i+1)%4?.4:.61;
+  for(const face of [1,-1]){const points=face===1?[[0,0,.15],[Math.cos(a)*r,Math.sin(a)*r,.015],[Math.cos(b)*s,Math.sin(b)*s,.015]]:[[0,0,-.1],[Math.cos(b)*s,Math.sin(b)*s,.015],[Math.cos(a)*r,Math.sin(a)*r,.015]];for(const p of points){starPositions.push(...p);starUvs.push(p[0]+.5,p[1]+.5);}}
+ }
+ const star=new T.BufferGeometry();star.setAttribute('position',new T.Float32BufferAttribute(starPositions,3));star.setAttribute('uv',new T.Float32BufferAttribute(starUvs,2));star.computeVertexNormals();
+ const starFrame=joined([...hanger(.64),new T.OctahedronGeometry(.105).translate(0,0,.18)]);
+
+ // The inner profile and visible clapper make the bell hollow from below.
+ const bellProfile=[[.36,-.34],[.33,-.28],[.245,-.08],[.22,.15],[.14,.3],[.05,.34],[.05,.27],[.1,.25],[.16,.12],[.19,-.08],[.28,-.27],[.3,-.3],[.36,-.34]].map(([x,y])=>new T.Vector2(x,y));
+ const bell=new T.LatheGeometry(bellProfile,32);
+ const bellFrame=joined([...hanger(.38),hoop(.35,-.32,.023),hoop(.225,.13,.012),new T.CylinderGeometry(.013,.013,.39,8).translate(0,-.13,0),new T.SphereGeometry(.087,14,10).translate(0,-.36,0)]);
+
+ const loop=new T.Shape();loop.moveTo(-.045,.025);loop.bezierCurveTo(-.2,.24,-.45,.35,-.56,.24);loop.bezierCurveTo(-.65,.15,-.59,-.13,-.45,-.15);loop.bezierCurveTo(-.27,-.16,-.16,-.035,-.045,.025);loop.closePath();
+ const tail=new T.Shape();tail.moveTo(-.035,-.035);tail.bezierCurveTo(-.13,-.14,-.14,-.42,-.29,-.55);tail.lineTo(-.15,-.48);tail.lineTo(-.055,-.58);tail.quadraticCurveTo(.025,-.3,.065,-.08);tail.closePath();
+ const bowParts=[];
+ for(const side of [-1,1]){const lobe=extruded(loop,.11,.04),ribbon=extruded(tail,.065,.022);if(side===1){lobe.rotateY(Math.PI);ribbon.rotateY(Math.PI);}lobe.rotateY(side*.12);ribbon.rotateY(side*.09);bowParts.push(lobe,ribbon);}
+ bowParts.push(new T.SphereGeometry(.12,16,10).scale(.8,1.3,.95).translate(0,0,.07));const bow=joined(bowParts);
+ const bowFrame=joined([...hanger(.2),tube([[-.075,.11,.12],[-.08,0,.16],[-.055,-.12,.1]],.012,12),tube([[.075,.11,.12],[.08,0,.16],[.055,-.12,.1]],.012,12),tube([[-.1,.025,.13],[-.29,.095,.12],[-.49,.09,.085]],.009,16),tube([[.1,.025,.13],[.29,.095,.12],[.49,.09,.085]],.009,16)]);
+
+ const moonShape=new T.Shape(),moonRadius=.52,tipAngle=.7;moonShape.absarc(0,0,moonRadius,tipAngle,Math.PI*2-tipAngle,false);moonShape.quadraticCurveTo(-.18,0,Math.cos(tipAngle)*moonRadius,Math.sin(tipAngle)*moonRadius);moonShape.closePath();
+ const moon=extruded(moonShape,.12,.038);
+ const moonRim=Array.from({length:33},(_,i)=>{const a=tipAngle+(Math.PI*2-tipAngle*2)*i/32;return [Math.cos(a)*.544,Math.sin(a)*.544,.04];});
+ const moonFrame=joined([...hanger(.54),tube(moonRim,.012,40),tube([[.4,.31,.06],[.4,.16,.06],[.4,.02,.06]],.009,8),new T.OctahedronGeometry(.08).scale(.65,1.3,.65).translate(.4,-.05,.06)]);
+
+ const crystalPositions=[],crystalUvs=[],crystalIndices=[],rings=[[.4,.11,0],[.25,.23,Math.PI/6],[.08,.19,0],[-.7,0,0]];
+ for(let row=0;row<rings.length;row++){const [y,r,offset]=rings[row];for(let j=0;j<6;j++){const a=j*Math.PI/3+offset;crystalPositions.push(Math.cos(a)*r,y,Math.sin(a)*r);crystalUvs.push(j/6,row/3);if(row<rings.length-1){const n=row*6+j,q=row*6+(j+1)%6;crystalIndices.push(n,q,n+6,q,q+6,n+6);}}}
+ const crystal=new T.BufferGeometry();crystal.setAttribute('position',new T.Float32BufferAttribute(crystalPositions,3));crystal.setAttribute('uv',new T.Float32BufferAttribute(crystalUvs,2));crystal.setIndex(crystalIndices);const icicle=faceted(crystal);
+ const icicleFrame=joined([...hanger(.45),hoop(.235,.25,.012)]);
+
+ const geometries={ball,star,bell,bow,moon,icicle},settings={ball:ballFrame,star:starFrame,bell:bellFrame,bow:bowFrame,moon:moonFrame,icicle:icicleFrame},meshes={},frames={};
+ for(const kind of kinds){meshes[kind]=new T.InstancedMesh(geometries[kind],jewel,capacity);frames[kind]=new T.InstancedMesh(settings[kind],gold,capacity);for(const [object,name]of [[meshes[kind],'ornament'],[frames[kind],'setting']]){object.name=`tree-${name}-${kind}`;object.count=0;object.frustumCulled=false;object.castShadow=true;object.receiveShadow=true;object.instanceMatrix.setUsage(T.DynamicDrawUsage);root.add(object);}}
+
+ // One small point cloud follows the supplied instance matrices; no extra render wiring.
+ const positions=new Float32Array(capacity*3),colors=new Float32Array(capacity*3),alphas=new Float32Array(capacity),sparkGeometry=new T.BufferGeometry();
+ sparkGeometry.setAttribute('position',new T.BufferAttribute(positions,3).setUsage(T.DynamicDrawUsage));sparkGeometry.setAttribute('color',new T.BufferAttribute(colors,3).setUsage(T.DynamicDrawUsage));sparkGeometry.setAttribute('alpha',new T.BufferAttribute(alphas,1).setUsage(T.DynamicDrawUsage));sparkGeometry.setDrawRange(0,0);
+ const sparkleMaterial=new T.ShaderMaterial({transparent:true,depthWrite:false,blending:T.AdditiveBlending,vertexColors:true,vertexShader:`attribute float alpha;varying vec3 vColor;varying float vAlpha;void main(){vColor=color;vAlpha=alpha;vec4 p=modelViewMatrix*vec4(position,1.);gl_Position=projectionMatrix*p;gl_PointSize=clamp(250./max(1.,-p.z),2.,18.);}`,fragmentShader:`varying vec3 vColor;varying float vAlpha;void main(){vec2 p=gl_PointCoord-.5;float core=exp(-dot(p,p)*70.);float rayX=pow(max(0.,1.-abs(p.x)*10.),2.)*pow(max(0.,1.-abs(p.y)*2.),3.);float rayY=pow(max(0.,1.-abs(p.y)*10.),2.)*pow(max(0.,1.-abs(p.x)*2.),3.);float a=clamp(core+(rayX+rayY)*.32,0.,1.)*vAlpha;if(a<.012)discard;gl_FragColor=vec4(vColor,a);}`});
+ const sparkles=new T.Points(sparkGeometry,sparkleMaterial);sparkles.name='tree-ornament-sparkles';sparkles.frustumCulled=false;sparkles.visible=false;root.add(sparkles);
+ const matrix=new T.Matrix4(),position=new T.Vector3(),color=new T.Color(),white=new T.Color('#fff7e9');
+ function update(time=0,still=false){
+  const t=still||!Number.isFinite(time)?0:time;jewel.emissiveIntensity=still?.075:.075+Math.sin(t*.55)*.018;let count=0;
+  for(let i=0;i<capacity&&count<capacity;i++)for(let k=0;k<kinds.length&&count<capacity;k++){
+   const object=meshes[kinds[k]];if(i>=object.count)continue;const phase=i*2.399+k*1.1;object.getMatrixAt(i,matrix);position.set(Math.sin(phase+t*.18)*.16,.16+Math.cos(phase+t*.21)*.09,.48).applyMatrix4(matrix);position.toArray(positions,count*3);
+   if(object.instanceColor)object.getColorAt(i,color);else color.set('#ffffff');color.lerp(white,.65).toArray(colors,count*3);alphas[count]=still?.52:.3+Math.pow((Math.sin(phase+t*.7)+1)*.5,2)*.45;count++;
+  }
+  sparkles.visible=count>0;sparkGeometry.setDrawRange(0,count);for(const attribute of Object.values(sparkGeometry.attributes))attribute.needsUpdate=true;
+ }
+ return{meshes,frames,update};
+}

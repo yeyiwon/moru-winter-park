@@ -39,43 +39,74 @@ export function createCompanion({detail='full'}={}){
  for(const s of [-1,1]){const eye=orb(eyeMat,s*.205,.075,.663,.068,.094,.046);eyes.push(eye);orb(eyeWhite,-.25,.32,.94,.16,.12,.1,eye);feet.push(orb(velvet,s*.27,-.74,.14,.18,.12,.25));}
  const roundEye=eyes[0].geometry,flatEye=new THREE.CapsuleGeometry(.014,.135,5,12);flatEye.rotateZ(Math.PI/2);
  const closedEye=new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(-.081,.016,0),new THREE.Vector3(0,-.012,.006),new THREE.Vector3(.081,.016,0)]),16,.013,8,false);
- let eyeProfiles=[];
- function styleEyes(style=''){
+ const contentEye=new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(-.073,-.006,0),new THREE.Vector3(0,.023,.005),new THREE.Vector3(.073,-.006,0)]),16,.012,8,false);
+ function symbolEye(kind){const outline=new THREE.Shape();if(kind==='heart'){outline.moveTo(0,-.085);outline.bezierCurveTo(-.17,0,-.09,.15,0,.065);outline.bezierCurveTo(.09,.15,.17,0,0,-.085);}else{for(let i=0;i<10;i++){const a=i*Math.PI/5+Math.PI/2,r=i%2?.043:.1;i?outline.lineTo(Math.cos(a)*r,Math.sin(a)*r):outline.moveTo(Math.cos(a)*r,Math.sin(a)*r);}outline.closePath();}return new THREE.ExtrudeGeometry(outline,{depth:.012,bevelEnabled:true,bevelSize:.005,bevelThickness:.004,bevelSegments:2});}
+ const starEye=symbolEye('star'),heartEye=symbolEye('heart'),heartEyeMaterial=new THREE.MeshStandardMaterial({color:'#ad5076',roughness:.4});
+ let eyeProfiles=[],selectedEyeStyle='',activeEyeReaction='';
+ function styleEyes(style='',reaction=''){
+  activeEyeReaction=reaction;
   eyeProfiles=eyes.map((eye,i)=>{
-   const side=i?1:-1,closed=style==='eyes-flat'||style==='eyes-sleepy'||style==='eyes-wink'&&i===1,goofy=style==='eyes-goofy';
-   eye.name=i?'right-eye':'left-eye';eye.geometry=style==='eyes-flat'?flatEye:closed?closedEye:roundEye;eye.material=goofy?eyeWhite:eyeMat;
+   const side=i?1:-1,content=reaction==='content'||style==='eyes-happy',symbol=style==='eyes-star'||style==='eyes-heart',closed=content||symbol||style==='eyes-flat'||style==='eyes-sleepy'||style==='eyes-wink'&&i===1,goofy=style==='eyes-goofy'&&!content;
+   eye.name=i?'right-eye':'left-eye';eye.geometry=content?contentEye:style==='eyes-star'?starEye:style==='eyes-heart'?heartEye:style==='eyes-flat'?flatEye:closed?closedEye:roundEye;eye.material=style==='eyes-heart'&&!content?heartEyeMaterial:goofy?eyeWhite:eyeMat;
    const scale=closed?[1,1,1]:goofy?[.108,.117,.052]:style==='eyes-round'||style==='eyes-wink'?[.077,.077,.046]:[.068,.094,.046];
-   eye.scale.set(...scale);eye.rotation.z=style==='eyes-sleepy'?side*.12:0;eye.position.y=goofy?.085:.075;
+   eye.scale.set(...scale);eye.rotation.z=style==='eyes-sleepy'&&!content?side*.12:0;eye.position.y=goofy?.085:.075;
    const pupil=eye.children[0];pupil.visible=!closed;pupil.material=goofy?eyeMat:eyeWhite;pupil.position.set(goofy?(i?.22:-.27):-.25,goofy?(i?.13:-.12):.32,.94);pupil.scale.set(goofy?.34:.16,goofy?.37:.12,goofy?.15:.1);
    return {scale,closed};
   });
  }
- // All ear concepts reuse one mesh; only the selected, softly bevelled geometry reaches the GPU.
- const earInner=new THREE.MeshPhysicalMaterial({color:'#e9b7c6',roughness:1,sheen:1,sheenColor:'#ffe4eb',sheenRoughness:.9});
+ // Rolled velvet rims and inset charcoal cups stay black independently of body fur.
+ const earVelvet=new THREE.MeshPhysicalMaterial({color:'#17181e',roughness:.94,metalness:0,sheen:.7,sheenColor:'#52535c',sheenRoughness:.82}),earInner=new THREE.MeshPhysicalMaterial({color:'#35363e',roughness:1,metalness:0,sheen:.5,sheenColor:'#696972',sheenRoughness:1});
+ function paddedEar(outline,center,depth,bend){
+  const contour=outline.getSpacedPoints(64),radii=[.16,.32,.46,.58,.64,.72,.84,.94,1],positions=[],uv=[],indices=[],geometry=new THREE.BufferGeometry(),faces=[];
+  function vertex(x,y,z,u,v){const p=bend?bend(x,y,z):[x,y,z];positions.push(...p);uv.push(u,v);return positions.length/3-1;}
+  for(const front of [true,false]){
+   const start=vertex(center[0],center[1],depth*(front?.725:-.74),.5,.5),rings=[];
+   for(const radius of radii){const ring=[];for(let i=0;i<64;i++){const point=contour[i],x=center[0]+(point.x-center[0])*radius,y=center[1]+(point.y-center[1])*radius,bulge=Math.sqrt(1-radius*radius),z=depth*(front?.7*bulge+.45*Math.exp(-(((radius-.75)/.16)**2))+.025:-.7*bulge-.04);ring.push(vertex(x,y,z,.5+(i/64-.5)*radius,radius));}rings.push(ring);}
+   let begin=indices.length;for(let i=0;i<64;i++){const next=(i+1)%64;front?indices.push(start,rings[0][i],rings[0][next]):indices.push(start,rings[0][next],rings[0][i]);}geometry.addGroup(begin,indices.length-begin,front?1:0);
+   for(let row=1;row<rings.length;row++){begin=indices.length;const inner=rings[row-1],outer=rings[row];for(let i=0;i<64;i++){const next=(i+1)%64;front?indices.push(inner[i],outer[i],outer[next],inner[i],outer[next],inner[next]):indices.push(inner[i],outer[next],outer[i],inner[i],inner[next],outer[next]);}geometry.addGroup(begin,indices.length-begin,front&&radii[row]<=.58?1:0);}
+   faces.push(rings.at(-1));
+  }
+  const seam=indices.length;for(let i=0;i<64;i++){const next=(i+1)%64;indices.push(faces[0][i],faces[1][i],faces[1][next],faces[0][i],faces[1][next],faces[0][next]);}geometry.addGroup(seam,indices.length-seam,0);
+  geometry.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geometry.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geometry.setIndex(indices);geometry.computeVertexNormals();return geometry;
+ }
  function earGeometry(kind){
   const pieces=[],transform=new THREE.Object3D();
-  function part(geometry,position,scale=[1,1,1],angle=0,material=0){transform.position.set(...position);transform.scale.set(...scale);transform.rotation.set(0,0,angle);transform.updateMatrix();geometry.applyMatrix4(transform.matrix);pieces.push({geometry,material});}
-  const points=[];for(let i=0;i<=24;i++){const a=i/24*Math.PI;points.push(new THREE.Vector3(Math.cos(a)*.66,.35+Math.sin(a)*.44,-.025));}
-  part(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),28,.043,8,false),[0,0,0]);
+  function part(geometry,position,scale=[1,1,1],angle=0){transform.position.set(...position);transform.scale.set(...scale);transform.rotation.set(0,0,angle);transform.updateMatrix();geometry.applyMatrix4(transform.matrix);pieces.push(geometry);}
+  const points=[];for(let i=0;i<=32;i++){const a=i/32*Math.PI;points.push(new THREE.Vector3(Math.cos(a)*.67,.24+Math.sin(a)*.555,-.035));}
+  part(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),36,.038,10,false),[0,0,0]);
   for(const side of [-1,1]){
+   part(new THREE.SphereGeometry(1,18,12),[side*.668,.248,-.035],[.045,.068,.05]);
+   const outline=new THREE.Shape();
    if(kind==='bunny-ears'){
-    const outer=new THREE.SphereGeometry(1,24,20),v=outer.attributes.position;
-    for(let i=0;i<v.count;i++){const t=v.getY(i),bend=Math.max(0,t);v.setXYZ(i,v.getX(i)*.168+side*(t*.042+bend*bend*.055),t*.46-(side>0?bend**3*.095:0),v.getZ(i)*.105+(side>0?bend**3*.075:0));}outer.computeVertexNormals();part(outer,[side*.32,1.12,-.03]);
-    part(new THREE.SphereGeometry(1,24,18),[side*.323,1.12,.066],[.094,.335,.024],-side*.1,1);
+    outline.moveTo(0,0);outline.bezierCurveTo(.13,-.015,.185,.09,.18,.27);outline.bezierCurveTo(.17,.56,.105,.89,.015,.945);outline.bezierCurveTo(-.075,.99,-.165,.67,-.18,.32);outline.bezierCurveTo(-.19,.1,-.13,0,0,0);
+    const curl=(x,y,z)=>{const t=Math.max(0,(y-.62)/.325);return [x+side*y*y*.026,y-(side>0?.115*t*t:0),z+(side>0?.14*t*t:0)];};
+    part(paddedEar(outline,[0,.43],.145,curl),[side*.31,.71,-.045],[1,1,1],-side*.095);
+    part(new THREE.SphereGeometry(1,20,14),[side*.31,.727,-.03],[.155,.072,.107]);
    }else if(kind==='cat-ears'){
-    const outline=new THREE.Shape();outline.moveTo(-.18,0);outline.quadraticCurveTo(-.21,.1,-.14,.27);outline.lineTo(-.055,.47);outline.quadraticCurveTo(0,.56,.055,.47);outline.lineTo(.17,.23);outline.quadraticCurveTo(.22,.06,.18,0);outline.quadraticCurveTo(0,-.045,-.18,0);
-    part(new THREE.ExtrudeGeometry(outline,{depth:.09,bevelEnabled:true,bevelSize:.045,bevelThickness:.045,bevelSegments:4,curveSegments:12}),[side*.4,.62,-.07],[1,1,1],-side*.18);
-    part(new THREE.ExtrudeGeometry(outline,{depth:.018,bevelEnabled:true,bevelSize:.022,bevelThickness:.014,bevelSegments:3,curveSegments:12}),[side*.41,.7,.084],[.58,.65,1],-side*.18,1);
+    outline.moveTo(-.25,.035);outline.quadraticCurveTo(0,-.045,.25,.035);outline.quadraticCurveTo(.29,.12,.205,.27);outline.lineTo(.065,.505);outline.quadraticCurveTo(0,.586,-.065,.505);outline.lineTo(-.215,.27);outline.quadraticCurveTo(-.285,.12,-.25,.035);
+    part(paddedEar(outline,[0,.215],.165,(x,y,z)=>[x,y,z+y*y*.045]),[side*.43,.64,-.055],[1,1,1],-side*.19);
+    part(new THREE.SphereGeometry(1,20,14),[side*.438,.67,-.015],[.205,.075,.105],-side*.12);
    }else{
-    part(new THREE.SphereGeometry(1,24,18),[side*.48,.79,-.015],[.235,.24,.13],-side*.18);
-    part(new THREE.SphereGeometry(1,24,18),[side*.488,.8,.105],[.137,.146,.033],-side*.18,1);
+    outline.absellipse(0,.215,.225,.228,0,Math.PI*2,false);
+    part(paddedEar(outline,[0,.215],.155),[side*.49,.63,-.045],[1,1,1],-side*.18);
+    part(new THREE.SphereGeometry(1,20,14),[side*.49,.68,-.02],[.162,.065,.1]);
    }
   }
   const arrays={position:[],normal:[],uv:[]},merged=new THREE.BufferGeometry();let offset=0;
-  for(const {geometry,material}of pieces){const g=geometry.index?geometry.toNonIndexed():geometry;for(const name in arrays)arrays[name].push(...g.attributes[name].array);merged.addGroup(offset,g.attributes.position.count,material);offset+=g.attributes.position.count;if(g!==geometry)g.dispose();geometry.dispose();}
-  for(const [name,values]of Object.entries(arrays))merged.setAttribute(name,new THREE.Float32BufferAttribute(values,name==='uv'?2:3));merged.computeBoundingSphere();return merged;
+  // Consolidate each material into one draw group, including every padded attachment.
+  for(const material of [0,1]){const begin=offset;for(const geometry of pieces){const g=geometry.index?geometry.toNonIndexed():geometry,groups=g.groups.length?g.groups:[{start:0,count:g.attributes.position.count,materialIndex:0}];for(const section of groups){if(section.materialIndex!==material)continue;for(const name in arrays){const attribute=g.attributes[name],size=attribute.itemSize;arrays[name].push(...attribute.array.slice(section.start*size,(section.start+section.count)*size));}offset+=section.count;}if(g!==geometry)g.dispose();}merged.addGroup(begin,offset-begin,material);}
+  pieces.forEach(geometry=>geometry.dispose());for(const [name,values]of Object.entries(arrays))merged.setAttribute(name,new THREE.Float32BufferAttribute(values,name==='uv'?2:3));merged.computeBoundingBox();merged.computeBoundingSphere();return merged;
  }
- const earShapes=Object.fromEntries(['bunny-ears','cat-ears','bear-ears'].map(kind=>[kind,earGeometry(kind)])),headband=new THREE.Mesh(earShapes['bunny-ears'],[velvet,earInner]);headband.name='plush-ear-headband';headband.castShadow=true;headband.visible=false;shape.add(headband);
+ const earShapes=Object.fromEntries(['bunny-ears','cat-ears','bear-ears'].map(kind=>[kind,earGeometry(kind)])),headband=new THREE.Mesh(earShapes['bunny-ears'],[earVelvet,earInner]);headband.name='plush-ear-headband';headband.castShadow=true;headband.visible=false;shape.add(headband);
+ // A small curved smile and rounded blush sit above the fur, without rectangular face decals.
+ function facialGeometry(mouth){
+  const parts=[mouth];for(const side of [-1,1])parts.push(new THREE.SphereGeometry(1,20,12).scale(.061,.022,.008).translate(side*.31,-.048,.661));
+  const geometry=new THREE.BufferGeometry(),arrays={position:[],normal:[],uv:[]};let vertices=0,smileCount=0;
+  parts.forEach((part,index)=>{const source=part.toNonIndexed();for(const name in arrays)arrays[name].push(...source.attributes[name].array);vertices+=source.attributes.position.count;if(!index)smileCount=vertices;source.dispose();part.dispose();});
+  for(const [name,values]of Object.entries(arrays))geometry.setAttribute(name,new THREE.Float32BufferAttribute(values,name==='uv'?2:3));geometry.addGroup(0,smileCount,0);geometry.addGroup(smileCount,vertices-smileCount,1);return geometry;
+ }
+ const smileCurve=new THREE.CatmullRomCurve3([new THREE.Vector3(-.041,-.115,.723),new THREE.Vector3(0,-.13,.727),new THREE.Vector3(.041,-.115,.723)]),reactionGeometry=facialGeometry(new THREE.TubeGeometry(smileCurve,16,.0075,8,false)),pursedGeometry=facialGeometry(new THREE.TorusGeometry(.018,.006,8,24).translate(0,-.115,.73));
+ const reactions=new THREE.Mesh(reactionGeometry,[eyeMat,new THREE.MeshStandardMaterial({color:'#d9a2aa',roughness:1,transparent:true,opacity:.5,depthWrite:false})]);reactions.name='content-cheeks-smile';reactions.visible=false;shape.add(reactions);
  const glasses=new THREE.Group();glasses.name='sunglasses';shape.add(glasses);
  const frameMat=new THREE.MeshStandardMaterial({color:'#17151f',roughness:.3,metalness:.15}),lensMat=new THREE.MeshPhysicalMaterial({color:'#172333',roughness:.14,metalness:.4,clearcoat:1});
  for(const side of [-1,1]){
@@ -113,6 +144,9 @@ export function createCompanion({detail='full'}={}){
  const accents=new THREE.Group();shape.add(accents);
  const pin=new THREE.Shape();for(let i=0;i<10;i++){const a=i*Math.PI/5+Math.PI/2,r=i%2?.075:.16;i?pin.lineTo(Math.cos(a)*r,Math.sin(a)*r):pin.moveTo(Math.cos(a)*r,Math.sin(a)*r);}pin.closePath();const brooch=new THREE.Mesh(new THREE.ExtrudeGeometry(pin,{depth:.025,bevelEnabled:true,bevelSize:.012,bevelThickness:.012,bevelSegments:3}),new THREE.MeshStandardMaterial({color:'#c5a578',metalness:.65,roughness:.3}));brooch.position.set(.43,.47,.4);brooch.rotation.z=-.2;accents.add(brooch);brooch.visible=false;
  const ribbon=new THREE.Group();ribbon.position.set(-.4,.5,.35);ribbon.rotation.z=.2;accents.add(ribbon);const satin=new THREE.MeshPhysicalMaterial({color:'#9684b2',roughness:.7,sheen:1});for(const side of [-1,1]){const loop=orb(satin,side*.11,0,0,.13,.085,.045,ribbon);loop.rotation.z=side*.35;}orb(satin,0,0,.035,.045,.06,.04,ribbon);ribbon.visible=false;
+ function mergeAccessory(parts){const arrays={position:[],normal:[],uv:[]},geometry=new THREE.BufferGeometry();for(const part of parts){const g=part.index?part.toNonIndexed():part;for(const name in arrays)arrays[name].push(...g.attributes[name].array);if(g!==part)g.dispose();part.dispose();}for(const [name,values]of Object.entries(arrays))geometry.setAttribute(name,new THREE.Float32BufferAttribute(values,name==='uv'?2:3));return geometry;}
+ const scarfRing=new THREE.TorusGeometry(.65,.073,10,64);scarfRing.rotateX(Math.PI/2);scarfRing.translate(0,-.37,0);const scarf=new THREE.Mesh(mergeAccessory([scarfRing,new THREE.CapsuleGeometry(.062,.3,6,12).rotateZ(.12).translate(-.24,-.59,.55),new THREE.CapsuleGeometry(.057,.2,6,12).rotateZ(-.18).translate(-.1,-.55,.61)]),satin);scarf.name='winter-scarf';shape.add(scarf);scarf.visible=false;
+ const muffCurve=new THREE.CatmullRomCurve3(Array.from({length:33},(_,i)=>{const a=i/32*Math.PI;return new THREE.Vector3(Math.cos(a)*.76,.18+Math.sin(a)*.66,-.05);})),earmuffs=new THREE.Mesh(mergeAccessory([new THREE.TubeGeometry(muffCurve,32,.035,8,false),...[-1,1].map(side=>new THREE.SphereGeometry(1,24,16).scale(.14,.21,.18).translate(side*.73,.18,-.05))]),earVelvet);earmuffs.name='winter-earmuffs';shape.add(earmuffs);earmuffs.visible=false;
  const santa=new THREE.Group();santa.name='santa-hat';santa.position.set(0,.62,0);shape.add(santa);
  const red=new THREE.MeshStandardMaterial({color:'#a5444b',roughness:.95}),white=new THREE.MeshStandardMaterial({color:'#f7f2e9',roughness:1});
  const hp=[],hi=[],rings=14,slices=32;
@@ -130,19 +164,44 @@ export function createCompanion({detail='full'}={}){
  for(const side of [-1,1]){const binding=new THREE.Mesh(new THREE.BoxGeometry(.23,.1,.34),frameMat);binding.position.set(side*.27,-.79,.12);board.add(binding);}
  const sled=new THREE.Group();sled.name='sled-equipment';shape.add(sled);const wood=new THREE.MeshStandardMaterial({color:'#ad815c',roughness:.85});for(let i=0;i<5;i++){const slat=new THREE.Mesh(new THREE.BoxGeometry(.8,.055,.18),wood);slat.position.set(0,-.88,-.36+i*.2);sled.add(slat);}for(const side of [-1,1]){const runner=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(side*.4,-1.02,-.65),new THREE.Vector3(side*.4,-1.02,.55),new THREE.Vector3(side*.4,-.8,.77)]),14,.035,6,false),skiMat);sled.add(runner);}
  const bathTowel=new THREE.Group();bathTowel.name='bath-towel';shape.add(bathTowel);
- const towelMat=new THREE.MeshStandardMaterial({color:'#f0e3cd',roughness:1});
- orb(towelMat,0,.67,0,.44,.075,.32,bathTowel);for(const side of [-1,1]){const roll=new THREE.Mesh(new THREE.TorusGeometry(.12,.055,6,14),towelMat);roll.position.set(side*.37,.72,.03);roll.rotation.y=side*.45;bathTowel.add(roll);}
- const teaCup=new THREE.Group();teaCup.name='tea-cup';shape.add(teaCup);const cup=new THREE.Mesh(new THREE.CylinderGeometry(.14,.12,.19,16),towelMat);teaCup.add(cup);const tea=new THREE.Mesh(new THREE.CircleGeometry(.115,16),new THREE.MeshBasicMaterial({color:'#976e42'}));tea.rotation.x=-Math.PI/2;tea.position.y=.096;teaCup.add(tea);bathTowel.visible=teaCup.visible=false;
+ const towelMat=new THREE.MeshStandardMaterial({color:'#f0e3cd',roughness:1}),towelSeam=new THREE.MeshStandardMaterial({color:'#c5b8a3',roughness:1}),towelParts=[];
+ const foldedBand=new THREE.CapsuleGeometry(.12,.6,6,20);foldedBand.rotateZ(Math.PI/2);foldedBand.scale(1,.55,2);foldedBand.translate(0,.72,.025);towelParts.push({geometry:foldedBand,material:0});
+ for(const side of [-1,1]){
+  const profile=[[0,-.14],[.13,-.14],[.18,-.1],[.187,0],[.18,.1],[.155,.135],[0,.135]].map(([x,y])=>new THREE.Vector2(x,y)),roll=new THREE.LatheGeometry(profile,32);roll.rotateX(Math.PI/2);roll.translate(side*.48,.785,.035);towelParts.push({geometry:roll,material:0});
+  const spiral=[];for(let i=0;i<=80;i++){const t=i/80,a=t*Math.PI*4.7,r=.018+t*.145;spiral.push(new THREE.Vector3(side*.48+Math.cos(a)*r,.785+Math.sin(a)*r,.174));}towelParts.push({geometry:new THREE.TubeGeometry(new THREE.CatmullRomCurve3(spiral),80,.006,5,false),material:1});
+ }
+ const fold=[new THREE.Vector3(-.32,.7,.265),new THREE.Vector3(0,.699,.27),new THREE.Vector3(.32,.7,.265)];towelParts.push({geometry:new THREE.TubeGeometry(new THREE.CatmullRomCurve3(fold),20,.005,5,false),material:1});
+ const towelGeometry=new THREE.BufferGeometry(),towelArrays={position:[],normal:[],uv:[]};let towelVertices=0;
+ for(const material of [0,1]){const start=towelVertices;for(const part of towelParts){if(part.material!==material)continue;const source=part.geometry.toNonIndexed();for(const name in towelArrays)towelArrays[name].push(...source.attributes[name].array);towelVertices+=source.attributes.position.count;source.dispose();part.geometry.dispose();}towelGeometry.addGroup(start,towelVertices-start,material);}
+ for(const [name,values]of Object.entries(towelArrays))towelGeometry.setAttribute(name,new THREE.Float32BufferAttribute(values,name==='uv'?2:3));const rolledTowel=new THREE.Mesh(towelGeometry,[towelMat,towelSeam]);rolledTowel.name='rolled-sheep-towel';bathTowel.add(rolledTowel);
+ const bubbleWand=new THREE.Group();bubbleWand.name='bubble-wand';shape.add(bubbleWand);const wandHandle=new THREE.CylinderGeometry(.017,.022,.26,12).translate(0,-.085,0),wandLoop=new THREE.TorusGeometry(.071,.012,8,32).translate(0,.12,0),wandGeometry=new THREE.BufferGeometry(),wandArrays={position:[],normal:[],uv:[]};for(const part of [wandHandle,wandLoop]){const source=part.toNonIndexed();for(const name in wandArrays)wandArrays[name].push(...source.attributes[name].array);source.dispose();part.dispose();}for(const [name,values]of Object.entries(wandArrays))wandGeometry.setAttribute(name,new THREE.Float32BufferAttribute(values,name==='uv'?2:3));bubbleWand.add(new THREE.Mesh(wandGeometry,new THREE.MeshStandardMaterial({color:'#c7b5d9',metalness:.25,roughness:.4})));bubbleWand.visible=false;
+ const teaCup=new THREE.Group();teaCup.name='tea-cup';shape.add(teaCup);const cupProfile=[[0,-.095],[.115,-.095],[.132,-.075],[.145,.075],[.14,.095],[.123,.095],[.116,-.066],[0,-.066]].map(([x,y])=>new THREE.Vector2(x,y)),cupShell=new THREE.LatheGeometry(cupProfile,32),cupHandle=new THREE.TorusGeometry(.08,.022,8,24).translate(.15,0,0),cupGeometry=new THREE.BufferGeometry();for(const name of ['position','normal','uv']){const values=[];for(const part of [cupShell,cupHandle]){const source=part.toNonIndexed();values.push(...source.attributes[name].array);source.dispose();}cupGeometry.setAttribute(name,new THREE.Float32BufferAttribute(values,name==='uv'?2:3));}cupShell.dispose();cupHandle.dispose();const cupMaterial=new THREE.MeshStandardMaterial({color:'#f0e3cd',roughness:.38}),cup=new THREE.Mesh(cupGeometry,cupMaterial);teaCup.add(cup);const tea=new THREE.Mesh(new THREE.CircleGeometry(.115,16),new THREE.MeshBasicMaterial({color:'#976e42'}));tea.rotation.x=-Math.PI/2;tea.position.y=.069;teaCup.add(tea);bathTowel.visible=teaCup.visible=false;
+ const skewerWood=new THREE.MeshStandardMaterial({color:'#b38b60',roughness:.9}),skewerFood=new THREE.MeshStandardMaterial({color:'#fff7e9',roughness:.78});
+ function skewerGeometry(kind){
+  let stick=new THREE.CylinderGeometry(.009,.011,.55,10).translate(0,-.05,0);let food;
+  if(kind==='odeng'){const ribbon=new THREE.Shape();for(let i=0;i<=48;i++){const t=i/48,x=.072*Math.sin(t*Math.PI*4)-.059,y=.05+t*.29;i?ribbon.lineTo(x,y):ribbon.moveTo(x,y);}for(let i=48;i>=0;i--){const t=i/48;ribbon.lineTo(.072*Math.sin(t*Math.PI*4)+.059,.05+t*.29);}ribbon.closePath();food=new THREE.ExtrudeGeometry(ribbon,{depth:.055,bevelEnabled:true,bevelSize:.009,bevelThickness:.009,bevelSegments:3,curveSegments:12});food.translate(0,0,-.028);}
+  else if(kind==='icecream'){stick.dispose();stick=new THREE.CylinderGeometry(.1,0,.29,20).translate(0,-.07,0);food=mergeAccessory([new THREE.SphereGeometry(.135,24,16).translate(0,.15,0),new THREE.TorusGeometry(.09,.025,8,24).rotateX(Math.PI/2).translate(0,.075,0)]);}
+  else if(kind==='balloon'){stick.dispose();stick=new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(0,-.17,0),new THREE.Vector3(.03,.4,0),new THREE.Vector3(-.045,1.08,0)]),24,.005,5,false);food=mergeAccessory([new THREE.SphereGeometry(1,28,20).scale(.25,.31,.25).translate(-.045,1.38,0),new THREE.ConeGeometry(.035,.07,8).translate(-.045,1.05,0)]);}
+  else{const profile=[[0,-.11],[.083,-.11],[.108,-.096],[.115,-.068],[.115,.068],[.108,.096],[.083,.11],[0,.11]].map(([x,y])=>new THREE.Vector2(x,y));food=new THREE.LatheGeometry(profile,28);food.translate(0,.23,0);}
+  const geometry=new THREE.BufferGeometry(),arrays={position:[],normal:[],uv:[]};let offset=0;[stick,food].forEach((part,material)=>{const source=part.index?part.toNonIndexed():part;for(const name in arrays)arrays[name].push(...source.attributes[name].array);geometry.addGroup(offset,source.attributes.position.count,material);offset+=source.attributes.position.count;if(source!==part)source.dispose();part.dispose();});for(const [name,values]of Object.entries(arrays))geometry.setAttribute(name,new THREE.Float32BufferAttribute(values,name==='uv'?2:3));return geometry;
+ }
+ const skewerShapes={odeng:skewerGeometry('odeng'),marshmallow:skewerGeometry('marshmallow'),balloon:skewerGeometry('balloon'),icecream:skewerGeometry('icecream')},heldSkewer=new THREE.Group();heldSkewer.name='held-skewer';shape.add(heldSkewer);const skewerMesh=new THREE.Mesh(skewerShapes.marshmallow,[skewerWood,skewerFood]);skewerMesh.castShadow=true;heldSkewer.add(skewerMesh);heldSkewer.visible=false;
+ const toastWhite=new THREE.Color('#fff7e9'),toastTan=new THREE.Color('#d8a06a'),toastBrown=new THREE.Color('#8e4c28');let currentHeldItem='',lastRoast=-1,lastGesture='',gestureStartedAt=0;
  const arms=new THREE.InstancedMesh(new THREE.CapsuleGeometry(.105,.22,5,12),velvet,2);arms.name='plush-arms';arms.frustumCulled=false;arms.castShadow=true;arms.instanceMatrix.setUsage(THREE.DynamicDrawUsage);shape.add(arms);
  const armStart=new THREE.Vector3(),armEnd=new THREE.Vector3(),armDirection=new THREE.Vector3(),inverseShape=new THREE.Matrix4(),stanceMatrix=new THREE.Matrix4(),partMatrix=new THREE.Matrix4(),partPosition=new THREE.Vector3(),partRotation=new THREE.Quaternion(),partScale=new THREE.Vector3(.18,.12,.25),yAxis=new THREE.Vector3(0,1,0);
  function armPose(index,hand,shoulderY=-.12){const side=index?1:-1;armStart.set(side*.59,shoulderY,.08);armEnd.set(...hand);armDirection.copy(armEnd).sub(armStart);const length=armDirection.length();dummy.position.copy(armStart).add(armEnd).multiplyScalar(.5);dummy.quaternion.setFromUnitVectors(up,armDirection.normalize());dummy.scale.set(1,length/.43,1);dummy.updateMatrix();arms.setMatrixAt(index,dummy.matrix);}
  function stancePose(object,target){object.matrixAutoUpdate=false;object.matrix.copy(inverseShape).multiply(target);object.matrix.decompose(object.position,object.quaternion,object.scale);object.matrixWorldNeedsUpdate=true;}
  let appearanceItems=[],relaxing=false;
  let wardrobeGear='none',equipped='none';function equip(kind=wardrobeGear){equipped=kind;skis.visible=kind==='ski';board.visible=kind==='board';sled.visible=kind==='sled';boots.forEach(b=>b.visible=kind==='ski'||kind==='board');}equip();
- let roundness=0;
- function customize(o){const items=selectedItems(normalizeWardrobe(o.accessory));appearanceItems=items;wardrobeGear=items.includes('board')?'board':items.includes('ski')?'ski':'none';equip();goggles.visible=items.includes('goggles');velvet.color.set(o.fur||'#f4eee5');fibreMaterial.color.copy(velvet.color);groom(o.fluff??100);glasses.visible=items.includes('sunglasses');roundness=((o.roundness??50)-50)/500;shape.scale.set(1+roundness,1-roundness*.5,1);brooch.visible=items.includes('star');ribbon.visible=items.includes('ribbon');santa.visible=items.includes('santa');helmet.visible=items.includes('helmet');const ears=items.find(item=>earShapes[item]);headband.visible=!!ears;headband.userData.kind=ears||'';if(ears)headband.geometry=earShapes[ears];styleEyes(items.find(item=>item.startsWith('eyes-')));}
- function pose({phase=0,walking=false,time=0,landing=0,still=false,look=0,mode='',lean=0,tilt=0,speed=0,brake=false,gesture=''}={}){
-  group.rotation.order='YXZ';const spa=['bath','sauna','lie','tea'].includes(mode),snack=gesture==='snack'&&mode!=='ski'&&mode!=='lift',warming=gesture==='warm'&&mode!=='ski'&&mode!=='lift';if(spa!==relaxing){relaxing=spa;equip(spa?'none':wardrobeGear);}bathTowel.visible=spa;teaCup.visible=mode==='tea'||snack;santa.visible=!spa&&appearanceItems.includes('santa');helmet.visible=!spa&&appearanceItems.includes('helmet');headband.visible=!spa&&!!headband.userData.kind;goggles.visible=!spa&&appearanceItems.includes('goggles');glasses.visible=!spa&&appearanceItems.includes('sunglasses');group.rotation.x=mode==='lie'?-Math.PI/2:mode==='ski'?tilt:0;
+ let roundness=0,nameHeight=.9;
+ function customize(o){const items=selectedItems(normalizeWardrobe(o.accessory));appearanceItems=items;wardrobeGear=items.includes('board')?'board':items.includes('ski')?'ski':'none';equip();goggles.visible=items.includes('goggles');velvet.color.set(o.fur||'#f4eee5');fibreMaterial.color.copy(velvet.color);groom(o.fluff??100);glasses.visible=items.includes('sunglasses');roundness=((o.roundness??50)-50)/500;shape.scale.set(1+roundness,1-roundness*.5,1);brooch.visible=items.includes('star');ribbon.visible=items.includes('ribbon');santa.visible=items.includes('santa');helmet.visible=items.includes('helmet');const ears=items.find(item=>earShapes[item]);headband.visible=!!ears;headband.userData.kind=ears||'';if(ears)headband.geometry=earShapes[ears];selectedEyeStyle=items.find(item=>item.startsWith('eyes-'))||'';styleEyes(selectedEyeStyle);const headTop=ears?Math.max(.8,headband.geometry.boundingBox.max.y):items.includes('santa')?1.15:items.includes('helmet')?.97:items.includes('earmuffs')?.94:.8,headScale=1-roundness*.5;nameHeight=headTop*headScale+.86*(headScale-1)+.1;}
+ function pose({phase=0,walking=false,time=0,landing=0,still=false,look=0,mode='',lean=0,tilt=0,speed=0,brake=false,gesture='',heldItem,roast=0}={}){
+  heldItem=heldItem??(['ski','lift','bath','sauna','lie','tea'].includes(mode)?'':appearanceItems.find(v=>['coffee','cocoa','odeng','marshmallow','bubble-wand','balloon','icecream'].includes(v))||'');
+  if(heldItem==='bubble-wand'&&!gesture)gesture='bubble';
+  group.rotation.order='YXZ';const spa=['bath','sauna','lie','tea'].includes(mode),snack=gesture==='snack'&&mode!=='ski'&&mode!=='lift',warming=gesture==='warm'&&mode!=='ski'&&mode!=='lift',bubbling=gesture==='bubble'&&!spa&&mode!=='ski'&&mode!=='lift',waving=gesture==='wave'&&!spa&&mode!=='ski'&&mode!=='lift';if(spa!==relaxing){relaxing=spa;equip(spa?'none':wardrobeGear);}bathTowel.visible=spa;teaCup.visible=mode==='tea'||snack||['coffee','cocoa'].includes(heldItem);cupMaterial.color.set(heldItem==='coffee'?'#b7b0cd':heldItem==='cocoa'?'#ac857b':'#f0e3cd');tea.material.color.set(heldItem==='coffee'?'#4f3028':heldItem==='cocoa'?'#6c3b2a':'#976e42');santa.visible=!spa&&appearanceItems.includes('santa');helmet.visible=!spa&&appearanceItems.includes('helmet');headband.visible=!spa&&!!headband.userData.kind;scarf.visible=!spa&&appearanceItems.includes('scarf');earmuffs.visible=!spa&&appearanceItems.includes('earmuffs');goggles.visible=!spa&&appearanceItems.includes('goggles');glasses.visible=!spa&&appearanceItems.includes('sunglasses');group.rotation.x=mode==='lie'?-Math.PI/2:mode==='ski'?tilt:0;
+  if(gesture!==lastGesture){lastGesture=gesture;gestureStartedAt=time;}const gestureTime=Math.max(0,time-gestureStartedAt),carrying=!!skewerShapes[heldItem]&&mode!=='ski'&&mode!=='lift';heldSkewer.visible=carrying;
+  if(carrying){if(currentHeldItem!==heldItem){currentHeldItem=heldItem;skewerMesh.geometry=skewerShapes[heldItem];lastRoast=-1;}const cooked=THREE.MathUtils.clamp(roast,0,1);if(cooked!==lastRoast){lastRoast=cooked;skewerWood.color.set(heldItem==='balloon'?'#e1d7c8':'#b38b60');skewerFood.roughness=heldItem==='balloon'?.28:.78;if(heldItem==='balloon')skewerFood.color.set('#d9a0ce');else if(heldItem==='icecream')skewerFood.color.set('#f1d8c5');else if(heldItem==='odeng')skewerFood.color.set('#dcb079');else skewerFood.color.copy(cooked<.5?toastWhite:toastTan).lerp(cooked<.5?toastTan:toastBrown,cooked<.5?cooked*2:(cooked-.5)*2);}}
+  let sipProgress=0,blowProgress=0,eatProgress=0;bubbleWand.visible=bubbling&&!carrying;if(carrying)teaCup.visible=false;
   const swing=walking&&!still?Math.sin(phase):0;
   group.rotation.z=mode==='ski'?lean*.2:still?0:-swing*.065;
   const bounce=still?0:walking?Math.sin(phase*2)*.035:Math.sin(time*2.2)*.009;
@@ -174,12 +233,18 @@ export function createCompanion({detail='full'}={}){
    feet.forEach((f,i)=>{f.position.y=-.52;f.position.z=.58+(mode==='bath'?(i?1:-1)*stroke*swim*.07:0);});
    for(let i=0;i<2;i++){const side=i?1:-1;if(mode==='bath')armPose(i,[side*(.78+stroke*side*swim*.07),.025+breath*.008,.3+stroke*side*(.018+swim*.1)],-.025);else if(mode==='lie')armPose(i,[side*.63,-.38,.23]);else armPose(i,[side*.43,-.39+breath*.009,.48]);}
   }
-  if(mode==='tea'||snack){const sip=still?0:Math.pow(.5+.5*Math.sin(time*.72),6);teaCup.position.set(0,-.28+sip*.39,.74-sip*.025);teaCup.rotation.x=-sip*.24;shape.rotation.x+=sip*.025;for(let i=0;i<2;i++)armPose(i,[(i?1:-1)*.14,-.29+sip*.34,.72-sip*.025]);}
+  if(mode==='tea'||snack){const sip=still?0:Math.pow(.5+.5*Math.sin(time*.72),6);sipProgress=sip;teaCup.position.set(0,-.36+sip*.145,.88-sip*.04);teaCup.rotation.x=sip*.24;shape.rotation.x+=sip*.025;for(let i=0;i<2;i++)armPose(i,[(i?1:-1)*.14,-.36+sip*.145,.87-sip*.04]);}
+  if(['coffee','cocoa'].includes(heldItem)&&mode!=='tea'){const sip=gesture==='drink'?(still?.9:THREE.MathUtils.smoothstep(gestureTime,0,.6)*(1-THREE.MathUtils.smoothstep(gestureTime,2.1,2.8))):0;sipProgress=sip;teaCup.position.set(.46*(1-sip),-.4+sip*.185,.52+sip*.32);teaCup.rotation.x=sip*.24;armPose(1,[teaCup.position.x+.13,teaCup.position.y,teaCup.position.z]);}
   if(warming){const hover=still?0:Math.sin(time*1.35)*.02;shape.rotation.x+=.055;for(let i=0;i<2;i++)armPose(i,[(i?1:-1)*.28,-.08+hover,.77],-.08);}
-  if((snack||warming)&&!spa&&mode!=='ski'&&mode!=='lift'){shape.updateMatrix();inverseShape.copy(shape.matrix).invert();stanceMatrix.identity();stancePose(skis,stanceMatrix);stancePose(board,stanceMatrix);for(let i=0;i<2;i++){partPosition.set((i?1:-1)*.27,-.74,.14);partRotation.identity();partMatrix.compose(partPosition,partRotation,partScale);stancePose(feet[i],partMatrix);}}
+  if(bubbling&&!carrying){const cycle=time%5.2;blowProgress=still?.25:THREE.MathUtils.smoothstep(cycle,1,2.2)*(1-THREE.MathUtils.smoothstep(cycle,3.1,4.1));bubbleWand.position.set(.14,-.27+blowProgress*.06,.76);bubbleWand.rotation.set(0,-.12,0);armPose(1,[.16,-.31+blowProgress*.05,.75]);shape.rotation.x+=blowProgress*.025;}
+  if(waving){const wave=still?0:Math.sin(time*5.7);armPose(1,[.7+wave*.06,.3+(still?0:Math.sin(time*2.4)*.035),.25]);}
+  if(carrying){heldSkewer.rotation.set(0,0,-.09);heldSkewer.position.set(.35,-.38,.47);if(gesture==='eat'){eatProgress=still?.8:THREE.MathUtils.smoothstep(gestureTime,0,.7)*(1-THREE.MathUtils.smoothstep(gestureTime,2.4,3.1));heldSkewer.position.set(.35*(1-eatProgress),-.38+eatProgress*(heldItem==='icecream'?.12:.04),.47+eatProgress*.26);heldSkewer.rotation.z=-.09*(1-eatProgress);}else if(gesture==='roast'){heldSkewer.position.set(.2,-.14,.72);heldSkewer.rotation.set(Math.PI/2-.18,0,0);shape.rotation.x+=.055;}partPosition.set(0,-.17,0).applyEuler(heldSkewer.rotation).add(heldSkewer.position);armPose(1,[partPosition.x,partPosition.y,partPosition.z]);if(gesture==='roast')armPose(0,[partPosition.x-.12,partPosition.y-.015,partPosition.z-.02]);}
+  if((snack||warming||bubbling||waving||carrying)&&!walking&&!spa&&mode!=='ski'&&mode!=='lift'){shape.updateMatrix();inverseShape.copy(shape.matrix).invert();stanceMatrix.identity();stancePose(skis,stanceMatrix);stancePose(board,stanceMatrix);for(let i=0;i<2;i++){partPosition.set((i?1:-1)*.27,-.74,.14);partRotation.identity();partMatrix.compose(partPosition,partRotation,partScale);stancePose(feet[i],partMatrix);}}
   arms.instanceMatrix.needsUpdate=true;
-  const blink=mode==='lie'?.12:spa?.65:still?1:((time%5.7)>5.5?Math.max(.06,Math.abs((time%5.7)-5.6)*10):1);
+  const reaction=(mode==='bath'&&(still||time%9>1.1))||warming||waving||sipProgress>.6||eatProgress>.7?'content':'';if(activeEyeReaction!==reaction)styleEyes(selectedEyeStyle,reaction);reactions.visible=spa||snack||warming||bubbling||waving||eatProgress>.2||gesture==='roast';reactions.geometry=bubbling&&!carrying&&blowProgress>.3?pursedGeometry:reactionGeometry;
+  const interval=mode==='ski'?4.2:spa?7.8:5.7,cycle=time%interval,blinkGate=cycle>interval-.2?Math.max(.06,Math.abs(cycle-(interval-.1))*10):1;
+  const blink=mode==='lie'?.12:still?1:blinkGate*(mode==='ski'?.86:spa?.72+Math.sin(time*.6)*.035:1);
   eyes.forEach((e,i)=>{const profile=eyeProfiles[i];e.scale.y=profile.scale[1]*(profile.closed?1:blink);e.position.x=(i?1:-1)*.205+Math.max(-.025,Math.min(.025,look));});
  }
- customize({});return{group,eyes,feet,customize,pose,equip,get gear(){return wardrobeGear;},get winterReady(){return ['ski','board'].includes(equipped)&&boots.every(b=>b.visible);}};
+ customize({});return{group,eyes,feet,customize,pose,equip,get displayHeight(){return heldSkewer.visible&&currentHeldItem==='balloon'?Math.max(nameHeight,1.65):nameHeight;},get nameHeight(){return relaxing?1.08:nameHeight;},get gear(){return wardrobeGear;},get winterReady(){return ['ski','board'].includes(equipped)&&boots.every(b=>b.visible);}};
 }

@@ -10,12 +10,15 @@ appearance.accessory=normalizeWardrobe(appearance.accessory);
 delete appearance.sunglasses;
 window.labAppearance=appearance;
 window.addEventListener('lab:equip-winter',()=>{let items=selectedItems(appearance.accessory);if(!items.some(v=>['ski','board'].includes(v)))items.push('ski');if(!items.some(v=>['sunglasses','goggles'].includes(v)))items.push('goggles');if(!items.includes('helmet')){items=items.filter(v=>!['santa','bunny-ears','cat-ears','bear-ears'].includes(v));items.push('helmet');}appearance.accessory=normalizeWardrobe(items.join(','));update();});
+window.addEventListener('lab:unequip-winter',()=>{appearance.accessory=normalizeWardrobe(selectedItems(appearance.accessory).filter(v=>!['ski','board'].includes(v)).join(','));update();});
+window.addEventListener('lab:carry',e=>{appearance.accessory=normalizeWardrobe(selectedItems(appearance.accessory).filter(v=>!['coffee','cocoa','marshmallow','odeng','bubble-wand','balloon','icecream'].includes(v)).concat(e.detail||[]).join(','));update();});
 const studio=document.getElementById('studio'),tabs=[...studio.querySelectorAll('[data-studio]')];
 function update(){
   document.documentElement.style.setProperty('--light',appearance.light);
 
   document.getElementById('light-color').value=appearance.light;document.getElementById('light-level').value=appearance.brightness;document.getElementById('light-value').textContent=appearance.brightness+'%';document.getElementById('fur-length').value=appearance.fluff;document.getElementById('roundness').value=appearance.roundness;
   for(const key of ['light','fur','accessory'])studio.querySelectorAll('[data-'+key+']').forEach(b=>b.setAttribute('aria-pressed',key==='accessory'?(b.dataset[key]==='none'?appearance.accessory==='none':selectedItems(appearance.accessory).includes(b.dataset[key])):b.dataset[key]===appearance[key]));
+  const chosen=studio.querySelector('[data-light][aria-pressed=true]'),custom=studio.querySelector('.custom-color');custom.classList.toggle('selected',!chosen);custom.style.setProperty('--swatch',appearance.light);document.querySelector('#light-choice').textContent=chosen?chosen.getAttribute('aria-label'):'사용자 지정 · '+appearance.light.toUpperCase();
   studio.querySelector('[data-reset-eyes]')?.setAttribute('aria-pressed',!selectedItems(appearance.accessory).some(v=>v.startsWith('eyes-')));
   window.dispatchEvent(new CustomEvent('lab:appearance',{detail:{...appearance}}));
   try{localStorage.setItem('lab-appearance-v2',JSON.stringify(appearance));}catch{document.querySelector('.studio-saved').textContent='설정을 저장할 수 없습니다. 이 화면에서는 계속 적용됩니다.';}
@@ -30,17 +33,15 @@ studio.querySelector('[role=tablist]').addEventListener('keydown',e=>{if(!['Arro
 for(const [id,key] of [['light-color','light'],['light-level','brightness'],['fur-length','fluff'],['roundness','roundness']])document.getElementById(id).addEventListener('input',e=>{appearance[key]=key==='light'?e.target.value:Number(e.target.value);update();});
 
 const map=document.getElementById('island-map');
-const mapPositions={alpine:[50,8],science:[50,28],history:[15,42],law:[85,42],park:[50,51],art:[15,68],philosophy:[85,68],nature:[50,76],spa:[50,95],wish:[85,88]};
+const mapPositions={alpine:[50,10],park:[50,32],nature:[24,57],philosophy:[76,57],spa:[24,84],wish:[76,84]};
 const point=i=>({x:mapPositions[i.id][0],y:mapPositions[i.id][1]});
 map.innerHTML='<svg class="map-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'+bridges.map(([a,b])=>{const p=point(a),q=point(b);return `<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}"/>`;}).join('')+'</svg>'+islands.filter(i=>!i.hidden).map(i=>{const p=point(i);return `<button data-island="${i.id}" aria-label="${i.name} 이동" style="--island:${i.color};left:${p.x}%;top:${p.y}%"><span class="island-dot"></span><span>${i.name}<small>${i.subject}</small></span></button>`;}).join('');
-map.addEventListener('click',e=>{const b=e.target.closest('[data-island]');if(b&&window.travelToIsland){closeStudio();window.travelToIsland(b.dataset.island);}});
+const mapDestinations={alpine:'ski',philosophy:'quiz',spa:'onsen',wish:'tree'};
+map.addEventListener('click',e=>{const b=e.target.closest('[data-island]');if(!b)return;closeStudio();const destination=mapDestinations[b.dataset.island];if(destination)window.travelToPlace?.(destination);else window.travelToIsland?.(b.dataset.island);});
 window.addEventListener('lab:region',e=>map.querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',b.dataset.island===e.detail?'location':'false')));
 update();
 
 window.addEventListener('keydown',e=>{if(document.body.classList.contains('invite-gate')||e.code!=='KeyM'||e.repeat||e.metaKey||e.ctrlKey||e.altKey||e.target.closest?.('input,textarea,select,[contenteditable=true]')||document.querySelector('#learning').open)return;e.preventDefault();if(studio.open&&!document.querySelector('#pane-map').hidden)closeStudio();else openStudio('map');});
-function fillPlaces(){const box=document.querySelector('#winter-places');box.replaceChildren();for(const place of window.labWinter?.destinations||[]){const b=document.createElement('button');b.textContent=place.name;b.onclick=()=>{closeStudio();window.travelToPlace?.(place.id)};box.append(b);}}
-window.addEventListener('lab:winter-ready',fillPlaces);fillPlaces();
-
 studio.addEventListener('click',e=>{const tab=e.target.closest('[data-custom-tab]');if(tab){studio.querySelectorAll('[data-custom-tab]').forEach(b=>b.setAttribute('aria-pressed',b===tab));studio.querySelectorAll('[data-custom-panel]').forEach(p=>p.hidden=p.dataset.customPanel!==tab.dataset.customTab);}if(e.target.closest('[data-reset-eyes]')){appearance.accessory=normalizeWardrobe(selectedItems(appearance.accessory).filter(v=>!v.startsWith('eyes-')).join(','));update();}});
 
 studio.addEventListener('cancel',e=>{e.preventDefault();closeStudio();});

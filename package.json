@@ -5,7 +5,8 @@
     "test": "node --experimental-vm-modules --test tests/*.test.mjs",
     "build": "node scripts/build-worker.mjs",
     "dev": "node scripts/dev-server.mjs",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "build:vercel": "node scripts/build-vercel.mjs"
   },
   "devDependencies": {
     "jsdom": "26.1.0",

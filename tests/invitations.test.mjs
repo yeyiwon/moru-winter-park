@@ -16,6 +16,10 @@ test('only the bound owner creates password-protected invitations, with no clien
  assert.equal((await req('join',{room:'invented-room',name:'게스트',password:'test-pass'})).status,403);
  const joined=await req('join',{room,name:'게스트',password:'test-pass'});assert.equal(joined.status,200);assert.match(joined.headers.get('set-cookie'),/HttpOnly; SameSite=Lax; Secure/);const cookie=joined.headers.get('set-cookie').split(';')[0];
  assert.equal((await req('tree')).status,401);assert.equal((await req('tree?room=another-room',undefined,{cookie})).status,200);
+ for(const kind of ['ball','star','bell','bow','moon','icicle']){const added=await req('tree',{kind,color:'#d7b5f0',angle:.5,height:12},{cookie});assert.equal(added.status,200,kind);query({sql:'UPDATE tree_decorations SET created_at=0',args:[]});}
+ assert.equal((await req('tree',{kind:'unknown',color:'#d7b5f0',angle:0,height:12},{cookie})).status,400);
+ const decorated=await (await req('tree',undefined,{cookie})).json();assert.equal(decorated.decorations.length,6);
+ const deletion=await handleAPI(new Request('https://winter.test/api/tree',{method:'DELETE',headers:{Origin:'https://winter.test',cookie,'content-type':'application/json'},body:JSON.stringify({id:decorated.decorations[0].id})}),env);assert.equal(deletion.status,200);assert.equal((await (await req('tree',undefined,{cookie})).json()).decorations.length,5);
  const named=await req('name',{name:'새 닉네임'},{cookie});assert.deepEqual(await named.json(),{name:'새 닉네임'});
  assert.equal((await req('invite',{password:'test-pass'},{cookie})).status,403);
  for(let i=0;i<5;i++)await req('join',{room,name:'게스트',password:'wrong'});

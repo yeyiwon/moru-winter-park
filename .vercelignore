@@ -1,0 +1,8 @@
+node_modules
+.git
+.winter-build
+web-dist
+dist/server
+dist/.openai
+qa
+.env*
