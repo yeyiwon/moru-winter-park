@@ -11,7 +11,6 @@ delete appearance.sunglasses;
 window.labAppearance=appearance;
 window.addEventListener('lab:equip-winter',()=>{let items=selectedItems(appearance.accessory);if(!items.some(v=>['ski','board'].includes(v)))items.push('ski');if(!items.some(v=>['sunglasses','goggles'].includes(v)))items.push('goggles');if(!items.includes('helmet')){items=items.filter(v=>!['santa','bunny-ears','cat-ears','bear-ears'].includes(v));items.push('helmet');}appearance.accessory=normalizeWardrobe(items.join(','));update();});
 window.addEventListener('lab:unequip-winter',()=>{appearance.accessory=normalizeWardrobe(selectedItems(appearance.accessory).filter(v=>!['ski','board'].includes(v)).join(','));update();});
-window.addEventListener('lab:carry',e=>{appearance.accessory=normalizeWardrobe(selectedItems(appearance.accessory).filter(v=>!['coffee','cocoa','marshmallow','odeng','bubble-wand','balloon','icecream'].includes(v)).concat(e.detail||[]).join(','));update();});
 const studio=document.getElementById('studio'),tabs=[...studio.querySelectorAll('[data-studio]')];
 function update(){
   document.documentElement.style.setProperty('--light',appearance.light);

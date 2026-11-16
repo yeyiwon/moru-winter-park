@@ -40,7 +40,7 @@ export function createCompanion({detail='full'}={}){
  const roundEye=eyes[0].geometry,flatEye=new THREE.CapsuleGeometry(.014,.135,5,12);flatEye.rotateZ(Math.PI/2);
  const closedEye=new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(-.081,.016,0),new THREE.Vector3(0,-.012,.006),new THREE.Vector3(.081,.016,0)]),16,.013,8,false);
  const contentEye=new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(-.073,-.006,0),new THREE.Vector3(0,.023,.005),new THREE.Vector3(.073,-.006,0)]),16,.012,8,false);
- function symbolEye(kind){const outline=new THREE.Shape();if(kind==='heart'){outline.moveTo(0,-.085);outline.bezierCurveTo(-.17,0,-.09,.15,0,.065);outline.bezierCurveTo(.09,.15,.17,0,0,-.085);}else{for(let i=0;i<10;i++){const a=i*Math.PI/5+Math.PI/2,r=i%2?.043:.1;i?outline.lineTo(Math.cos(a)*r,Math.sin(a)*r):outline.moveTo(Math.cos(a)*r,Math.sin(a)*r);}outline.closePath();}return new THREE.ExtrudeGeometry(outline,{depth:.012,bevelEnabled:true,bevelSize:.005,bevelThickness:.004,bevelSegments:2});}
+ function symbolEye(kind){const outline=new THREE.Shape();if(kind==='heart'){outline.moveTo(0,-.085);outline.bezierCurveTo(-.17,0,-.09,.15,0,.065);outline.bezierCurveTo(.09,.15,.17,0,0,-.085);}else{for(let i=0;i<10;i++){const a=i*Math.PI/5+Math.PI/2,r=i%2?.043:.1;i?outline.lineTo(Math.cos(a)*r,Math.sin(a)*r):outline.moveTo(Math.cos(a)*r,Math.sin(a)*r);}outline.closePath();}const geometry=new THREE.ExtrudeGeometry(outline,{depth:.012,bevelEnabled:true,bevelSize:.005,bevelThickness:.004,bevelSegments:2});geometry.center();return geometry;}
  const starEye=symbolEye('star'),heartEye=symbolEye('heart'),heartEyeMaterial=new THREE.MeshStandardMaterial({color:'#ad5076',roughness:.4});
  let eyeProfiles=[],selectedEyeStyle='',activeEyeReaction='';
  function styleEyes(style='',reaction=''){
@@ -49,7 +49,7 @@ export function createCompanion({detail='full'}={}){
    const side=i?1:-1,content=reaction==='content'||style==='eyes-happy',symbol=style==='eyes-star'||style==='eyes-heart',closed=content||symbol||style==='eyes-flat'||style==='eyes-sleepy'||style==='eyes-wink'&&i===1,goofy=style==='eyes-goofy'&&!content;
    eye.name=i?'right-eye':'left-eye';eye.geometry=content?contentEye:style==='eyes-star'?starEye:style==='eyes-heart'?heartEye:style==='eyes-flat'?flatEye:closed?closedEye:roundEye;eye.material=style==='eyes-heart'&&!content?heartEyeMaterial:goofy?eyeWhite:eyeMat;
    const scale=closed?[1,1,1]:goofy?[.108,.117,.052]:style==='eyes-round'||style==='eyes-wink'?[.077,.077,.046]:[.068,.094,.046];
-   eye.scale.set(...scale);eye.rotation.z=style==='eyes-sleepy'&&!content?side*.12:0;eye.position.y=goofy?.085:.075;
+   eye.scale.set(...scale);eye.rotation.z=style==='eyes-sleepy'&&!content?side*.12:0;eye.position.y=goofy?.085:.075;eye.position.z=closed?.711:.663;
    const pupil=eye.children[0];pupil.visible=!closed;pupil.material=goofy?eyeMat:eyeWhite;pupil.position.set(goofy?(i?.22:-.27):-.25,goofy?(i?.13:-.12):.32,.94);pupil.scale.set(goofy?.34:.16,goofy?.37:.12,goofy?.15:.1);
    return {scale,closed};
   });

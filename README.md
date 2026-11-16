@@ -20,4 +20,9 @@ npm run build
 
 ## 음악
 
-First Snow, Moonlight, At The End Of All Things — Scott Buckley. [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/). 곡별 공식 출처와 변환 정보는 [음원 라이선스](dist/audio/LICENSE.txt)에 있습니다.
+- First Snow, Moonlight — Scott Buckley (CC BY 4.0)
+- 사탕 요정의 춤 — Kevin MacLeod (CC BY 4.0)
+- 꽃의 왈츠 — United States Air Force Band (public domain recording)
+- 갈잎피리의 춤 — Eastern Wind Symphony, 지휘·편곡 Clark McAlister (CC BY-SA 4.0)
+
+클래식 세 곡의 작곡가는 P. I. Tchaikovsky입니다. 연주별 출처, 라이선스와 변환 정보는 [음원 라이선스](dist/audio/LICENSE.txt)에 있습니다.

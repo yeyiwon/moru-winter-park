@@ -6,14 +6,12 @@ export function createWinterExperience(winter,companion,travel){
  const spa=createSpaController(),rides=createRideController(winter.rides);
  const card=document.querySelector('#place-card'),actions=document.querySelector('#place-actions');
  const hud=document.querySelector('#ride-hud'),label=document.querySelector('#ride-label'),stopButton=document.querySelector('#stop-ride');
- let place=null,rest=null,lastMode='',anchor=null,actionKeys=[],gesture='',gestureTime=0,heldItem='',roast=0,position={x:0,z:0},finishEating=false,wardrobeHand='';
- function handAppearance(a={}){const next=String(a.accessory||'').split(',').find(v=>['coffee','cocoa','marshmallow','odeng','bubble-wand','balloon','icecream'].includes(v))||'';if(next!==wardrobeHand){wardrobeHand=next;heldItem=next;roast=0;clearGesture();}}
- handAppearance(window.labAppearance);window.addEventListener('lab:appearance',e=>handAppearance(e.detail));
+ let place=null,rest=null,lastMode='',anchor=null,actionKeys=[],gesture='',gestureTime=0,heldItem='',roast=0,position={x:0,z:0},finishEating=false;
  const parkActivities=[{id:'bubbles',name:'풍선 부스',x:8,z:19.6,r:3},{id:'icecream',name:'아이스크림',x:-12.7,z:25.3,r:3},{id:'coffee',name:'카페',x:-7,z:27.5,r:3},{id:'light-duet',name:'빛의 듀엣',x:-6.5,z:3,r:4},{id:'footbath',name:'족욕',x:18,z:132.5,r:2.5},{id:'lounge',name:'창가 소파',x:3.4,z:127.5,r:2.1}];
  function act(kind,duration=5){gesture=kind;gestureTime=duration;window.labSound?.(kind);card.hidden=true;}
  function eat(){finishEating=true;act('eat',2.8);}
- function clearItem(){const had=heldItem;heldItem='';roast=0;finishEating=false;if(had)window.dispatchEvent(new CustomEvent('lab:carry',{detail:''}));}
- function take(item){clearGesture();heldItem=item;roast=0;finishEating=false;window.dispatchEvent(new CustomEvent('lab:carry',{detail:item}));window.labSound?.('select');card.hidden=true;}
+ function clearItem(){heldItem='';roast=0;finishEating=false;}
+ function take(item){clearGesture();heldItem=item;roast=0;finishEating=false;window.labSound?.('select');card.hidden=true;}
  window.addEventListener('lab:wave',()=>{clearItem();act('wave',3);});
  function button(text,fn){
   const b=document.createElement('button'),k=document.createElement('kbd');
@@ -64,17 +62,18 @@ export function createWinterExperience(winter,companion,travel){
   }else if(id==='healing')button('쉬기',()=>{rides.stop();companion.equip('none');rest=restSeats.healing;card.hidden=true;hud.hidden=false;stopButton.textContent='일어나기';label.textContent='';window.labSound?.('rest');});
   else if(id==='tree')button('트리 꾸미기',()=>window.dispatchEvent(new Event('lab:tree-open')));
   else if(id==='restroom')button('문 열기 / 닫기',()=>winter.toggleRestroom?.());
-  else if(id==='odeng')button('어묵 먹기',()=>{take('odeng');eat();});
-  else if(id==='marshmallow')button('마시멜로 들기',()=>take('marshmallow'));
+  else if(id==='odeng')button('어묵',()=>take('odeng'));
+  else if(id==='marshmallow')button('마시멜로',()=>take('marshmallow'));
   else if(id==='campfire'){
    if(heldItem==='marshmallow'){button(roast>=1?'마시멜로 먹기':'마시멜로 굽기',()=>{if(roast>=1)eat();else act('roast',60);});}
    else button('몸 녹이기',()=>act('warm',60));
-  }else if(id==='bubbles'){button('풍선 들기',()=>take('balloon'));button('비눗방울 챙기기',()=>{take('bubble-wand');act('bubble',3);});}
-  else if(id==='icecream')button('아이스크림 들기',()=>take('icecream'));
-  else if(id==='coffee'){button('커피 들기',()=>take('coffee'));button('코코아 들기',()=>take('cocoa'));}
+  }else if(id==='bubbles'){button('풍선',()=>take('balloon'));button('비눗방울',()=>{take('bubble-wand');act('bubble',3);});}
+  else if(id==='icecream')button('아이스크림',()=>take('icecream'));
+  else if(id==='coffee'){button('커피',()=>take('coffee'));}
   else if(id==='light-duet')document.querySelector('#place-description').textContent='두 사람이 원에 서면 조명이 켜집니다.';
   card.hidden=false;anchor={x:place.x,y:rides.mode==='summit'?alpineHeight(place.x,place.z)+2.5:2.7,z:place.z};
  }
+ function useHeldItem(){if(gesture||spa.active||rides.mode&&rides.mode!=='summit')return false;if(['coffee','cocoa'].includes(heldItem)){act('drink',2.8);return true;}if(['odeng','icecream'].includes(heldItem)||heldItem==='marshmallow'&&roast>=1){eat();return true;}return false;}
  const touch={};
  for(const b of document.querySelectorAll('[data-ski]')){
   const clear=()=>delete touch[b.dataset.ski];b.onpointerdown=e=>{e.preventDefault();b.setPointerCapture?.(e.pointerId);touch[b.dataset.ski]=true;};b.onpointerup=clear;b.onpointercancel=clear;b.onlostpointercapture=clear;
@@ -82,10 +81,11 @@ export function createWinterExperience(winter,companion,travel){
  window.addEventListener('blur',()=>{for(const k in touch)delete touch[k];});
  window.addEventListener('keydown',e=>{
   if(e.repeat||e.metaKey||e.ctrlKey||document.body.classList.contains('studio-open')||document.body.classList.contains('quiz-open')||e.target.closest?.('input,textarea,select,[contenteditable=true]'))return;
+  if(e.code==='KeyE'&&card.hidden&&useHeldItem()){e.preventDefault();return;}
   const n=['KeyE','KeyF','KeyG','KeyH'].indexOf(e.code);if(n>=0&&!card.hidden&&actionKeys[n]){e.preventDefault();actionKeys[n]();}
  });
  document.querySelector('#close-place').onclick=()=>card.hidden=true;stopButton.onclick=stop;
- return{rides,show,wake,cancel,get anchor(){return anchor;},get active(){return!!rides.mode||!!rest||spa.active;},get focusGesture(){return gesture;},get gesture(){return gesture||(heldItem==='bubble-wand'?'bubble':'');},get heldItem(){return heldItem;},get roast(){return roast;},
+ return{rides,show,wake,cancel,useHeldItem,get anchor(){return anchor;},get active(){return!!rides.mode||!!rest||spa.active;},get focusGesture(){return gesture;},get gesture(){return gesture||(heldItem==='bubble-wand'?'bubble':'');},get heldItem(){return heldItem;},get roast(){return roast;},
   proximity(x,z){
    position={x,z};
    if(gesture||spa.active||rides.mode&&rides.mode!=='summit'||rest){card.hidden=true;return;}
@@ -96,7 +96,7 @@ export function createWinterExperience(winter,companion,travel){
     {id:'onsen',activity:'bath',x:-10,z:116,r:4.8},{id:'onsen',activity:'smallbath',x:-19,z:128.5,r:4}
    ];
    const near=points.filter(p=>Math.hypot(x-p.x,z-p.z)<p.r).sort((a,b)=>Math.hypot(x-a.x,z-a.z)-Math.hypot(x-b.x,z-b.z))[0];
-   if(!near){if(['coffee','cocoa','odeng','icecream'].includes(heldItem)){show('hand-item');anchor={x,y:(z< -150?alpineHeight(x,z):0)+1.1,z};}else card.hidden=true;return;}
+   if(!near){card.hidden=true;return;}
    if(card.hidden||place?.id!==near.id||(near.activity&&card.dataset.activity!==near.activity))show(near.id,near.activity);
    anchor={x:near.x,y:(near.z< -150?alpineHeight(near.x,near.z):0)+2.5,z:near.z};
   },

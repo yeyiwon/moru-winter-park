@@ -11,3 +11,4 @@ dist/.openai/
 .vercel/
 web-dist/
 .env*
+.vercel

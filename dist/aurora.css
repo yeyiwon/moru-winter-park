@@ -44,3 +44,21 @@ dialog[open]{animation:glass-enter .32s cubic-bezier(.16,1,.3,1)}.menu-panel{tra
 @media(max-width:650px){.studio-head{top:-7px}.fluff-controls{max-height:none;overflow:visible;padding-right:0}#fluff-preview{height:230px}.fluff-stage{padding:12px}.custom-tabs button{font-size:10px}.fluff-stage h2{margin:4px 0}}
 
 .music-player{display:grid;grid-template-columns:38px minmax(0,1fr) 38px;gap:8px;align-items:center;margin:12px 0}.music-player button{height:38px;padding:9px;border-radius:50%;background:#ffffff12;border:1px solid #ffffff30;color:inherit}.music-player svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linejoin:round}.music-player select{min-width:0;width:100%;padding:10px 26px 10px 12px;border-radius:14px;border:1px solid #ffffff30;color:inherit;background:#ffffff12;font:inherit}.music-player option{color:#302a3b;background:#f3eaf9}
+
+/* Keep the character and settings navigation outside the controls scrollport. */
+.studio .music-player{grid-template-columns:44px minmax(0,1fr) 44px;align-items:center}
+.studio .music-player button{width:44px;height:44px;min-height:44px;padding:0;display:grid;place-items:center;line-height:1}
+.studio .music-player select{appearance:none;-webkit-appearance:none;height:44px;min-height:44px;line-height:22px;padding:10px 38px 10px 12px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='white' stroke-width='1.5'/%3E%3C/svg%3E");background-position:right 13px center;background-size:16px 16px;background-repeat:no-repeat}
+@media(max-width:750px){
+ #studio:has(#pane-fluff:not([hidden])){display:flex;flex-direction:column;height:calc(100dvh - 24px);max-height:calc(100dvh - 24px);width:calc(100vw - 24px);inset:0;margin:auto;padding:16px;overflow:hidden}
+ #studio:has(#pane-fluff:not([hidden])) .studio-head{position:relative;top:auto;flex:0 0 40px;height:40px;margin:0 0 8px;z-index:1}
+ #studio:has(#pane-fluff:not([hidden])) .studio-tabs{flex:0 0 auto;margin:0 0 10px;min-height:46px}
+ #studio:has(#pane-fluff:not([hidden])) .studio-saved{flex:0 0 auto;margin:8px 0 0}
+ #pane-fluff:not([hidden]){display:grid;grid-template-columns:minmax(0,1fr);grid-template-rows:auto minmax(0,1fr);gap:10px;flex:1;min-height:0;overflow:hidden}
+ #pane-fluff .fluff-stage{position:relative;top:auto;align-self:auto;padding:8px;min-height:0;overflow:hidden}
+ #pane-fluff #fluff-preview{height:clamp(140px,25dvh,210px)}
+ #pane-fluff .fluff-stage h2{margin:0;font-size:15px}
+ #pane-fluff .preview-hint{margin:3px 0!important;font-size:10px!important}
+ #pane-fluff .fluff-controls{min-height:0;max-height:none;overflow-y:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;padding:0 6px 16px;scrollbar-width:thin}
+ #pane-fluff .control-caption:first-of-type{margin-top:8px}
+}

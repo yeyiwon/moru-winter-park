@@ -1,10 +1,34 @@
-Music by Scott Buckley — CC BY 4.0
+Music recordings and attribution
+
+First Snow and Moonlight — Scott Buckley
+License: Creative Commons Attribution 4.0
 https://creativecommons.org/licenses/by/4.0/
+https://www.scottbuckley.com.au/library/first-snow/
+https://www.scottbuckley.com.au/library/moonlight/
 
-First Snow: https://www.scottbuckley.com.au/library/first-snow/
-Moonlight: https://www.scottbuckley.com.au/library/moonlight/
-At The End Of All Things: https://www.scottbuckley.com.au/library/at-the-end-of-all-things/
+Dance of the Sugar Plum Fairies — Kevin MacLeod (incompetech.com)
+Composition: P. I. Tchaikovsky; recording/arrangement: Kevin MacLeod
+License: Creative Commons Attribution 4.0
+https://creativecommons.org/licenses/by/4.0/
+https://incompetech.com/music/royalty-free/index.html?Search=Search&isrc=USUAN1100270
 
-All recordings retain the complete original arrangement. The official MP3
-downloads were transcoded to AAC at 64 kb/s for web playback. No musical edits.
-Attribution and the current track source are displayed in Settings > Sound.
+Waltz of the Flowers — United States Air Force Band, Concert Band
+Composition: P. I. Tchaikovsky; arrangement: Lawrence Odom
+Recording: United States Air Force, Christmas on Stage and Screen (1996)
+Public domain recording, performance and arrangement, as identified by the source:
+https://commons.wikimedia.org/wiki/File:Waltz_of_the_Flowers_-_Concert_Band_-_United_States_Air_Force_Band.mp3
+https://www.music.af.mil/Multimedia/Music/Public-Domain-Music/
+
+Dance of the Reed Flutes / Danse des mirlitons — Eastern Wind Symphony
+Composition: P. I. Tchaikovsky; conductor/arranger: Clark McAlister,
+partially after John MacKenzie-Rogan; editor: Alfred Reed.
+Publisher: Serenissima Music (2002–04). IMSLP recording #941628.
+License: Creative Commons Attribution-ShareAlike 4.0
+https://creativecommons.org/licenses/by-sa/4.0/
+https://imslp.org/wiki/Special:ReverseLookup/941628
+The complete final movement was extracted from the six-movement recording.
+The resulting audio file is also distributed under CC BY-SA 4.0.
+
+MP3 recordings were transcoded to AAC at 48–64 kb/s for web playback.
+Attribution, source and license for the selected recording appear in Settings > Sound.
+No endorsement by the composers, performers or publishers is implied.
