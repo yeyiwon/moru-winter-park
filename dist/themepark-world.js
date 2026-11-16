@@ -1,6 +1,6 @@
 import * as THREE from './vendor/three.module.js';
-import {buildArchipelago} from './world-art.js?v=game16';
-import {buildWinterWorld} from './winter-world.js?v=game16';
+import {buildArchipelago} from './world-art.js?v=ui17';
+import {buildWinterWorld} from './winter-world.js?v=ui17';
 import {exhibits,islands} from './world-layout.js';
 export function buildWorld(scene){
 const materials=new Map();const M=(color,roughness=.7,metalness=.05)=>{const key=[color,roughness,metalness].join();if(!materials.has(key))materials.set(key,new THREE.MeshStandardMaterial({color,roughness,metalness}));return materials.get(key);};const stone=M('#a99eae'),gold=M('#bca079',.35,.65),dark=M('#39394f'),roof=M('#978cae',.5,.2),cream=M('#d6bd9a'),wood=M('#604750');const glow=new THREE.MeshBasicMaterial({color:'#ffe0a1'}),pinkGlow=new THREE.MeshBasicMaterial({color:'#ffc1da'}),blueGlow=new THREE.MeshBasicMaterial({color:'#b6dfff'});
