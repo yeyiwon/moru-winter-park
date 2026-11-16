@@ -1,5 +1,5 @@
 import {normalizeWardrobe} from '../dist/wardrobe.js';
-import {resortRidePosition,restSeats} from '../dist/resort-layout.js';
+import {resortRidePosition,restSeats,spaPositionValid} from '../dist/resort-layout.js';
 import {surfaceHeight} from '../dist/world-layout.js';
 import {canStandAt} from '../dist/movement.js';
 const json=(data,status=200,headers={})=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store',...headers}});
@@ -29,9 +29,9 @@ export async function handleAPI(request,env){
   const raw=await request.text();if(raw.length>2048)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);
   const restOK=b.mode==='rest'&&Object.values(restSeats).some(p=>Math.hypot(b.x-p.x,b.z-p.z)<.15&&Math.abs(b.y-p.y)<.15);
   const groundOK=canStandAt(b.x,b.z)&&b.y>=surfaceHeight(b.x,b.z)+.5&&b.y<=surfaceHeight(b.x,b.z)+3;
-  if(!Number.isFinite(b.x)||!Number.isFinite(b.z)||!Number.isFinite(b.yaw)||!Number.isFinite(b.y)||!(groundOK||restOK||resortRidePosition(b.x,b.y,b.z,b.mode)))return json({error:'이동 위치를 확인해 주세요.'},400);
+  if(!Number.isFinite(b.x)||!Number.isFinite(b.z)||!Number.isFinite(b.yaw)||!Number.isFinite(b.y)||!(groundOK||restOK||spaPositionValid(b.x,b.y,b.z,b.mode)||resortRidePosition(b.x,b.y,b.z,b.mode)))return json({error:'이동 위치를 확인해 주세요.'},400);
   const color=/^#[0-9a-f]{6}$/i.test(b.color)?b.color:'#f4eee5',accessory=normalizeWardrobe(b.accessory),gesture=b.gesture==='wave'?'wave':'';
-  await env.DB.prepare('UPDATE visitors SET x=?,z=?,yaw=?,y=?,mode=?,color=?,accessory=?,seen=?,gesture=?,gesture_at=? WHERE id=? AND seen<=?').bind(b.x,b.z,b.yaw,b.y,['lift','summit','ski','sled','rest'].includes(b.mode)?b.mode:'',color,accessory,now,gesture,gesture?now:0,id,now-500).run();
+  await env.DB.prepare('UPDATE visitors SET x=?,z=?,yaw=?,y=?,mode=?,color=?,accessory=?,seen=?,gesture=?,gesture_at=? WHERE id=? AND seen<=?').bind(b.x,b.z,b.yaw,b.y,['lift','summit','ski','sled','rest','bath','sauna','lie','tea'].includes(b.mode)?b.mode:'',color,accessory,now,gesture,gesture?now:0,id,now-500).run();
   const people=await env.DB.prepare('SELECT id,name,color,accessory,x,z,yaw,y,mode,gesture,gesture_at AS gestureAt FROM visitors WHERE room=? AND seen>? AND id<>? ORDER BY seen DESC LIMIT 11').bind(self.room,now-age,id).all();return json({people:people.results||[],count:(people.results?.length||0)+1});
  }
  return json({error:'지원하지 않는 요청입니다.'},404);

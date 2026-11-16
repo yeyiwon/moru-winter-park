@@ -19,26 +19,32 @@ export function buildArchipelago(api){
     for(let j=0;j<4;j++){const a=j*Math.PI/2+.6;const mist=halo(island.x+Math.cos(a)*island.r,-5,island.z+Math.sin(a)*island.r,island.color,22);mist.material.opacity=.075;}
   }
   for(const island of islands.slice(1,7))terrain(island);
-  // Narrow sky bridges have detailed timber, warm edge lights and brass railings.
-  // Six arched promenades: continuous wood deck, stone edge, curved brass rail.
-  const deckMaterial=M('#687987',.85),edgeMaterial=M('#9baab4',.88),plankGeo=new THREE.BoxGeometry(4.2,.18,.51),planks=[];
+  // Warm timber footbridges: a continuous deck, substantial rails and snowy landing stones.
+  const deckMaterial=M('#95765e',.95,0),edgeMaterial=M('#655345',.96,0),bridgeSnow=M('#e2e9e6',1,0),jointMat=M('#7b8586',1,0),plankGeo=new THREE.BoxGeometry(4.2,.13,.36),planks=[];
   for(const [a,b] of bridges){const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz),ux=dx/len,uz=dz/len,start=a.r-1,end=len-b.r+1;
    const at=(d,side=0)=>new THREE.Vector3(a.x+ux*d+uz*side,bridgeHeight(a.x+ux*d,a.z+uz*d),a.z+uz*d-ux*side);
-   for(let d=start;d<end;d+=.54){const p=at(d);planks.push({p,yaw:Math.atan2(ux,uz),tilt:Math.cos((d-start)/(end-start)*Math.PI)*.35*Math.PI/(end-start)});}
-   for(const side of [-1,1]){const rail=[],edge=[];for(let j=0;j<=40;j++){const p=at(start+(end-start)*j/40,side*2.2);edge.push(p.clone());rail.push(p.clone().add(new THREE.Vector3(0,.95,0)));}
-    mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(edge),48,.12,8,false),edgeMaterial);mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(rail),48,.045,7,false),gold);
-    for(let d=start;d<=end;d+=2.1){const p=at(d,side*2.2);rod(p.toArray(),p.clone().add(new THREE.Vector3(0,.95,0)).toArray(),.045,gold);ball(M('#e6eceb',.98),p.x,p.y+.99,p.z,.105);if(Math.floor((d-start)/2.1)%3===0)halo(p.x,p.y+1.1,p.z,'#e3cda8',.7);}
-    const support=edge.map(p=>p.clone().add(new THREE.Vector3(0,-.45,0)));mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(support),48,.16,8,false),deckMaterial);
+   const yaw=Math.atan2(ux,uz);
+   for(let d=start;d<end;d+=.375){const p=at(d);planks.push({p,yaw,tilt:Math.cos((d-start)/(end-start)*Math.PI)*.35*Math.PI/(end-start)});
+    if(Math.floor((d-start)/.375)%3===0)for(const side of [-1,1]){const nail=at(d,side*1.8);cylinder(.027,.027,.012,dark,nail.x,nail.y+.075,nail.z,scene,6);}
    }
+   for(const side of [-1,1]){
+    const count=Math.max(2,Math.ceil((end-start)/1.8));
+    for(let j=0;j<=count;j++){const d=start+(end-start)*j/count,p=at(d,side*2.12),post=box(.16,1.05,.16,edgeMaterial,p.x,p.y+.55,p.z);post.rotation.y=yaw;
+     const cap=box(.24,.06,.25,bridgeSnow,p.x,p.y+1.11,p.z);cap.rotation.y=yaw;
+     if(j<count){const q=at(start+(end-start)*(j+1)/count,side*2.12),mid=p.clone().add(q).multiplyScalar(.5),l=p.distanceTo(q),tilt=Math.atan2(q.y-p.y,Math.hypot(q.x-p.x,q.z-p.z));
+      for(const h of [.35,.99]){const rail=box(.12,.12,l+.03,edgeMaterial,mid.x,mid.y+h,mid.z);rail.rotation.set(-tilt,yaw,0);}
+      const frost=box(.13,.035,l+.03,bridgeSnow,mid.x,mid.y+1.065,mid.z);frost.rotation.set(-tilt,yaw,0);
+      for(const k of [-1,1]){const v=mid.clone().addScaledVector(q.clone().sub(p),k*.24);const baluster=box(.06,.58,.06,edgeMaterial,v.x,v.y+.66,v.z);baluster.rotation.y=yaw;}
+     }
+    }
+    const under=[];for(let j=0;j<=32;j++){const p=at(start+(end-start)*j/32,side*1.65);p.y-=.25;under.push(p);}mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(under),32,.13,6,false),edgeMaterial);
+   }
+   // The abutment is flush with the snow; the bridge never starts with a floating step.
+   for(const d of [start,end]){const p=at(d),stone=box(4.8,.08,1.05,ivory,p.x,p.y-.025,p.z);stone.rotation.y=yaw;for(const side of [-1,1]){const v=at(d,side*2.45);const cap=box(.62,.14,.85,bridgeSnow,v.x,v.y+.08,v.z);cap.rotation.y=yaw;}}
   }
-  const bridgeMesh=new THREE.InstancedMesh(plankGeo,deckMaterial,planks.length),dummy=new THREE.Object3D();planks.forEach(({p,yaw,tilt},i)=>{dummy.position.copy(p);dummy.position.y-=.02;dummy.rotation.set(0,yaw,0);dummy.rotateX(-tilt);dummy.updateMatrix();bridgeMesh.setMatrixAt(i,dummy.matrix)});bridgeMesh.receiveShadow=true;scene.add(bridgeMesh);
+  const bridgeMesh=new THREE.InstancedMesh(plankGeo,deckMaterial,planks.length),dummy=new THREE.Object3D();planks.forEach(({p,yaw,tilt},i)=>{dummy.position.copy(p);dummy.position.y-=.005;dummy.rotation.set(0,yaw,0);dummy.rotateX(-tilt);dummy.updateMatrix();bridgeMesh.setMatrixAt(i,dummy.matrix);bridgeMesh.setColorAt(i,new THREE.Color().setScalar(.9+(i%7)*.016));});bridgeMesh.receiveShadow=true;scene.add(bridgeMesh);
   function groupAt(i,x=0,z=0){const g=new THREE.Group();g.position.set(i.x+x,0,i.z+z);scene.add(g);return g;}
   function ringFloor(parent,r,mat){cylinder(r,r+.2,.22,mat,0,.1,0,parent,64);const ring=torus(r-.1,.04,gold,0,.23,0,parent);ring.rotation.x=-Math.PI/2;}
-  function arch(parent,x,z,h,w,color){
-    const pts=[new THREE.Vector3(x-w,0,z),new THREE.Vector3(x-w,h*.65,z),new THREE.Vector3(x,h,z),new THREE.Vector3(x+w,h*.65,z),new THREE.Vector3(x+w,0,z)];mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),48,.1,8,false),gold,0,0,0,parent);
-    const shape=new THREE.Shape();shape.moveTo(-w,0);shape.lineTo(w,0);shape.lineTo(w,h*.6);shape.quadraticCurveTo(w,h,0,h);shape.quadraticCurveTo(-w,h,-w,h*.6);shape.closePath();
-    const mirror=new THREE.MeshPhysicalMaterial({color,metalness:.85,roughness:.08,transparent:true,opacity:.7,side:THREE.DoubleSide,clearcoat:1});mesh(new THREE.ShapeGeometry(shape,36),mirror,x,.1,z,parent);halo(x,h*.5,z+.15,color,h*1.5,parent);
-  }
   const canopyGeo=new THREE.SphereGeometry(1,32,24),cp=canopyGeo.attributes.position;
   for(let i=0;i<cp.count;i++){const x=cp.getX(i),y=cp.getY(i),z=cp.getZ(i),r=1+.065*Math.sin(x*4+y*3)*Math.cos(z*4)+.025*Math.sin(y*8+z*3);cp.setXYZ(i,x*r,y*r,z*r);}canopyGeo.computeVertexNormals();
   const winterCapGeo=new THREE.SphereGeometry(1,12,8);
@@ -69,8 +75,8 @@ export function buildArchipelago(api){
   rod([0,5.4,-.7],[0,9,-.7],.09,gold,archive);const balance=new THREE.Group();balance.position.set(0,8.7,-.7);archive.add(balance);rod([-3,0,0],[3,0,0],.08,gold,balance);rotations.push({g:balance,s:0,balance:true});
   for(const side of [-1,1]){for(const dz of [-.55,.55])rod([side*2.7,0,0],[side*2.7,-1.65,dz],.02,gold,balance);const bowl=mesh(new THREE.SphereGeometry(.82,24,12,0,Math.PI*2,Math.PI/2,Math.PI/2),gold,side*2.7,-1.6,0,balance);bowl.scale.y=.3;}
   for(let side of [-1,1])for(let shelf=0;shelf<3;shelf++){box(2.5,.1,.6,gold,side*3,shelf*.85+.6,-2,archive);for(let j=0;j<9;j++){const book=box(.16,.45+rand()*.2,.43,M(['#8f829a','#547f83','#b49679'][j%3]),side*3-1+j*.25,shelf*.85+.95,-2,archive);book.rotation.z=(rand()-.5)*.15;}}
-  // Mirror forest: freestanding silver portals and a grove with individual branches.
-  const forest=groupAt(islands[3]);for(let j=0;j<5;j++){const a=j/5*Math.PI*2,g=new THREE.Group();g.position.set(Math.cos(a)*7,0,Math.sin(a)*7);g.rotation.y=-a+Math.PI/2;forest.add(g);arch(g,0,0,4+rand(),1.2,'#b1abed');}
+  // A quiet snowy grove keeps the skyline open after removing the mirror portals.
+  const forest=groupAt(islands[3]);
   for(const [x,z,h] of [[-5,-5,7],[5,-6,6],[8,3,5],[-7,4,6]])tree(forest,x,z,h,'#6b668f');
   // A glazed conservatory around a reflecting pool, with room to walk outside.
   const garden=groupAt(islands[4],0,0);ringFloor(garden,4.7,green);
@@ -85,23 +91,37 @@ export function buildArchipelago(api){
   const domeTop=mesh(new THREE.SphereGeometry(4.7,48,20,0,Math.PI*2,0,1.08),orangeryGlass,0,.3,0,garden);domeTop.scale.y=1.28;for(let panel=0;panel<12;panel++){if([2,3,8,9].includes(panel))continue;const pane=mesh(new THREE.SphereGeometry(4.7,8,8,panel*Math.PI/6,Math.PI/6,1.08,Math.PI/2-1.08),orangeryGlass,0,.3,0,garden);pane.scale.y=1.28;}
   for(const side of [-1,1]){const seat=new THREE.Group();seat.position.set(side*10,0,.3);seat.rotation.y=-side*Math.PI/2;garden.add(seat);const wood=M('#8d7e76');for(let j=0;j<4;j++)box(2.6,.1,.15,wood,0,.65,-.26+j*.18,seat);for(let j=0;j<3;j++)box(2.6,.13,.08,wood,0,.94+j*.18,-.38,seat);for(const x of [-1,1]){rod([x,.05,-.3],[x,1.4,-.38],.05,gold,seat);rod([x,.05,.3],[x,.64,.3],.05,gold,seat);}}
   for(let j=0;j<3;j++){const u={time:{value:0}},mat=new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,uniforms:u,vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying vec2 vUv;uniform float time;void main(){float s=pow(.5+.5*sin(vUv.x*70.+sin(vUv.y*15.+time*3.)),5.);float e=sin(vUv.x*3.14159)*smoothstep(0.,.25,vUv.y);gl_FragColor=vec4(.43,.78,.82,(.1+s*.2)*e);}'});mesh(new THREE.PlaneGeometry(2.3,11,1,16),mat,-3+j*3,-5.2,16,garden);waterfalls.push(u);}
-  // Open-air music theatre: a giant lyre and a sweeping ivory keyboard.
-  const theatre=groupAt(islands[5],0,-2);ringFloor(theatre,6,M('#594e66'));ringFloor(theatre,4.7,M('#8d788b'));
-  const lyrePts=[new THREE.Vector3(-3,7,0),new THREE.Vector3(-3.3,3,0),new THREE.Vector3(0,1,0),new THREE.Vector3(3.3,3,0),new THREE.Vector3(3,7,0)];mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(lyrePts),64,.18,12,false),gold,0,0,0,theatre);rod([-3,6.5,0],[3,6.5,0],.14,gold,theatre);const strings=[];for(let j=-5;j<=5;j++){const string=rod([j*.43,2+Math.abs(j)*.1,0],[j*.43,6.5,0],.025,gold,theatre);string.userData.action='sound';strings.push(string);}
-  for(let j=0;j<17;j++){const a=-.9+j*.112,g=new THREE.Group();g.position.set(Math.sin(a)*8,.1,Math.cos(a)*8-1);g.rotation.y=a;theatre.add(g);box(.75,.15,1.8,ivory,0,0,0,g);if(j%7!==2&&j%7!==6)box(.3,.25,.85,dark,.39,.12,-.45,g);}
-  for(let j=0;j<5;j++){const note=new THREE.Group();note.position.set(-4+j*2,7+Math.sin(j)*1.5,1);theatre.add(note);ball(gold,0,0,0,.18,note).scale.y=.65;rod([.15,0,0],[.15,.9,0],.035,gold,note);rotations.push({g:note,s:.12});}
-  // Clock harbour: a clock face, layered brass gears and moored paper sails.
-  const harbour=groupAt(islands[6],1,-2);ringFloor(harbour,4,ivory);box(3.7,5,2.8,M('#6f7280'),0,2.6,0,harbour);cylinder(0,3.4,2.8,M('#587484'),0,7,0,harbour,4).rotation.y=Math.PI/4;
-  const face=cylinder(1.55,1.55,.14,M('#e1d6b2'),0,4.7,1.5,harbour,64);face.rotation.x=Math.PI/2;torus(1.6,.1,gold,0,4.7,1.62,harbour);
-  for(let j=0;j<12;j++){const a=j/12*Math.PI*2;const tick=box(.06,.2,.03,gold,Math.sin(a)*1.3,4.7+Math.cos(a)*1.3,1.64,harbour);tick.rotation.z=-a;}rod([0,4.7,1.7],[.7,5.1,1.7],.045,dark,harbour);rod([0,4.7,1.71],[-.25,5.8,1.71],.03,dark,harbour);
-  for(let j=0;j<3;j++){const gear=new THREE.Group();gear.position.set(-4+j*4,3+j*.8,-1);harbour.add(gear);torus(1.1,.13,gold,0,0,0,gear);for(let k=0;k<16;k++){const a=k/16*Math.PI*2;const cog=box(.2,.25,.2,gold,Math.cos(a)*1.2,Math.sin(a)*1.2,0,gear);cog.rotation.z=a-Math.PI/2;}for(let k=0;k<6;k++){const a=k/6*Math.PI*2;rod([0,0,0],[Math.cos(a),Math.sin(a),0],.04,gold,gear);}rotations.push({g:gear,s:(j%2?-1:1)*.1});}
-  for(const side of [-1,1]){const boat=new THREE.Group();boat.position.set(side*8,.5,4);harbour.add(boat);const hull=ball(M('#9f8190'),0,0,0,1.1,boat);hull.scale.set(1.6,.3,.6);rod([0,0,0],[0,3.2,0],.05,gold,boat);const sail=new THREE.Shape();sail.moveTo(0,.5);sail.lineTo(0,3);sail.lineTo(1.4,.7);sail.closePath();mesh(new THREE.ShapeGeometry(sail),new THREE.MeshStandardMaterial({color:'#e3d1bb',side:THREE.DoubleSide}),0,0,0,boat);}
+  // A human-scale acoustic garden: timber canopy, slatted backdrop and a playable chime stand.
+  const theatre=groupAt(islands[5],0,-2);theatre.name='acoustic-garden';
+  const timber=deckMaterial,roofMat=edgeMaterial,linen=M('#e4d4b7',1,0),stageMat=M('#a8a69d',1,0),lampMat=new THREE.MeshBasicMaterial({color:'#f1cf91'});
+  cylinder(6,6.15,.2,stageMat,0,.11,0,theatre,64);
+  for(let j=-13;j<=13;j++){const z=j*.36,w=2*Math.sqrt(Math.max(0,35-z*z));box(w,.025,.34,timber,0,.225,z,theatre);}
+  for(const x of [-4.5,4.5])for(const z of [-3,2.5]){box(.22,4.15,.22,roofMat,x,2.2,z,theatre);box(.4,.15,.4,stageMat,x,.3,z,theatre);}
+  for(const z of [-3,2.5]){const arch=[];for(let i=0;i<=24;i++){const x=-4.8+i*.4;arch.push(new THREE.Vector3(x,4.2+1.25*Math.cos(x/4.8*Math.PI/2),z));}mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(arch),36,.11,8,false),roofMat,0,0,0,theatre);}
+  const roofPositions=[],roofUV=[],roofIndex=[];for(let i=0;i<=32;i++){const x=-5+i*10/32,y=4.25+1.25*Math.cos(x/5*Math.PI/2);roofPositions.push(x,y,-3.5,x,y,3);roofUV.push(i/32,0,i/32,1);if(i<32){const k=i*2;roofIndex.push(k,k+2,k+1,k+1,k+2,k+3);}}
+  const roofGeometry=new THREE.BufferGeometry();roofGeometry.setAttribute('position',new THREE.Float32BufferAttribute(roofPositions,3));roofGeometry.setAttribute('uv',new THREE.Float32BufferAttribute(roofUV,2));roofGeometry.setIndex(roofIndex);roofGeometry.computeVertexNormals();const canopy=mesh(roofGeometry,linen,0,0,0,theatre);canopy.material.side=THREE.DoubleSide;
+  for(let x=-4.5;x<=4.5;x+=.45){const y=4.25+1.25*Math.cos(x/5*Math.PI/2);rod([x,y+.03,-3.5],[x,y+.03,3],.025,bridgeSnow,theatre);}
+  for(let i=0;i<31;i++){const x=-4.4+i*.29;box(.11,2.5,.16,timber,x,1.5,-3,theatre);}box(9.2,.12,.32,roofMat,0,2.8,-3,theatre);
+  for(const x of [-3,0,3]){rod([x,4.7,-.4],[x,3.5,-.4],.015,dark,theatre);cylinder(.25,.4,.4,linen,x,3.35,-.4,theatre,24);ball(lampMat,x,3.13,-.4,.12,theatre);}
+  const chime=new THREE.Group();chime.position.set(2,.24,-1.5);theatre.add(chime);for(const x of [-.8,.8])rod([x,0,0],[x,2.3,0],.045,roofMat,chime);rod([-.85,2.3,0],[.85,2.3,0],.05,roofMat,chime);const strings=[];
+  for(let j=0;j<7;j++){const x=-.6+j*.2,h=.8+j*.11,string=cylinder(.045,.045,h,gold,x,2-h*.5,0,chime,12);rod([x,2.3,0],[x,2,0],.008,dark,chime);string.userData.action='sound';strings.push(string);}
+  // Low benches frame the garden without blocking the front promenade or the nearby grand piano.
+  for(const [x,z,angle]of [[-3.3,5.8,.2],[.6,6.6,0],[4.7,5.3,-.35]]){const bench=new THREE.Group();bench.position.set(x,0,z);bench.rotation.y=angle;theatre.add(bench);for(let j=0;j<4;j++)box(2.5,.09,.17,timber,0,.58,-.28+j*.18,bench);for(let j=0;j<3;j++)box(2.5,.14,.08,timber,0,.93+j*.17,-.36,bench);for(const side of [-1,1]){box(.1,.55,.6,roofMat,side*.95,.3,0,bench);box(.1,.9,.1,roofMat,side*.95,.85,-.34,bench);}box(2.55,.035,.2,bridgeSnow,0,1.34,-.36,bench);}
+  // The old clock, gear wheels and decorative boats are intentionally removed.
   // Designed promenades and planted borders replace random grass and pebble rings.
-  const pathMat=M('#bac7c9',.98),pathEdge=M('#8d9fa3',.94,.02),soil=M('#2a3938',1),bedStone=M('#606771',.8);
+  const pathMat=M('#b4b5ad',1,0),pathEdge=M('#c7c9bd',1,0),soil=M('#2a3938',1),bedStone=M('#606771',.8);
+  const pavingMarks=new Set();
   function promenade(points,width=2.6){
     if(points.length<2)return;const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(p[0],0,p[1]))),position=[],uv=[],index=[];const steps=Math.max(24,Math.ceil(curve.getLength()*3));
     for(let i=0;i<=steps;i++){const t=i/steps,p=curve.getPoint(t),d=curve.getTangent(t),n=new THREE.Vector3(-d.z,0,d.x).normalize().multiplyScalar(width/2);for(const side of [1,-1]){const x=p.x+n.x*side,z=p.z+n.z*side;position.push(x,surfaceHeight(x,z)+.018,z);}uv.push(0,t*12,1,t*12);if(i<steps){const v=i*2;index.push(v,v+2,v+1,v+1,v+2,v+3);}}
     const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(position,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(index);geo.computeVertexNormals();const walk=mesh(geo,pathMat);walk.name='connected-promenade';
+    // Shallow joints and small edge blocks add scale without forming raised rails across junctions.
+    const length=curve.getLength();for(let d=.6;d<length-.4;d+=1.15){const p=curve.getPointAt(d/length),t=curve.getTangentAt(d/length),yaw=Math.atan2(t.x,t.z),key=Math.round(p.x*1.5)+'/'+Math.round(p.z*1.5);if(pavingMarks.has(key))continue;pavingMarks.add(key);
+     const joint=box(width-.2,.008,.025,jointMat,p.x,surfaceHeight(p.x,p.z)+.025,p.z);joint.rotation.y=yaw;
+     for(const side of [-1,1]){const x=p.x+t.z*side*(width/2-.12),z=p.z-t.x*side*(width/2-.12),edge=box(.22,.035,.96,pathEdge,x,surfaceHeight(x,z)+.025,z);edge.rotation.y=yaw;}
+     const stagger=box(.018,.008,1.03,jointMat,p.x+t.z*(pavingMarks.size%2?.38:-.38),surfaceHeight(p.x,p.z)+.027,p.z-t.x*(pavingMarks.size%2?.38:-.38));stagger.rotation.y=yaw;
+    }
+
   }
   // Every branch reaches a bridge landing or a real front door. No decorative dead ends.
   const drawn=new Set();function connect(a,b){const route=findPath(a,b);if(!route.length)return;const key=[a.x,a.z,b.x,b.z].join('/');if(drawn.has(key))return;drawn.add(key);promenade([[a.x,a.z],...route.map(p=>[p.x,p.z])]);}
@@ -113,7 +133,7 @@ export function buildArchipelago(api){
   for(const [x,z] of [[-3.7,-2.8],[3.7,-2.8],[-3.8,2.7],[3.8,2.7]])planter(garden,x,z,.85,1.05,'#d0b6d1');
   for(const island of islands.slice(1,7)){
     const g=groupAt(island);
-    const positions={science:[[-10,-6,2,1.2]],law:[[-8,-5,1.4,2.2],[8,-5,1.7,1.3]],philosophy:[[-9,-4,1.5,2],[9,5,1.8,1.2]],nature:[[-10,-6,1.7,2.6],[9,7,2.2,1.5],[9,-5,1.3,2]],art:[[-10,-4,1.6,1.1],[10,3,1.5,1]],history:[[-10,-6,1.8,1.1],[10,4,1.4,2]]}[island.id];
+    const positions={science:[[-10,-6,2,1.2]],law:[[-8,-5,1.4,2.2],[8,-5,1.7,1.3]],philosophy:[[-9,-4,1.5,2],[9,5,1.8,1.2]],nature:[[-10,-6,1.7,2.6],[9,7,2.2,1.5],[9,-5,1.3,2]],art:[],history:[[-10,-6,1.8,1.1],[10,4,1.4,2]]}[island.id];
     for(const [x,z,rx,rz] of positions)planter(g,x,z,rx,rz,island.color);
     for(const [x,z] of (island.id==='nature'?[[-12,-2],[10,-8]]:island.id==='philosophy'?[]:[[-11,-7]]))tree(g,x,z,3.2,island.id==='nature'?'#619781':'#71788e');
     const lampMat=new THREE.MeshBasicMaterial({color:'#f4d5ab'});
@@ -125,8 +145,6 @@ export function buildArchipelago(api){
   for(let j=0;j<12;j++){const a=j*2.4,x=Math.cos(a)*6.8,z=Math.sin(a)*6.8;if(z>2)continue;const crystal=cylinder(0,.16+rand()*.2,.8+rand()*1.1,M('#91bdcf',.18,.25),x,.65,z,observatory,6);crystal.rotation.z=(rand()-.5)*.3;}
   // Hanging seed lights and curled leaves make the greenhouse feel alive.
   for(let j=0;j<9;j++){const a=j/9*Math.PI*2,r=1.3+rand()*1.5,x=Math.cos(a)*r,z=Math.sin(a)*r,y=4.5+rand()*1.5,len=.8+rand()*1.8;const pts=[new THREE.Vector3(x*.5,6,z*.5),new THREE.Vector3(x,y+.5,z),new THREE.Vector3(x+.15,y-len,z)];mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),16,.018,5,false),gold,0,0,0,garden);ball(new THREE.MeshBasicMaterial({color:'#d6f4a8'}),x+.15,y-len,z,.065,garden);halo(x+.15,y-len,z,'#c9ecad',.8,garden);}
-  const seatMat=M('#83717f',.76),stageStone=M('#706a7e',.8);
-  for(let level=0;level<3;level++){const r=7.2+level*.95,angleStart=.2,angleLength=Math.PI-.4;const terrace=mesh(new THREE.TorusGeometry(r,.28,8,80,angleLength),stageStone,0,.25+level*.28,0,theatre);terrace.rotation.x=Math.PI/2;terrace.rotation.z=angleStart;for(let j=0;j<13;j++){const a=angleStart+(j+.5)/13*angleLength,seat=box(.85,.12,.65,seatMat,Math.cos(a)*r,.6+level*.28,Math.sin(a)*r,theatre);seat.rotation.y=-a;}}
   const pedimentShape=new THREE.Shape();pedimentShape.moveTo(-5.4,0);pedimentShape.lineTo(0,2.3);pedimentShape.lineTo(5.4,0);pedimentShape.closePath();mesh(new THREE.ExtrudeGeometry(pedimentShape,{depth:.28,bevelEnabled:true,bevelSize:.04,bevelThickness:.04,bevelSegments:2}),ivory,0,5.3,2,archive);
   for(let j=-2;j<=2;j++)box(.07,4.2,.05,gold,j*.65,2.8,-2.8,archive);
   for(const side of [-1,1]){for(let level=0;level<4;level++)box(1.3,.08,.5,gold,side*1.8,.8+level*.9,-2.9,archive);}

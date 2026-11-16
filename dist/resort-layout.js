@@ -18,6 +18,14 @@ export const resortDestinations=[
  {id:'sauna',name:'편백 휴양관',x:12,z:115,kind:'sauna',view:{distance:32,yaw:2.65,pitch:.55}}
 ];
 export const restSeats={onsen:{x:-17.8,y:1.35,z:124,yaw:Math.PI/2},sauna:{x:7.5,y:1.55,z:125,yaw:Math.PI/2},healing:{x:50,y:1,z:35.5,yaw:Math.PI}};
+export const spaActivities={
+ bath:{x:-10,y:.28,z:121,yaw:Math.PI,mode:'bath',label:'노천탕 · WASD로 천천히 이동',pool:{x:-10,z:124,rx:5.8,rz:4.8},view:{distance:12,yaw:2.7,pitch:.32}},
+ smallbath:{x:-19,y:.28,z:132,yaw:Math.PI,mode:'bath',label:'작은 온천 · 물소리 듣기',pool:{x:-19,z:132,rx:2.4,rz:1.7},view:{distance:10,yaw:2.7,pitch:.35}},
+ sauna:{x:7.5,y:1.8,z:125,yaw:Math.PI/2,mode:'sauna',label:'편백 벤치 · 포근하게 몸 녹이기',view:{distance:5,yaw:1.2,pitch:.18,lookHeight:-.8}},
+ lie:{x:17,y:1.98,z:124.9,yaw:0,mode:'lie',label:'따뜻한 매트 · 누워 쉬는 중',view:{distance:6,yaw:2.7,pitch:.18,lookHeight:-.9}},
+ tea:{x:15.2,y:1.28,z:118.8,yaw:0,mode:'tea',label:'찻자리 · 따뜻한 차 한 잔',view:{distance:5,yaw:.35,pitch:.2,lookHeight:-.8}}
+};
+export function spaPositionValid(x,y,z,mode){return Object.values(spaActivities).some(a=>{if(a.mode!==mode||Math.abs(y-a.y)>.12)return false;if(a.pool)return ((x-a.pool.x)/a.pool.rx)**2+((z-a.pool.z)/a.pool.rz)**2<=1.02;return Math.hypot(x-a.x,z-a.z)<.15;});}
 const ski=Array.from({length:81},(_,i)=>{const z=-134+i/80*42,x=localSkiCenter(z)+Math.sin(i/80*Math.PI*4)*.6;return[x,localHeight(x,z),z];});ski.push([2,.09,-92]);
 const lift=Array.from({length:41},(_,i)=>{const t=i/40,x=-9+Math.sin(t*Math.PI)*1.5,z=-96-t*38;return[x,localHeight(x,z)+4.5,z];});
 const sled=Array.from({length:51},(_,i)=>{const t=1-i/50,z=-98-t*19,x=17+Math.sin(t*Math.PI)*2;return[x,localHeight(x,z),z];});sled.push([17,localHeight(17,-97),-97]);
@@ -31,7 +39,7 @@ export const resortObstacles=[
  {x:12,z:133,w:9,d:.3},{x:3,z:125,w:.3,d:8},{x:21,z:125,w:.3,d:8},
  {x:12,z:117,w:9,d:.3,door:{x:12,w:2.2}},
  {x:7.5,z:125,w:1.1,d:5},{x:17,z:127,w:1.1,d:3},
- {x:12,z:130,r:1.5}
+ {x:12,z:130,r:1.5},{x:16.5,z:120,w:1.7,d:.75},{x:5.2,z:118.5,w:1.4,d:.3}
 ];
 export function resortGround(x,z){if(Math.hypot(x,z+260)<144)return alpineHeight(x,z);if(Math.abs(x-12)<9&&z>117&&z<133)return .34;return .09;}
 export function resortRidePosition(x,y,z,mode){return ['lift','summit','ski','sled'].includes(mode)&&Math.hypot(x,z+260)<142&&Number.isFinite(y)&&y>=alpineHeight(x,z)-.1&&y<=alpineHeight(x,z)+8;}

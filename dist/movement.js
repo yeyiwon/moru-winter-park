@@ -2,12 +2,12 @@ import {resortObstacles,alpineHeight} from './resort-layout.js';
 import {terrainAt} from './world-layout.js';
 // Pure ground movement shared by keyboard, touch and click navigation.
 export const obstacles = [
- ...resortObstacles,{x:108,z:35,r:9.4},{x:-53,z:22,r:1.5},{x:-48,z:36.2,w:3.6,d:.2},{x:46,z:-20,r:.8},
+ ...resortObstacles,{x:108,z:35,r:9.4},{x:-47.3,z:25,r:1.5},{x:-48,z:36.2,w:3.6,d:.2},{x:46,z:-20,r:.8},
   {x:7.1,z:-3.2,r:3.9}, {x:-18,z:-5,r:6},
   {x:-3.55,z:-14,w:2.1,d:1.6},{x:3.55,z:-14,w:2.1,d:1.6},
   {x:-5.4,z:-14,r:1.5},{x:5.4,z:-14,r:1.6},{x:-3.4,z:-16,r:1.35},{x:3.4,z:-16.5,r:1.5},
   {x:8,z:-10,w:1.9,d:1.6}, {x:11.2,z:-10.7,w:1.9,d:1.6}, {x:14.4,z:-11.4,w:1.9,d:1.6},
-  {x:0,z:-56,r:4.8},{x:-8,z:-51,r:1.1},{x:47,z:-30,r:.6},{x:0,z:53,r:3.3},{x:-46,z:25,w:3.5,d:.35},{x:-45,z:-29,w:2.2,d:1.9},
+  {x:0,z:-56,r:4.8},{x:-8,z:-51,r:1.1},{x:47,z:-30,r:.6},{x:0,z:53,r:3.3},...[-50.5,-41.5].flatMap(x=>[22,27.5].map(z=>({x,z,r:.3}))),{x:-46,z:22,w:4.6,d:.2},{x:-44,z:23.5,w:.9,d:.2},...[[ -49.3,30.8],[-45.4,31.6],[-41.3,30.3]].map(([x,z])=>({x,z,w:1.3,d:.5})),
   ...Array.from({length:9},(_,j)=>({x:47+Math.cos(j/8*Math.PI)*4.5,z:-30-Math.sin(j/8*Math.PI)*3.3,r:.53})),
   {x:41,z:22,r:.6},{x:51,z:21,r:.6},{x:54,z:30,r:.6},{x:39,z:31,r:.6},
   {x:-6,z:10,r:.8},{x:8,z:9,r:.8},{x:13,z:-7,r:.8},{x:-15,z:-10,r:.8}

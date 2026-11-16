@@ -9,3 +9,5 @@ dialog,.studio,#learning{background:#111d2ef5;color:#c9d3dd;border-color:#bfd0e3
 
 /* Contextual actions leave the scene unobstructed. */
 #place-card{width:260px;padding:17px 20px;background:#142336d9;bottom:25px}#place-kind:empty{display:none}#place-card h2{font-size:15px;margin:0 0 7px}#place-card p{font-size:11px;line-height:1.65}#place-actions{margin-top:10px}#place-actions button{padding:8px 12px}#island-map{height:400px}.world-caption{display:none}@media(max-width:750px){#place-card{bottom:112px;width:230px}#island-map{height:360px}}
+
+.spa-active #ride-hud{background:#3d2d25ed;border-color:#e5bb7d55;color:#f2dbb9}.spa-active #ride-hud button{color:#f5ddbd;border-color:#e4b27b66}#place-actions button{line-height:1.5}

@@ -68,11 +68,16 @@ export function createCompanion({detail='full'}={}){
  const deck=new THREE.Mesh(new THREE.CapsuleGeometry(.34,1.35,4,12),skiMat);deck.rotation.x=Math.PI/2;deck.scale.z=.12;deck.position.set(0,-.86,.12);board.add(deck);
  for(const side of [-1,1]){const binding=new THREE.Mesh(new THREE.BoxGeometry(.23,.1,.34),frameMat);binding.position.set(side*.27,-.79,.12);board.add(binding);}
  const sled=new THREE.Group();sled.name='sled-equipment';shape.add(sled);const wood=new THREE.MeshStandardMaterial({color:'#ad815c',roughness:.85});for(let i=0;i<5;i++){const slat=new THREE.Mesh(new THREE.BoxGeometry(.8,.055,.18),wood);slat.position.set(0,-.88,-.36+i*.2);sled.add(slat);}for(const side of [-1,1]){const runner=new THREE.Mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(side*.4,-1.02,-.65),new THREE.Vector3(side*.4,-1.02,.55),new THREE.Vector3(side*.4,-.8,.77)]),14,.035,6,false),skiMat);sled.add(runner);}
+ const bathTowel=new THREE.Group();bathTowel.name='bath-towel';shape.add(bathTowel);
+ const towelMat=new THREE.MeshStandardMaterial({color:'#f0e3cd',roughness:1});
+ orb(towelMat,0,.67,0,.44,.075,.32,bathTowel);for(const side of [-1,1]){const roll=new THREE.Mesh(new THREE.TorusGeometry(.12,.055,6,14),towelMat);roll.position.set(side*.37,.72,.03);roll.rotation.y=side*.45;bathTowel.add(roll);}
+ const teaCup=new THREE.Group();teaCup.name='tea-cup';shape.add(teaCup);const cup=new THREE.Mesh(new THREE.CylinderGeometry(.14,.12,.19,16),towelMat);teaCup.add(cup);const tea=new THREE.Mesh(new THREE.CircleGeometry(.115,16),new THREE.MeshBasicMaterial({color:'#976e42'}));tea.rotation.x=-Math.PI/2;tea.position.y=.096;teaCup.add(tea);bathTowel.visible=teaCup.visible=false;
+ let appearanceItems=[],relaxing=false;
  let wardrobeGear='none',equipped='none';function equip(kind=wardrobeGear){equipped=kind;skis.visible=kind==='ski';board.visible=kind==='board';sled.visible=kind==='sled';boots.forEach(b=>b.visible=kind==='ski'||kind==='board');}equip();
  let roundness=0;
- function customize(o){const items=selectedItems(o.accessory);wardrobeGear=items.includes('board')?'board':items.includes('ski')?'ski':'none';equip();goggles.visible=items.includes('goggles');velvet.color.set(o.fur||'#f4eee5');fibreMaterial.color.copy(velvet.color);groom(o.fluff??100);glasses.visible=items.includes('sunglasses');roundness=((o.roundness??50)-50)/500;shape.scale.set(1+roundness,1-roundness*.5,1);brooch.visible=items.includes('star');ribbon.visible=items.includes('ribbon');santa.visible=items.includes('santa');}
+ function customize(o){const items=selectedItems(o.accessory);appearanceItems=items;wardrobeGear=items.includes('board')?'board':items.includes('ski')?'ski':'none';equip();goggles.visible=items.includes('goggles');velvet.color.set(o.fur||'#f4eee5');fibreMaterial.color.copy(velvet.color);groom(o.fluff??100);glasses.visible=items.includes('sunglasses');roundness=((o.roundness??50)-50)/500;shape.scale.set(1+roundness,1-roundness*.5,1);brooch.visible=items.includes('star');ribbon.visible=items.includes('ribbon');santa.visible=items.includes('santa');}
  function pose({phase=0,walking=false,time=0,landing=0,still=false,look=0,mode='',lean=0,tilt=0}={}){
-  group.rotation.x=mode==='ski'?tilt:0;
+  const spa=['bath','sauna','lie','tea'].includes(mode);if(spa!==relaxing){relaxing=spa;equip(spa?'none':wardrobeGear);}bathTowel.visible=spa;teaCup.visible=mode==='tea';santa.visible=!spa&&appearanceItems.includes('santa');goggles.visible=!spa&&appearanceItems.includes('goggles');glasses.visible=!spa&&appearanceItems.includes('sunglasses');group.rotation.x=mode==='lie'?-Math.PI/2:mode==='ski'?tilt:0;
   const swing=walking&&!still?Math.sin(phase):0;
   group.rotation.z=mode==='ski'?-lean*.2:still?0:-swing*.065;
   const bounce=still?0:walking?Math.sin(phase*2)*.035:Math.sin(time*2.2)*.009;
@@ -87,7 +92,8 @@ export function createCompanion({detail='full'}={}){
    feet.forEach(f=>{f.position.y=-.5;f.position.z=.65;});
    skis.position.set(0,.3,.52);board.position.set(0,.3,.52);
   }else{shape.rotation.x=0;skis.position.set(0,0,0);board.position.set(0,0,0);}
-  const blink=still?1:((time%5.7)>5.5?Math.max(.06,Math.abs((time%5.7)-5.6)*10):1);
+  if(spa){shape.position.y=mode==='bath'&&!still?Math.sin(time*1.6)*.025:0;shape.rotation.x=0;feet.forEach(f=>{f.position.y=-.52;f.position.z=.58;});teaCup.position.set(0,-.28+(still?0:Math.max(0,Math.sin(time*.7))**8*.25),.74);}
+  const blink=mode==='lie'?.12:spa?.65:still?1:((time%5.7)>5.5?Math.max(.06,Math.abs((time%5.7)-5.6)*10):1);
   eyes.forEach((e,i)=>{e.scale.y=.094*blink;e.position.x=(i?1:-1)*.205+Math.max(-.025,Math.min(.025,look));});
  }
  customize({});return{group,eyes,feet,customize,pose,equip,get gear(){return wardrobeGear;},get winterReady(){return ['ski','board'].includes(equipped)&&boots.every(b=>b.visible);}};

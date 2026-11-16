@@ -6,10 +6,10 @@ export function buildSpaResort(api){
  const hitMaterial=new T.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false});
  const {scene,M}=api,root=new T.Group();root.name='spa-resort';scene.add(root);
  const interactive=[],steam=[],waterSurfaces=[],moving=new Set();
- const snow=M('#e8eeeb',.98,0),stone=M('#81918d',.94,0),stoneLight=M('#b5bcb0',.96,0),stoneDark=M('#536763',.94,0),rock=M('#5c6c70',.97,0),rockShade=M('#485b62',.98,0),cedar=M('#99775a',.92,0),cedarLight=M('#b49b78',.96,0),cedarDark=M('#5f5145',.94,0),slate=M('#3e5358',.86,.04),brass=M('#b59b72',.6,.2),cloth=M('#ece4d0',1,0),green=M('#335b50',1,0),greenLight=M('#4d7262',1,0);
- const water=new T.MeshPhysicalMaterial({color:'#6eaaa4',roughness:.22,metalness:.05,transparent:true,opacity:.88,clearcoat:.35,depthWrite:false});
+ const snow=M('#e8eeeb',.98,0),stone=M('#aa9b86',.94,0),stoneLight=M('#c7b69b',.96,0),stoneDark=M('#756353',.94,0),rock=M('#5c6c70',.97,0),rockShade=M('#485b62',.98,0),cedar=M('#b17e52',.92,0),cedarLight=M('#d2aa72',.96,0),cedarDark=M('#70513b',.94,0),slate=M('#3e5358',.86,.04),brass=M('#b59b72',.6,.2),cloth=M('#ece4d0',1,0),green=M('#335b50',1,0),greenLight=M('#4d7262',1,0);
+ const water=new T.MeshPhysicalMaterial({color:'#8db6a7',emissive:'#a1793d',emissiveIntensity:.12,roughness:.65,metalness:0,transparent:true,opacity:.84,clearcoat:.08,depthWrite:false});
  const paleWater=new T.MeshBasicMaterial({color:'#b5d9ce',transparent:true,opacity:.24,depthWrite:false});
- const lamp=new T.MeshStandardMaterial({color:'#e9d5ad',emissive:'#d7ad66',emissiveIntensity:.24,roughness:.72});
+ const lamp=new T.MeshStandardMaterial({color:'#ffe4b2',emissive:'#ffc177',emissiveIntensity:.62,roughness:.72});
  let seed=913;const rand=()=>{seed=seed*16807%2147483647;return(seed-1)/2147483646;};
  const cube=new T.BoxGeometry(1,1,1),sphere=new T.SphereGeometry(1,12,8);
  function mesh(geo,mat,x=0,y=0,z=0,parent=root){const m=new T.Mesh(geo,mat);m.position.set(x,y,z);m.castShadow=!mat.transparent;m.receiveShadow=true;parent.add(m);return m;}
@@ -39,13 +39,13 @@ export function buildSpaResort(api){
  // Stone terraces surround the water; pool shells stay below the deck.
  for(let poolIndex=0;poolIndex<pools.length;poolIndex++){
   const p=pools[poolIndex],ring=shape(outline(p.x,p.z,p.rx+1.9,p.rz+1.9,80,.025));ring.holes.push(new T.Path(outline(p.x,p.z,p.rx,p.rz,64).reverse()));const g=new T.ShapeGeometry(ring,1);g.rotateX(-Math.PI/2);mesh(g,stoneLight,0,.145,0);
-  const basin=shape(outline(p.x,p.z,p.rx*.99,p.rz*.99,64)),bg=new T.ShapeGeometry(basin,1);bg.rotateX(-Math.PI/2);mesh(bg,stoneDark,0,-.43,0);
+  const basin=shape(outline(p.x,p.z,p.rx*.99,p.rz*.99,64)),bg=new T.ShapeGeometry(basin,1);bg.rotateX(-Math.PI/2);mesh(bg,stoneDark,0,-1.05,0);
   const wg=bg.clone(),surface=mesh(wg,water,0,.025,0);surface.name='recessed-hot-spring';waterSurfaces.push(surface);moving.add(surface);
-  const wall=[],wallIdx=[];const edge=outline(p.x,p.z,p.rx,p.rz,64);for(let i=0;i<=64;i++){const e=edge[i%64];wall.push(e.x,.15,-e.y,e.x,-.44,-e.y);if(i<64){const k=i*2;wallIdx.push(k,k+1,k+2,k+2,k+1,k+3);}}const wallGeo=new T.BufferGeometry();wallGeo.setAttribute('position',new T.Float32BufferAttribute(wall,3));wallGeo.setIndex(wallIdx);wallGeo.computeVertexNormals();mesh(wallGeo,stoneDark);
+  const wall=[],wallIdx=[];const edge=outline(p.x,p.z,p.rx,p.rz,64);for(let i=0;i<=64;i++){const e=edge[i%64];wall.push(e.x,.15,-e.y,e.x,-1.06,-e.y);if(i<64){const k=i*2;wallIdx.push(k,k+1,k+2,k+2,k+1,k+3);}}const wallGeo=new T.BufferGeometry();wallGeo.setAttribute('position',new T.Float32BufferAttribute(wall,3));wallGeo.setIndex(wallIdx);wallGeo.computeVertexNormals();mesh(wallGeo,stoneDark);
   const stones=poolIndex?30:52;for(let i=0;i<stones;i++){const a=i/stones*Math.PI*2,f=1+Math.sin(a*3+.6)*.025+Math.sin(a*5-.3)*.0125,x=p.x+Math.cos(a)*p.rx*f,z=p.z+Math.sin(a)*p.rz*f,sz=.48+rand()*.16,b=oval(i%4?stone:stoneDark,x,.25,z,sz,.24+rand()*.08,sz*.8);b.rotation.y=-a;if(i%4===0&&z>p.z+1)oval(snow,x,.46,z,sz*.8,.065,sz*.6);}
   for(let j=0;j<5;j++){const r=.8+j*(poolIndex?.43:.85),m=mesh(new T.RingGeometry(r-.012,r+.012,64),paleWater,p.x-.4,.034,p.z+.2);m.rotation.x=-Math.PI/2;m.scale.y=.76;moving.add(m);waterSurfaces.push(m);}
   // Steam is translucent vapour with normal blending, not emissive light.
-  if(api.glowMap)for(let i=0;i<(poolIndex?4:9);i++){const a=rand()*Math.PI*2,r=Math.sqrt(rand())*.7,x=p.x+Math.cos(a)*p.rx*r,z=p.z+Math.sin(a)*p.rz*r,mat=new T.SpriteMaterial({map:api.glowMap,color:'#e2ece7',transparent:true,opacity:.055,depthWrite:false,blending:T.NormalBlending}),s=new T.Sprite(mat);s.position.set(x,.7,z);s.scale.set(2.7,1.8,1);root.add(s);moving.add(s);steam.push({s,x,z,phase:rand()});}
+  if(api.glowMap)for(let i=0;i<(poolIndex?6:14);i++){const a=rand()*Math.PI*2,r=Math.sqrt(rand())*.7,x=p.x+Math.cos(a)*p.rx*r,z=p.z+Math.sin(a)*p.rz*r,mat=new T.SpriteMaterial({map:api.glowMap,color:'#fff0d9',transparent:true,opacity:.14,depthWrite:false,blending:T.NormalBlending}),s=new T.Sprite(mat);s.position.set(x,.7,z);s.scale.set(2.7,1.8,1);root.add(s);moving.add(s);steam.push({s,x,z,phase:rand()});}
  }
  // Two low ledges make the large bath readable from the footpath.
  for(const [x,z,w,d]of [[-17.8,124,1.15,4],[-8,116.3,4,1],[-23.8,132,1,2.7]]){box(w,.22,d,cedarDark,x,.24,z);for(let i=0;i<Math.max(3,Math.round(w/.17));i++)box(.13,.07,d,cedarLight,x-w/2+.1+i*.17,.39,z);}
@@ -82,9 +82,23 @@ export function buildSpaResort(api){
  function pine(x,z,h){mesh(new T.CylinderGeometry(.07,.16,h*.74,8),cedarDark,x,h*.37,z);for(let i=0;i<5;i++){const y=h*(.25+i*.14),r=h*(.28-i*.043);const c=mesh(new T.ConeGeometry(r,h*.36,10),i%2?green:greenLight,x,y,z);c.rotation.y=i*.4;const snowCap=mesh(new T.ConeGeometry(r*.82,h*.27,10),snow,x,y+h*.055,z);snowCap.rotation.y=i*.4;}}
  for(const [x,z,h]of [[-24,113,5.5],[-26,119,6.3],[-26,126,5.2],[-24,137,6],[-15,141,7],[-7,143,6.5],[1,144,7.2],[9,142,6.6],[17,139,6],[24,132,7],[27,124,6.5],[25,114,6],[-11,100,4.6],[10,99,5.5],[-18,104,5.8],[19,106,5]])pine(x,z,h);
  for(const [x,z,rx,rz]of [[-8,105,2.8,1.9],[8,105,2.5,1.8],[-21,111,2.8,1.5],[23,112,2.2,1.5]]){for(let i=0;i<5;i++){const a=i*2.4,r=Math.sqrt(rand()),b=oval(stoneDark,x+Math.cos(a)*rx*r,.33,z+Math.sin(a)*rz*r,.6+rand()*.7,.45+rand()*.4,.5+rand()*.7);b.rotation.y=a;oval(snow,b.position.x,b.position.y+.4,b.position.z,b.scale.x*.85,.12,b.scale.z*.8);}}
+
+ // A few local pools of amber light make warmth belong to the rooms and water.
+ for(const [x,y,z,power,range] of [[-15,3.2,119,55,20],[8,3.3,124,70,16],[17,3.3,127,65,15]]){const light=new T.PointLight('#ffc484',power,range,2);light.position.set(x,y,z);root.add(light);}
+ function paperLamp(x,y,z,r=.48){const shade=oval(lamp,x,y,z,r,r*.78,r);shade.castShadow=false;for(let j=-2;j<=2;j++){const yy=j*r*.24,rr=r*Math.sqrt(Math.max(.1,1-(yy/(r*.78))**2));const hoop=mesh(new T.TorusGeometry(rr,.012,5,24),cedarDark,x,y+yy,z);hoop.rotation.x=Math.PI/2;}rod([x,y+r*.8,z],[x,y+r*1.7,z],.018,brass);}
+ for(const [x,z] of [[5,121],[8,127],[16,123],[19,129]])paperLamp(x,3.5,z);
+ // Folded linen and padded cedar loungers invite a different posture from the bath.
+ const cushion=M('#d8ad88',1,0);
+ for(const z of [124.9,127.9]){oval(cushion,17,1.12,z,1,.17,1.25);oval(cloth,17,1.28,z+1,.8,.19,.3);for(let j=0;j<4;j++)box(1.65,.018,.025,cloth,17,1.29,z-.6+j*.12);}
+ for(const [x,z] of [[6,120],[19,131],[-16,116]]){const basket=mesh(new T.CylinderGeometry(.48,.38,.55,20),cedar,x,.51,z);for(let i=0;i<8;i++){const ring=mesh(new T.TorusGeometry(.39+i*.01,.018,5,24),cedarDark,x,.27+i*.065,z);ring.rotation.x=Math.PI/2;}for(let i=0;i<3;i++){const roll=mesh(new T.CylinderGeometry(.13,.13,.6,14),cloth,x-.24+i*.24,.87,z);roll.rotation.x=Math.PI/2;}}
+ // A little timber landing and broad submerged treads lead into the main bath.
+ for(let i=0;i<4;i++)box(2.5,.18,.65,stoneLight,-10,.10-i*.27,117.6+i*.55);
+ for(const side of [-1,1])rod([-10+side*1.35,.65,117.3],[-10+side*1.35,-.1,119.5],.045,brass);
+ // Low privacy screens frame the garden without closing the approach.
+ for(const [cx,cz,n] of [[-22,122,5],[-8,133,8]])for(let i=0;i<n;i++){box(.12,1.9,.13,cedarDark,cx+i*.34,1.05,cz);if(i===0||i===n-1)oval(snow,cx+i*.34,2.04,cz,.14,.07,.15);}
  target('onsen',-10,.7,124,14.8,1.5,12.8);target('sauna',12,2.2,125,18,4.3,16);
  // Merge opaque static geometry by material while keeping water and vapour separate.
  root.updateMatrixWorld(true);const groups=new Map();root.traverse(o=>{if(!o.isMesh||moving.has(o)||Array.isArray(o.material))return;const key=o.material.uuid;if(!groups.has(key))groups.set(key,{material:o.material,items:[]});groups.get(key).items.push(o);});
  for(const {material,items}of groups.values()){if(items.length<2)continue;const chunks={position:[],normal:[],uv:[]};let count=0;for(const o of items){let g=o.geometry.clone().applyMatrix4(o.matrixWorld);if(g.index){const old=g;g=g.toNonIndexed();old.dispose();}if(!g.attributes.normal)g.computeVertexNormals();const size=g.attributes.position.count;chunks.position.push(g.attributes.position.array);chunks.normal.push(g.attributes.normal.array);chunks.uv.push(g.attributes.uv?.array||new Float32Array(size*2));count+=size;g.dispose();o.removeFromParent();}const g=new T.BufferGeometry();for(const key of Object.keys(chunks)){const size=key==='uv'?2:3,out=new Float32Array(count*size);let at=0;for(const chunk of chunks[key]){out.set(chunk,at);at+=chunk.length;}g.setAttribute(key,new T.BufferAttribute(out,size));}g.computeBoundingSphere();mesh(g,material);}
- return{root,interactive,update(time,still){for(const {s,x,z,phase}of steam){const t=still?.4:(time*.075+phase)%1;s.position.set(x+(still?0:Math.sin(time*.12+phase)*.3),.35+t*2.4,z);s.scale.set(2.2+t*1.3,1.2+t*1.8,1);s.material.opacity=Math.sin(t*Math.PI)*.055;}}};
+ return{root,interactive,update(time,still){for(const {s,x,z,phase}of steam){const t=still?.4:(time*.075+phase)%1;s.position.set(x+(still?0:Math.sin(time*.12+phase)*.3),.25+t*3.5,z);s.scale.set(2.5+t*2.4,1.7+t*2.1,1);s.material.opacity=Math.sin(t*Math.PI)*.32;}}};
 }
