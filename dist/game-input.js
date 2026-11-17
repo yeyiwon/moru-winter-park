@@ -6,7 +6,7 @@ export function joystickVector(dx,dy,radius=42,deadZone=.08){
 export function createTouchControls({canvas,joystick,jumpButton,brakeButton,onMove,onOrbit,onZoom,onTap,onJump,locked=()=>false,onCancel=()=>{}}){
  const stick=joystick.querySelector('.joystick-stick'),pointers=new Map();
  let joyId=null,jumpId=null,mode='walk',pinch=0,moved=false,tapStart=null,braking=false;
- const blocked=()=>locked()||mode==='lift';
+ const blocked=()=>locked()||['lift','ride'].includes(mode);
  const own=e=>{e.preventDefault();e.stopPropagation();};
  function releaseJoy(){joyId=null;onMove(0,0);stick.style.transform='translate(-50%,-50%)';joystick.classList.remove('active');}
  function releaseBrake(){braking=false;brakeButton.classList.remove('active');}
@@ -18,7 +18,7 @@ export function createTouchControls({canvas,joystick,jumpButton,brakeButton,onMo
  jumpButton.addEventListener('pointerdown',e=>{own(e);if(!blocked()&&mode==='walk'&&jumpId===null){jumpId=e.pointerId;jumpButton.setPointerCapture(e.pointerId);jumpButton.classList.add('active');onJump();}});
  for(const event of ['pointerup','pointercancel','lostpointercapture'])jumpButton.addEventListener(event,e=>{if(e.pointerId===jumpId){jumpId=null;jumpButton.classList.remove('active');}});
  jumpButton.addEventListener('click',e=>{if(e.detail===0&&!e.pointerType&&jumpId===null&&!blocked()&&mode==='walk')onJump();});
- brakeButton.addEventListener('pointerdown',e=>{own(e);if(!['ski','skate','bumper'].includes(mode)||blocked())return;brakeButton.setPointerCapture(e.pointerId);braking=true;brakeButton.classList.add('active');});
+ brakeButton.addEventListener('pointerdown',e=>{own(e);if(!['ski','skate'].includes(mode)||blocked())return;brakeButton.setPointerCapture(e.pointerId);braking=true;brakeButton.classList.add('active');});
  for(const event of ['pointerup','pointercancel','lostpointercapture'])brakeButton.addEventListener(event,releaseBrake);
  canvas.addEventListener('pointerdown',e=>{if(locked())return;e.preventDefault();document.activeElement?.blur();canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===1){tapStart={x:e.clientX,y:e.clientY};moved=false;}else{moved=true;pinch=distance();}});
  function distance(){const [a,b]=[...pointers.values()];return a&&b?Math.hypot(a.x-b.x,a.y-b.y):0;}
@@ -26,5 +26,5 @@ export function createTouchControls({canvas,joystick,jumpButton,brakeButton,onMo
  canvas.addEventListener('pointerup',e=>{if(!pointers.has(e.pointerId))return;const tap=pointers.size===1&&!moved&&!locked();pointers.delete(e.pointerId);pinch=0;if(tap)onTap(e);if(!pointers.size)tapStart=null;});
  for(const event of ['pointercancel','lostpointercapture'])canvas.addEventListener(event,e=>{pointers.delete(e.pointerId);pinch=0;moved=true;});
  window.addEventListener('blur',reset);document.addEventListener('visibilitychange',reset);window.addEventListener('lab:pause',reset);window.addEventListener('orientationchange',reset);
- return{reset,get braking(){return braking;},setMode(next){next=['ski','skate','bumper','lift'].includes(next)?next:'walk';if(next===mode)return;reset();mode=next;document.body.dataset.controls=mode;joystick.setAttribute('aria-disabled',String(mode==='lift'));jumpButton.disabled=mode!=='walk';brakeButton.hidden=!['ski','skate','bumper'].includes(mode);}};
+ return{reset,get braking(){return braking;},setMode(next){next=['carousel','ferris','bath','sauna','lie','tea','rest'].includes(next)?'ride':['ski','skate','lift'].includes(next)?next:'walk';if(next===mode)return;reset();mode=next;document.body.dataset.controls=mode;joystick.setAttribute('aria-disabled',String(mode==='lift'));jumpButton.disabled=mode!=='walk';brakeButton.hidden=!['ski','skate'].includes(mode);}};
 }

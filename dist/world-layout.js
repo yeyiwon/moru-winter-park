@@ -13,22 +13,29 @@ export const islands=[
   {id:'wish',name:'트리 광장',subject:'크리스마스 · 산책',x:108,z:35,r:27,color:'#d7be91',spawn:{x:108,z:53}},
   {id:'spa',name:'설림 온천 마을',subject:'노천 온천 · 편백 휴양관',x:0,z:119,r:31,color:'#b5cdc0',spawn:{x:0,z:96}}
 ];
-islands.push({id:'festival',name:'놀이공원 서쪽',subject:'회전 컵 · 범퍼카',x:-63,z:0,r:25,color:'#e0b7d2',spawn:{x:-42,z:0}});
+islands.push({id:'festival',name:'일루미네이션 가든',subject:'겨울 야경 · 포토 가든',x:-63,z:0,r:25,color:'#e0b7d2',spawn:{x:-42,z:0}});
 islands.push({id:'rink',name:'아이스링크',subject:'스케이트 · 겨울 라운지',x:-58,z:94,r:29,color:'#b4dcdf',spawn:{x:-34,z:94}});
-export const bridges=[[islands[0],islands[3]],[islands[0],islands[4]],[islands[4],islands[9]]];
-export function bridgeHeight(x,z){for(const [a,b] of bridges){const length=Math.hypot(b.x-a.x,b.z-a.z),d=((x-a.x)*(b.x-a.x)+(z-a.z)*(b.z-a.z))/length,start=a.r-1,end=length-b.r+1;if(d>=start&&d<=end&&segmentDistance(x,z,a,b)<2.7)return .09+Math.sin((d-start)/(end-start)*Math.PI)*.35;}return .09;}
-export function segmentDistance(x,z,a,b){const dx=b.x-a.x,dz=b.z-a.z,t=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/(dx*dx+dz*dz)));return Math.hypot(x-a.x-t*dx,z-a.z-t*dz);}
-// A single connected snowfield; districts are labels, never isolated walkable discs.
-export const snowfields=[
- {a:{x:0,z:0},b:{x:-63,z:0},r:39},
- {a:{x:0,z:5},b:{x:46,z:27},r:28},
- {a:{x:46,z:27},b:{x:108,z:35},r:29},
- {a:{x:0,z:25},b:{x:0,z:119},r:36},
- {a:{x:0,z:105},b:{x:-58,z:94},r:31},
- {a:{x:0,z:-10},b:{x:-9,z:-156},r:24}
+// Explicit landings keep wide bridges separate from the shape of each district.
+export const bridgeHalfWidth=3.6;
+const landing=(x,z)=>({x,z,r:1});
+export const bridges=[[[24,14],[34,20]],[[0,32],[0,35]],[[0,71],[0,91]],[[62,29],[83,32]],[[ -28,104],[-35,101]],[[0,-27],[0,-121]]].map(([a,b])=>[landing(...a),landing(...b)]);
+export function bridgeHeight(x,z){for(const [a,b] of bridges){const length=Math.hypot(b.x-a.x,b.z-a.z),d=((x-a.x)*(b.x-a.x)+(z-a.z)*(b.z-a.z))/length;if(d>=0&&d<=length&&segmentDistance(x,z,a,b)<bridgeHalfWidth+.4)return .09+Math.sin(d/length*Math.PI)*Math.min(.7,length*.025);}return .09;}
+export function segmentDistance(x,z,a,b){const dx=b.x-a.x,dz=b.z-a.z,t=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-a.x-t*dx,z-a.z-t*dz);}
+// The west gardens and rides share ONE large island. Other districts have real air gaps.
+export const landforms=[
+ {id:'park',x:-29,z:0,rx:75,rz:34,depth:24,phase:.2},
+ {id:'philosophy',x:46,z:27,rx:19,rz:18,depth:16,phase:1.7},
+ {id:'nature',x:0,z:53,rx:27,rz:20,depth:18,phase:3.1},
+ {id:'wish',x:108,z:35,rx:30,rz:29,depth:25,phase:4.3},
+ {id:'spa',x:0,z:119,rx:37,rz:32,depth:24,phase:5.7},
+ {id:'rink',x:-58,z:94,rx:33,rz:29,depth:19,phase:2.4},
+ {id:'alpine',x:0,z:-260,rx:144,rz:144,depth:45,phase:1.2}
 ];
-export function snowfieldDistance(x,z){return Math.min(...snowfields.map(p=>segmentDistance(x,z,p.a,p.b)-p.r),Math.hypot(x,z+260)-144);}
-export function terrainAt(x,z){return Number.isFinite(x+z)&&(!!interiorAt(x,z)||snowfieldDistance(x,z)<-.65);}
+export function landRadius(form,angle){return 1+.018*Math.sin(angle*5+form.phase)+.012*Math.sin(angle*9-form.phase);}
+export function landDistance(x,z,form){const dx=(x-form.x)/form.rx,dz=(z-form.z)/form.rz;return(Math.hypot(dx,dz)-landRadius(form,Math.atan2(dz,dx)))*Math.min(form.rx,form.rz);}
+export const snowfields=landforms.map(f=>({a:{x:f.x,z:f.z},b:{x:f.x,z:f.z},r:f.rz}));
+export function snowfieldDistance(x,z){return Math.min(...landforms.map(f=>landDistance(x,z,f)),...bridges.map(([a,b])=>segmentDistance(x,z,a,b)-bridgeHalfWidth));}
+export function terrainAt(x,z){return Number.isFinite(x+z)&&(!!interiorAt(x,z)||snowfieldDistance(x,z)<-.35);}
 export function islandAt(x,z){return islands.filter(i=>!i.hidden).sort((a,b)=>Math.hypot(x-a.x,z-a.z)-Math.hypot(x-b.x,z-b.z)).find(i=>Math.hypot(x-i.x,z-i.z)<i.r+15);}
 
 // Learning functions remain independent of the seven visual island identities.

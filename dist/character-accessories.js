@@ -4,8 +4,9 @@ import * as THREE from './vendor/three.module.js';
 // visitors. Each piece is one mesh, with a small number of material draw groups.
 const cache=new Map();
 const materials={
- black:new THREE.MeshPhysicalMaterial({color:'#101116',roughness:.25,metalness:.22,clearcoat:.9}),
- smoke:new THREE.MeshPhysicalMaterial({color:'#161d28',roughness:.13,metalness:.35,clearcoat:1}),
+ black:new THREE.MeshPhysicalMaterial({color:'#101116',roughness:.28,metalness:.04,clearcoat:.75}),
+ smoke:new THREE.MeshPhysicalMaterial({color:'#171d26',roughness:.18,metalness:.08,clearcoat:.9}),
+ lensGlint:new THREE.MeshBasicMaterial({color:'#b4c9d3',transparent:true,opacity:.32}),
  silver:new THREE.MeshStandardMaterial({color:'#d6e2e6',metalness:.92,roughness:.23}),
  crystal:new THREE.MeshPhysicalMaterial({color:'#d7ebef',transparent:true,opacity:.13,roughness:.09,metalness:.1,depthWrite:false}),
  glint:new THREE.MeshBasicMaterial({color:'#dcebf0',transparent:true,opacity:.6}),
@@ -13,8 +14,10 @@ const materials={
  gem:new THREE.MeshPhysicalMaterial({color:'#a5d6d0',metalness:.18,roughness:.12,clearcoat:1}),
  satin:new THREE.MeshPhysicalMaterial({color:'#a38caf',roughness:.5,side:THREE.DoubleSide,sheen:1,sheenColor:'#efd9f3',sheenRoughness:.36}),
  satinEdge:new THREE.MeshPhysicalMaterial({color:'#d0b3d8',roughness:.64,sheen:.9}),
- knit:new THREE.MeshPhysicalMaterial({color:'#b696a6',roughness:1,sheen:.8,sheenColor:'#ead2d8'}),
- knitRib:new THREE.MeshStandardMaterial({color:'#d3b6c0',roughness:1}),
+ knit:new THREE.MeshPhysicalMaterial({color:'#d5c6b4',roughness:1,sheen:.8,sheenColor:'#f0e5d7'}),
+ knitRib:new THREE.MeshStandardMaterial({color:'#e7dbcb',roughness:1}),
+ wool:new THREE.MeshPhysicalMaterial({color:'#5e6878',roughness:1,sheen:.85,sheenColor:'#a9b1c0',sheenRoughness:1}),
+ woolBand:new THREE.MeshStandardMaterial({color:'#4d5666',roughness:1}),
 };
 function merge(parts){
  const geometry=new THREE.BufferGeometry(),attributes={position:[],normal:[],uv:[]};let count=0;
@@ -30,27 +33,39 @@ function merge(parts){
 }
 function tube(points,radius=.01,segments=24,sides=6,closed=false){return new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p)),closed),segments,radius,sides,closed);}
 function sphere(position,scale,segments=16){return new THREE.SphereGeometry(1,segments,12).scale(...scale).translate(...position);}
-function extrude(shape,depth=.016,bevel=.004){return new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:true,bevelSize:bevel,bevelThickness:bevel,bevelSegments:3,curveSegments:18});}
+function extrude(shape,depth=.016,bevel=.004,curveSegments=18){return new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:true,bevelSize:bevel,bevelThickness:bevel,bevelSegments:3,curveSegments});}
 function star(radius=.15,inner=.073){const shape=new THREE.Shape();for(let i=0;i<10;i++){const a=Math.PI/2+i*Math.PI/5,r=i%2?inner:radius;i?shape.lineTo(Math.cos(a)*r,Math.sin(a)*r):shape.moveTo(Math.cos(a)*r,Math.sin(a)*r);}shape.closePath();return shape;}
 function curveEyewear(geometry){const p=geometry.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i);p.setZ(i,p.getZ(i)+.77-.115*(x/.6)**2);}geometry.computeVertexNormals();return geometry;}
-function eyeContour(side,scale=1){
- // Swept upper corners and a narrow lower rim give an original, angular frame.
- const points=[[.063,.19],[.17,.276],[.445,.263],[.57,.208],[.503,.047],[.345,-.024],[.138,.005],[.074,.083]],shape=new THREE.Shape();
- const center=[.315,.126],p=points.map(([x,y])=>[side*(center[0]+(x-center[0])*scale),center[1]+(y-center[1])*scale]);
- shape.moveTo(...p[0]);for(let i=1;i<p.length;i++)shape.lineTo(...p[i]);shape.closePath();return shape;
+function eyeContour(side,style,scale=1){
+ const shape=new THREE.Shape(),point=(x,y)=>[side*(.255+(x-.255)*scale),.09+(y-.09)*scale];
+ const move=(x,y)=>shape.moveTo(...point(x,y)),line=(x,y)=>shape.lineTo(...point(x,y)),curve=(x,y,ex,ey)=>shape.quadraticCurveTo(...point(x,y),...point(ex,ey));
+ if(style==='oval')shape.absellipse(side*.255,.09,.196*scale,.123*scale,0,Math.PI*2,side<0);
+ else if(style==='cat-eye'){
+  move(.066,.145);curve(.081,.205,.174,.211);curve(.331,.216,.479,.264);
+  curve(.494,.268,.484,.239);line(.446,.071);curve(.43,-.024,.33,-.027);
+  line(.166,-.023);curve(.093,-.018,.078,.053);curve(.064,.109,.066,.145);
+ }else{
+  move(.066,.177);curve(.062,.221,.112,.225);line(.407,.22);curve(.458,.216,.454,.172);
+  line(.433,.029);curve(.425,-.031,.367,-.036);line(.153,-.042);
+  curve(.096,-.038,.083,.016);line(.066,.147);curve(.063,.162,.066,.177);
+ }
+ shape.closePath();return shape;
 }
-function sunglasses(){
+function sunglasses(style='classic'){
  const parts=[],add=(geometry,material)=>parts.push({geometry,material});
  for(const side of [-1,1]){
-  const outer=eyeContour(side),inner=eyeContour(side,.79),hole=new THREE.Path(inner.getPoints());outer.holes.push(hole);
-  add(curveEyewear(extrude(outer,.039,.009)),0);
-  add(curveEyewear(extrude(inner,.014,.004).translate(0,0,.023)),1);
-  add(tube([[side*.545,.2,.66],[side*.635,.19,.42],[side*.683,.16,.08],[side*.663,.08,-.16]],.025,22,8),0);
-  add(tube([[side*.52,.208,.688],[side*.565,.204,.643]],.011,6,6),2);
-  add(curveEyewear(tube([[side*.19,.212,.045],[side*.33,.222,.045],[side*.415,.209,.045]],.005,12,5)),3);
+  // Thin acetate rims surround inset lenses; curved temples reach the sides of the unchanged head.
+  const outer=eyeContour(side,style),inner=eyeContour(side,style,.88);outer.holes.push(new THREE.Path(inner.getPoints(10)));
+  add(curveEyewear(extrude(outer,.022,.004,10)),0);
+  add(curveEyewear(extrude(inner,.007,.002,10).translate(0,0,.01)),1);
+  const hinge=style==='cat-eye'?[.467,.217]:style==='oval'?[.441,.112]:[.441,.175];
+  add(tube([[side*hinge[0],hinge[1],.715],[side*.578,.15,.44],[side*.684,.105,.07],[side*.657,.035,-.17]],.012,24,8),0);
+  add(tube([[side*(hinge[0]-.012),hinge[1],.727],[side*(hinge[0]+.018),hinge[1]-.008,.707]],.005,6,6),2);
+  const reflection=style==='oval'?[[.13,.139],[.187,.175],[.247,.18]]:style==='cat-eye'?[[.13,.166],[.225,.18],[.316,.191]]:[[.132,.18],[.222,.185],[.305,.18]];
+  add(curveEyewear(tube(reflection.map(([x,y])=>[side*x,y,.02]),.0025,12,5)),3);
  }
- add(tube([[-.085,.173,.787],[0,.19,.8],[.085,.173,.787]],.019,14,8),0);
- return {geometry:merge(parts),materials:[materials.black,materials.smoke,materials.silver,materials.glint],name:'sunglasses'};
+ const bridgeY=style==='oval'?.11:.142;add(tube([[-.071,bridgeY,.772],[0,bridgeY+.019,.784],[.071,bridgeY,.772]],.011,14,8),0);
+ return {geometry:merge(parts),materials:[materials.black,materials.smoke,materials.silver,materials.lensGlint],name:style==='classic'?'sunglasses':style+'-sunglasses'};
 }
 function silverGlasses(){
  const parts=[],add=(geometry,material)=>parts.push({geometry,material});
@@ -126,8 +141,18 @@ function scarf(remote){
  parts.push({geometry:sphere([-.23,-.265,.64],[.12,.09,.075]),material:0});
  return {geometry:merge(parts),materials:[materials.knit,materials.knitRib],name:'winter-scarf'};
 }
+function beret(){
+ const profile=[[.43,-.015],[.47,0],[.56,.025],[.59,.08],[.56,.14],[.46,.22],[.31,.27],[.14,.309],[0,.31]].map(p=>new THREE.Vector2(...p));
+ const cap=new THREE.LatheGeometry(profile,56),position=cap.attributes.position;
+ for(let i=0;i<position.count;i++){const x=position.getX(i),y=position.getY(i),z=position.getZ(i);position.setXYZ(i,x+.18*y,y+.012*Math.sin(Math.atan2(z,x)*3)*Math.hypot(x,z),z*.88);}cap.computeVertexNormals();
+ const band=new THREE.TorusGeometry(.437,.019,8,56).rotateX(Math.PI/2).scale(1,1,.88).translate(0,-.006,0);
+ const stem=tube([[.056,.3,0],[.063,.325,.001],[.081,.348,.005]],.014,12,7);
+ const geometry=merge([{geometry:cap,material:0},{geometry:band,material:1},{geometry:stem,material:0}]);
+ geometry.rotateZ(-.12).translate(-.055,.69,-.035);
+ return {geometry,materials:[materials.wool,materials.woolBand],name:'wool-beret'};
+}
 export function createStyleAccessories({detail='full'}={}){
  const level=detail==='remote'?'remote':'full';
- if(!cache.has(level))cache.set(level,{glasses:sunglasses(),silverGlasses:silverGlasses(),crown:crown(),brooch:brooch(),ribbon:ribbon(),scarf:scarf(level==='remote')});
+ if(!cache.has(level))cache.set(level,{glasses:sunglasses(),ovalGlasses:sunglasses('oval'),catEyeGlasses:sunglasses('cat-eye'),silverGlasses:silverGlasses(),crown:crown(),brooch:brooch(),ribbon:ribbon(),scarf:scarf(level==='remote'),beret:beret()});
  return Object.fromEntries(Object.entries(cache.get(level)).map(([key,spec])=>{const mesh=new THREE.Mesh(spec.geometry,spec.materials);mesh.name=spec.name;mesh.visible=false;mesh.castShadow=true;if(spec.position)mesh.position.set(...spec.position);if(spec.rotation)mesh.rotation.set(...spec.rotation);return[key,mesh];}));
 }

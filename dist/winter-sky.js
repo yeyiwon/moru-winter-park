@@ -11,28 +11,48 @@ export function createWinterSky(scene,hemi,sun,fill,world){
  const snow=new T.Points(geometry,new T.ShaderMaterial({uniforms:snowUniforms,transparent:true,depthWrite:false,toneMapped:false,
   vertexShader:`attribute float flakeSize;attribute float flakePhase;attribute float flakeSpin;uniform float time;uniform float pixelRatio;varying float angle;varying float opacity;void main(){vec4 p=modelViewMatrix*vec4(position,1.);float d=-p.z;angle=flakePhase+time*flakeSpin;opacity=smoothstep(.7,2.,d)*(1.-smoothstep(48.,105.,d))*(.5+flakeSize*.45);gl_PointSize=clamp(flakeSize*310./max(1.,d),1.5,19.)*pixelRatio;gl_Position=projectionMatrix*p;}`,
   fragmentShader:`uniform sampler2D flakeMap;varying float angle;varying float opacity;void main(){float c=cos(angle),s=sin(angle);vec2 uv=mat2(c,-s,s,c)*(gl_PointCoord-.5)+.5;if(any(lessThan(uv,vec2(0.)))||any(greaterThan(uv,vec2(1.))))discard;float alpha=texture2D(flakeMap,uv).a*opacity;if(alpha<.012)discard;gl_FragColor=vec4(.94,.98,1.,alpha);}`}));snow.name='winter-snow-crystals';snow.frustumCulled=false;scene.add(snow);
- // Geometry carries the long folds; opacity never breaks the ribbon into isolated columns.
+ // A tall folded sheet, rather than a luminous line: the lower edge is coherent and rays dissolve upward.
+ // Visual reference: NASA/Joy Ng, https://science.nasa.gov/feature/nasas-guide-to-finding-and-photographing-auroras/
  const auroraUniforms={time:{value:0},night:{value:0}};
  const aurora=new T.Group();aurora.name='winter-auroral-curtains';scene.add(aurora);
- for(const [layer,y,z,yaw]of [[0,161,-320,-.18],[1,190,-385,.23],[2,212,-455,-.34]]){
+ for(const [layer,y,z,yaw]of [[0,220,-360,-.18],[1,238,-440,.28],[2,259,-525,-.34]]){
   const material=new T.ShaderMaterial({uniforms:{...auroraUniforms,layer:{value:layer}},transparent:true,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending,toneMapped:false,
-   vertexShader:`uniform float time;uniform float layer;varying vec2 vUv;void main(){vUv=uv;float x=uv.x,t=time*.018+layer*2.31;vec3 p=position;
-    float fold=sin(x*6.8+t)*18.+sin(x*13.1-t*.63)*7.;
-    p.y+=fold+(uv.y-.5)*(sin(x*8.3+t*.8)*17.+sin(x*3.7-t)*12.);
-    p.z+=sin(x*7.2+t*.64)*47.+sin(x*15.3-t*.37)*14.;
-    p.x+=sin(x*5.1+t*.4)*uv.y*9.;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`,
-   fragmentShader:`uniform float time;uniform float night;uniform float layer;varying vec2 vUv;
+   vertexShader:`uniform float time;uniform float layer;varying vec2 vUv;varying float vFold;void main(){vUv=uv;float x=uv.x,t=time*.016,phase=layer*2.37;vec3 p=position;
+    float sweep=x*5.4+phase+t*.42;
+    float crease=x*18.2+sin(x*6.1+phase)*1.55-t*.58;
+    float hem=sin(sweep)*24.+sin(x*11.3-phase-t*.31)*15.+sin(crease*.77)*7.;
+    float height=.86+.19*sin(x*8.1+phase+t*.27)+.12*sin(x*17.7-phase-t*.19);
+    p.y=(uv.y*height-.5)*(240.-layer*22.)+hem;
+    p.x+=sin(crease)*49.+sin(sweep*.83)*27.;
+    p.z+=cos(crease)*37.+sin(sweep)*76.+sin(x*10.4-phase)*21.;
+    p.x+=pow(uv.y,1.4)*(18.+sin(sweep)*23.);
+    p.z+=uv.y*(14.+cos(sweep*.7)*20.);
+    vFold=.5+.5*cos(crease);gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`,
+   fragmentShader:`uniform float time;uniform float night;uniform float layer;varying vec2 vUv;varying float vFold;
     float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
     float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.,1.)),f.x),f.y);}
-    void main(){float t=time*.018;vec2 uv=vUv;float warp=noise(vec2(uv.x*7.+layer,t*.4))* .11;
-     float h=uv.y-warp;float edge=smoothstep(0.,.12,uv.x)*(1.-smoothstep(.84,1.,uv.x));
-     float curtain=smoothstep(.015,.13,h)*exp(-max(0.,h-.13)*4.2)*(1.-smoothstep(.62,.96,h));
-     float flow=noise(vec2(uv.x*56.+noise(vec2(uv.x*8.,t))*2.5,h*3.-t));
-     float threads=.78+.22*flow;float lower=exp(-pow((h-.13)*15.,2.));
-     vec3 mint=vec3(.16,.57,.43),blue=vec3(.17,.31,.57),violet=vec3(.31,.22,.46);
-     vec3 color=mix(mint,blue,smoothstep(.1,.68,h));color=mix(color,violet,smoothstep(.42,.87,h)*.48);
-     float breath=.9+.1*sin(t*.6+layer);gl_FragColor=vec4(color,(curtain*.48+lower*.08)*threads*edge*night*breath/(1.+layer*.3));}`});
-  const curtain=new T.Mesh(new T.PlaneGeometry(650,88-layer*9,160,24),material);curtain.position.set(0,y,z);curtain.rotation.y=yaw;curtain.frustumCulled=false;aurora.add(curtain);
+    void main(){float t=time*.016;vec2 uv=vUv;float phase=layer*2.37;
+     float drift=noise(vec2(uv.x*8.+phase,t*.25));
+     float lowerEdge=.035+noise(vec2(uv.x*19.+phase,t*.2))*.045;
+     float h=uv.y-lowerEdge;
+     float edge=smoothstep(0.,.12,uv.x)*(1.-smoothstep(.86,1.,uv.x));
+     float onset=smoothstep(-.014,.035,h);
+     float reach=.64+noise(vec2(uv.x*11.+phase,t*.18))*.3;
+     float veil=onset*exp(-max(h,0.)*2.35)*(1.-smoothstep(reach*.64,reach,h));
+     float rayX=uv.x*230.+drift*7.+h*sin(uv.x*9.+phase)*.8;
+     float fine=noise(vec2(rayX,h*.8-t*.3));
+     float fine2=noise(vec2(rayX*1.91+phase,h*1.4+t*.2));
+     float rays=.46+.4*fine+.23*fine2*fine2;
+     float body=.6+.4*noise(vec2(uv.x*21.+phase,t*.2+h*.28));
+     float hem=exp(-pow((h-.035)*22.,2.));
+     float foldGlow=.78+.22*vFold;
+     vec3 green=vec3(.21,.68,.37),mint=vec3(.42,.79,.51),blue=vec3(.16,.36,.49);
+     vec3 color=mix(green,mint,hem*.44);color=mix(color,blue,smoothstep(.18,.79,h)*.67);
+     color=mix(color,vec3(.34,.24,.44),smoothstep(.53,.94,h)*.22);
+     float breath=.94+.06*sin(t*.7+phase);
+     float alpha=(veil*.58+hem*.18)*rays*body*foldGlow*edge*night*breath/(1.+layer*.48);
+     gl_FragColor=vec4(color,alpha);}`});
+  const curtain=new T.Mesh(new T.PlaneGeometry(780,240-layer*22,224,24),material);curtain.name='winter-aurora-sheet-'+layer;curtain.position.set(0,y,z);curtain.rotation.y=yaw;curtain.frustumCulled=false;aurora.add(curtain);
  }
  const a=new T.Color(),b=new T.Color();let skyState=skyAt(12),hour=12,snowEnabled=true;
  try{snowEnabled=localStorage.getItem('winter-snow')!=='off';}catch{}const toggle=document.querySelector('#snow-enabled');if(toggle)toggle.checked=snowEnabled;

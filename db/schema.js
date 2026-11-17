@@ -1,4 +1,4 @@
-import {sqliteTable,text,real,integer,index} from 'drizzle-orm/sqlite-core';
+import {sqliteTable,text,real,integer,index,primaryKey} from 'drizzle-orm/sqlite-core';
 export const visitors=sqliteTable('visitors',{
  id:text('id').primaryKey(),room:text('room').notNull(),name:text('name').notNull(),color:text('color').notNull(),accessory:text('accessory').notNull(),x:real('x').notNull(),z:real('z').notNull(),yaw:real('yaw').notNull(),y:real('y').notNull().default(.95),mode:text('mode').notNull().default(''),seen:integer('seen').notNull(),gesture:text('gesture').notNull(),gestureAt:integer('gesture_at').notNull(),chat:text('chat').notNull().default(''),chatAt:integer('chat_at').notNull().default(0)
 },t=>[index('visitors_room_seen').on(t.room,t.seen)]);
@@ -16,3 +16,5 @@ export const reports=sqliteTable('reports',{id:text('id').primaryKey(),room:text
 export const visitorBlocks=sqliteTable('visitor_blocks',{id:text('id').primaryKey(),createdAt:integer('created_at').notNull()});
 export const quizOverrides=sqliteTable('quiz_overrides',{id:text('id').primaryKey(),payload:text('payload').notNull(),updatedAt:integer('updated_at').notNull()});
 export const worldEvents=sqliteTable('world_events',{id:text('id').primaryKey(),title:text('title').notNull(),startsAt:integer('starts_at').notNull(),endsAt:integer('ends_at').notNull(),kind:text('kind').notNull(),enabled:integer('enabled').notNull().default(1)});
+
+export const rideSeats=sqliteTable('ride_seats',{room:text('room').notNull(),kind:text('kind').notNull(),cabin:integer('cabin').notNull(),seat:integer('seat').notNull(),visitor:text('visitor').notNull().unique(),startedAt:integer('started_at').notNull(),expiresAt:integer('expires_at').notNull()},t=>[primaryKey({columns:[t.room,t.kind,t.cabin,t.seat]})]);

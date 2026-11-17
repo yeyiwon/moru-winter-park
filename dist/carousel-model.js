@@ -121,6 +121,6 @@ export function buildCarousel({sculpted=true}={}){
  const lamps=new T.InstancedMesh(new T.SphereGeometry(.045,8,6),palette.light,bulbPositions.length);lamps.name='carousel-warm-bulbs';for(let i=0;i<bulbPositions.length;i++){transform.position.set(...bulbPositions[i]);transform.rotation.set(0,0,0);transform.scale.set(1,1,1);transform.updateMatrix();lamps.setMatrixAt(i,transform.matrix);}lamps.castShadow=false;root.add(lamps);architecture.finish();
  // Interior rings keep the seats visible at night without a bright central bloom.
  for(const x of [-3.5,3.5]){const light=new T.PointLight('#ffdfa9',11,9,2);light.position.set(x,5.1,0);root.add(light);}
- function update(time,still=false){if(still)return;rotor.rotation.y=time*.10;horses.forEach((horse,i)=>horse.position.y=carouselDimensions.bobBase+Math.sin(time*1.05+i*Math.PI*.5)*carouselDimensions.bobAmplitude);}
+ function update(time,still=false){if(still)return;rotor.rotation.y=-time*.10;horses.forEach((horse,i)=>horse.position.y=carouselDimensions.bobBase+Math.sin(time*1.05+i*Math.PI*.5)*carouselDimensions.bobAmplitude);}
  root.userData.asset='authored-swept-equine-carousel';root.updateMatrixWorld(true);return{root,rotor,seats,horses,update,dimensions:carouselDimensions};
 }

@@ -1,4 +1,5 @@
 import * as T from './vendor/three.module.js';
+import {createRetreatAtmosphere} from './retreat-atmosphere.js';
 import {interiorRooms,ryokanFixtures,conservatoryFixtures,interiorPromenade,interiorPromenadePoint} from './interior-layout.js';
 
 const UP=new T.Vector3(0,1,0);
@@ -86,8 +87,12 @@ function buildRyokan(root,m){
  for(const [x,z]of [[-12,7],[12,10],[-12,-8],[12,-8],[0,-6],[0,8]]){makeLantern(b,m,x,5.25,z,1.1);b.rod([x,6.8,z],[x,6.05,z],.015,m.endgrain);}
  const vista=new T.Group();vista.name='ryokan-window-snow';root.add(vista);snowVista(vista,m,52);
  const light=new T.PointLight('#ffc991',75,38,2);light.position.set(0,5,0);root.add(light);const fill=new T.HemisphereLight('#ffe4bf','#685743',1.5);root.add(fill);
- const steamUniforms={time:{value:0}},steamPositions=[];for(let i=0;i<24;i++)steamPositions.push(Math.sin(i*2.399)*2.35,(i%8)/8*1.8,-11+Math.cos(i*2.399)*1.45);const steamGeometry=new T.BufferGeometry();steamGeometry.setAttribute('position',new T.Float32BufferAttribute(steamPositions,3));const steamMaterial=new T.ShaderMaterial({transparent:true,depthWrite:false,uniforms:steamUniforms,vertexShader:'uniform float time;varying float life;void main(){vec3 p=position;life=mod(p.y+time*.14,1.8)/1.8;p.y=.55+life*1.8;p.x+=sin(time*.3+p.z)*.12;vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=clamp(280./max(1.,-mv.z),2.,45.);gl_Position=projectionMatrix*mv;}',fragmentShader:'varying float life;void main(){float d=length(gl_PointCoord-.5)*2.;float a=exp(-d*d*5.)*.1*sin(life*3.14159);gl_FragColor=vec4(1.,.91,.75,a);}'});const steam=new T.Points(steamGeometry,steamMaterial);steam.name='footbath-steam';root.add(steam);
- mergeFinish(root);return{root,walls,ceiling:ceil,uniforms:[steamUniforms]};
+ const atmosphere=createRetreatAtmosphere(root,{name:'ryokan',
+  waters:[{x:bath.x,y:.344,z:bath.z,rx:2.64,rz:1.74,rect:true,lights:[[0,5.5,-6],[-12,5.5,-8],[12,5.5,-8]]}],
+  vapour:[{x:bath.x,y:.34,z:bath.z-.5,rx:2.15,rz:1.05,rise:1.25,size:.9,count:20,opacity:.11},{x:-13,y:1.25,z:7,rx:.18,rz:.18,rise:.65,size:.32,count:6,opacity:.1},{x:12,y:1.25,z:-9,rx:.18,rz:.18,rise:.65,size:.32,count:6,opacity:.1},{x:stove.x,y:1.5,z:stove.z,rx:.65,rz:.65,rise:1.6,size:.6,count:8,opacity:.065}],
+  lamps:[[-12,7],[12,10],[-12,-8],[12,-8],[0,-6],[0,8]].map(([x,z])=>({x,y:.143,z,rx:3.3,rz:2.5}))
+ });
+ mergeFinish(root);return{root,walls,ceiling:ceil,uniforms:[],atmosphere};
 }
 
 function buildConservatory(root,m){
@@ -131,10 +136,16 @@ function buildConservatory(root,m){
  const glow=new T.MeshBasicMaterial({color:'#b5e2cf',transparent:true,opacity:.18,depthWrite:false});for(let i=0;i<6;i++){const r=.7+i*.35,ring=b.mesh(new T.RingGeometry(r-.016,r+.016,48),glow,-3.1,.225,3);ring.rotation.x=-Math.PI/2;ring.scale.y=.42;ring.userData.ripplePhase=i/6;}
  for(const o of conservatoryFixtures.filter(o=>o.id.includes('bench'))){b.box(o.rx*2,.35,o.rz*2,m.navy,o.x,.32,o.z);for(let j=0;j<6;j++)b.box(o.rx*2,.08,.18,m.lightWood,o.x,.55,o.z-.5+j*.2);for(const side of [-1,1])b.rod([o.x+side*(o.rx-.2),.1,o.z],[o.x+side*(o.rx-.2),1.15,o.z+.5],.05,m.silver);b.box(o.rx*2,.35,.13,m.lightWood,o.x,1,o.z+.5);}
  for(const [x,z]of [[-10,15],[9,13],[-21,-7],[20,-5],[10,-17]])makeLantern(b,m,x,1.2,z,.65);
- const auroraU={time:{value:0}},auroraMat=new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending,uniforms:auroraU,vertexShader:'uniform float time;varying vec2 vUv;void main(){vUv=uv;vec3 p=position;p.y+=sin(p.x*.2+time*.18)*.65;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}',fragmentShader:'varying vec2 vUv;void main(){float a=pow(sin(vUv.y*3.14159),2.)*smoothstep(0.,.1,vUv.x)*(1.-smoothstep(.85,1.,vUv.x));vec3 c=mix(vec3(.18,.5,.55),vec3(.37,.72,.53),vUv.y);gl_FragColor=vec4(c,a*.24);}'});const curtain=new T.PlaneGeometry(24,5,36,8);const aurora=b.mesh(curtain,auroraMat,0,17,-6);aurora.name='conservatory-aurora-canopy';
+ const atmosphere=createRetreatAtmosphere(root,{name:'conservatory',
+  waters:[{x:-4,y:.232,z:3,rx:5.5,rz:2.28,warm:false,lights:[[-4,10,0],[-10,2,15],[9,2,13]]}],
+  vapour:[{x:-3.1,y:.24,z:3,rx:.85,rz:.4,rise:.95,size:.65,count:14,opacity:.075}],
+  fireflies:[{x:-4,y:2,z:-3,rx:5.2,rz:5.2,height:10,count:38,color:'#b9ead0'},...conservatoryFixtures.filter(o=>o.id.includes('bed')||o.id.includes('palms')).map(o=>({...o,y:1,height:1.4,count:12,color:'#ead592'}))],
+  ribbons:[{x:1,y:18,z:-6,width:31,height:4.8,color:'#79c9ac',yaw:-.12},{x:0,y:20.2,z:1,width:28,height:3.7,color:'#9bb9d8',yaw:.18},{x:-1,y:16.5,z:-11,width:22,height:3.1,color:'#a4cf9f',yaw:-.2}],
+  lamps:[[-10,15],[9,13],[-21,-7],[20,-5],[10,-17]].map(([x,z])=>({x,y:.12,z,rx:2.3,rz:2.1,color:'#e9c696'}))
+ });
  const vista=new T.Group();vista.name='conservatory-window-snow';root.add(vista);snowVista(vista,m,64);
  const light=new T.PointLight('#a5d9c4',65,45,2);light.position.set(-4,10,0);root.add(light);root.add(new T.HemisphereLight('#bddfe0','#24443d',1.35));
- mergeFinish(root);return{root,walls:[],ceiling:null,uniforms:[uniforms,auroraU],glass:dome,light};
+ mergeFinish(root);return{root,walls:[],ceiling:null,uniforms:[uniforms],glass:dome,light,atmosphere};
 }
 
 export function buildInteriors(scene){
@@ -145,6 +156,7 @@ export function buildInteriors(scene){
  const occluders=[];root.traverse(o=>{if(o.isMesh&&!o.material.transparent&&!o.material.isShaderMaterial)occluders.push(o);});
  function setActive(id){active=rooms[id]?id:null;root.visible=!!active;for(const [key,room]of Object.entries(rooms))room.root.visible=key===active;}
  function setCamera(position){const room=rooms[active];if(!room||!position)return;const local={x:position.x-room.layout.x,z:position.z-room.layout.z};for(const wall of room.walls){const axis=wall.userData.cutawayAxis,sign=wall.userData.cutawaySign;wall.visible=local[axis]*sign<room.layout[axis==='x'?'rx':'rz']*.15;}if(room.ceiling)room.ceiling.visible=position.y<3&&Math.hypot(local.x,local.z)<5;}
- function update(time,still=false){const room=rooms[active];if(!room)return;for(const u of room.uniforms||[])u.time.value=still?0:time;}
- return{root,rooms,occluders,setActive,setCamera,update,get active(){return active;}};
+ function update(time,still=false,quality){const room=rooms[active];if(!room)return;if(!still)for(const u of room.uniforms||[])u.time.value=time;room.atmosphere.update(time,still,quality);}
+ function setQuality(value){for(const room of Object.values(rooms))room.atmosphere.setQuality(value);}
+ return{root,rooms,occluders,setActive,setCamera,update,setQuality,get active(){return active;}};
 }

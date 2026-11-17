@@ -102,23 +102,20 @@ export function buildWinterRetreat(scene){
   float alpha=min(.56,streak*.028+fine*.018+bubble*.11+frostEdge*.11+sheen+glint*.38+sparkle);
   vec3 color=mix(vec3(.66,.86,.94),vec3(1.,.86,.61),min(1.,glint));gl_FragColor=vec4(color,alpha);
  }`}));icePattern.name='ice-surface-detail';icePattern.rotation.x=-Math.PI/2;icePattern.position.y=r.iceY+.004;icePattern.scale.set(r.rx,r.rz,1);rink.add(icePattern);dynamic.push(icePattern);
- const gateAngle=Math.asin(r.gateHalfWidth/r.fenceRz),fenceSteps=112,low=gateAngle,high=Math.PI*2-gateAngle;
+ const gateAngle=Math.asin(r.gateHalfWidth/r.fenceRz),fenceSteps=40,low=gateAngle,high=Math.PI*2-gateAngle;
  function edge(a,rx=r.fenceRx,rz=r.fenceRz,y=0){return[Math.cos(a)*rx,y,Math.sin(a)*rz];}
- // Wrought-silver balustrade: structural posts, narrow rails and arched tracery.
+ // Clear low glazing keeps the ice and skaters visible from the promenade.
+ // Fewer structural posts replace dense pickets and the canopy of festoon wires.
+ const glazingPositions=[],glazingIndices=[];
  for(let j=0;j<=fenceSteps;j++){
-  const a=low+(high-low)*j/fenceSteps,[x,,z]=edge(a),major=j%8===0||j===fenceSteps;
-  cylinder(major?.082:.035,major?.105:.045,major?1.3:1.04,navy,x,major?.73:.6,z,rink,major?12:8);
-  if(major){cylinder(.17,.21,.16,marble,x,.18,z,rink,12);cylinder(.12,.12,.045,brass,x,1.3,z,rink,12);oval(silver,x,1.43,z,.115,.135,.115,rink);}
-  if(j<fenceSteps){const next=low+(high-low)*(j+1)/fenceSteps,mid=(a+next)/2,[xx,,zz]=edge(next);for(const y of [.31,1.08])rod([x,y,z],[xx,y,zz],.025,silver,rink);curve([[x,.58,z],edge(mid,r.fenceRx,r.fenceRz,.9),[xx,.58,zz]],.013,brass,rink,6);}
+  const a=low+(high-low)*j/fenceSteps,[x,,z]=edge(a),major=j%5===0||j===fenceSteps;
+  cylinder(major?.065:.035,major?.085:.045,1.03,navy,x,.65,z,rink,10);
+  if(major){cylinder(.13,.17,.12,marble,x,.18,z,rink,12);oval(brass,x,1.19,z,.075,.035,.075,rink);}
+  if(j<fenceSteps){const next=low+(high-low)*(j+1)/fenceSteps,[xx,,zz]=edge(next);for(const y of [.22,1.14])rod([x,y,z],[xx,y,zz],y>.5?.035:.025,silver,rink);const k=glazingPositions.length/3;glazingPositions.push(x,.25,z,xx,.25,zz,x,1.1,z,xx,1.1,zz);glazingIndices.push(k,k+1,k+2,k+2,k+1,k+3);}
  }
- // Tall light finials follow the fence footprint; no poles occupy the walking concourse.
- const bays=14,bulbs=[];
- for(let bay=0;bay<=bays;bay++){
-  const a=low+(high-low)*bay/bays,[x,,z]=edge(a);
-  cylinder(.045,.08,2.9,navy,x,1.55,z,rink,12);cylinder(.11,.11,.055,brass,x,2.9,z,rink,12);oval(glow,x,3.04,z,.12,.16,.12,rink);oval(snow,x,3.2,z,.14,.035,.14,rink);
-  if(bay<bays){const b=low+(high-low)*(bay+1)/bays,points=[];for(let k=0;k<=18;k++){const t=k/18,angle=a+(b-a)*t,y=2.97-.37*Math.sin(t*Math.PI);points.push(edge(angle,r.fenceRx,r.fenceRz,y));if(k>0&&k<18&&k%2===0)bulbs.push(edge(angle,r.fenceRx,r.fenceRz,y-.075));}curve(points,.012,navy,rink,18);}
- }
- for(const [x,y,z]of bulbs){cylinder(.019,.019,.055,silver,x,y+.035,z,rink,6);oval(glow,x,y-.015,z,.036,.052,.036,rink);}
+ const glazingGeometry=new T.BufferGeometry();glazingGeometry.setAttribute('position',new T.Float32BufferAttribute(glazingPositions,3));glazingGeometry.setIndex(glazingIndices);glazingGeometry.computeVertexNormals();
+ const glazingMaterial=new T.MeshPhysicalMaterial({color:'#b6dbe1',roughness:.15,metalness:.1,transparent:true,opacity:.13,clearcoat:.8,depthWrite:false,side:T.DoubleSide});
+ mesh(glazingGeometry,glazingMaterial,0,0,0,rink).name='rink-clear-glass-balustrade';
  const snowPoints=[];for(let j=0;j<=120;j++){const a=low+(high-low)*j/120;snowPoints.push(edge(a,r.fenceRx+.13,r.fenceRz+.13,.16));}curve(snowPoints,.11,snow,rink,120);
  // Broad gate piers sit at the fence endpoints, outside the usable entry width.
  for(const side of [-1,1]){const x=Math.cos(gateAngle)*r.fenceRx,z=side*r.gateHalfWidth;cylinder(.15,.23,1.42,navy,x,.82,z,rink,12);cylinder(.23,.23,.09,brass,x,1.57,z,rink,12);oval(glow,x,1.76,z,.16,.18,.16,rink);}

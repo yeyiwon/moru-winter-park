@@ -6,7 +6,7 @@ import {parkWalkways} from './park-layout.js';
 import {createSnowPaths} from './snow-path.js';
 import {createAuroraLandmarks} from './aurora-landmarks.js';
 import * as THREE from './vendor/three.module.js';
-import {islands,bridges,bridgeHeight,exhibits,surfaceHeight} from './world-layout.js';
+import {islands,bridges,bridgeHalfWidth,bridgeHeight,exhibits,surfaceHeight} from './world-layout.js';
 
 export function buildArchipelago(api){
   const {scene,mesh,ball,cylinder,box,rod,torus,halo,M,glowMap}=api;
@@ -20,7 +20,7 @@ export function buildArchipelago(api){
   // Bowed timber and warm stone share the exact walking profile used by navigation.
   const deckMaterial=M('#c5a17c',.88,0),edgeMaterial=M('#8c694f',.88,0),bridgeSnow=M('#e2e9e6',1,0),bridgeStone=M('#cbbba7',.94,0),bridgeRose=M('#edb7c5',.84,0);
   const lanternGlass=new THREE.MeshStandardMaterial({color:'#fff0cb',emissive:'#ffbd74',emissiveIntensity:.6,roughness:.35,metalness:.04});
-  const plankShape=new THREE.Shape();plankShape.moveTo(-2.05,-.065);plankShape.lineTo(2.05,-.065);plankShape.quadraticCurveTo(2.1,-.065,2.1,-.015);plankShape.lineTo(2.1,.015);plankShape.quadraticCurveTo(2.1,.065,2.05,.065);plankShape.lineTo(-2.05,.065);plankShape.quadraticCurveTo(-2.1,.065,-2.1,.015);plankShape.lineTo(-2.1,-.015);plankShape.quadraticCurveTo(-2.1,-.065,-2.05,-.065);
+  const plankShape=new THREE.Shape();plankShape.moveTo(-3.53,-.065);plankShape.lineTo(3.53,-.065);plankShape.quadraticCurveTo(3.6,-.065,3.6,-.015);plankShape.lineTo(3.6,.015);plankShape.quadraticCurveTo(3.6,.065,3.53,.065);plankShape.lineTo(-3.53,.065);plankShape.quadraticCurveTo(-3.6,.065,-3.6,.015);plankShape.lineTo(-3.6,-.015);plankShape.quadraticCurveTo(-3.6,-.065,-3.53,-.065);
   const plankGeo=new THREE.ExtrudeGeometry(plankShape,{depth:.32,bevelEnabled:true,bevelSize:.012,bevelThickness:.012,bevelSegments:1,curveSegments:3});plankGeo.translate(0,0,-.16);const planks=[];
   function bridgeLantern(p,yaw){
    const g=new THREE.Group();g.position.copy(p);g.rotation.y=yaw;scene.add(g);
@@ -32,17 +32,17 @@ export function buildArchipelago(api){
   }
   for(const [a,b] of bridges){const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz),ux=dx/len,uz=dz/len,start=a.r-1,end=len-b.r+1;
    const at=(d,side=0)=>new THREE.Vector3(a.x+ux*d+uz*side,bridgeHeight(a.x+ux*d,a.z+uz*d),a.z+uz*d-ux*side),yaw=Math.atan2(ux,uz),span=end-start;
-   for(let d=start;d<end;d+=.35){const p=at(d);planks.push({p,yaw,tilt:Math.cos((d-start)/span*Math.PI)*.35*Math.PI/span});}
+   for(let d=start;d<end;d+=.35){const p=at(d);planks.push({p,yaw,tilt:Math.cos((d-start)/span*Math.PI)*Math.min(.7,span*.025)*Math.PI/span});}
    const count=Math.max(2,Math.ceil(span/1.75));
    for(const side of [-1,1]){
-    const handrail=[],snowRail=[];for(let j=0;j<=count*3;j++){const p=at(start+span*j/(count*3),side*2.12);handrail.push(p.clone().add(new THREE.Vector3(0,1.06,0)));snowRail.push(p.clone().add(new THREE.Vector3(0,1.115,0)));}
+    const handrail=[],snowRail=[];for(let j=0;j<=count*3;j++){const p=at(start+span*j/(count*3),side*bridgeHalfWidth);handrail.push(p.clone().add(new THREE.Vector3(0,1.06,0)));snowRail.push(p.clone().add(new THREE.Vector3(0,1.115,0)));}
     mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(handrail),count*4,.07,7,false),edgeMaterial);mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(snowRail),count*4,.022,5,false),bridgeSnow);
     for(let j=0;j<=count;j++){
-     const d=start+span*j/count,p=at(d,side*2.12),post=box(.18,1.14,.18,edgeMaterial,p.x,p.y+.57,p.z);post.rotation.y=yaw;
+     const d=start+span*j/count,p=at(d,side*bridgeHalfWidth),post=mesh(new THREE.BoxGeometry(.18,1.14,.18),edgeMaterial,p.x,p.y+.57,p.z);post.rotation.y=yaw;
      cylinder(.16,.19,.12,bridgeStone,p.x,p.y+.13,p.z,scene,8);cylinder(.14,.14,.055,gold,p.x,p.y+1.17,p.z,scene,8);
      if(j%3===0||j===count)bridgeLantern(p,yaw);
      else{const cap=ball(bridgeSnow,p.x,p.y+1.22,p.z,.145);cap.scale.y=.35;}
-     if(j<count){const q=at(start+span*(j+1)/count,side*2.12),mid=p.clone().lerp(q,.5),v=q.clone().sub(p);
+     if(j<count){const q=at(start+span*(j+1)/count,side*bridgeHalfWidth),mid=p.clone().lerp(q,.5),v=q.clone().sub(p);
       for(const h of [.28,.85]){const pts=[p.clone().add(new THREE.Vector3(0,h,0)),mid.clone().add(new THREE.Vector3(0,h-.05,0)),q.clone().add(new THREE.Vector3(0,h,0))];mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),10,.035,6,false),edgeMaterial);}
       const lo=mid.clone().add(new THREE.Vector3(0,.33,0)),hi=mid.clone().add(new THREE.Vector3(0,.89,0)),left=mid.clone().addScaledVector(v,-.25).add(new THREE.Vector3(0,.6,0)),right=mid.clone().addScaledVector(v,.25).add(new THREE.Vector3(0,.6,0));for(const [u,w]of [[lo,left],[left,hi],[hi,right],[right,lo]])rod(u.toArray(),w.toArray(),.022,gold);
       const medallion=torus(.09,.017,gold,mid.x,mid.y+.61,mid.z);medallion.rotation.y=yaw+Math.PI/2;
@@ -51,7 +51,7 @@ export function buildArchipelago(api){
     }
 
    }
-   for(const d of [start,end]){const p=at(d),stone=box(4.8,.08,1.15,bridgeStone,p.x,p.y-.025,p.z);stone.rotation.y=yaw;for(const side of [-1,1]){const v=at(d,side*2.48);cylinder(.4,.48,.38,bridgeStone,v.x,v.y+.12,v.z,scene,12);const cap=ball(bridgeSnow,v.x,v.y+.34,v.z,.43);cap.scale.y=.18;}}
+   for(const d of [start,end]){const p=at(d),stone=box(8,.08,1.15,bridgeStone,p.x,p.y-.025,p.z);stone.rotation.y=yaw;for(const side of [-1,1]){const v=at(d,side*4.0);cylinder(.4,.48,.38,bridgeStone,v.x,v.y+.12,v.z,scene,12);const cap=ball(bridgeSnow,v.x,v.y+.34,v.z,.43);cap.scale.y=.18;}}
   }
   const bridgeMesh=new THREE.InstancedMesh(plankGeo,deckMaterial,planks.length),dummy=new THREE.Object3D();planks.forEach(({p,yaw,tilt},i)=>{dummy.position.copy(p);dummy.position.y-=.065;dummy.rotation.set(0,yaw,0);dummy.rotateX(-tilt);dummy.updateMatrix();bridgeMesh.setMatrixAt(i,dummy.matrix);bridgeMesh.setColorAt(i,new THREE.Color().setScalar(.94+(i%7)*.008));});bridgeMesh.receiveShadow=true;scene.add(bridgeMesh);
   function groupAt(i,x=0,z=0){const g=new THREE.Group();g.position.set(i.x+x,0,i.z+z);scene.add(g);return g;}
@@ -86,7 +86,7 @@ export function buildArchipelago(api){
   for(const route of parkWalkways)promenade(route.points,route.width);
   // Keep the original blurred snow-path material; only connect its authored routes.
   for(const route of pathRoutes)promenade(route.points,route.width);
-  for(const [a,b]of bridges){const len=Math.hypot(b.x-a.x,b.z-a.z),ux=(b.x-a.x)/len,uz=(b.z-a.z)/len;promenade([[a.x+ux*(a.r-2),a.z+uz*(a.r-2)],[b.x-ux*(b.r-2),b.z-uz*(b.r-2)]],3.5);}
+  for(const [a,b]of bridges){const len=Math.hypot(b.x-a.x,b.z-a.z),ux=(b.x-a.x)/len,uz=(b.z-a.z)/len;promenade([[a.x+ux*(a.r-2),a.z+uz*(a.r-2)],[b.x-ux*(b.r-2),b.z-uz*(b.r-2)]],6.4);}
   promenade.flush();
   function planter(parent,x,z,rx,rz,color){const base=cylinder(1,1.03,.19,bedStone,x,.1,z,parent,40);base.scale.set(rx,1,rz);const inside=cylinder(.91,.91,.035,soil,x,.21,z,parent,40);inside.scale.set(rx,1,rz);const bloom=M(color,.92,0),foliage=M('#4b6d64',.98,0);for(const [dx,dz,scale] of [[-.38,.08,.48],[.16,-.24,.6],[.45,.26,.35]]){const bush=mesh(canopyGeo,foliage,x+dx*rx,.37,z+dz*rz,parent);bush.scale.set(rx*scale,.26,rz*scale);}for(const [dx,dz,h] of [[-.43,-.15,.65],[-.12,.34,.61],[.23,-.39,.71],[.54,.12,.62],[.02,-.01,.78]]){const fx=x+dx*rx,fz=z+dz*rz;rod([fx,.22,fz],[fx,h,fz],.014,foliage,parent);for(let j=0;j<5;j++){const a=j*Math.PI*2/5,petal=ball(bloom,fx+Math.cos(a)*.075,h,fz+Math.sin(a)*.075,.069,parent);petal.scale.set(1,.45,.9);}ball(ivory,fx,h+.025,fz,.038,parent);}}
   for(const [x,z] of [[-3.7,-2.8],[3.7,-2.8],[-3.8,2.7],[3.8,2.7]])planter(garden,x,z,.85,1.05,'#d0b6d1');

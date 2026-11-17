@@ -7,7 +7,7 @@ export const guidePlaces=[
  {id:'post-office',name:'소원 우체국',x:90,z:46,aliases:['우체국','편지','소원']},
  {id:'skating',name:'아이스링크',x:-32,z:105.3,aliases:['스케이트','아이스','얼음']},
  {id:'quiz',name:'지식 연구소',x:44,z:24,aliases:['퀴즈','문제','지식']},
- {id:'teacups',name:'겨울 축제',x:-63,z:-3.9,aliases:['놀이','축제','회전 컵','범퍼카']},
+ {id:'festival-photo',name:'겨울 포토존',x:-65,z:8,aliases:['사진','포토존','정원']},
  {id:'greenhouse',name:'오로라 온실',x:0,z:40.8,aliases:['온실','폭포','식물','오로라']}
 ];
 export {decorationKinds,decorationColors} from './decorations.js';

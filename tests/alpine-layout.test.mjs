@@ -74,4 +74,6 @@ test('summit transfer follows an open flat corridor, behind food service and awa
  const exit=resortRides.upperlift.exit;for(const start of skiStarts.filter(p=>['advanced','expert'].includes(p.id)))assert.ok(Math.hypot(start.x-exit[0],start.z-exit[2])>7,'upper exit needs a staging apron');
 });
 
-test('upper arrival faces the downhill staging area rather than hiding the player behind the terminal',async()=>{const {createRideController}=await import('../dist/winter-rides.js');const ride=createRideController(resortRides);ride.start('upperlift');const arrival=ride.update(28);assert.equal(arrival.mode,'summit');assert.equal(arrival.arrivalYaw,Math.PI);assert.equal(arrival.yaw,0);});
+test('upper arrival faces the downhill staging area rather than hiding the player behind the terminal',async()=>{const {createRideController}=await import('../dist/winter-rides.js');const ride=createRideController(resortRides);ride.start('upperlift');const arrival=ride.update(28);assert.equal(arrival.mode,'summit');assert.ok(Math.sin(arrival.arrivalYaw)>.5&&Math.cos(arrival.arrivalYaw)>.5);assert.equal(arrival.yaw,0);});
+
+test('upper loading station is behind the restroom with a separate wide approach',()=>{const restroom=summitFacilities.find(p=>p.id==='restroom');assert.ok(upperLiftLayout.z<restroom.z-7);for(const food of summitFacilities.filter(p=>['odeng','marshmallow','campfire'].includes(p.id)))assert.ok(Math.hypot(upperLiftLayout.x-food.model.x,upperLiftLayout.z-food.model.z)>11);});

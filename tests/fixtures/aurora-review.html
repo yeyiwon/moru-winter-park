@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Aurora shader review</title>
+<style>body{margin:0;background:#071329;color:#e0eee9;font:13px system-ui}canvas{display:block;width:100vw;height:100vh}aside{position:fixed;left:16px;bottom:16px;padding:12px;background:#06101cbb;border:1px solid #657b7944;border-radius:12px}button{margin:4px;padding:7px 12px;border:1px solid #647b77;background:#10252d;color:inherit;border-radius:6px}output{display:block;margin:4px}</style></head>
+<body><aside><button data-time="0">0초</button><button data-time="60">60초</button><button data-time="180">180초</button><button id="motion">동작 재생</button><button id="day">낮 / 밤</button><output id="status">셰이더 확인 중…</output></aside>
+<script type="module">
+import * as T from '../../dist/vendor/three.module.js';
+import {createWinterSky} from '../../dist/winter-sky.js';
+const scene=new T.Scene();scene.background=new T.Color('#071329');scene.fog=new T.Fog('#192c45',110,330);
+const hemi=new T.HemisphereLight(),sun=new T.DirectionalLight(),fill=new T.DirectionalLight();scene.add(hemi,sun,fill);
+const renderer=new T.WebGLRenderer({antialias:true});renderer.setPixelRatio(Math.min(devicePixelRatio,1.5));renderer.setSize(innerWidth,innerHeight);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;document.body.prepend(renderer.domElement);
+const camera=new T.PerspectiveCamera(55,innerWidth/innerHeight,.1,1200);camera.position.set(0,8,30);camera.lookAt(0,174,-360);
+window.labWorldTime={hour:22};const sky=createWinterSky(scene,hemi,sun,fill,{}),target=new T.Vector3();
+const status=document.querySelector('#status');let time=0,play=false,hour=22,previous=performance.now(),shaderErrors=0;
+renderer.debug.onShaderError=()=>{shaderErrors++;status.textContent='Shader compile error';};
+const render=()=>{sky.update(time,!play&&time===0,target);scene.getObjectByName('winter-snow-crystals').visible=false;renderer.render(scene,camera);if(!shaderErrors)status.textContent=`${innerWidth} × ${innerHeight} · ${time.toFixed(1)}초 · ${hour}시 · ${renderer.info.render.triangles.toLocaleString()} triangles`;};
+document.querySelectorAll('[data-time]').forEach(button=>button.addEventListener('click',()=>{time=Number(button.dataset.time);play=false;render();}));
+document.querySelector('#motion').addEventListener('click',()=>{play=!play;});document.querySelector('#day').addEventListener('click',()=>{hour=hour===22?12:22;window.dispatchEvent(new CustomEvent('lab:time',{detail:{hour}}));render();});
+window.addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);render();});
+function tick(now){if(play)time+=Math.min(.05,(now-previous)/1000);previous=now;render();requestAnimationFrame(tick);}requestAnimationFrame(tick);
+</script></body></html>

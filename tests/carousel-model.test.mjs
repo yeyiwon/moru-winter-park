@@ -34,3 +34,8 @@ test('saddle forward follows the tangent and does not change during bobbing',()=
  for(const time of [0,4,18]){model.update(time);model.root.updateMatrixWorld(true);for(const socket of model.seats){socket.getWorldPosition(position);socket.getWorldQuaternion(quaternion);forward.set(0,0,1).applyQuaternion(quaternion);const tangent=new T.Vector3(-position.z,0,position.x).normalize();assert.ok(forward.dot(tangent)>.999);}}
  const before=model.rotor.rotation.y;model.update(50,true);assert.equal(model.rotor.rotation.y,before);
 });
+
+test('the horse and rider face the actual direction of travel',()=>{
+ const a=new T.Vector3(),b=new T.Vector3(),q=new T.Quaternion();
+ for(const t of [1,6,17,41])for(const socket of model.seats){model.update(t);model.root.updateMatrixWorld(true);socket.getWorldPosition(a);socket.getWorldQuaternion(q);model.update(t+.01);model.root.updateMatrixWorld(true);socket.getWorldPosition(b);const velocity=b.sub(a).setY(0).normalize(),forward=new T.Vector3(0,0,1).applyQuaternion(q).setY(0).normalize();assert.ok(velocity.dot(forward)>.999);}
+});

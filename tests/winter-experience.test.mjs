@@ -23,3 +23,16 @@ test('resting has no countdown and movement stands up',t=>{
 test('portable items replace each other, bubbles keep blowing while walking, and map travel retains them',t=>{
  const {e}=setup(t);const click=(name)=>[...document.querySelectorAll('#place-actions button')].find(b=>b.getAttribute('aria-label')===name).click();e.show('bubbles');click('비눗방울');assert.equal(e.heldItem,'bubble-wand');e.update(.1,{x:1});assert.equal(e.gesture,'bubble');assert.equal(e.focusGesture,'');e.cancel();assert.equal(e.heldItem,'bubble-wand');e.show('bubbles');click('풍선');assert.equal(e.heldItem,'balloon');assert.equal(e.gesture,'');e.show('coffee');click('커피');assert.equal(e.heldItem,'coffee');e.proximity(0,30);assert.equal(document.querySelector('#place-card').hidden,true);assert.equal(e.useHeldItem(),true);assert.equal(e.gesture,'drink');e.update(3,{});assert.equal(e.heldItem,'coffee');e.show('icecream');click('아이스크림');assert.equal(e.heldItem,'icecream');
 });
+
+test('expired shared lift seats return the rider safely and release their reservation',async t=>{
+ const app=setup(t);let releases=0;window.reserveRide=async()=>({kind:'lift',cabin:1,seat:0,startedAt:Date.now()});window.releaseRide=()=>releases++;
+ app.e.show('ski');app.click();await new Promise(r=>setTimeout(r,0));assert.equal(app.e.rides.mode,'lift');
+ window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:'lift'}));assert.equal(app.e.active,false);assert.equal(app.trips,1);assert.equal(releases,1);
+ window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:'lift'}));assert.equal(app.trips,1);
+});
+
+test('leaving during an outstanding boarding request never reboards the player',async t=>{
+ const app=setup(t);let resolveClaim,releases=0;window.reserveRide=()=>new Promise(resolve=>resolveClaim=resolve);window.releaseRide=()=>releases++;
+ app.e.show('ski');app.click();app.e.cancel();resolveClaim({kind:'lift',cabin:1,seat:0,startedAt:Date.now()});await new Promise(r=>setTimeout(r,0));
+ assert.equal(app.e.active,false);assert.equal(releases,1);assert.equal(app.trips,0);
+});

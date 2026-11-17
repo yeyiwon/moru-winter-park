@@ -4,7 +4,7 @@ import {festivalObstacles} from './festival-layout.js';
 import {conservatoryCanStandAt,conservatoryCanMoveFrom} from './conservatory-layout.js';
 import {parkObstacles} from './park-layout.js';
 import {resortObstacles,alpineHeight} from './resort-layout.js';
-import {terrainAt,bridges} from './world-layout.js';
+import {terrainAt,bridges,bridgeHalfWidth} from './world-layout.js';
 // Pure ground movement shared by keyboard, touch and click navigation.
 export const obstacles = [
  {x:86,z:45.8,r:.75},{x:-47.3,z:-181.5,r:.75},...resortObstacles,...festivalObstacles,{x:0,z:53,r:11.2},{x:12,z:126,w:12,d:11},{x:108,z:35,r:9.4},
@@ -17,7 +17,7 @@ export const bodyRadius=.35;
 export function canStandAt(x,z){
   if(!Number.isFinite(x+z)||!terrainAt(x,z))return false;
   if(interiorAt(x,z))return interiorCanStandAt(x,z,bodyRadius);
-  if(bridges.some(([a,b])=>{const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz),along=((x-a.x)*dx+(z-a.z)*dz)/len,side=Math.abs(((x-a.x)*dz-(z-a.z)*dx)/len);return along>a.r-1&&along<len-b.r+1&&Math.abs(side-2.12)<bodyRadius+.1;}))return false;
+  if(bridges.some(([a,b])=>{const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz),along=((x-a.x)*dx+(z-a.z)*dz)/len,side=Math.abs(((x-a.x)*dz-(z-a.z)*dx)/len);return along>a.r-1&&along<len-b.r+1&&Math.abs(side-bridgeHalfWidth)<bodyRadius+.1;}))return false;
   if(!retreatCanStandAt(x,z,bodyRadius)||!conservatoryCanStandAt(x,z,bodyRadius))return false;
   return !obstacles.some(o=>{if(o.door&&Math.abs(x-o.door.x)<o.door.w-bodyRadius)return false;if(o.rx)return ((x-o.x)/(o.rx+bodyRadius))**2+((z-o.z)/(o.rz+bodyRadius))**2<1;return o.r?Math.hypot(x-o.x,z-o.z)<o.r+bodyRadius:Math.abs(x-o.x)<o.w+bodyRadius&&Math.abs(z-o.z)<o.d+bodyRadius;});
 }

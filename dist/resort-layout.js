@@ -9,12 +9,12 @@ function localHeight(x,z){
  return terrain*(1-corridor)+(.09+26*t**1.4)*corridor;
 }
 export const summit={x:-8,z:-347,height:72.09,rx:50,rz:27};
-export const peakSummit={x:45,z:-380,height:100.09,rx:20,rz:12};
+export const peakSummit={x:27,z:-386,height:100.09,rx:40,rz:20};
 // The transfer entrance is on the terminal's open approach axis, not beside its railing.
-export const upperLiftLayout={x:-23,z:-367,dx:53,dz:-18,spacing:4,hanger:3.1,supports:[0,.25,.5,.75,1]};
+export const upperLiftLayout={x:23,z:-361,dx:-22,dz:-34,spacing:4,hanger:3.1,supports:[0,.25,.5,.75,1]};
 const upperLength=Math.hypot(upperLiftLayout.dx,upperLiftLayout.dz),upperDirection={x:upperLiftLayout.dx/upperLength,z:upperLiftLayout.dz/upperLength},upperNormal={x:-upperDirection.z,z:upperDirection.x};
 export const upperLiftEntry={x:upperLiftLayout.x+upperNormal.x*2-upperDirection.x*6.4,z:upperLiftLayout.z+upperNormal.z*2-upperDirection.z*6.4};
-export const summitTransfer=[{x:-22,z:-344},{x:-21,z:-352},upperLiftEntry];
+export const summitTransfer=[{x:-22,z:-344},{x:-10,z:-340},{x:5,z:-340},{x:23,z:-343},upperLiftEntry];
 function terminalColumns(x,z,half,n={x:1,z:0}){return [-1,1].flatMap(side=>[-1.65,1.65].map(depth=>({x:x+2*n.x+side*half*n.x-depth*n.z,z:z+2*n.z+side*half*n.z+depth*n.x,r:.3})));}
 export const skiRuns=[
  {id:'main',name:'중급 슬로프',level:'중급',color:'#8fcbe8',startX:-12,startZ:-334,finish:-172,width:9.5},
@@ -50,7 +50,7 @@ export const skiRunouts=[{x:8,z:-172,rx:24,rz:18},{x:56,z:-180,rx:24,rz:18}];
 export const skiCenter=z=>skiRunCenter(z),skiHalfWidth=z=>skiRunHalfWidth(z);
 export function sledCenter(z){return 124+8*Math.sin(clamp((-z-196)/76)*Math.PI)-4*(1-smooth((-z-192)/20));}
 export const summitObstacles=[
- ...terminalColumns(-30,-348,3.4),...terminalColumns(upperLiftLayout.x,upperLiftLayout.z,5.2,upperNormal),...terminalColumns(30,-385,3.4,upperNormal),
+ ...terminalColumns(-30,-348,3.4),...terminalColumns(upperLiftLayout.x,upperLiftLayout.z,5.2,upperNormal),...terminalColumns(upperLiftLayout.x+upperLiftLayout.dx,upperLiftLayout.z+upperLiftLayout.dz,3.4,upperNormal),
  {x:-10,z:-363,w:4.15,d:1.85},{x:10,z:-363,w:4.15,d:1.85},{x:-3,z:-350,r:1.65},
  {x:-6.8,z:-350,w:.6,d:1.6},{x:.8,z:-350,w:.6,d:1.6},
  {x:11.1,z:-352,w:.2,d:2.4},{x:16.9,z:-352,w:.2,d:2.4},{x:14,z:-354.4,w:2.9,d:.2},{x:14,z:-349.6,w:2.9,d:.2,door:{x:14,w:1.1}}
@@ -113,7 +113,7 @@ export function upperLiftPoint(progress){const t=clamp(progress);return[upperLif
 export function alpineHeight(x,z){
  let terrain=alpineTerrainHeight(x,z);
  const u=upperLiftLayout,along=((x-u.x)*u.dx+(z-u.z)*u.dz)/(u.dx*u.dx+u.dz*u.dz);
- if(along>=0&&along<=1){const p=upperLiftPoint(along),distance=((x-p[0])*-u.dz+(z-p[2])*u.dx)/Math.hypot(u.dx,u.dz),weight=1-smooth((Math.abs(distance-2)-3)/4),airborne=Math.min(smooth(along/.14),smooth((1-along)/.14));terrain=mix(terrain,Math.min(terrain,p[1]-.6-3.2*airborne),weight);}
+ if(along>=-.000001&&along<=1.000001){const p=upperLiftPoint(along),distance=((x-p[0])*-u.dz+(z-p[2])*u.dx)/Math.hypot(u.dx,u.dz),weight=1-smooth((Math.abs(distance-2)-3)/4),airborne=Math.min(smooth(along/.14),smooth((1-along)/.14));terrain=mix(terrain,Math.min(terrain,p[1]-.6-3.2*airborne),weight);}
  const t=(z-liftLayout.z)/liftLayout.dz;
  if(t<0||t>1)return terrain;
  const [lx,seat]=liftPoint(t),dx=x-(lx+liftLayout.spacing/2),width=dx<0?25:11;
@@ -149,7 +149,7 @@ const upperlift=Array.from({length:101},(_,i)=>upperLiftPoint(i/100));
 const sled=Array.from({length:51},(_,i)=>{const t=1-i/50,z=-98-t*19,x=17+Math.sin(t*Math.PI)*2;return[x,localHeight(x,z),z];});sled.push([17,localHeight(17,-97),-97]);
 
 for(let i=0;i<sled.length;i++){const p=scalePoint(sled[i]),x=sledCenter(p[2]);sled[i]=[x,alpineHeight(x,p[2]),p[2]];}
-export const resortRides={lift:{bodyOffset:.82,heightMode:'seat',points:lift,exit:[-22,alpineHeight(-22,-344),-344],duration:45},upperlift:{bodyOffset:.82,heightMode:'seat',points:upperlift,exit:[37,alpineHeight(37,-383),-383],duration:28},ski:{heightMode:'surface',points:ski,duration:38},sled:{bodyOffset:1.03,heightMode:'surface',points:sled,duration:22}};
+export const resortRides={lift:{bodyOffset:.82,heightMode:'seat',points:lift,exit:[-22,alpineHeight(-22,-344),-344],duration:45},upperlift:{bodyOffset:.82,heightMode:'seat',points:upperlift,exit:[9,alpineHeight(9,-391),-391],duration:28},ski:{heightMode:'surface',points:ski,duration:38},sled:{bodyOffset:1.03,heightMode:'surface',points:sled,duration:22}};
 export const resortObstacles=[
  {x:-55,z:-176,w:9.3,d:6},{x:-44,z:-185,w:1.5,d:1.4},
  ...summitObstacles,
@@ -166,7 +166,7 @@ export function resortGround(x,z){if(Math.hypot(x,z+260)<144)return alpineHeight
 export function resortRidePosition(x,y,z,mode){
  if(!Number.isFinite(x)||!Number.isFinite(y)||!Number.isFinite(z))return false;
  if(mode==='lift'||mode==='upperlift'){
-  return [[liftLayout,liftPoint],[upperLiftLayout,upperLiftPoint]].some(([line,point])=>{const t=((x-line.x)*line.dx+(z-line.z)*line.dz)/(line.dx*line.dx+line.dz*line.dz);if(t<-.001||t>1.001)return false;const p=point(t);return Math.hypot(x-p[0],z-p[2])<.7&&Math.abs(y-p[1]-.82)<.5;});
+  return [[liftLayout,liftPoint],[upperLiftLayout,upperLiftPoint]].some(([line,point])=>{const t=((x-line.x)*line.dx+(z-line.z)*line.dz)/(line.dx*line.dx+line.dz*line.dz);if(t<-.001||t>1.001)return false;const p=point(t);return Math.hypot(x-p[0],z-p[2])<1.5&&Math.abs(y-p[1]-.82)<.5;});
  }
  return ['summit','ski','sled'].includes(mode)&&Math.hypot(x,z+260)<142&&y>=alpineHeight(x,z)-.1&&y<=alpineHeight(x,z)+8;
 }

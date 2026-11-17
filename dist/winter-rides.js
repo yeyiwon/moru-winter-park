@@ -7,16 +7,16 @@ export function sampleRide(route,progress){
 }
 export function createRideController(routes){
  let mode='',elapsed=0,last=null,speed=0,z=0,x=0,heading=0,launched=false,steer=0,recovery=0,runId='main',activeRoute='',crossed=false;
- return{get mode(){return mode;},start(kind,position){const run=position&&skiRunAt(position.x,position.z),valid=run&&position.z>=run.startZ-7&&position.z<=run.finish&&Math.abs(position.x-skiRunCenter(position.z,run.id))<=skiRunHalfWidth(position.z,run.id);if(!routes[kind]||kind==='ski'&&mode!=='summit'&&!valid)return false;const launch=last||(valid?{...position,y:alpineHeight(position.x,position.z)+.86,yaw:0}:null);activeRoute=kind;mode=kind==='upperlift'?'lift':kind;elapsed=0;crossed=false;last=kind==='ski'&&launch?launch:sampleRide(routes[kind],0);if(kind==='ski'){speed=0;z=last.z;x=last.x;runId=skiRunAt(x,z).id;heading=Math.atan2(skiRunCenter(z+6,runId)-x,6);launched=false;steer=0;recovery=0;}return true;},stop(){const was=mode;mode='';last=null;return was;},update(dt,input={}){
- if(!mode)return null;if(mode==='summit'){const step=Math.min(.1,Math.max(0,dt)),vx=input.x||0,vz=input.z||0;let x=last.x+vx*3*step,z=last.z+vz*3*step;if(!onTerrace(x,z)){x=last.x;z=last.z;}if(!summitPositionValid(x,last.z))x=last.x;if(!summitPositionValid(x,z))z=last.z;last={x,z,y:alpineHeight(x,z)+.86,yaw:Math.hypot(vx,vz)>.01?Math.atan2(vx,vz):last.yaw};return{...last,mode};}dt=Math.max(0,Math.min(120,dt));
+ return{get mode(){return mode;},syncElapsed(seconds){if(mode==='lift')elapsed=Math.max(0,seconds);},start(kind,position){const run=position&&skiRunAt(position.x,position.z),valid=run&&position.z>=run.startZ-7&&position.z<=run.finish&&Math.abs(position.x-skiRunCenter(position.z,run.id))<=skiRunHalfWidth(position.z,run.id);if(!routes[kind]||kind==='ski'&&mode!=='summit'&&!valid)return false;const launch=last||(valid?{...position,y:alpineHeight(position.x,position.z)+.86,yaw:0}:null);activeRoute=kind;mode=kind==='upperlift'?'lift':kind;elapsed=0;crossed=false;last=kind==='ski'&&launch?launch:sampleRide(routes[kind],0);if(kind==='ski'){speed=0;z=last.z;x=last.x;runId=skiRunAt(x,z).id;heading=Math.atan2(skiRunCenter(z+6,runId)-x,6);launched=false;steer=0;recovery=0;}return true;},stop(){const was=mode;mode='';last=null;return was;},update(dt,input={}){
+ if(!mode)return null;if(mode==='summit'){const step=Math.min(.1,Math.max(0,dt)),vx=input.x||0,vz=input.z||0;let x=last.x+vx*3*step,z=last.z+vz*3*step;if(!onTerrace(x,z)){x=last.x;z=last.z;}if(!summitPositionValid(x,last.z))x=last.x;if(!summitPositionValid(x,z))z=last.z;last={arrivalYaw:last.arrivalYaw,x,z,y:alpineHeight(x,z)+.86,yaw:Math.hypot(vx,vz)>.01?Math.atan2(vx,vz):last.yaw};return{...last,mode};}dt=Math.max(0,Math.min(120,dt));
  if(mode==='ski'){
   const finish=skiRuns.find(r=>r.id===runId).finish;let remaining=dt;
   while(remaining>0&&z<finish+10){const step=Math.min(.025,remaining);remaining-=step;if(launched&&!crossed)elapsed+=step;recovery=Math.max(0,recovery-step);
    if(input.push)launched=true;
    const slope=alpineHeight(x,z)-alpineHeight(x+Math.sin(heading),z+Math.cos(heading));
-   const braking=!!input.brake||crossed,turn=Math.max(-1,Math.min(1,input.steer||0));
+   const braking=!!input.brake||crossed,rawTurn=Math.max(-1,Math.min(1,input.steer||0)),turn=Math.abs(rawTurn)<.08?0:rawTurn;
    speed=launched?Math.max(0,Math.min(34,speed+(12*slope/Math.sqrt(1+slope*slope)+(input.push&&!crossed?5.2:0)-.012*speed*speed-(braking?23:0))*step)):0;
-   steer+=(turn-steer)*(1-Math.exp(-step*12));heading-=steer*step*(1.95-Math.min(.65,speed*.018));heading=Math.atan2(Math.sin(heading),Math.cos(heading));
+   steer+=(turn-steer)*(1-Math.exp(-step*12));heading-=steer*step*(1.70-Math.min(.45,speed*.013));heading=Math.atan2(Math.sin(heading),Math.cos(heading));
    const travel=speed*step/Math.sqrt(1+slope*slope),nx=x+Math.sin(heading)*travel,nz=Math.max(-392,Math.min(finish+10,z+Math.cos(heading)*travel));
    // All physical pistes are available. Course identity follows the ground,
    // never a selected rail or an automatic steering target.
@@ -27,7 +27,8 @@ export function createRideController(routes){
     const edge=intervals.flatMap(i=>[i.left,i.right]).sort((a,b)=>Math.abs(a-nx)-Math.abs(b-nx))[0];
     // Stop at the bank rather than snapping across the space between courses.
     if(Math.abs(edge-x)<=Math.max(.25,travel*1.5)){x=edge;z=nz;}
-    speed*=Math.exp(-step*6);recovery=.15;
+    // A glancing bank contact removes lateral momentum without killing downhill control.
+    const forward=Math.max(0,Math.cos(heading));speed*=Math.exp(-step*(forward>.4?1.2:5));if(forward>.4)heading*=Math.exp(-step*5);recovery=.15;
    }
    if(z>=finish)crossed=true;if(crossed&&speed<.3)break;
   }
@@ -35,5 +36,5 @@ export function createRideController(routes){
   last={x,y:alpineHeight(x,z)+.88/Math.cos(tilt),z,yaw,tilt,speed,lean:steer,raceTime:elapsed,recovery,heading,launched,brake:!!input.brake,runId};
   if(crossed&&(speed<.3||z>=finish+10)){mode='';return{...last,mode:'',finished:true};}return{...last,mode};
  }
- elapsed+=dt;const route=routes[activeRoute];last=sampleRide(route,elapsed/route.duration);if(elapsed>=route.duration){if(mode==='lift'){mode='summit';const [x,y,z]=route.exit;last={x,y:y+.86,z,yaw:activeRoute==='upperlift'?0:Math.atan2(skiCenter(-330)-x,-330-z),arrivalYaw:activeRoute==='upperlift'?Math.PI:-.65};}else{mode='';return{...last,mode:'',finished:true};}}return{...last,mode};}};
+ elapsed+=dt;const route=routes[activeRoute];last=sampleRide(route,elapsed/route.duration);if(elapsed>=route.duration){if(mode==='lift'){mode='summit';const [x,y,z]=route.exit;last={x,y:y+.86,z,yaw:activeRoute==='upperlift'?0:Math.atan2(skiCenter(-330)-x,-330-z),arrivalYaw:activeRoute==='upperlift'?.75:.7};}else{mode='';return{...last,mode:'',finished:true};}}return{...last,mode};}};
 }
