@@ -90,4 +90,11 @@ Apple M2 / Chrome headless, PC 1280×800 및 모바일 에뮬레이션 390×844(
 
 비교 화면은 `qa/browser-v32/comparison`, 브라우저 결과는 `qa/browser-v32/gameplay`, `layout`, `polish`, 정적 지도는 `map-render`에 저장한다. 스크린샷은 해당 실행 시점의 결과이며 새 배치로 다시 촬영하기 전 자료를 최종 결과라고 사용하지 않는다.
 
-기준 배포 커밋 `c4f7364ca4bae7e1017731c50db826dda2f34f74`, 작업 보존 커밋 `743529a`. 현재 릴리스 커밋과 GitHub·Sites·Vercel 배포 상태는 검증 완료 후 기록한다.
+기준 배포 커밋 `c4f7364ca4bae7e1017731c50db826dda2f34f74`, 작업 보존 커밋 `743529a`. 릴리스 커밋은 [`980f21db`](https://github.com/yeyiwon/moru-winter-park/commit/980f21dbdb209347c6828ea086a63f6fc529d4a9)이다.
+
+- GitHub `main` 반영 완료.
+- Sites 버전 33 배포 성공: `appgdep_6afcbfc56fdc8191a691fe8ff5b4f8a7`. [서버·월드](https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site).
+- Vercel 운영 배포 READY: `dpl_AEkct4pbwhK4NJNTHaKbGs3SEiJE`. [운영 주소](https://moru-winter-park.vercel.app).
+- 두 주소에서 region-layout/world-map/park/ski-trails/지도 WebP의 SHA-256이 로컬 배포 파일과 일치. `/api/health`가 200과 `multiplayer:true`, 삭제한 `/skating.js`는 404. [배포 확인 기록](../qa/browser-v32/deployment.json).
+- 라이브 미리보기 4183은 200 응답으로 유지. 배포 후 실사용자 데이터에는 테스트 레코드를 추가하지 않았다.
+- 운영 검증은 파일 일치·API 연결 검사이며, 플레이 시나리오는 별도 DB의 로컬 브라우저에서 수행했다.

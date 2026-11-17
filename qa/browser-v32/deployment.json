@@ -1,0 +1,81 @@
+{
+  "commit": "980f21dbdb209347c6828ea086a63f6fc529d4a9",
+  "sites": [
+    {
+      "origin": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "assets": [
+        {
+          "file": "region-layout.js",
+          "status": 200,
+          "match": true
+        },
+        {
+          "file": "world-map.js",
+          "status": 200,
+          "match": true
+        },
+        {
+          "file": "park.js",
+          "status": 200,
+          "match": true
+        },
+        {
+          "file": "ski-trails.js",
+          "status": 200,
+          "match": true
+        },
+        {
+          "file": "textures/winter-world-map.webp",
+          "status": 200,
+          "match": true
+        }
+      ],
+      "health": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "multiplayer": true
+        }
+      },
+      "removedSkatingStatus": 404
+    },
+    {
+      "origin": "https://moru-winter-park.vercel.app",
+      "assets": [
+        {
+          "file": "region-layout.js",
+          "status": 200,
+          "match": true
+        },
+        {
+          "file": "world-map.js",
+          "status": 200,
+          "match": true
+        },
+        {
+          "file": "park.js",
+          "status": 200,
+          "match": true
+        },
+        {
+          "file": "ski-trails.js",
+          "status": 200,
+          "match": true
+        },
+        {
+          "file": "textures/winter-world-map.webp",
+          "status": 200,
+          "match": true
+        }
+      ],
+      "health": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "multiplayer": true
+        }
+      },
+      "removedSkatingStatus": 404
+    }
+  ]
+}
