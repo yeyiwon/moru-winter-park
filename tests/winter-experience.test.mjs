@@ -5,6 +5,8 @@ import {JSDOM} from 'jsdom';
 import {createWinterExperience} from '../dist/winter-experience.js';
 import {resortRides,resortDestinations,skiStarts} from '../dist/resort-layout.js';
 import {walkToStart} from './ski-driver.mjs';
+import * as T from '../dist/vendor/three.module.js';
+import {ferrisDimensions} from '../dist/ferris-layout.js';
 function setup(t){const dom=new JSDOM(fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8'),{url:'https://winter.test'}),w=dom.window;t.after(()=>w.close());Object.assign(globalThis,{window:w,document:w.document,Event:w.Event,CustomEvent:w.CustomEvent,localStorage:w.localStorage});let trips=0;const winter={rides:resortRides,destinations:resortDestinations,rideChair:{visible:false,position:{set(){}},rotation:{set(){}}}},companion={gear:'ski',winterReady:true,equip(){}};return{e:createWinterExperience(winter,companion,()=>trips++),get trips(){return trips;},click(){document.querySelector('#place-actions button').click();}};}
 test('marshmallow stays in hand, toasts at the fire, survives walking and can be eaten',t=>{
  const {e,click}=setup(t);e.rides.start('lift');e.update(45);e.proximity(10,-358.5);click();assert.equal(e.heldItem,'marshmallow');e.update(.1,{x:1});assert.equal(e.heldItem,'marshmallow');assert.equal(e.roast,0);
@@ -35,4 +37,13 @@ test('leaving during an outstanding boarding request never reboards the player',
  const app=setup(t);let resolveClaim,releases=0;window.reserveRide=()=>new Promise(resolve=>resolveClaim=resolve);window.releaseRide=()=>releases++;
  app.e.show('ski');app.click();app.e.cancel();resolveClaim({kind:'lift',cabin:1,seat:0,startedAt:Date.now()});await new Promise(r=>setTimeout(r,0));
  assert.equal(app.e.active,false);assert.equal(releases,1);assert.equal(app.trips,0);
+});
+
+test('the facing Ferris pair shares a camera focus between the seats',async t=>{
+ setup(t);window.innerWidth=390;const claim={kind:'ferris',cabin:2,seat:1,startedAt:Date.now()};window.reserveRide=async()=>claim;
+ const winter={rides:resortRides,destinations:[{id:'ferris',name:'관람차',...ferrisDimensions.entrance}],rideChair:{visible:false}},pet={equip(){}};
+ const e=createWinterExperience(winter,pet,()=>{});e.show('ferris');document.querySelector('#place-actions button').click();await new Promise(r=>setTimeout(r,0));
+ const pose=e.update(0,{}),offset=ferrisDimensions.seatDepth*ferrisDimensions.scale;assert.ok(Math.abs(pose.view.focus.x-(pose.x-Math.sin(ferrisDimensions.yaw)*offset))<1e-9);assert.ok(Math.abs(pose.view.focus.z-(pose.z-Math.cos(ferrisDimensions.yaw)*offset))<1e-9);
+ const aim=new T.Vector3(pose.view.focus.x,pose.y+.65,pose.view.focus.z),v=pose.view,camera=new T.PerspectiveCamera(v.fov,390/844,.1,100);camera.position.set(aim.x+Math.sin(v.yaw)*Math.cos(v.pitch)*v.distance,aim.y+Math.sin(v.pitch)*v.distance,aim.z+Math.cos(v.yaw)*Math.cos(v.pitch)*v.distance);camera.lookAt(aim);camera.updateMatrixWorld();
+ for(const side of [-1,1]){const anchor=aim.clone();anchor.x+=Math.sin(ferrisDimensions.yaw)*offset*side;anchor.z+=Math.cos(ferrisDimensions.yaw)*offset*side;anchor.y=pose.y;for(const dx of [-.9,.9])for(const dz of [-.9,.9])for(const dy of [-.65,.95]){const screen=anchor.clone().add(new T.Vector3(dx,dy,dz)).project(camera);assert.ok(Math.abs(screen.x)<.96&&Math.abs(screen.y)<.96);}}
 });

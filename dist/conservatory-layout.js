@@ -1,6 +1,7 @@
 // One floor description drives the glasshouse model, movement and presence validation.
-export const conservatoryLayout={x:0,z:53,radius:11.2,height:17,floor:.22,doorHalfWidth:2.1,walkRadius:7.6,walkHalfWidth:1.2,walkRise:4.98,walkArc:Math.PI*1.5};
-export const conservatoryObstacles=[{x:-3.2,z:53.8,rx:3.05,rz:3.25}];
+export const conservatoryLayout={x:0,z:64,radius:11.2,height:17,floor:.22,doorHalfWidth:2.1,walkRadius:7.6,walkHalfWidth:1.2,walkRise:4.98,walkArc:Math.PI*1.5};
+export const conservatoryEntry={x:conservatoryLayout.x,z:conservatoryLayout.z-12.2};
+export const conservatoryObstacles=[{x:-3.2,z:64.8,rx:3.05,rz:3.25}];
 const tau=Math.PI*2;
 export function conservatoryWalkPoint(t,side=0){const c=conservatoryLayout,u=Math.max(0,Math.min(1,t)),a=-Math.PI/2+u*c.walkArc,r=c.walkRadius+side*c.walkHalfWidth;return{x:c.x+Math.cos(a)*r,y:c.floor+c.walkRise*u,z:c.z+Math.sin(a)*r};}
 export function conservatoryWalkAt(x,z){const c=conservatoryLayout,dx=x-c.x,dz=z-c.z,r=Math.hypot(dx,dz),angle=((Math.atan2(dz,dx)+Math.PI/2)%tau+tau)%tau;if(r<c.walkRadius-c.walkHalfWidth||r>c.walkRadius+c.walkHalfWidth||angle>c.walkArc)return null;return{height:c.floor+c.walkRise*angle/c.walkArc,t:angle/c.walkArc,r};}

@@ -17,7 +17,18 @@ const weaveMap=new T.DataTexture(weave,64,64,T.RGBAFormat);weaveMap.wrapS=weaveM
 function surface(rows,columns,point){const positions=[],uv=[],indices=[];for(let i=0;i<=rows;i++)for(let j=0;j<=columns;j++){positions.push(...point(i/rows,j/columns));uv.push(j/columns,i/rows);if(i<rows&&j<columns){const n=i*(columns+1)+j;indices.push(n,n+1,n+columns+1,n+1,n+columns+2,n+columns+1);}}const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(positions,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(indices);g.computeVertexNormals();return g;}
 function tube(points,r=.01,segments=20,sides=6){return new T.TubeGeometry(new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p))),segments,r,sides,false);}
 function orb(x,y,z,sx,sy,sz){return new T.SphereGeometry(1,24,16).scale(sx,sy,sz).translate(x,y,z);}
-function batch(parent,parts){const groups=new Map();for(const [geometry,material]of parts){if(!groups.has(material))groups.set(material,[]);groups.get(material).push(geometry);}for(const [material,list]of groups){const values={position:[],normal:[],uv:[]};for(const original of list){const g=original.index?original.toNonIndexed():original;for(const k of Object.keys(values))values[k].push(...g.attributes[k].array);if(g!==original)g.dispose();original.dispose();}const g=new T.BufferGeometry();for(const [k,v]of Object.entries(values))g.setAttribute(k,new T.Float32BufferAttribute(v,k==='uv'?2:3));g.computeBoundingBox();g.computeBoundingSphere();const mesh=new T.Mesh(g,material);mesh.castShadow=mesh.receiveShadow=true;parent.add(mesh);}}
+function batch(parent,parts,combine=false){
+ const groups=new Map();for(const [geometry,material]of parts){if(!groups.has(material))groups.set(material,[]);groups.get(material).push(geometry);}
+ const geometry=combine?new T.BufferGeometry():null,values={position:[],normal:[],uv:[]},materials=[];let start=0;
+ for(const [material,list]of groups){
+  const target=combine?values:{position:[],normal:[],uv:[]};
+  for(const original of list){const g=original.index?original.toNonIndexed():original;for(const k of Object.keys(target))target[k].push(...g.attributes[k].array);if(g!==original)g.dispose();original.dispose();}
+  if(combine){const count=target.position.length/3-start;geometry.addGroup(start,count,materials.length);materials.push(material);start+=count;}
+  else add(target,material);
+ }
+ if(combine)add(values,materials,geometry);
+ function add(values,material,g=new T.BufferGeometry()){for(const [k,v]of Object.entries(values))g.setAttribute(k,new T.Float32BufferAttribute(v,k==='uv'?2:3));g.computeBoundingBox();g.computeBoundingSphere();const mesh=new T.Mesh(g,material);mesh.castShadow=mesh.receiveShadow=true;parent.add(mesh);}
+}
 const robeRadius=y=>Math.max(.51,Math.sqrt(Math.max(0,.74*.74-y*y))+.065);
 const frontZ=(x,y,extra=0)=>Math.sqrt(Math.max(.015,robeRadius(y)**2-x*x))*.91+extra;
 
@@ -29,15 +40,30 @@ export function createYukata(){
  // Crossed collar follows the sphere; the eye, cheek and mouth area stays exposed.
  for(const side of [-1,1]){const lapel=surface(24,4,(v,u)=>{const x=side*(.54-.74*v)+(u-.5)*.075,y=-.13-.35*v;return[x,y,frontZ(x,y,.022+(side>0?.009:0))];});parts.push([lapel,ivory]);const seam=[];for(let i=0;i<=24;i++){const v=i/24,x=side*(.54-.74*v),y=-.13-.35*v;seam.push([x,y,frontZ(x,y,.036)]);}parts.push([tube(seam,.0035,24,4),gold]);}
  const obi=surface(6,80,(v,u)=>{const a=u*Math.PI*2,y=-.45-v*.135,r=robeRadius(y)+.024;return[Math.sin(a)*r,y,Math.cos(a)*r*.91];});parts.push([obi,ivory]);
- for(const side of [-1,1]){
-  const sleeve=surface(16,40,(v,u)=>{const a=u*Math.PI*2,x=side*(.58+.4*v),drop=.08+.1*v,y=-.16-drop+Math.sin(a)*(.15+.09*v)-Math.max(0,-Math.sin(a))*.13,z=Math.cos(a)*(.26-.025*v);return[x,y,z];});parts.push([sleeve,fabric]);
-  const cuff=[];for(let i=0;i<=40;i++){const a=i/40*Math.PI*2;cuff.push([side*.982,-.34+Math.sin(a)*.24-Math.max(0,-Math.sin(a))*.13,Math.cos(a)*.235]);}parts.push([tube(cuff,.012,40),ivory]);
- }
  // Folded obi knot sits on the back, outside the fur shell.
  for(const side of [-1,1])parts.push([surface(18,8,(v,u)=>{const x=side*(.02+.22*Math.sin(v*Math.PI)),y=-.505+(u-.5)*(.08+.15*Math.sin(v*Math.PI)),z=-.57-.065*Math.sin(v*Math.PI*2);return[x,y,z];}),ivory]);parts.push([orb(0,-.505,-.59,.055,.075,.045),gold]);
  // Small six-armed stitched snow crystals repeat over the front fabric.
  for(const [x,y,r]of [[-.32,-.32,.036],[.3,-.34,.034],[-.27,-.64,.03],[.23,-.67,.032],[0,-.68,.025]])for(let a=0;a<6;a++){const angle=a*Math.PI/3,points=[];for(let i=0;i<=3;i++){const t=i/3,px=x+Math.sin(angle)*r*t,py=y+Math.cos(angle)*r*t;points.push([px,py,frontZ(px,py,.012)]);}parts.push([tube(points,.0028,3,4),stitch]);}
- batch(root,parts);root.userData.wearable='yukata';root.userData.faceClearance={minY:-.1,frontZ:.62};return root;
+ batch(root,parts,true);
+ // The body is static cloth; each sleeve has its own shoulder pivot. Moru uses
+ // procedural arm endpoints rather than a skeleton, so the same endpoints drive both.
+ const sleeves=[];
+ for(let index=0;index<2;index++){
+  const sleeve=new T.Group();sleeve.name='yukata-sleeve-'+index;root.add(sleeve);sleeves.push(sleeve);
+  const shell=surface(14,32,(v,u)=>{const a=u*Math.PI*2,fold=1+.025*Math.cos(a*5)*v;return[Math.cos(a)*(.155+.035*v)*fold,v,Math.sin(a)*(.16+.045*v)*fold];});
+  const cuff=[];for(let i=0;i<=40;i++){const a=i/40*Math.PI*2;cuff.push([Math.cos(a)*.19,1,Math.sin(a)*.205]);}
+  batch(sleeve,[[shell,fabric],[tube(cuff,.009,40),ivory]],true);
+ }
+ const direction=new T.Vector3(),up=new T.Vector3(0,1,0);
+ root.poseSleeve=(index,shoulder,hand)=>{
+  const sleeve=sleeves[index];if(!sleeve)return;
+  direction.copy(hand).sub(shoulder);const length=direction.length();
+  sleeve.position.copy(shoulder);sleeve.quaternion.setFromUnitVectors(up,direction.normalize());
+  // The cuff stops behind the hand, preserving the grip and the cup/skewer silhouette.
+  sleeve.scale.set(1,Math.max(.12,length-.085),1);sleeve.userData.armLength=length;
+ };
+ for(let index=0;index<2;index++){const side=index?1:-1;root.poseSleeve(index,new T.Vector3(side*.59,-.12,.08),new T.Vector3(side*.68,-.38,.14));}
+ root.userData.wearable='yukata';root.userData.faceClearance={minY:-.1,frontZ:.62};return root;
 }
 
 export function createSnowfolk(){

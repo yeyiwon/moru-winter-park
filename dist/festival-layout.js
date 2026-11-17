@@ -1,3 +1,4 @@
+import {ferrisDimensions as wheel} from './ferris-layout.js';
 export const festivalLayout={x:-63,z:0,r:25};
 export const festivalDestinations=[
  {id:'festival-photo',name:'겨울 포토존',x:-65,z:8,kind:'photo',view:{distance:13,pitch:.18,yaw:-1.4,lookHeight:-.3}},
@@ -10,6 +11,6 @@ export const festivalObstacles=[...festivalLamps.map(p=>({...p,r:.43})),
 export function amusementPositionValid(x,y,z,mode){
  if(!Number.isFinite(x+y+z))return false;
  if(mode==='carousel')return Math.hypot(x-16,z-3.8)<5&&y>2.4&&y<4.4;
- if(mode==='ferris')return x>-33&&x< -2&&z> -4.5&&z<.5&&y>1&&y<29;
+ if(mode==='ferris'){const dx=x-wheel.center.x,dz=z-wheel.center.z,lx=(dx*Math.cos(wheel.yaw)-dz*Math.sin(wheel.yaw))/wheel.scale,lz=(dx*Math.sin(wheel.yaw)+dz*Math.cos(wheel.yaw))/wheel.scale,ly=(y-wheel.avatarOriginOffset-wheel.center.y)/wheel.scale-wheel.floorHeight;return Math.abs(Math.hypot(lx,ly)-wheel.radius)<.5&&Math.abs(lz-wheel.cabinDepthOffset)<wheel.seatDepth+.2;}
  return false;
 }

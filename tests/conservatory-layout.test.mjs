@@ -18,9 +18,9 @@ test('the canopy promenade rises continuously and agrees with its visible floor'
 test('glass doors stay open while the plant basin, walls and raised ramp edges block walking',()=>{
  for(const side of [-1,1])for(const x of [-1.5,0,1.5])assert.ok(conservatoryCanStandAt(x,c.z+side*c.radius));
  assert.equal(conservatoryCanStandAt(c.radius,c.z),false);
- assert.equal(conservatoryCanStandAt(-3.2,53.8),false);
- assert.equal(conservatoryCanMoveFrom({x:8.9,z:53},{x:8.7,z:53}),false);
- assert.equal(conservatoryCanMoveFrom({x:0,z:43.9},{x:0,z:44.3}),true);
- assert.equal(conservatoryWalkAt(0,53),null);
- assert.equal(conservatorySurfaceAt(40,53),null);
+ assert.equal(conservatoryCanStandAt(-3.2,c.z+.8),false);
+ assert.equal(conservatoryCanMoveFrom({x:8.9,z:c.z},{x:8.7,z:c.z}),false);
+ assert.equal(conservatoryCanMoveFrom({x:0,z:c.z-9.1},{x:0,z:c.z-8.7}),true);
+ assert.equal(conservatoryWalkAt(0,c.z),null);
+ assert.equal(conservatorySurfaceAt(40,c.z),null);
 });

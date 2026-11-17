@@ -8,7 +8,7 @@ test('arched bridges leave headroom above the actual walking surface',()=>{const
 test('conservatory front and rear openings are clear through actual glazing and frame geometry',()=>{
  const physical=[];scene.traverseVisible(o=>{if(o.isMesh&&o.material.opacity!==0&&!o.material.isShaderMaterial)physical.push(o);});
  for(const sign of [-1,1])for(const x of [-.6,0,.6])for(const y of [.8,1.6]){
-  const ray=new T.Raycaster(new T.Vector3(x,y,53+sign*5.5),new T.Vector3(0,0,-sign),0,2.1);
+  const ray=new T.Raycaster(new T.Vector3(x,y,64+sign*12.5),new T.Vector3(0,0,-sign),0,2.1);
   const hits=ray.intersectObjects(physical,false);assert.equal(hits.length,0,hits[0]?.point?.toArray().join(','));
  }
 });
@@ -60,4 +60,9 @@ test('upper dismount camera has an unobstructed line to the character above the 
 test('the rendered summit snow follows the walking height instead of burying the avatar',()=>{
  const layout=modules.get(path.join(root,'resort-layout.js')).namespace,terrain=scene.getObjectByName('alpine-heightfield'),ray=new T.Raycaster();
  for(const point of layout.summitTransfer)for(const dx of [-.6,0,.6]){const x=point.x+dx,z=point.z;ray.set(new T.Vector3(x,150,z),new T.Vector3(0,-1,0));ray.far=200;const hit=ray.intersectObject(terrain,false)[0];assert.ok(hit);assert.ok(Math.abs(hit.point.y-layout.alpineHeight(x,z))<.3,`${x},${z}: ${hit.point.y} vs ${layout.alpineHeight(x,z)}`);}
+});
+
+test('food truck tyres sit on the rendered graded apron, including the rear marshmallow wheels',()=>{
+ const layout=modules.get(path.join(root,'resort-layout.js')).namespace,terrain=scene.getObjectByName('alpine-heightfield'),ray=new T.Raycaster();
+ for(const stop of layout.summitFacilities.filter(p=>['odeng','marshmallow'].includes(p.id))){const base=layout.alpineHeight(stop.model.x,stop.model.z);for(const dx of [-2.5,2.6])for(const dz of [-1.48,1.48]){ray.set(new T.Vector3(stop.model.x+dx,150,stop.model.z+dz),new T.Vector3(0,-1,0));const ground=ray.intersectObject(terrain,false)[0];assert.ok(ground);assert.ok(Math.abs(ground.point.y-base)<.15,stop.id+JSON.stringify(ground.point));}}
 });

@@ -1,26 +1,21 @@
 {
   "environment": "Node v22.4.1 darwin arm64",
   "measurement": "CPU scene geometry construction; no browser, WebGL or GPU rendering",
-  "sceneConstructionMs": 18875.33,
-  "meshObjects": 591,
+  "sceneConstructionMs": 52647.95,
+  "meshObjects": 594,
   "materials": 215,
-  "triangles": 3931811.333333333,
+  "triangles": 3134144.3333333335,
   "renderFPS": null,
   "largestMeshes": [
     {
-      "name": "",
+      "name": "alpine-heightfield",
       "parent": "alpine-mountain",
-      "triangles": 165320
+      "triangles": 143040
     },
     {
       "name": "",
       "parent": "winter-places",
       "triangles": 125972
-    },
-    {
-      "name": "alpine-heightfield",
-      "parent": "alpine-mountain",
-      "triangles": 122560
     },
     {
       "name": "",
@@ -34,28 +29,8 @@
     },
     {
       "name": "",
-      "parent": "alpine-mountain",
-      "triangles": 118272
-    },
-    {
-      "name": "",
       "parent": "",
       "triangles": 117504
-    },
-    {
-      "name": "",
-      "parent": "alpine-mountain",
-      "triangles": 116480
-    },
-    {
-      "name": "",
-      "parent": "",
-      "triangles": 110144
-    },
-    {
-      "name": "",
-      "parent": "",
-      "triangles": 109888
     },
     {
       "name": "",
@@ -64,8 +39,33 @@
     },
     {
       "name": "",
-      "parent": "alpine-mountain",
-      "triangles": 100436
+      "parent": "",
+      "triangles": 91856
+    },
+    {
+      "name": "",
+      "parent": "",
+      "triangles": 89880
+    },
+    {
+      "name": "winter-palace-metal",
+      "parent": "winter-palace",
+      "triangles": 72024
+    },
+    {
+      "name": "",
+      "parent": "spa-resort",
+      "triangles": 66588
+    },
+    {
+      "name": "",
+      "parent": "",
+      "triangles": 66496
+    },
+    {
+      "name": "",
+      "parent": "",
+      "triangles": 57932
     }
   ],
   "browserVisualVerification": "Separate browser checks are documented in docs/urgent-rendering-repair.md; these metrics are CPU-only"

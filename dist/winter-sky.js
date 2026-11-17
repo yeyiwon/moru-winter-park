@@ -11,51 +11,58 @@ export function createWinterSky(scene,hemi,sun,fill,world){
  const snow=new T.Points(geometry,new T.ShaderMaterial({uniforms:snowUniforms,transparent:true,depthWrite:false,toneMapped:false,
   vertexShader:`attribute float flakeSize;attribute float flakePhase;attribute float flakeSpin;uniform float time;uniform float pixelRatio;varying float angle;varying float opacity;void main(){vec4 p=modelViewMatrix*vec4(position,1.);float d=-p.z;angle=flakePhase+time*flakeSpin;opacity=smoothstep(.7,2.,d)*(1.-smoothstep(48.,105.,d))*(.5+flakeSize*.45);gl_PointSize=clamp(flakeSize*310./max(1.,d),1.5,19.)*pixelRatio;gl_Position=projectionMatrix*p;}`,
   fragmentShader:`uniform sampler2D flakeMap;varying float angle;varying float opacity;void main(){float c=cos(angle),s=sin(angle);vec2 uv=mat2(c,-s,s,c)*(gl_PointCoord-.5)+.5;if(any(lessThan(uv,vec2(0.)))||any(greaterThan(uv,vec2(1.))))discard;float alpha=texture2D(flakeMap,uv).a*opacity;if(alpha<.012)discard;gl_FragColor=vec4(.94,.98,1.,alpha);}`}));snow.name='winter-snow-crystals';snow.frustumCulled=false;scene.add(snow);
- // A tall folded sheet, rather than a luminous line: the lower edge is coherent and rays dissolve upward.
- // Visual reference: NASA/Joy Ng, https://science.nasa.gov/feature/nasas-guide-to-finding-and-photographing-auroras/
+ // Long, non-overlapping curtain folds retain a dark sky between the layers.
+ // Reference: https://science.nasa.gov/image-article/apod-2015-may-4-an-unexpected-aurora-over-norway/
  const auroraUniforms={time:{value:0},night:{value:0}};
  const aurora=new T.Group();aurora.name='winter-auroral-curtains';scene.add(aurora);
- for(const [layer,y,z,yaw]of [[0,220,-360,-.18],[1,238,-440,.28],[2,259,-525,-.34]]){
-  const material=new T.ShaderMaterial({uniforms:{...auroraUniforms,layer:{value:layer}},transparent:true,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending,toneMapped:false,
-   vertexShader:`uniform float time;uniform float layer;varying vec2 vUv;varying float vFold;void main(){vUv=uv;float x=uv.x,t=time*.016,phase=layer*2.37;vec3 p=position;
-    float sweep=x*5.4+phase+t*.42;
-    float crease=x*18.2+sin(x*6.1+phase)*1.55-t*.58;
-    float hem=sin(sweep)*24.+sin(x*11.3-phase-t*.31)*15.+sin(crease*.77)*7.;
-    float height=.86+.19*sin(x*8.1+phase+t*.27)+.12*sin(x*17.7-phase-t*.19);
-    p.y=(uv.y*height-.5)*(240.-layer*22.)+hem;
-    p.x+=sin(crease)*49.+sin(sweep*.83)*27.;
-    p.z+=cos(crease)*37.+sin(sweep)*76.+sin(x*10.4-phase)*21.;
-    p.x+=pow(uv.y,1.4)*(18.+sin(sweep)*23.);
-    p.z+=uv.y*(14.+cos(sweep*.7)*20.);
-    vFold=.5+.5*cos(crease);gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`,
-   fragmentShader:`uniform float time;uniform float night;uniform float layer;varying vec2 vUv;varying float vFold;
+ for(const [layer,y,z,yaw]of [[0,134,-390,-.12],[1,186,-490,.23],[2,232,-580,-.27]]){
+  const material=new T.ShaderMaterial({uniforms:{...auroraUniforms,layer:{value:layer}},transparent:true,depthWrite:false,side:T.DoubleSide,blending:T.NormalBlending,toneMapped:false,
+   vertexShader:`uniform float time;uniform float layer;varying vec2 vUv;void main(){vUv=uv;float x=uv.x,t=time*.012,phase=layer*2.37;vec3 p=position;
+    // The high-frequency crease is in depth only; the sheet cannot double back in X.
+    p.x+=(sin(x*4.3+phase+t*.34)-sin(x*4.3+phase))*5.;
+    p.y+=(sin(x*5.4+phase+t*.29)-sin(x*5.4+phase))*7.;
+    p.y+=uv.y*(sin(x*8.7-phase+t*.21)-sin(x*8.7-phase))*4.;
+    p.z+=(sin(x*6.1+phase+t*.37)-sin(x*6.1+phase))*13.;
+    p.z+=(sin(x*13.4-phase-t*.24)-sin(x*13.4-phase))*4.;
+    gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`,
+   fragmentShader:`uniform float time;uniform float night;uniform float layer;varying vec2 vUv;
     float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
     float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.,1.)),f.x),f.y);}
-    void main(){float t=time*.016;vec2 uv=vUv;float phase=layer*2.37;
-     float drift=noise(vec2(uv.x*8.+phase,t*.25));
-     float lowerEdge=.035+noise(vec2(uv.x*19.+phase,t*.2))*.045;
-     float h=uv.y-lowerEdge;
-     float edge=smoothstep(0.,.12,uv.x)*(1.-smoothstep(.86,1.,uv.x));
-     float onset=smoothstep(-.014,.035,h);
-     float reach=.64+noise(vec2(uv.x*11.+phase,t*.18))*.3;
-     float veil=onset*exp(-max(h,0.)*2.35)*(1.-smoothstep(reach*.64,reach,h));
-     float rayX=uv.x*230.+drift*7.+h*sin(uv.x*9.+phase)*.8;
-     float fine=noise(vec2(rayX,h*.8-t*.3));
-     float fine2=noise(vec2(rayX*1.91+phase,h*1.4+t*.2));
-     float rays=.46+.4*fine+.23*fine2*fine2;
-     float body=.6+.4*noise(vec2(uv.x*21.+phase,t*.2+h*.28));
-     float hem=exp(-pow((h-.035)*22.,2.));
-     float foldGlow=.78+.22*vFold;
-     vec3 green=vec3(.21,.68,.37),mint=vec3(.42,.79,.51),blue=vec3(.16,.36,.49);
-     vec3 color=mix(green,mint,hem*.44);color=mix(color,blue,smoothstep(.18,.79,h)*.67);
-     color=mix(color,vec3(.34,.24,.44),smoothstep(.53,.94,h)*.22);
-     float breath=.94+.06*sin(t*.7+phase);
-     float alpha=(veil*.58+hem*.18)*rays*body*foldGlow*edge*night*breath/(1.+layer*.48);
-     gl_FragColor=vec4(color,alpha);}`});
-  const curtain=new T.Mesh(new T.PlaneGeometry(780,240-layer*22,224,24),material);curtain.name='winter-aurora-sheet-'+layer;curtain.position.set(0,y,z);curtain.rotation.y=yaw;curtain.frustumCulled=false;aurora.add(curtain);
+    void main(){float t=time*.012;vec2 uv=vUv;float phase=layer*2.37;
+     float flow=noise(vec2(uv.x*6.7+phase,t*.28));
+     float edge=smoothstep(0.,.13,uv.x)*(1.-smoothstep(.84,1.,uv.x));
+     float lower=.025+noise(vec2(uv.x*23.+phase,t*.14))*.024,h=uv.y-lower;
+     float onset=smoothstep(-.018,.055,h),reach=.69+noise(vec2(uv.x*9.+phase,t*.19))*.26;
+     float veil=onset*exp(-max(h,0.)*2.65)*(1.-smoothstep(reach*.65,reach,h));
+     float streak=uv.x*470.+flow*5.+h*sin(uv.x*7.+phase)*.65;
+     float fine=noise(vec2(streak,h*2.4-t*.35)),fine2=noise(vec2(streak*1.73+phase,h*4.1+t*.2));
+     // Fine, continuous threads modulate a connected curtain, not separated columns.
+     float rays=.64+.24*fine+.12*fine2;
+     float body=.78+.22*noise(vec2(uv.x*17.+phase,t*.17+h*.65));
+     float hem=exp(-pow((h-.075)*14.,2.));
+     vec3 green=vec3(.25,.66,.48),mint=vec3(.53,.80,.67),blue=vec3(.23,.43,.59);
+     vec3 color=mix(green,mint,hem*.43);color=mix(color,blue,smoothstep(.18,.75,h)*.65);
+     color=mix(color,vec3(.36,.32,.51),smoothstep(.5,.91,h)*.18);
+     float alpha=(veil*.48+hem*.14)*rays*body*edge*night/(1.+layer*.65);
+     if(alpha<.001)discard;gl_FragColor=vec4(color,alpha);}`});
+  const curtain=new T.Mesh(createAuroraCurtainGeometry(layer),material);curtain.name='winter-aurora-sheet-'+layer;curtain.position.set(0,y,z);curtain.rotation.y=yaw;curtain.frustumCulled=false;aurora.add(curtain);
  }
+ let quality=(globalThis.innerWidth||1024)<650?'medium':'high';try{quality=localStorage.getItem('winter-vfx-quality')||quality;}catch{}
+ const setQuality=value=>{quality=['high','medium','low'].includes(value)?value:'medium';aurora.children.forEach((sheet,index)=>sheet.visible=index<(quality==='high'?3:quality==='medium'?2:1));};setQuality(quality);document.querySelector('#vfx-quality')?.addEventListener('change',e=>setQuality(e.target.value));
  const a=new T.Color(),b=new T.Color();let skyState=skyAt(12),hour=12,snowEnabled=true;
  try{snowEnabled=localStorage.getItem('winter-snow')!=='off';}catch{}const toggle=document.querySelector('#snow-enabled');if(toggle)toggle.checked=snowEnabled;
  const updateTime=detail=>{hour=detail.hour;skyState=skyAt(hour);};if(window.labWorldTime)updateTime(window.labWorldTime);window.addEventListener('lab:time',e=>updateTime(e.detail));document.querySelector('#snow-enabled')?.addEventListener('change',e=>{snowEnabled=e.target.checked;try{localStorage.setItem('winter-snow',snowEnabled?'on':'off');}catch{}});
- return{update(time,still,target,brightness=1){const {a:lo,b:hi,t}=skyState;const color=(x,y)=>a.set(x).lerp(b.set(y),t),night=hour>=20||hour<5?1:hour>=18?(hour-18)/2:hour<7?(7-hour)/2:0,top=color(lo.sky,hi.sky).clone().lerp(new T.Color('#071329'),night),horizon=color(lo.horizon,hi.horizon).clone().lerp(new T.Color('#192c45'),night);scene.background.copy(top);scene.fog.color.copy(horizon);hemi.intensity=T.MathUtils.lerp(lo.ambient,hi.ambient,t)*T.MathUtils.lerp(1,.34,night);hemi.color.set('#b3c6df');hemi.groundColor.set('#586a76');sun.color.copy(color(lo.sun,hi.sun));sun.intensity=T.MathUtils.lerp(lo.light,hi.light,t)*brightness*T.MathUtils.lerp(1,.24,night);fill.intensity=T.MathUtils.lerp(.22,.12,night);scene.environmentIntensity=T.MathUtils.lerp(.35,.15,night);fill.color.set('#ebc7a1');world.setSky?.(top,horizon,hour);auroraUniforms.night.value=night;auroraUniforms.time.value=still?0:time;aurora.position.set(target.x,0,target.z);aurora.visible=!window.labInterior&&night>.01;snow.visible=!window.labInterior&&snowEnabled;const clock=still?0:time;snowUniforms.time.value=clock;for(let i=0;i<count;i++){const f=seeds[i];positions[i*3]=target.x+f.x+Math.sin(clock*.15+f.phase)*1.8+Math.sin(clock*.43+f.phase)*.18;positions[i*3+1]=Math.max(0,target.y-2)+((f.y-clock*f.s)%29+29)%29;positions[i*3+2]=target.z+f.z+Math.cos(clock*.12+f.phase);}geometry.attributes.position.needsUpdate=true;}};
+ return{setQuality,update(time,still,target,brightness=1){const {a:lo,b:hi,t}=skyState;const color=(x,y)=>a.set(x).lerp(b.set(y),t),night=hour>=20||hour<5?1:hour>=18?(hour-18)/2:hour<7?(7-hour)/2:0,top=color(lo.sky,hi.sky).clone().lerp(new T.Color('#071329'),night),horizon=color(lo.horizon,hi.horizon).clone().lerp(new T.Color('#192c45'),night);scene.background.copy(top);scene.fog.color.copy(horizon);hemi.intensity=T.MathUtils.lerp(lo.ambient,hi.ambient,t)*T.MathUtils.lerp(1,.34,night);hemi.color.set('#b3c6df');hemi.groundColor.set('#586a76');sun.color.copy(color(lo.sun,hi.sun));sun.intensity=T.MathUtils.lerp(lo.light,hi.light,t)*brightness*T.MathUtils.lerp(1,.24,night);fill.intensity=T.MathUtils.lerp(.22,.12,night);scene.environmentIntensity=T.MathUtils.lerp(.35,.15,night);fill.color.set('#ebc7a1');world.setSky?.(top,horizon,hour);auroraUniforms.night.value=night;auroraUniforms.time.value=still?0:time;aurora.position.set(target.x,0,target.z);aurora.visible=!window.labInterior&&night>.01;snow.visible=!window.labInterior&&snowEnabled;const clock=still?0:time;snowUniforms.time.value=clock;for(let i=0;i<count;i++){const f=seeds[i];positions[i*3]=target.x+f.x+Math.sin(clock*.15+f.phase)*1.8+Math.sin(clock*.43+f.phase)*.18;positions[i*3+1]=Math.max(0,target.y-2)+((f.y-clock*f.s)%29+29)%29;positions[i*3+2]=target.z+f.z+Math.cos(clock*.12+f.phase);}geometry.attributes.position.needsUpdate=true;}};
+}
+
+// The actual mesh is curved before shader animation. A monotonic horizontal span
+// prevents doubled triangles and the additive bright pillars they previously produced.
+export function createAuroraCurtainGeometry(layer=0){
+ const geometry=new T.PlaneGeometry(980,1,224,16),p=geometry.attributes.position,uv=geometry.attributes.uv,phase=layer*2.37;
+ for(let i=0;i<p.count;i++){
+  const u=uv.getX(i),v=uv.getY(i),hem=Math.sin(u*5.6+phase)*18+Math.sin(u*11.1+phase*.4)*11;
+  const height=60+Math.sin(u*7.7+phase)*14+Math.sin(u*13.3-phase)*6;
+  p.setXYZ(i,(u-.5)*980,hem+v*height,Math.sin(u*4.3+phase)*50+Math.sin(u*12.5+phase)*18+v*Math.sin(u*6.3)*6);
+ }
+ geometry.computeVertexNormals();geometry.computeBoundingBox();geometry.computeBoundingSphere();return geometry;
 }

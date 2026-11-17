@@ -1,5 +1,5 @@
 // Terrain, ride routes and collision rules share world coordinates.
-export const alpine={x:0,z:-260,r:144},spa={x:0,z:119,r:31};
+export const alpine={x:0,z:-260,r:144,landZ:-230,rx:144,rz:174},spa={x:0,z:119,r:31};
 const clamp=t=>Math.max(0,Math.min(1,t)),smooth=t=>{t=clamp(t);return t*t*(3-2*t);};
 function localSkiCenter(z){return 2+Math.sin(clamp((-z-96)/38)*Math.PI*2)*3;}
 function localHeight(x,z){
@@ -52,17 +52,13 @@ export function sledCenter(z){return 124+8*Math.sin(clamp((-z-196)/76)*Math.PI)-
 export const summitObstacles=[
  ...terminalColumns(-30,-348,3.4),...terminalColumns(upperLiftLayout.x,upperLiftLayout.z,5.2,upperNormal),...terminalColumns(upperLiftLayout.x+upperLiftLayout.dx,upperLiftLayout.z+upperLiftLayout.dz,3.4,upperNormal),
  {x:-10,z:-363,w:4.15,d:1.85},{x:10,z:-363,w:4.15,d:1.85},{x:-3,z:-350,r:1.65},
- {x:-6.8,z:-350,w:.6,d:1.6},{x:.8,z:-350,w:.6,d:1.6},
- {x:11.1,z:-352,w:.2,d:2.4},{x:16.9,z:-352,w:.2,d:2.4},{x:14,z:-354.4,w:2.9,d:.2},{x:14,z:-349.6,w:2.9,d:.2,door:{x:14,w:1.1}}
+ {x:-6.8,z:-350,w:.6,d:1.6},{x:.8,z:-350,w:.6,d:1.6}
 ];
-let summitRestroomOpen=true;
-export function setSummitRestroomOpen(open){summitRestroomOpen=!!open;return summitRestroomOpen;}
-export function summitPositionValid(x,z){if(!summitRestroomOpen&&Math.abs(x-14)<1.1&&Math.abs(z+349.6)<.22)return false;return !summitObstacles.some(o=>{if(o.door&&Math.abs(x-o.door.x)<o.door.w-.35)return false;return o.r?Math.hypot(x-o.x,z-o.z)<o.r+.35:Math.abs(x-o.x)<o.w+.35&&Math.abs(z-o.z)<o.d+.35;});}
+export function summitPositionValid(x,z){return !summitObstacles.some(o=>o.r?Math.hypot(x-o.x,z-o.z)<o.r+.35:Math.abs(x-o.x)<o.w+.35&&Math.abs(z-o.z)<o.d+.35);}
 export const summitFacilities=[
  {id:'odeng',name:'어묵 트럭',x:-10,z:-358.5,model:{x:-10,z:-363},view:{distance:9,yaw:.25,pitch:.3}},
  {id:'marshmallow',name:'마시멜로 트럭',x:10,z:-358.5,model:{x:10,z:-363},view:{distance:9,yaw:.25,pitch:.3}},
  {id:'campfire',name:'모닥불',x:-3,z:-347.5,r:1.4,model:{x:-3,z:-350},view:{distance:11,yaw:.25,pitch:.3}},
- {id:'restroom',name:'정상 화장실',x:14,z:-348,model:{x:14,z:-352},view:{distance:9,yaw:.25,pitch:.3}},
  {id:'upperlift',name:'상부 리프트',...upperLiftEntry,r:2.8,model:{x:upperLiftLayout.x,z:upperLiftLayout.z},view:{distance:10,yaw:1.5,pitch:.22}}
 ];
 function alpineTerrainHeight(x,z){
@@ -89,7 +85,11 @@ function alpineTerrainHeight(x,z){
  terrain=mix(terrain,lowerHeight(z),accessBlend);
  const sledDistance=Math.abs(x-sledCenter(z)),sledT=clamp((-z-192)/80),sledBlend=(1-smooth((sledDistance-5)/5))*smooth((z+282)/10)*(1-smooth((z+192)/8));
  terrain=terrain*(1-sledBlend)+(.09+19*smooth(sledT))*sledBlend;
- for(const area of [summit,peakSummit]){const d=Math.hypot((x-area.x)/area.rx,(z-area.z)/area.rz),terrace=1-smooth((d-.85)/.45);terrain=mix(terrain,area.height,terrace);}
+ for(const area of [summit,peakSummit]){const d=Math.hypot((x-area.x)/area.rx,(z-area.z)/area.rz),terrace=1-smooth((d-.85)/.68);terrain=mix(terrain,area.height,terrace);}
+ // A graded service apron supports the entire truck footprint, not only its origin.
+ for(const stop of summitFacilities.filter(p=>['odeng','marshmallow'].includes(p.id))){const dx=Math.max(0,Math.abs(x-stop.model.x)-5.3),dz=Math.max(0,Math.abs(z-stop.model.z)-6),blend=1-smooth(Math.hypot(dx,dz)/9);terrain=mix(terrain,summit.height,blend);}
+ // Smooth pedestrian grading spans the whole approach and its landing apron.
+ for(let i=1;i<summitTransfer.length;i++){const a=summitTransfer[i-1],b=summitTransfer[i],dx=b.x-a.x,dz=b.z-a.z,t=clamp(((x-a.x)*dx+(z-a.z)*dz)/(dx*dx+dz*dz)),distance=Math.hypot(x-a.x-dx*t,z-a.z-dz*t);terrain=mix(terrain,summit.height,1-smooth((distance-3.5)/5.5));}
  const accessFinal=(1-smooth((Math.abs(x-24)-beginnerAccess.halfWidth)/5))*smooth((z+342)/8)*(1-smooth((z+294)/8));terrain=mix(terrain,lowerHeight(z),accessFinal);
  // Upper pistes cut through the shoulders of the lower terrace, rather than
  // inheriting its sideways cliff where the two elevations approach each other.

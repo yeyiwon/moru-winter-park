@@ -33,7 +33,7 @@ studio.addEventListener('click',e=>{if(e.target===studio){const r=studio.getBoun
 studio.querySelector('[role=tablist]').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const current=tabs.indexOf(document.activeElement),index=e.key==='Home'?0:e.key==='End'?tabs.length-1:(current+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;selectTab(tabs[index].dataset.studio);tabs[index].focus();});
 for(const [id,key] of [['light-color','light'],['light-level','brightness'],['fur-length','fluff'],['roundness','roundness']])document.getElementById(id).addEventListener('input',e=>{appearance[key]=key==='light'?e.target.value:Number(e.target.value);update();});
 
-createWorldMap(document.getElementById('island-map'),id=>{closeStudio();if(id==='park')window.travelToIsland?.('park');else window.travelToPlace?.(id);});
+createWorldMap(document.getElementById('island-map'),id=>{closeStudio();if(id==='park')window.travelToIsland?.('park');else window.travelToPlace?.(id,false);});
 update();
 
 window.addEventListener('keydown',e=>{if(document.body.classList.contains('invite-gate')||e.code!=='KeyM'||e.repeat||e.metaKey||e.ctrlKey||e.altKey||e.target.closest?.('input,textarea,select,[contenteditable=true]')||document.querySelector('#learning').open)return;e.preventDefault();if(studio.open&&!document.querySelector('#pane-map').hidden)closeStudio();else openStudio('map');});

@@ -1,16 +1,16 @@
+import {castleObstacles} from './castle-layout.js';
 import {interiorAt,interiorCanStandAt,interiorCanMoveFrom} from './interior-layout.js';
 import {retreatCanStandAt} from './retreat-layout.js';
 import {festivalObstacles} from './festival-layout.js';
-import {conservatoryCanStandAt,conservatoryCanMoveFrom} from './conservatory-layout.js';
+import {conservatoryLayout,conservatoryCanStandAt,conservatoryCanMoveFrom} from './conservatory-layout.js';
 import {parkObstacles} from './park-layout.js';
 import {resortObstacles,alpineHeight} from './resort-layout.js';
 import {terrainAt,bridges,bridgeHalfWidth} from './world-layout.js';
 // Pure ground movement shared by keyboard, touch and click navigation.
 export const obstacles = [
- {x:86,z:45.8,r:.75},{x:-47.3,z:-181.5,r:.75},...resortObstacles,...festivalObstacles,{x:0,z:53,r:11.2},{x:12,z:126,w:12,d:11},{x:108,z:35,r:9.4},
+ {x:86,z:45.8,r:.75},{x:-47.3,z:-181.5,r:.75},...resortObstacles,...festivalObstacles,{x:conservatoryLayout.x,z:conservatoryLayout.z,r:conservatoryLayout.radius},{x:12,z:126,w:12,d:11},{x:108,z:35,r:9.4},
   ...parkObstacles,
-  {x:-3.55,z:-14,w:2.1,d:1.6},{x:3.55,z:-14,w:2.1,d:1.6},
-  {x:-5.4,z:-14,r:1.5},{x:5.4,z:-14,r:1.6},{x:-3.4,z:-16,r:1.35},{x:3.4,z:-16.5,r:1.5},
+  ...castleObstacles,
   {x:41.45,z:31.2,r:.5},{x:50.55,z:31.2,r:.5},{x:38.2,z:24.2,r:.65},{x:53.8,z:24.2,r:.65},
 ];
 export const bodyRadius=.35;

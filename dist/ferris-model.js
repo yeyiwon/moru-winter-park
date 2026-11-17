@@ -1,12 +1,9 @@
 import * as T from './vendor/three.module.js';
 
-export const ferrisDimensions=Object.freeze({
- center:Object.freeze({x:-18,y:17,z:-5}),scale:2.35,yaw:.12,radius:5.7,cabinCount:12,seatsPerCabin:2,
- cabinWidth:2.14,cabinDepth:1.56,cabinDepthOffset:1.23,floorHeight:-1.30,ceilingHeight:.12,
- seatSpacing:1,seatDepth:.04,avatarOriginOffset:.82,rotationPeriod:240,
-});
+import {ferrisDimensions,ferrisSeatAnchor} from './ferris-layout.js';
+export {ferrisDimensions} from './ferris-layout.js';
 const TAU=Math.PI*2,V=(x,y,z)=>new T.Vector3(x,y,z);
-const colors={silver:'#c0d0d8',paleSilver:'#e0e8e9',gold:'#cbb582',ice:'#9ec6d6',blue:'#536f83',navy:'#253b50',ivory:'#e4e8e4',warm:'#ffdfab',cool:'#cceeff'};
+const colors={silver:'#d0dce2',paleSilver:'#edf3f4',gold:'#cbb582',ice:'#9ec6d6',blue:'#91aebb',navy:'#253b50',ivory:'#e4e8e4',warm:'#ffdfab',cool:'#cceeff'};
 
 function roundedBlock(w,h,d,r=.04){
  r=Math.min(r,w/5,h/5,d/5);const shape=new T.Shape(),x=-w/2,y=-h/2;
@@ -39,75 +36,49 @@ function batch(parent,name,materials,metadata={}){
  return{add,finish};
 }
 
-function canopyGeometry(){
- const points=[V(1.13,.12,0),V(1.11,.19,0),V(.96,.29,0),V(.70,.42,0),V(.36,.51,0),V(.035,.55,0)];
- return new T.LatheGeometry(points.map(p=>new T.Vector2(p.x,p.y)),40).scale(1,1,.76);
-}
-
 function cabinTemplate(materials){
  const root=new T.Group(),sections={};root.name='ferris-cabin-template';
  const section=(name,fade=false)=>{const group=new T.Group();group.name=name;group.userData={ferrisPart:name,ferrisCameraFade:fade};root.add(group);sections[name]=group;return batch(group,name,materials,{ferrisPart:name,ferrisCameraFade:fade});};
- const floor=section('floor'),roof=section('roof',true),frameParts=section('frame',true);
- floor.add(roundedBlock(2.14,.11,1.56),'blue','paint',[0,-1.365,0]);
- floor.add(roundedBlock(2.10,.035,1.52),'gold','metal',[0,-1.302,0]);
- floor.add(roundedBlock(2.04,.025,1.46),'ivory','paint',[0,-1.31,0]);
- // A low fascia leaves faces and the landscape open, including from inside the gondola.
- floor.add(roundedBlock(2.14,.19,.055),'ice','paint',[0,-1.25,.75]);
- floor.add(roundedBlock(2.14,.19,.055),'ice','paint',[0,-1.25,-.75]);
- for(const x of [-1.045,1.045])floor.add(roundedBlock(.055,.19,1.48),'ice','paint',[x,-1.25,0]);
- for(const z of [-.785,.785]){floor.add(rod([-1.04,-1.15,z],[1.04,-1.15,z],.018),'gold');for(const x of [-.75,-.25,.25,.75])floor.add(roundedBlock(.017,.09,.014),'silver','metal',[x,-1.25,z]);}
- for(const x of [-1.068,1.068])floor.add(rod([x,-1.15,-.73],[x,-1.15,.73],.018),'gold');
- floor.add(roundedBlock(.72,.055,.22),'silver','metal',[0,-1.38,.86]);
- floor.add(new T.TorusGeometry(.095,.014,6,20),'gold','metal',[0,-1.25,.797],[0,0,0],[1,.65,1]);
- // Each full-width cushion is low enough for the existing floor + .82 avatar anchor.
- for(const x of [-.5,.5]){
-  floor.add(roundedBlock(.82,.09,.60,.04),'blue','paint',[x,-1.29,.04]);
-  floor.add(roundedBlock(.84,.025,.62),'gold','metal',[x,-1.338,.04]);
-  floor.add(roundedBlock(.83,.24,.075),'blue','paint',[x,-1.13,-.30]);
-  floor.add(roundedBlock(.84,.025,.075),'gold','metal',[x,-.998,-.30]);
-  for(const dx of [-.35,.35])floor.add(rod([x+dx,-1.29,-.29],[x+dx,-.99,-.29],.014),'silver');
+ const floor=section('floor'),roof=section('roof',true),frame=section('frame',true);
+ // The round basin and low shell keep the cabin silhouette simple and the view open.
+ floor.add(new T.CylinderGeometry(1.075,1.02,.10,48),'ivory','paint',[0,-1.365,0]);
+ floor.add(ellipseRing(1.065,1.065,-1.31,.016),'gold');
+ const shell=[new T.Vector2(1.02,-1.38),new T.Vector2(1.08,-1.30),new T.Vector2(1.09,-1.19),new T.Vector2(1.07,-1.12)];
+ floor.add(new T.LatheGeometry(shell,48),'ice','paint');
+ floor.add(ellipseRing(1.07,1.07,-1.12,.016),'silver');
+ // Seats face the central aisle; their sockets and cushions use the same local Z values.
+ for(const seatIndex of [0,1]){
+  const anchor=ferrisSeatAnchor(seatIndex),side=seatIndex===1?1:-1,z=anchor.z;
+  floor.add(roundedBlock(.72,.08,.45),'blue','paint',[0,-1.285,z]);
+  floor.add(roundedBlock(.75,.025,.47),'gold','metal',[0,-1.333,z]);
+  floor.add(roundedBlock(.76,.29,.075),'blue','paint',[0,-1.10,z+side*.24]);
+  floor.add(roundedBlock(.77,.025,.08),'silver','metal',[0,-.947,z+side*.24]);
+  for(const x of [-.35,.35])floor.add(rod([x,-1.30,z+side*.24],[x,-.94,z+side*.24],.014),'silver');
  }
  floor.finish();
-
- const frame=(name,z)=>{
-  const b=frameParts;
-  for(const x of [-1.0,1.0]){
-   b.add(rod([x,-1.18,z],[x,.12,z],.025),'silver');
-   for(const y of [-1.13,-.91,.08])b.add(new T.CylinderGeometry(.043,.043,.045,10),'gold','metal',[x,y,z]);
-   b.add(tube([[x,-.12,z],[x*.96,.02,z],[x*.79,.12,z]],.018,10),'gold');
-  }
-  b.add(rod([-1,.12,z],[1,.12,z],.022),'gold');
-  if(name==='back-frame'){
-   b.add(rod([-1,-.89,z],[1,-.89,z],.019),'silver');
-   for(const x of [-.72,-.36,0,.36,.72])b.add(rod([x,-1.15,z],[x,-.89,z],.011),'gold');
-  }else{
-   // The broad central entrance is intentionally free of a rail across the riders.
-   for(const side of [-1,1]){b.add(rod([side,-.92,z],[side*.72,-.92,z],.017),'gold');b.add(rod([side*.72,-1.15,z],[side*.72,-.92,z],.012),'silver');}
-  }
- };
- frame('front-frame',.68);frame('back-frame',-.68);
+ // Four slender posts stay away from either head and from the side-facing camera.
+ for(let i=0;i<4;i++){
+  const a=Math.PI/4+i*Math.PI/2,x=Math.cos(a)*1.04,z=Math.sin(a)*1.04;
+  frame.add(rod([x,-1.14,z],[x,.14,z],.024),'paleSilver');
+  for(const y of [-1.1,.12])frame.add(new T.CylinderGeometry(.039,.039,.04,10),'gold','metal',[x,y,z]);
+ }
+ // Low side rails leave the two seated faces unobstructed and provide a side entry.
  for(const side of [-1,1]){
-  const b=frameParts,x=side*1.0;
-  b.add(rod([x,-.88,-.68],[x,-.88,.68],.020),'silver');b.add(rod([x,.12,-.68],[x,.12,.68],.022),'gold');
-  for(const z of [-.40,0,.40])b.add(rod([x,-1.15,z],[x,-.88,z],.012),'gold');
-  b.add(tube([[x,-.08,-.68],[x,.10,-.45],[x,.15,0],[x,.10,.45],[x,-.08,.68]],.016,16),'silver');
+  const points=Array.from({length:15},(_,i)=>{const a=side*Math.PI/2+(i/14-.5)*.92;return[Math.cos(a)*1.055,-.91,Math.sin(a)*1.055];});
+  frame.add(tube(points,.016,18),'silver');
  }
-
- roof.add(canopyGeometry(),'blue');
- roof.add(ellipseRing(1.13,.86,.13,.022),'gold');roof.add(ellipseRing(1.12,.85,.11,.011),'cool','light');
- roof.add(ellipseRing(.95,.72,.30,.011),'silver');
- for(let j=0;j<12;j++){
-  const angle=j/12*TAU,c=Math.cos(angle),s=Math.sin(angle),profile=[[1.13,.14],[1.09,.21],[.94,.31],[.69,.44],[.35,.53],[.035,.565]];
-  roof.add(tube(profile.map(([r,y])=>[c*r,y,s*r*.76]),.013,14),'gold');
-  if(j%2===0)roof.add(new T.SphereGeometry(.023,8,6),'warm','light',[c*1.105,.10,s*.84]);
- }
- roof.add(new T.CylinderGeometry(.055,.095,.075,12),'gold','metal',[0,.59,0]);roof.add(new T.SphereGeometry(.036,10,7),'warm','light',[0,.655,0]);roof.finish();
-
- // The axle stays behind the passenger envelope; an arched yoke reaches over the canopy.
- frameParts.add(rod([0,0,-1.58],[0,0,-.85],.055),'silver');
- frameParts.add(tube([[0,0,-.85],[0,.39,-.91],[0,.76,-.65],[0,.82,-.25],[0,.72,0],[0,.59,0]],.042,22),'silver');
- frameParts.add(new T.TorusGeometry(.095,.023,8,24),'gold','metal',[0,0,-1.60]);
- frameParts.finish();return{root,sections};
+ const canopy=[new T.Vector2(1.10,.12),new T.Vector2(1.09,.18),new T.Vector2(.91,.27),new T.Vector2(.60,.34),new T.Vector2(.20,.38),new T.Vector2(0,.39)];
+ roof.add(new T.LatheGeometry(canopy,48),'ivory');
+ roof.add(ellipseRing(1.10,1.10,.13,.020),'silver');
+ roof.add(ellipseRing(1.085,1.085,.105,.010),'warm','light');
+ // Eight tiny lamps rather than decorative ribs preserve the classic, quiet pod design.
+ for(let j=0;j<8;j++){const a=j/8*TAU;roof.add(new T.SphereGeometry(.022,8,5),'cool','light',[Math.cos(a)*1.07,.10,Math.sin(a)*1.07]);}
+ roof.finish();
+ // The hanger reaches over the canopy from the wheel plane behind the passenger envelope.
+ frame.add(rod([0,0,-1.85],[0,0,-1.16],.05),'silver');
+ frame.add(tube([[0,0,-1.16],[0,.43,-1.15],[0,.67,-.65],[0,.69,-.20],[0,.43,0]],.037,18),'silver');
+ frame.add(new T.TorusGeometry(.085,.018,8,24),'gold','metal',[0,0,-1.86]);
+ frame.finish();return{root,sections};
 }
 
 export function buildFerrisWheel(){
@@ -144,7 +115,7 @@ export function buildFerrisWheel(){
  for(let i=0;i<24;i++){
   const a=i/24*TAU,x=Math.cos(a)*d.radius,y=Math.sin(a)*d.radius;rim.add(rod([x,y,-.35],[x,y,.35],.029),'silver');
   for(const z of [-.30,.30]){
-   const offset=(i%2?1:-1)*.13,start=a+offset;spokes.add(rod([Math.cos(start)*.39,Math.sin(start)*.39,z],[Math.cos(a)*(d.radius-.29),Math.sin(a)*(d.radius-.29),z],i%2?.018:.026),i%2?'gold':'silver');
+   const start=a;spokes.add(rod([Math.cos(start)*.39,Math.sin(start)*.39,z],[Math.cos(a)*(d.radius-.29),Math.sin(a)*(d.radius-.29),z],i%2?.018:.026),i%2?'gold':'silver');
   }
   if(i%2===0)spokes.add(rod([Math.cos(a)*.57,Math.sin(a)*.57,.33],[Math.cos(a)*(d.radius-.35),Math.sin(a)*(d.radius-.35),.33],.008),'cool','light');
  }
@@ -163,7 +134,7 @@ export function buildFerrisWheel(){
   cabin.traverse(object=>{if(object!==cabin){const part=object.userData.ferrisPart;object.name='ferris-cabin-'+i+'-'+object.name;object.userData={...object.userData,ferrisCabin:i};if(object.isGroup&&part)parts[part]=object;}});cabinParts.push(parts);
   const pair=[];
   for(let seatIndex=0;seatIndex<d.seatsPerCabin;seatIndex++){
-   const socket=new T.Object3D();socket.name='ferris-cabin-'+i+'-seat-'+seatIndex;socket.position.set((seatIndex-.5)*d.seatSpacing,d.floorHeight,d.seatDepth);socket.userData={ferrisCabin:i,seatIndex,seatSurface:true,forwardAxis:'+Z',avatarOriginOffset:d.avatarOriginOffset};cabin.add(socket);pair.push(socket);
+   const socket=new T.Object3D();socket.name='ferris-cabin-'+i+'-seat-'+seatIndex;const anchor=ferrisSeatAnchor(seatIndex);socket.position.set(anchor.x,anchor.y,anchor.z);socket.rotation.y=anchor.yaw;socket.userData={ferrisCabin:i,seatIndex,seatSurface:true,forwardAxis:'+Z',avatarOriginOffset:d.avatarOriginOffset};cabin.add(socket);pair.push(socket);
   }seatSockets.push(pair);
  }
  const point=new T.Vector3(),forward=new T.Vector3(),quaternion=new T.Quaternion();

@@ -22,13 +22,13 @@ test('Ferris geometry is finite, shared, and partitioned for cabin camera fading
   }
  }
 });
-test('each cabin keeps two full-size passenger anchors upright over a full turn',()=>{
+test('each cabin keeps two facing full-size passenger anchors upright over a full turn',()=>{
  for(const time of [0,15,30,60,90,120,180,225,240]){
   model.update(time);model.root.updateMatrixWorld(true);
   for(let i=0;i<d.cabinCount;i++){
    const a=model.seat(i,0),b=model.seat(i,1),up=new T.Vector3(0,1,0).applyQuaternion(model.cabins[i].getWorldQuaternion(new T.Quaternion()));
    assert.ok(Math.abs(Math.hypot(a.x-b.x,a.z-b.z)-d.seatSpacing*d.scale)<1e-8);
-   assert.ok(Math.hypot(a.x-b.x,a.z-b.z)>2.1);assert.ok(Math.abs(a.y-b.y)<1e-8);assert.ok(Math.abs(a.yaw-d.yaw)<1e-8);assert.ok(up.distanceTo(new T.Vector3(0,1,0))<1e-8);
+   assert.ok(Math.hypot(a.x-b.x,a.z-b.z)>3);const toward=new T.Vector3(b.x-a.x,0,b.z-a.z).normalize(),forwardA=new T.Vector3(Math.sin(a.yaw),0,Math.cos(a.yaw)),forwardB=new T.Vector3(Math.sin(b.yaw),0,Math.cos(b.yaw));assert.ok(forwardA.dot(toward)>.999999);assert.ok(forwardB.dot(toward)<-.999999);assert.ok(Math.abs(a.y-b.y)<1e-8);assert.ok(Math.abs(a.yaw-d.yaw)<1e-8);assert.ok(up.distanceTo(new T.Vector3(0,1,0))<1e-8);
    const floor=model.seatSockets[i][0].getWorldPosition(new T.Vector3());assert.ok(Math.abs(a.y-floor.y-d.avatarOriginOffset)<1e-8);assert.ok(floor.y>.3);
   }
  }
@@ -63,4 +63,10 @@ test('rotation depends only on the world clock and still mode preserves the last
  for(const key of ['x','y','z','yaw'])assert.ok(Math.abs(initial[key]-repeated[key])<1e-8);
  model.update(90,true);assert.deepEqual(model.seat(3,1),repeated);model.update(Number.NaN);assert.deepEqual(model.seat(3,1),repeated);
  assert.equal(model.seat(-1,0),null);assert.equal(model.seat(d.cabinCount,0),null);assert.equal(model.seat(0,2),null);assert.equal(model.seat(.5,0),null);
+});
+
+test('the western placement leaves the castle approach and photo garden independent',()=>{
+ const bounds=new T.Box3();for(let time=0;time<240;time+=10){model.update(time);model.root.updateMatrixWorld(true);bounds.union(new T.Box3().setFromObject(model.root,true));}
+ assert.ok(bounds.min.x>-60);assert.ok(bounds.max.x<-25);assert.ok(bounds.max.y<34);
+ assert.ok(Math.hypot(d.entrance.x-d.center.x,d.entrance.z-d.center.z)>9);
 });

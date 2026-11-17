@@ -1,3 +1,4 @@
+import {ferrisDimensions} from './ferris-layout.js';
 import {sharedSeatPose} from './ride-seats.js';
 import {interiorInteractions,interiorActivityPoses,interiorAt,interiorSurfaceHeight} from './interior-layout.js';
 import {createSkatingController} from './skating.js';
@@ -76,7 +77,6 @@ export function createWinterExperience(winter,companion,travel){
   else if(id==='sauna')button('입장',()=>window.enterInterior?.('ryokan'));
   else if(id==='healing')button('쉬기',()=>{rides.stop();companion.equip('none');rest=restSeats.healing;card.hidden=true;hud.hidden=false;stopButton.textContent='일어나기';label.textContent='';window.labSound?.('rest');});
   else if(id==='tree')button('트리 꾸미기',()=>window.dispatchEvent(new Event('lab:tree-open')));
-  else if(id==='restroom')button('문 열기 / 닫기',()=>winter.toggleRestroom?.());
   else if(id==='odeng')button('어묵',()=>take('odeng'));
   else if(id==='marshmallow')button('마시멜로',()=>take('marshmallow'));
   else if(id==='campfire'){
@@ -117,7 +117,7 @@ export function createWinterExperience(winter,companion,travel){
   },
   update(dt,input){
    if(skating.active){card.hidden=true;const result=skating.update(dt,input);if(result.finished){companion.equip('none');hud.hidden=true;}return result;}
-   if(parkRide){const seat=reservation?sharedSeatPose(reservation,Date.now()+(window.labServerOffset||0)):winter.parkRides.seat(parkRide,parkSeat);card.hidden=true;document.querySelector('#ski-controls').hidden=true;const outer=parkRide==='carousel'?Math.atan2(seat.x-16,seat.z-3.8):.12;return{...seat,mode:parkRide,view:{distance:parkRide==='ferris'?7.5:8,pitch:parkRide==='ferris'?.12:.15,yaw:outer,lookHeight:-.55}};}
+   if(parkRide){const seat=reservation?sharedSeatPose(reservation,Date.now()+(window.labServerOffset||0)):winter.parkRides.seat(parkRide,parkSeat);card.hidden=true;document.querySelector('#ski-controls').hidden=true;const outer=parkRide==='carousel'?Math.atan2(seat.x-16,seat.z-3.8):ferrisDimensions.yaw+Math.PI/2;return{...seat,mode:parkRide,view:{distance:parkRide==='ferris'?(window.innerWidth<650?14:8.6):8,focus:parkRide==='ferris'?{x:seat.x+Math.sin(ferrisDimensions.yaw)*ferrisDimensions.seatDepth*ferrisDimensions.scale*(reservation?.seat===1?-1:1),z:seat.z+Math.cos(ferrisDimensions.yaw)*ferrisDimensions.seatDepth*ferrisDimensions.scale*(reservation?.seat===1?-1:1)}:null,fov:parkRide==='ferris'?50:undefined,pitch:parkRide==='ferris'?.12:.15,yaw:outer,lookHeight:-.55}};}
    const moving=Math.hypot(input?.x||0,input?.z||0)>.15;
    if(moving){if(gesture){clearGesture();finishEating=false;}else if(wake())return null;}
    if(gesture){
