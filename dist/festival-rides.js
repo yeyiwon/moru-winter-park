@@ -1,3 +1,4 @@
+import {stepBumper} from './bumper-physics.js';
 import * as THREE from './vendor/three.module.js';
 
 import {festivalLayout,festivalDestinations,festivalObstacles} from './festival-layout.js';
@@ -24,13 +25,13 @@ function builder(parent,name,palette){
 function socket(parent,name,position){const node=new THREE.Object3D();node.name=name;node.position.set(...position);parent.add(node);return node;}
 
 export function buildFestivalRides(scene){
- const root=new THREE.Group();root.name='winter-festival-annex';scene.add(root);
+ const root=new THREE.Group();root.name='winter-park-west';scene.add(root);
  const palette=[
   new THREE.MeshStandardMaterial({color:'#e4c18b',metalness:.7,roughness:.3}),
   new THREE.MeshStandardMaterial({color:'#f0eee6',roughness:.97,side:THREE.DoubleSide}),
-  new THREE.MeshPhysicalMaterial({color:'#bd9aba',roughness:.29,metalness:.15,clearcoat:.8,side:THREE.DoubleSide}),
+  new THREE.MeshPhysicalMaterial({color:'#29465b',roughness:.29,metalness:.15,clearcoat:.8,side:THREE.DoubleSide}),
   new THREE.MeshPhysicalMaterial({color:'#aecdd0',roughness:.33,metalness:.12,clearcoat:.7}),
-  new THREE.MeshStandardMaterial({color:'#806575',roughness:.8}),
+  new THREE.MeshStandardMaterial({color:'#75614b',roughness:.8}),
   new THREE.MeshStandardMaterial({color:'#34404a',roughness:.8}),
   new THREE.MeshStandardMaterial({color:'#b3bfc5',metalness:.78,roughness:.32}),
   new THREE.MeshBasicMaterial({color:'#ffdfa5',toneMapped:false}),
@@ -55,51 +56,28 @@ export function buildFestivalRides(scene){
  pot.add(new THREE.SphereGeometry(1,28,20),1,[0,.78,0],[0,0,0],[.68,.68,.68]);pot.add(cylinder(.46,.53,.12,32),0,[0,1.34,0]);pot.add(new THREE.SphereGeometry(.17,16,12),7,[0,1.52,0]);
  pot.add(tube([[.49,.75,0],[.9,.84,0],[1.03,1.19,0]],.135,20,12),1);pot.add(new THREE.TorusGeometry(.39,.07,10,36),0,[-.67,.81,0]);pot.finish();
 
- const arena=new THREE.Group();arena.name='bumper-car-arena';arena.position.set(-72,.1,7);root.add(arena);const court=builder(arena,'bumper-arena-floor-rails',palette);
- court.add(box(7,.19,5,.1),4,[0,.1,0]);court.add(box(6.7,.03,4.7,.05),3,[0,.21,0]);
- for(let x=-3;x<=3;x+=.75)court.add(box(.016,.01,4.6,.002),0,[x,.235,0]);
- for(const side of [-1,1]){court.add(box(.13,.3,5,.04),5,[side*3.4,.33,0]);court.add(rod([side*3.4,.62,-2.4],[side*3.4,.62,2.4],.04),0);for(let z=-2;z<=2;z++)court.add(cylinder(.035,.035,.55,8),6,[side*3.4,.48,z]);}
- court.add(box(6.8,.28,.13,.035),5,[0,.33,-2.4]);court.add(rod([-3.4,.65,-2.4],[3.4,.65,-2.4],.04),0);
- for(const side of [-1,1]){court.add(box(2.1,.28,.13,.035),5,[side*2.3,.33,2.4]);court.add(rod([side*1.2,.65,2.4],[side*3.4,.65,2.4],.04),0);}
- for(const x of [-3.3,3.3])for(const z of [-2.25,2.25]){court.add(cylinder(.07,.11,2.9,12),4,[x,1.5,z]);court.add(new THREE.SphereGeometry(.13,12,8),7,[x,3,z]);}
- for(let i=0;i<15;i++){const x=-3.2+i*6.4/14,y=2.72+.028*x*x;court.add(new THREE.SphereGeometry(.045,8,6),7,[x,y,-2.25]);}court.add(tube([[-3.3,3,-2.25],[0,2.72,-2.25],[3.3,3,-2.25]],.015,24,5),6);court.finish();
+ const arena=new THREE.Group();arena.name='bumper-car-arena';arena.position.set(festivalLayout.bumper.x,.1,festivalLayout.bumper.z);root.add(arena);const court=builder(arena,'bumper-arena-floor-rails',palette);
+ const {w,d}=festivalLayout.bumper,hx=w/2,hz=d/2;
+ court.add(box(w,.19,d,.1),4,[0,.1,0]);court.add(box(w-.3,.03,d-.3,.05),3,[0,.21,0]);
+ for(let x=-hx+.6;x<hx;x+=1.2)court.add(box(.015,.008,d-.5,.002),6,[x,.235,0]);
+ for(const side of [-1,1]){court.add(box(.18,.35,d,.04),5,[side*hx,.35,0]);court.add(rod([side*hx,.8,-hz],[side*hx,.8,hz],.06),0);for(let z=-hz;z<=hz;z+=1.4)court.add(cylinder(.04,.055,.6,8),6,[side*hx,.52,z]);}
+ court.add(box(w,.35,.18,.04),5,[0,.35,-hz]);court.add(rod([-hx,.8,-hz],[hx,.8,-hz],.06),0);
+ for(const side of [-1,1]){court.add(box(hx-1.3,.35,.18,.04),5,[side*(hx+1.3)/2,.35,hz]);court.add(rod([side*1.3,.8,hz],[side*hx,.8,hz],.06),0);}
+ for(const x of [-hx,hx])for(const z of [-hz,hz]){court.add(cylinder(.1,.18,4.1,12),2,[x,2.1,z]);court.add(cylinder(.3,.4,.2,16),0,[x,.2,z]);court.add(new THREE.SphereGeometry(.17,12,8),7,[x,4.2,z]);}
+ for(const z of [-hz,hz]){for(let i=0;i<35;i++){const x=-hx+i*w/34,y=3.6+.006*x*x;court.add(new THREE.SphereGeometry(.06,8,6),7,[x,y,z]);}court.add(tube([[-hx,4.2,z],[0,3.6,z],[hx,4.2,z]],.019,36,5),6);}
+ court.finish();
  const cars=[],carSeats=[];
- for(let i=0;i<2;i++){
+ for(let i=0;i<4;i++){
   const car=new THREE.Group();car.name='bumper-car-'+i;arena.add(car);cars.push(car);const b=builder(car,'bumper-car-body',palette);
   b.add(new THREE.TorusGeometry(.72,.115,10,48),5,[0,.25,0],[Math.PI/2,0,0],[1,1.25,1]);
-  b.add(new THREE.SphereGeometry(1,32,16,0,Math.PI*2,0,Math.PI/2),i?3:2,[0,.27,.08],[0,0,0],[.68,.43,.9]);
+  b.add(new THREE.LatheGeometry([[.73,.22],[.77,.35],[.72,.53],[.61,.68],[.56,.65],[.62,.42],[.65,.25]].map(v=>new THREE.Vector2(...v)),48),i%2?3:2,[0,0,0],[0,0,0],[1,1,1.35]);
   b.add(box(.79,.17,.72,.07),4,[0,.49,-.19]);b.add(box(.77,.55,.16,.07),4,[0,.76,-.55],[.14,0,0]);b.add(box(.64,.14,.19,.06),1,[0,1.045,-.56]);
   for(const side of [-1,1]){b.add(new THREE.SphereGeometry(.11,12,10),7,[side*.37,.47,.77]);b.add(box(.09,.06,.12,.015),0,[side*.53,.49,.71]);}
   b.add(rod([0,.52,.16],[0,.9,.39],.026),6);b.add(new THREE.TorusGeometry(.2,.028,8,32),5,[0,.9,.39],[-.42,0,0]);for(let j=0;j<3;j++){const a=j*Math.PI*2/3;b.add(rod([0,.9,.39],[Math.cos(a)*.17,.9+Math.sin(a)*.15,.39-Math.sin(a)*.065],.012),6);}
   b.add(rod([0,.5,-.67],[0,2,-.67],.014),6);b.add(new THREE.SphereGeometry(.07,10,8),7,[0,2.02,-.67]);b.finish();carSeats.push(socket(car,'bumper-seat-'+i,[0,.58,-.2]));
  }
- cars[0].position.set(-1.4,.24,0);cars[1].position.set(1.4,.24,0);let driven=false,carSpeed=0;const parked=new THREE.Vector3(-1.75,.24,-.72);
-
- const track=new THREE.Group();track.name='winter-train-track';track.position.set(-54,.1,6);root.add(track);const rail=builder(track,'brass-rails-and-sleepers',palette);
- for(const offset of [-.43,.43]){const points=[];for(let i=0;i<=100;i++){const a=i/100*Math.PI*2;points.push([Math.cos(a)*(7.4+offset),.18,Math.sin(a)*(4.8+offset)]);}rail.add(tube(points,.037,100,7,true),6);}
- for(let i=0;i<62;i++){const a=i/62*Math.PI*2,x=Math.cos(a)*7.4,z=Math.sin(a)*4.8,yaw=Math.atan2(-Math.sin(a)*7.4,Math.cos(a)*4.8);rail.add(box(1.12,.07,.15,.015),4,[x,.115,z],[0,yaw,0]);for(const offset of [-.43,.43])rail.add(new THREE.SphereGeometry(.035,8,6),0,[Math.cos(a)*(7.4+offset),.19,Math.sin(a)*(4.8+offset)]);}rail.finish();
- const train=[],trainSeats=[];
- for(let i=0;i<3;i++){
-  const carriage=new THREE.Group();carriage.name=i?'winter-train-coach-'+i:'winter-train-engine';track.add(carriage);train.push(carriage);const b=builder(carriage,'winter-train-detail-'+i,palette);
-  b.add(box(1.38,.18,2.2,.06),i?3:2,[0,.47,0]);
-  for(const side of [-1,1])for(const z of [-.72,.72]){b.add(cylinder(.29,.29,.14,24),5,[side*.66,.33,z],[0,0,Math.PI/2]);b.add(new THREE.TorusGeometry(.23,.025,6,24),0,[side*.74,.33,z],[0,Math.PI/2,0]);for(let j=0;j<6;j++){const a=j*Math.PI/3;b.add(rod([side*.748,.33,z],[side*.748,.33+Math.sin(a)*.21,z+Math.cos(a)*.21],.012),0);}}
-  if(i===0){
-   b.add(cylinder(.48,.48,1.38,40),2,[0,1.02,.3],[Math.PI/2,0,0]);b.add(cylinder(.49,.49,.07,40),0,[0,1.02,1.02],[Math.PI/2,0,0]);b.add(new THREE.SphereGeometry(.13,16,12),7,[0,1.02,1.065]);
-   for(const z of [-.05,.65])b.add(new THREE.TorusGeometry(.483,.022,8,40),0,[0,1.02,z]);
-   b.add(new THREE.LatheGeometry([[.17,0],[.17,.33],[.25,.4],[.27,.47],[.25,.5]].map(p=>new THREE.Vector2(...p)),24),5,[0,1.42,.65]);b.add(cylinder(.21,.17,.12,24),0,[0,1.87,.65]);
-   for(const side of [-1,1]){b.add(box(.09,1.35,.1,.015),4,[side*.57,1.27,-.89]);b.add(box(.09,1.35,.1,.015),4,[side*.57,1.27,-.15]);}b.add(snowRoof(1.5,1.1),2,[0,1.91,-.5]);b.add(snowRoof(1.56,1.15),1,[0,1.96,-.5]);b.add(box(1.1,.55,.09,.02),2,[0,.83,-.96]);
-  }else{
-   b.add(box(1.2,.16,1.28,.06),4,[0,.73,0]);b.add(box(1.25,.51,.14,.04),4,[0,.99,-.65]);
-   for(const side of [-1,1]){for(const z of [-.96,.96])b.add(cylinder(.035,.05,2.6,10),0,[side*.61,1.78,z]);b.add(rod([side*.62,1.08,-.95],[side*.62,1.08,.95],.025),0);b.add(box(.09,.42,1.92,.025),3,[side*.63,.75,0]);}
-   b.add(snowRoof(1.65,2.35),2,[0,3.09,0]);b.add(snowRoof(1.7,2.4),1,[0,3.15,0]);for(let j=0;j<7;j++)for(const side of [-1,1])b.add(new THREE.SphereGeometry(.035,8,6),7,[side*.81,3.08,-1+j/3]);
-   trainSeats.push(socket(carriage,'train-seat-'+i,[0,.82,-.18]));
-  }
-  b.add(rod([0,.41,-1.1],[0,.41,-1.35],.04),6);b.finish();
- }
- // A low station shelter leaves the main circulation space open.
- for(const x of [-1.6,1.6])for(const z of [-.6,.6])decorative.add(cylinder(.07,.11,2.65,12),4,[-54+x,1.47,13.3+z]);
- decorative.add(snowRoof(3.8,1.9),2,[-54,2.82,13.3]);decorative.add(snowRoof(3.9,2),1,[-54,2.87,13.3]);decorative.add(box(2.5,.13,.55,.04),4,[-54,.63,13.5]);
- for(const x of [-55,-53])decorative.add(box(.12,.53,.43,.025),0,[x,.32,13.5]);
+ const carStates=[{x:-5,z:3,yaw:Math.PI,speed:0},{x:4,z:-3,yaw:.4},{x:-4,z:-3,yaw:2.2},{x:5,z:3,yaw:-1}];let driven=false;
+ const syncCars=()=>cars.forEach((car,i)=>{const p=carStates[i];car.position.set(p.x,.24,p.z);car.rotation.y=p.yaw;});syncCars();
  // Snowflake photo arch and a compact brass-wheeled confectionery cart.
  decorative.add(tube([[-77.2,.1,-8],[-77.2,2.5,-8],[-75,4.2,-8],[-72.8,2.5,-8],[-72.8,.1,-8]],.075,48,8),0);
  for(let i=0;i<21;i++){const a=i/20*Math.PI;decorative.add(new THREE.SphereGeometry(.06,10,7),7,[-75+Math.cos(a)*2.2,2.4+Math.sin(a)*1.8,-8]);}
@@ -110,18 +88,11 @@ export function buildFestivalRides(scene){
  for(let i=0;i<5;i++){const x=-77.8+i*.4;decorative.add(cylinder(.012,.012,.55,8),4,[x,1.58,-14.72]);decorative.add(new THREE.SphereGeometry(1,18,14),i%2?1:2,[x,1.92,-14.72],[0,0,0],[.18,.26,.18]);}
  decorative.finish();
  const worldPosition=new THREE.Vector3(),worldQuaternion=new THREE.Quaternion(),forward=new THREE.Vector3();
- function seat(kind,index=0){const nodes=kind==='teacups'?cupSeats:kind==='bumper'?carSeats:kind==='train'?trainSeats:null;if(!nodes)return null;const node=nodes[Math.abs(index)%nodes.length];root.updateMatrixWorld(true);node.getWorldPosition(worldPosition);node.getWorldQuaternion(worldQuaternion);forward.set(0,0,1).applyQuaternion(worldQuaternion);return{x:worldPosition.x,y:worldPosition.y+.82,z:worldPosition.z,yaw:Math.atan2(forward.x,forward.z),mode:'ride',seat:node.name};}
+ function seat(kind,index=0){const nodes=kind==='teacups'?cupSeats:kind==='bumper'?carSeats:null;if(!nodes)return null;const node=nodes[Math.abs(index)%nodes.length];root.updateMatrixWorld(true);node.getWorldPosition(worldPosition);node.getWorldQuaternion(worldQuaternion);forward.set(0,0,1).applyQuaternion(worldQuaternion);return{x:worldPosition.x,y:worldPosition.y+.82,z:worldPosition.z,yaw:Math.atan2(forward.x,forward.z),mode:'ride',seat:node.name};}
  function update(time,still=false){
   if(still)return;const t=time;cupRotor.rotation.y=t*.19;cups.forEach((cup,i)=>cup.rotation.y=-t*.31+i*.8);
-  if(!driven){cars[0].position.set(Math.cos(t*.27)*1.9,.24,Math.sin(t*.27)*1.05);cars[0].rotation.y=Math.atan2(-Math.sin(t*.27)*1.9,Math.cos(t*.27)*1.05);}
-  cars[1].position.set(Math.cos(t*.27+Math.PI)*1.9,.24,Math.sin(t*.27+Math.PI)*1.05);cars[1].rotation.y=Math.atan2(-Math.sin(t*.27+Math.PI)*1.9,Math.cos(t*.27+Math.PI)*1.05);
-  // A parked second car gives the human driver a tangible, safe obstacle.
-  if(driven){cars[1].position.copy(parked);cars[1].rotation.y=.4;}
-  train.forEach((carriage,i)=>{const a=t*.16-i*.56;carriage.position.set(Math.cos(a)*7.4,0,Math.sin(a)*4.8);carriage.rotation.y=Math.atan2(-Math.sin(a)*7.4,Math.cos(a)*4.8);});
+  if(!driven){cars.forEach((car,i)=>{const a=t*.14+i*Math.PI/2,p=carStates[i];p.x=Math.cos(a)*6.2;p.z=Math.sin(a)*3.7;p.yaw=Math.atan2(-Math.sin(a)*6.2,Math.cos(a)*3.7);p.vx=0;p.vz=0;});syncCars();}
  }
- function driveBumper(dt,{steer=0,throttle=0,brake=false}={}){
-  if(!driven)parked.set(cars[0].position.x>0?-1.75:1.75,.24,cars[0].position.z>0?-.72:.72);driven=true;dt=Math.min(.05,Math.max(0,dt));const car=cars[0];carSpeed+=(Math.max(-1,Math.min(1,throttle))*2.6-carSpeed*(brake?10:1.2))*dt;carSpeed=Math.max(-1.2,Math.min(2.6,carSpeed));car.rotation.y-=Math.max(-1,Math.min(1,steer))*dt*1.6;const x=car.position.x+Math.sin(car.rotation.y)*carSpeed*dt,z=car.position.z+Math.cos(car.rotation.y)*carSpeed*dt;
-  if(Math.abs(x)<2.49&&Math.abs(z)<1.35&&Math.hypot(x-parked.x,z-parked.z)>1.55){car.position.x=x;car.position.z=z;}else carSpeed*=-.3;
- }
- update(0);return{root,dynamic:[root],destinations:festivalDestinations,obstacles:festivalObstacles,update,seat,driveBumper,releaseBumper(){driven=false;carSpeed=0;},sockets:{teacups:cupSeats,bumper:carSeats,train:trainSeats}};
+ function driveBumper(dt,input={}){driven=true;const result=stepBumper(carStates,dt,input);syncCars();return result;}
+ update(0);return{root,dynamic:[root],destinations:festivalDestinations,obstacles:festivalObstacles,update,seat,driveBumper,releaseBumper(){driven=false;carStates[0].speed=0;},sockets:{teacups:cupSeats,bumper:carSeats}};
 }

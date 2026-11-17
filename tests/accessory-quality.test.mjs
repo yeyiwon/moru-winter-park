@@ -19,15 +19,15 @@ test('fashion accessories share finite geometry with a bounded draw-group budget
 
 test('new headwear and eyewear replace their own slots and stay attached during activities',()=>{
  assert.equal(normalizeWardrobe('eyes-wink'),'none');
- assert.equal(toggleItem('santa,sunglasses,eyes-heart,scarf','silver-glasses'),'santa,eyes-heart,scarf,silver-glasses');
- assert.equal(toggleItem('santa,eyes-heart,scarf','crown'),'eyes-heart,scarf,crown');
+ assert.equal(toggleItem('santa,sunglasses,eyes-heart,scarf','silver-glasses'),'santa,eyes-heart,silver-glasses');
+ assert.equal(toggleItem('santa,eyes-heart,scarf','crown'),'eyes-heart,crown');
  const pet=createCompanion({detail:'remote'});pet.customize({accessory:'silver-glasses,crown,scarf,star,ribbon'});
- const items=['silver-glasses','jewel-crown','winter-scarf','star-hairpin','satin-ribbon'].map(name=>pet.group.getObjectByName(name));
+ const items=['silver-glasses','jewel-crown','star-hairpin','satin-ribbon'].map(name=>pet.group.getObjectByName(name));
  assert.ok(items.every(m=>m.visible));assert.ok(pet.nameHeight>1.1);
  const anchors=items.map(m=>m.position.clone());for(const state of [{walking:true,phase:1.4},{mode:'ski',speed:20,lean:.7},{gesture:'drink',heldItem:'coffee',time:2}]){
   pet.pose(state);items.forEach((m,i)=>{assert.ok(m.position.equals(anchors[i]));assert.equal(m.visible,true);});
  }
- pet.pose({mode:'bath'});assert.equal(items[0].visible,false);assert.equal(items[1].visible,false);assert.equal(items[2].visible,false);
+ pet.pose({mode:'bath'});assert.equal(items[0].visible,false);assert.equal(items[1].visible,false);assert.equal(pet.group.getObjectByName('winter-scarf').visible,false);
  pet.pose();assert.ok(items.every(m=>m.visible));
 });
 

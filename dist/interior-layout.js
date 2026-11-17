@@ -1,0 +1,65 @@
+// Room-local architecture and collision share these dimensions. World positions are
+// separate from the outdoor map, so an interior can be spacious without moving its door.
+const floor=.09;
+export const interiorRooms={
+ ryokan:{id:'ryokan',name:'료칸',x:400,z:0,rx:21,rz:17,floor,ceiling:7.2,shape:'rectangle',entry:{x:400,z:14.5},exit:{x:400,z:15.2},arrivalYaw:Math.PI,ambient:'#e9c79e'},
+ conservatory:{id:'conservatory',name:'온실',x:500,z:0,rx:25,rz:22,floor,ceiling:25,shape:'ellipse',entry:{x:500,z:18.8},exit:{x:500,z:19.8},arrivalYaw:Math.PI,ambient:'#b8d9d2'}
+};
+export const ryokanFixtures=[
+ {id:'reception',x:13,z:10,rx:4,rz:1.1},
+ {id:'tea-table',x:-13,z:7,rx:2.25,rz:1.1},
+ {id:'tea-bench-back',x:-13,z:10,rx:3.5,rz:.65},
+ {id:'tea-bench-side',x:-17.2,z:7,rx:.65,rz:2.6},
+ {id:'tatami-table',x:12,z:-9,rx:2.6,rz:1.1},
+ {id:'tatami-cabinet',x:17.8,z:-13.5,rx:2.1,rz:.75},
+ {id:'sauna-bench-back',x:-13,z:-13.7,rx:5,rz:1},
+ {id:'sauna-bench-side',x:-18,z:-8.5,rx:1,rz:4.2},
+ {id:'sauna-stove',x:-8.6,z:-11,rx:1.05,rz:1.05},
+ {id:'footbath',x:0,z:-11,rx:2.9,rz:2},
+ {id:'locker',x:17.7,z:4.8,rx:2,rz:.7},
+ ...[[-18.5,13],[-18.5,-1.5],[18.5,14],[18,0],[5,-14.7]].map(([x,z],i)=>({id:'planter-'+i,x,z,r:.65})),
+ // Wide doors in the sauna's south wall and east screen connect it to the hall.
+ {id:'sauna-wall-south-left',x:-18,z:-1.4,rx:2.8,rz:.14},
+ {id:'sauna-wall-south-right',x:-6.8,z:-1.4,rx:2.5,rz:.14},
+ {id:'sauna-wall-east-rear',x:-4.5,z:-11.8,rx:.14,rz:4.6},
+ {id:'sauna-wall-east-front',x:-4.5,z:-2.5,rx:.14,rz:1.2},
+ {id:'tatami-screen',x:6,z:-1.4,rx:.14,rz:3.8}
+];
+export const conservatoryFixtures=[
+ {id:'cloud-mountain',x:-4,z:-3,rx:5.1,rz:5.3},
+ {id:'waterfall-pool',x:-4,z:3,rx:5.8,rz:2.5},
+ {id:'fern-bed-east',x:20,z:4,rx:2,rz:3.6},
+ {id:'orchid-bed-west',x:-20,z:2,rx:2,rz:4},
+ {id:'southern-palms',x:10,z:15,rx:2,rz:2},
+ {id:'northern-palms',x:1,z:-18,rx:4,rz:1.8},
+ {id:'west-bench',x:-12,z:13,rx:2.7,rz:.7},
+ {id:'east-bench',x:12,z:-16,rx:2.7,rz:.7}
+];
+export const interiorPromenade={room:'conservatory',rx:16,rz:13,halfWidth:1.65,rise:6,start:Math.PI/2,arc:Math.PI*1.5,landingArc:Math.PI/7};
+export const interiorInteractions=[
+ {id:'exit-ryokan',name:'밖으로',room:'ryokan',kind:'exit',x:400,z:15.2},
+ {id:'interior-tea',name:'차',room:'ryokan',kind:'tea',x:387,z:8.7},
+ {id:'interior-sauna',name:'찜질',room:'ryokan',kind:'sauna',x:387,z:-11.7},
+ {id:'interior-rest',name:'다다미',room:'ryokan',kind:'rest',x:410,z:-5},
+ {id:'interior-footbath',name:'족욕',room:'ryokan',kind:'footbath',x:400,z:-7.8},
+ {id:'exit-conservatory',name:'밖으로',room:'conservatory',kind:'exit',x:500,z:19.8},
+ {id:'interior-garden-light',name:'온실 조명',room:'conservatory',kind:'garden',x:506,z:12},
+ {id:'interior-garden-rest',name:'쉬기',room:'conservatory',kind:'rest',x:488,z:11.3}
+];
+// Interaction markers occupy free floor; activity poses deliberately sit on furniture.
+// The companion's seated origin is .82 m above the cushion/bench/rim surface.
+export const interiorActivityPoses={
+ 'interior-tea':{room:'ryokan',x:387,y:1.4975,z:10,yaw:Math.PI,seatY:.6775},
+ 'interior-sauna':{room:'ryokan',x:387,y:1.56,z:-13.7,yaw:0,seatY:.74},
+ 'interior-rest':{room:'ryokan',x:409,y:1.13,z:-6,yaw:Math.PI,seatY:.31},
+ 'interior-footbath':{room:'ryokan',x:400,y:1.31,z:-9.05,yaw:Math.PI,seatY:.49},
+ 'interior-garden-rest':{room:'conservatory',x:488,y:1.41,z:12.9,yaw:Math.PI,seatY:.59}
+};
+export function interiorActivityPoseValid(x,y,z){return Number.isFinite(x+y+z)&&Object.values(interiorActivityPoses).some(p=>Math.hypot(x-p.x,z-p.z)<.22&&Math.abs(y-p.y)<.2);}
+export function interiorAt(x,z){if(!Number.isFinite(x+z))return null;return Object.values(interiorRooms).find(r=>Math.abs(x-r.x)<=r.rx+.6&&Math.abs(z-r.z)<=r.rz+.6)||null;}
+export function interiorPromenadePoint(t,side=0){const p=interiorPromenade,c=interiorRooms.conservatory,u=Math.max(0,Math.min(1,t)),a=p.start+p.arc*u;return{x:c.x+Math.cos(a)*(p.rx+side*p.halfWidth),z:c.z+Math.sin(a)*(p.rz+side*p.halfWidth),y:floor+p.rise*u};}
+export function interiorPromenadeAt(x,z){const c=interiorRooms.conservatory,p=interiorPromenade,dx=x-c.x,dz=z-c.z,angle=(Math.atan2(dz/p.rz,dx/p.rx)-p.start+Math.PI*4)%(Math.PI*2),normal=Math.hypot(dx/p.rx,dz/p.rz),distance=Math.abs(normal-1)*Math.min(p.rx,p.rz);if(distance>p.halfWidth||angle>p.arc+p.landingArc)return null;const t=Math.min(1,angle/p.arc);return{height:floor+t*p.rise,t};}
+export function interiorSurfaceHeight(x,z){const room=interiorAt(x,z);if(!room)return null;if(room.id==='conservatory')return interiorPromenadeAt(x,z)?.height??floor;return floor;}
+export function interiorCanStandAt(x,z,radius=.35){const room=interiorAt(x,z);if(!room||!Number.isFinite(radius)||radius<0)return false;const dx=x-room.x,dz=z-room.z;if(room.shape==='ellipse'){if((dx/(room.rx-radius-.25))**2+(dz/(room.rz-radius-.25))**2>1)return false;}else if(Math.abs(dx)>room.rx-radius-.25||Math.abs(dz)>room.rz-radius-.25)return false;const obstacles=room.id==='ryokan'?ryokanFixtures:conservatoryFixtures;return !obstacles.some(o=>o.r?Math.hypot(dx-o.x,dz-o.z)<o.r+radius:Math.abs(dx-o.x)<o.rx+radius&&Math.abs(dz-o.z)<o.rz+radius);}
+export function interiorCanMoveFrom(from,to){const a=interiorAt(from.x,from.z),b=interiorAt(to.x,to.z);if(!a||!b||a.id!==b.id)return false;return interiorCanStandAt(to.x,to.z)&&Math.abs(interiorSurfaceHeight(from.x,from.z)-interiorSurfaceHeight(to.x,to.z))<=.22;}
+export function interiorPositionValid(x,y,z){if(!Number.isFinite(x+y+z))return false;if(interiorActivityPoseValid(x,y,z))return true;if(!interiorCanStandAt(x,z,.1))return false;const ground=interiorSurfaceHeight(x,z);return y>=ground-.15&&y<=ground+3.9;}

@@ -12,7 +12,7 @@ test('the separate sled valley does not cross any ski run',()=>{
 
 test('summit counters are accessible while solid props and restroom walls block movement',()=>{
  for(const stop of summitFacilities){assert.ok(canStandAt(stop.x,stop.z));assert.ok(summitPositionValid(stop.x,stop.z));assert.ok(Math.abs(alpineHeight(stop.x,stop.z)-72.09)<.2);}
- for(const [x,z] of [[-18,-357],[2,-357],[-8,-349],[-11.8,-349],[11.1,-352],[16.9,-352]])assert.equal(summitPositionValid(x,z),false);
+ for(const [x,z] of [[-10,-363],[10,-363],[-3,-350],[-6.8,-350],[11.1,-352],[16.9,-352]])assert.equal(summitPositionValid(x,z),false);
  for(const z of [-348,-349.6,-350,-351])assert.equal(summitPositionValid(14,z),true,'the restroom doorway is traversable');
 });
 

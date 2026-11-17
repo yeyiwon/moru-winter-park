@@ -1,11 +1,11 @@
 import * as T from './vendor/three.module.js';
-import {postOffice,rinkBounds,rinkEntry,skateRental,rinkLamps} from './retreat-layout.js';
+import {postOffice,rinkBounds,rinkEntry,skateRental,rinkLamps,rinkBenches} from './retreat-layout.js';
 
 // Two authored destinations; their real interactions and terrain live in the controllers.
 export function buildWinterRetreat(scene){
  const root=new T.Group();root.name='winter-retreat';scene.add(root);const dynamic=[];
  const cache=new Map(),M=(color,roughness=.8,metalness=0)=>{const key=[color,roughness,metalness].join();if(!cache.has(key))cache.set(key,new T.MeshStandardMaterial({color,roughness,metalness}));return cache.get(key);};
- const cedar=M('#9b7359'),cream=M('#e7d4b9'),dark=M('#3b4f55',.8,.12),brass=M('#c7a572',.3,.72),plum=M('#96536e',.8,.08),snow=M('#e3eaf0',1),blade=M('#bacbd0',.22,.72),glass=new T.MeshStandardMaterial({color:'#dfdcc7',emissive:'#ffb66e',emissiveIntensity:.65,roughness:.28,metalness:.12});
+ const cedar=M('#9b7359'),cream=M('#e7d4b9'),dark=M('#3b4f55',.8,.12),brass=M('#c7a572',.3,.72),plum=M('#603d46',.65,.12),snow=M('#e3eaf0',1),blade=M('#bacbd0',.22,.72),glass=new T.MeshStandardMaterial({color:'#dfdcc7',emissive:'#ffb66e',emissiveIntensity:.65,roughness:.28,metalness:.12});
  const cube=new T.BoxGeometry(1,1,1),sphere=new T.SphereGeometry(1,12,8);
  function mesh(g,m,x=0,y=0,z=0,p=root){const o=new T.Mesh(g,m);o.position.set(x,y,z);o.castShadow=!m.transparent;o.receiveShadow=true;p.add(o);return o;}
  function box(w,h,d,m,x,y,z,p=root){const o=mesh(cube,m,x,y,z,p);o.scale.set(w,h,d);return o;}
@@ -64,21 +64,75 @@ export function buildWinterRetreat(scene){
   for(let j=0;j<4;j++){const y=.08+j*.065;rod([-.09,y,.082],[.04,y+.03,.082],.009,brass,p);rod([.04,y,.082],[-.09,y+.03,.082],.009,brass,p);}
  }
  const office=group('winter-wish-post-office',postOffice.x,postOffice.z);booth(office,postOffice.w,postOffice.d,'post');
- const mailbox=group('wish-postbox',97.8,53.15);cylinder(.29,.34,.18,dark,0,.18,0,mailbox,20);cylinder(.24,.28,1.24,plum,0,.87,0,mailbox,24);mesh(new T.SphereGeometry(.29,24,12,0,Math.PI*2,0,Math.PI/2),plum,0,1.49,0,mailbox);ring(.28,.02,brass,0,.37,0,mailbox);ring(.29,.02,brass,0,1.49,0,mailbox);box(.33,.07,.035,dark,0,1.39,.28,mailbox);box(.36,.025,.065,brass,0,1.445,.29,mailbox);envelope(mailbox,0,.91,.282,.58);box(.27,.42,.018,plum,0,.59,.28,mailbox);oval(brass,.08,.61,.31,.022,.022,.01,mailbox);
+ const mailbox=group('wish-postbox',postOffice.x+postOffice.w/2+.8,postOffice.z+1.15);cylinder(.29,.34,.18,dark,0,.18,0,mailbox,20);cylinder(.24,.28,1.24,plum,0,.87,0,mailbox,24);mesh(new T.SphereGeometry(.29,24,12,0,Math.PI*2,0,Math.PI/2),plum,0,1.49,0,mailbox);ring(.28,.02,brass,0,.37,0,mailbox);ring(.29,.02,brass,0,1.49,0,mailbox);box(.33,.07,.035,dark,0,1.39,.28,mailbox);box(.36,.025,.065,brass,0,1.445,.29,mailbox);envelope(mailbox,0,.91,.282,.58);box(.27,.42,.018,plum,0,.59,.28,mailbox);oval(brass,.08,.61,.31,.022,.022,.01,mailbox);
  const rental=group('winter-skate-rental',skateRental.x,skateRental.z);booth(rental,skateRental.w,skateRental.d,'skate');
  const r=rinkBounds,rink=group('winter-outdoor-rink',r.x,r.z);
- const frost=new T.MeshPhysicalMaterial({color:'#91b7c5',roughness:.24,metalness:.12,clearcoat:.65,clearcoatRoughness:.22});const ice=mesh(new T.CircleGeometry(1,96),frost,0,r.iceY,0,rink);ice.rotation.x=-Math.PI/2;ice.scale.set(r.rx,r.rz,1);ice.name='skating-ice';
- // Shallow resurfacing rings and hairline fractures are in the ice, never obstacles.
- const icePattern=new T.Mesh(new T.CircleGeometry(1,96),new T.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{time:{value:0}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying vec2 vUv;uniform float time;void main(){vec2 p=(vUv-.5)*2.;float ring=sin(length(p*vec2(1.,1.05))*110.+sin(atan(p.y,p.x)*3.)*.2);float fine=pow(max(0.,ring),22.);float sheen=pow(max(0.,1.-length((p-vec2(-.32,.16))*vec2(.75,1.5))),3.);gl_FragColor=vec4(.79,.93,1.,fine*.045+sheen*.08);}'}));icePattern.name='ice-surface-detail';icePattern.rotation.x=-Math.PI/2;icePattern.position.y=r.iceY+.003;icePattern.scale.set(r.rx,r.rz,1);rink.add(icePattern);dynamic.push(icePattern);
- const gateAngle=Math.asin(r.gateHalfWidth/r.fenceRz),fenceSteps=64,low=gateAngle,high=Math.PI*2-gateAngle;
- for(let j=0;j<=fenceSteps;j++){const a=low+(high-low)*j/fenceSteps,x=Math.cos(a)*r.fenceRx,z=Math.sin(a)*r.fenceRz;box(.085,.93,.085,dark,x,.58,z,rink);oval(brass,x,1.09,z,.075,.05,.075,rink);if(j%4===0){cylinder(.15,.18,.11,cream,x,.17,z,rink,12);cylinder(.12,.14,.09,brass,x,.98,z,rink,12);}if(j<fenceSteps){const b=low+(high-low)*(j+1)/fenceSteps,xx=Math.cos(b)*r.fenceRx,zz=Math.sin(b)*r.fenceRz;for(const y of [.36,.96])rod([x,y,z],[xx,y,zz],.028,dark,rink);const mid=(a+b)/2;curve([[x,.54,z],[Math.cos(mid)*r.fenceRx,.71,Math.sin(mid)*r.fenceRz],[xx,.54,zz]],.017,brass,rink,8);}}
- // White snowbanks remain outside the perimeter; the east access is completely clear.
- const snowPoints=[];for(let j=0;j<=100;j++){const a=low+(high-low)*j/100;snowPoints.push([Math.cos(a)*(r.fenceRx+.33),.15,Math.sin(a)*(r.fenceRz+.33)]);}curve(snowPoints,.13,snow,rink,100);
- for(const side of [-1,1]){const x=Math.cos(gateAngle)*r.fenceRx,z=side*r.gateHalfWidth;cylinder(.14,.21,1.25,dark,x,.75,z,rink,12);oval(brass,x,1.44,z,.13,.08,.13,rink);}
- for(const lamp of rinkLamps)lantern(lamp.x,lamp.z,3.25);
- for(const z of [79.7,108.3]){const b=group('rink-cedar-bench',-58,z);b.rotation.y=z<94?0:Math.PI;for(let j=0;j<5;j++)box(4.6,.07,.14,cedar,0,.57,-.31+j*.15,b);for(const x of [-1.9,1.9]){curve([[x,.1,.3],[x,.62,.3],[x,.9,-.36],[x,1.25,-.4]],.045,dark,b);rod([x,.1,-.3],[x,.6,-.3],.045,dark,b);}for(const y of [.9,1.17])box(4.6,.1,.09,cedar,0,y,-.4,b);box(4.55,.035,.11,snow,0,1.235,-.4,b);}
- for(const x of [-68,-48]){const light=new T.PointLight('#ffd7a3',22,17,2);light.position.set(x,3.4,94);root.add(light);}
- const officeLight=new T.PointLight('#ffc789',14,9,2);officeLight.position.set(94,2.5,55);root.add(officeLight);
+ const navy=M('#263d50',.55,.3),silver=M('#b9cbd1',.26,.72),marble=M('#d7dfe0',.63,.12),inlay=M('#748f9f',.46,.26),glow=new T.MeshBasicMaterial({color:'#ffe2ac',toneMapped:false});
+ // The flush perimeter is a resort concourse, not a second island or a raised obstruction.
+ function annulus(rx0,rz0,rx1,rz1,y,material,start=0,end=Math.PI*2,parent=rink){
+  const positions=[],uv=[],indices=[],segments=Math.max(8,Math.ceil((end-start)*24));
+  for(let i=0;i<=segments;i++){const a=start+(end-start)*i/segments;for(const [rx,rz]of [[rx0,rz0],[rx1,rz1]]){positions.push(Math.cos(a)*rx,y,Math.sin(a)*rz);uv.push(i/segments,rx===rx0?0:1);}if(i<segments){const k=i*2;indices.push(k,k+2,k+1,k+2,k+3,k+1);}}
+  const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(positions,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(indices);g.computeVertexNormals();return mesh(g,material,0,0,0,parent);
+ }
+ const concourse=annulus(r.rx-.08,r.rz-.08,r.fenceRx+2.6,r.fenceRz+2.6,.105,marble);concourse.name='rink-flush-concourse';
+ for(const offset of [.23,2.33])annulus(r.fenceRx+offset,r.fenceRz+offset,r.fenceRx+offset+.025,r.fenceRz+offset+.025,.109,brass);
+ // Fine expansion joints are flush with the stone and leave the east gate unobstructed.
+ for(let j=0;j<64;j++){const a=j*Math.PI*2/64;rod([Math.cos(a)*(r.fenceRx+.3),.112,Math.sin(a)*(r.fenceRz+.3)],[Math.cos(a)*(r.fenceRx+2.3),.112,Math.sin(a)*(r.fenceRz+2.3)],.006,inlay,rink);}
+ const iceBase=new T.MeshStandardMaterial({color:'#90b8c7',roughness:.48,metalness:.08});
+ const base=mesh(new T.CircleGeometry(1,128),iceBase,0,r.iceY-.012,0,rink);base.rotation.x=-Math.PI/2;base.scale.set(r.rx,r.rz,1);base.name='skating-ice-bed';
+ const frost=new T.MeshPhysicalMaterial({color:'#c3e5ec',roughness:.13,metalness:.16,transparent:true,opacity:.56,clearcoat:1,clearcoatRoughness:.075,ior:1.31,depthWrite:false});
+ const ice=mesh(new T.CircleGeometry(1,128),frost,0,r.iceY,0,rink);ice.rotation.x=-Math.PI/2;ice.scale.set(r.rx,r.rz,1);ice.name='skating-ice';dynamic.push(ice);
+ // Layered resurfacing lines, submerged bubbles and analytic lamp highlights.
+ // These are authored ice shading, not a claim of real-time scene reflections.
+ const lampPositions=rinkLamps.slice(0,8).map(p=>new T.Vector3(p.x,3.25,p.z));while(lampPositions.length<8)lampPositions.push(new T.Vector3(10000,10000,10000));
+ const icePattern=new T.Mesh(new T.CircleGeometry(1,128),new T.ShaderMaterial({transparent:true,depthWrite:false,uniforms:{time:{value:0},lampPositions:{value:lampPositions},lampCount:{value:Math.min(rinkLamps.length,8)}},vertexShader:`varying vec2 vUv;varying vec3 vWorld;
+ void main(){vUv=uv;vec4 world=modelMatrix*vec4(position,1.);vWorld=world.xyz;gl_Position=projectionMatrix*viewMatrix*world;}`,
+ fragmentShader:`varying vec2 vUv;varying vec3 vWorld;uniform float time;uniform vec3 lampPositions[8];uniform int lampCount;
+ float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+ void main(){
+  vec2 p=(vUv-.5)*2.;float radius=length(p),angle=atan(p.y,p.x);
+  float streak=pow(max(0.,sin(radius*185.+sin(angle*3.)*.7+sin(angle*7.)*.15)),34.);
+  float fine=pow(max(0.,sin(p.x*145.+sin(p.y*9.)*.7)),45.)*pow(max(0.,1.-abs(p.y)),3.);
+  vec2 grid=p*58.,cell=floor(grid),within=fract(grid)-.5;float bubble=(1.-smoothstep(.025,.075,length(within)))*step(.975,hash(cell));
+  float frostEdge=smoothstep(.87,1.,radius)*(.6+.4*hash(floor(p*72.)));
+  vec3 viewDirection=normalize(cameraPosition-vWorld),reflection=reflect(-viewDirection,vec3(0.,1.,0.));float glint=0.;
+  for(int i=0;i<8;i++){if(i>=lampCount)break;vec3 lightDirection=normalize(lampPositions[i]-vWorld);float spec=pow(max(0.,dot(reflection,lightDirection)),95.);glint+=spec*.8;}
+  float sheen=pow(max(0.,1.-length((p-vec2(-.28,.1))*vec2(.75,1.1))),3.)*.045;
+  float sparkle=pow(max(0.,sin(time*.3+hash(cell)*6.28)),28.)*bubble*.13;
+  float alpha=min(.56,streak*.028+fine*.018+bubble*.11+frostEdge*.11+sheen+glint*.38+sparkle);
+  vec3 color=mix(vec3(.66,.86,.94),vec3(1.,.86,.61),min(1.,glint));gl_FragColor=vec4(color,alpha);
+ }`}));icePattern.name='ice-surface-detail';icePattern.rotation.x=-Math.PI/2;icePattern.position.y=r.iceY+.004;icePattern.scale.set(r.rx,r.rz,1);rink.add(icePattern);dynamic.push(icePattern);
+ const gateAngle=Math.asin(r.gateHalfWidth/r.fenceRz),fenceSteps=112,low=gateAngle,high=Math.PI*2-gateAngle;
+ function edge(a,rx=r.fenceRx,rz=r.fenceRz,y=0){return[Math.cos(a)*rx,y,Math.sin(a)*rz];}
+ // Wrought-silver balustrade: structural posts, narrow rails and arched tracery.
+ for(let j=0;j<=fenceSteps;j++){
+  const a=low+(high-low)*j/fenceSteps,[x,,z]=edge(a),major=j%8===0||j===fenceSteps;
+  cylinder(major?.082:.035,major?.105:.045,major?1.3:1.04,navy,x,major?.73:.6,z,rink,major?12:8);
+  if(major){cylinder(.17,.21,.16,marble,x,.18,z,rink,12);cylinder(.12,.12,.045,brass,x,1.3,z,rink,12);oval(silver,x,1.43,z,.115,.135,.115,rink);}
+  if(j<fenceSteps){const next=low+(high-low)*(j+1)/fenceSteps,mid=(a+next)/2,[xx,,zz]=edge(next);for(const y of [.31,1.08])rod([x,y,z],[xx,y,zz],.025,silver,rink);curve([[x,.58,z],edge(mid,r.fenceRx,r.fenceRz,.9),[xx,.58,zz]],.013,brass,rink,6);}
+ }
+ // Tall light finials follow the fence footprint; no poles occupy the walking concourse.
+ const bays=14,bulbs=[];
+ for(let bay=0;bay<=bays;bay++){
+  const a=low+(high-low)*bay/bays,[x,,z]=edge(a);
+  cylinder(.045,.08,2.9,navy,x,1.55,z,rink,12);cylinder(.11,.11,.055,brass,x,2.9,z,rink,12);oval(glow,x,3.04,z,.12,.16,.12,rink);oval(snow,x,3.2,z,.14,.035,.14,rink);
+  if(bay<bays){const b=low+(high-low)*(bay+1)/bays,points=[];for(let k=0;k<=18;k++){const t=k/18,angle=a+(b-a)*t,y=2.97-.37*Math.sin(t*Math.PI);points.push(edge(angle,r.fenceRx,r.fenceRz,y));if(k>0&&k<18&&k%2===0)bulbs.push(edge(angle,r.fenceRx,r.fenceRz,y-.075));}curve(points,.012,navy,rink,18);}
+ }
+ for(const [x,y,z]of bulbs){cylinder(.019,.019,.055,silver,x,y+.035,z,rink,6);oval(glow,x,y-.015,z,.036,.052,.036,rink);}
+ const snowPoints=[];for(let j=0;j<=120;j++){const a=low+(high-low)*j/120;snowPoints.push(edge(a,r.fenceRx+.13,r.fenceRz+.13,.16));}curve(snowPoints,.11,snow,rink,120);
+ // Broad gate piers sit at the fence endpoints, outside the usable entry width.
+ for(const side of [-1,1]){const x=Math.cos(gateAngle)*r.fenceRx,z=side*r.gateHalfWidth;cylinder(.15,.23,1.42,navy,x,.82,z,rink,12);cylinder(.23,.23,.09,brass,x,1.57,z,rink,12);oval(glow,x,1.76,z,.16,.18,.16,rink);}
+ for(const lamp of rinkLamps)lantern(lamp.x,lamp.z,3.45);
+ for(const {x,z,yaw=0}of rinkBenches){
+  const b=group('rink-cedar-bench',x,z);b.rotation.y=yaw;
+  for(let j=0;j<6;j++)box(4.6,.055,.13,cedar,0,.58,-.36+j*.145,b);
+  for(const dx of [-1.9,1.9]){curve([[dx,.1,.36],[dx,.62,.36],[dx,.88,-.36],[dx,1.27,-.42]],.05,navy,b,18);rod([dx,.1,-.35],[dx,.59,-.35],.045,navy,b);curve([[dx,.61,.2],[dx,.87,.26],[dx,.94,-.16]],.033,brass,b,12);}
+  for(const y of [.93,1.15])box(4.6,.12,.075,cedar,0,y,-.4,b);box(4.55,.035,.095,snow,0,1.235,-.4,b);
+  for(const dx of [-1.3,0,1.3]){box(.035,.27,.08,brass,dx,1.04,-.39,b);oval(brass,dx,1.04,-.335,.05,.05,.012,b);}
+ }
+ // Two real lights support the authored ice highlights; the remaining bulbs share emissive finish.
+ for(const side of [-1,1]){const light=new T.PointLight('#ffdaa2',28,29,2);light.position.set(r.x+side*r.rx*.57,3.6,r.z);root.add(light);}
+ const officeLight=new T.PointLight('#ffc789',14,9,2);officeLight.position.set(postOffice.entry.x,2.5,postOffice.entry.z);root.add(officeLight);
  // Opaque parts are merged by finish; the entire retreat remains a small draw set.
  const batches=new Map();root.updateMatrixWorld(true);root.traverse(o=>{if(!o.isMesh||o.material.transparent||o.material.isShaderMaterial||dynamic.includes(o)||Array.isArray(o.material))return;const key=o.material.uuid;if(!batches.has(key))batches.set(key,{material:o.material,items:[]});batches.get(key).items.push(o);});
  for(const {material,items}of batches.values()){if(items.length<2)continue;const arrays={position:[],normal:[],uv:[]};let count=0;for(const item of items){let g=item.geometry.clone().applyMatrix4(item.matrixWorld);if(g.index){const source=g;g=g.toNonIndexed();source.dispose();}if(!g.attributes.normal)g.computeVertexNormals();const n=g.attributes.position.count;for(const key of Object.keys(arrays))arrays[key].push(g.attributes[key]?.array||new Float32Array(n*(key==='uv'?2:3)));count+=n;item.removeFromParent();g.dispose();}const g=new T.BufferGeometry();for(const key of Object.keys(arrays)){const width=key==='uv'?2:3,out=new Float32Array(count*width);let offset=0;for(const a of arrays[key]){out.set(a,offset);offset+=a.length;}g.setAttribute(key,new T.BufferAttribute(out,width));}g.computeBoundingSphere();mesh(g,material);}

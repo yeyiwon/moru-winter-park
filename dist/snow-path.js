@@ -1,7 +1,7 @@
 import * as T from './vendor/three.module.js';
 
 // Every branch writes into one field, so junctions are a union rather than stacked strips.
-export function createSnowPaths({root,snow,heightAt=()=>.09}){
+export function createSnowPaths({root,snow,heightAt=()=>.09,deferBuild=false}){
  const samples=[],field=new Map(),step=.45;
  root.userData.snowPathSamples=samples;
  const material=new T.MeshStandardMaterial({color:snow.color.clone().lerp(new T.Color('#9eafad'),.72),roughness:1,metalness:0,transparent:true,opacity:.38,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-1,polygonOffsetUnits:-1,vertexColors:true});
@@ -28,11 +28,12 @@ export function createSnowPaths({root,snow,heightAt=()=>.09}){
   for(const cell of cells){const [ix,iz]=cell.split('/').map(Number),a=vertex(ix,iz),b=vertex(ix+1,iz),c=vertex(ix,iz+1),d=vertex(ix+1,iz+1);index.push(a,c,b,b,c,d);}
   const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(pos,3));geometry.setAttribute('uv',new T.Float32BufferAttribute(uv,2));geometry.setAttribute('color',new T.Float32BufferAttribute(colors,3));geometry.setAttribute('trailAlpha',new T.Float32BufferAttribute(alpha,1));geometry.setIndex(index);geometry.computeVertexNormals();geometry.computeBoundingSphere();walk.geometry.dispose();walk.geometry=geometry;
  }
- return function pave(points,width=2.6){
+ function pave(points,width=2.6){
   const clean=points.filter((p,i)=>!i||Math.hypot(p[0]-points[i-1][0],p[1]-points[i-1][1])>.02);if(clean.length<2)return;
   const curve=new T.CatmullRomCurve3(clean.map(([x,z])=>new T.Vector3(x,0,z))),length=curve.getLength(),count=Math.max(1,Math.ceil(length/.7));let previous=curve.getPointAt(0);
   samples.push({x:previous.x,z:previous.z,r:width/2+.12});
   for(let i=1;i<=count;i++){const p=curve.getPointAt(i/count);stamp(previous,p,width/2);samples.push({x:p.x,z:p.z,r:width/2+.12});previous=p;}
-  rebuild();return curve;
- };
+  if(!deferBuild)rebuild();return curve;
+ }
+ pave.flush=rebuild;return pave;
 }

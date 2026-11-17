@@ -15,9 +15,9 @@ test('course mouths occupy a middle terrace, main summit and higher expert peak'
  assert.ok(height('easy')<height('main')-10);
  assert.ok(height('advanced')>height('main')+25);
  assert.equal(height('expert'),peakSummit.height);
- assert.ok(Math.abs(skiRunCenter(-196,'easy')-skiRunCenter(-196,'main'))<1e-9);
+ assert.ok(Math.abs(skiRunCenter(-177,'easy')-skiRunCenter(-177,'main'))<1e-9);
  assert.equal(skiRunCenter(-260,'advanced'),skiRunCenter(-260,'curve'));
- assert.equal(skiRunCenter(-288,'expert'),skiRunCenter(-288,'advanced'));
+ assert.equal(skiRunCenter(-275,'expert'),skiRunCenter(-275,'advanced'));
 });
 
 test('all courses descend continuously across their usable width and remain on the island',()=>{

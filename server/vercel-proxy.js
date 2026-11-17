@@ -4,7 +4,7 @@ export async function proxyRequest(request,fetcher=fetch){
  const url=new URL(request.url),route=url.searchParams.get('route')||url.pathname.slice(5),write=!['GET','HEAD'].includes(request.method);
  const error=(message,status)=>Response.json({error:message},{status,headers:{'Cache-Control':'no-store'}});
  if(!routes.has(route))return error('요청을 찾을 수 없습니다.',404);
- if(!['GET','HEAD','POST','DELETE'].includes(request.method))return error('지원하지 않는 요청입니다.',405);
+ if(!['GET','HEAD','POST','PATCH','DELETE'].includes(request.method))return error('지원하지 않는 요청입니다.',405);
  if(write&&(request.headers.get('origin')!==url.origin||request.headers.get('sec-fetch-site')==='cross-site'))return error('다른 사이트에서는 변경할 수 없습니다.',403);
  const body=write?await request.text():undefined;if(body?.length>4096)return error('요청이 너무 큽니다.',413);
  // Forward only the guest session. Client-supplied Sites identity headers must

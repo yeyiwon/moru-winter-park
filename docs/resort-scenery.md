@@ -1,0 +1,11 @@
+# Summit hearth and distant alpine scenery
+
+`buildResortScenery(scene)` in `dist/resort-scenery.js` adds a root group and returns `{root, campfire, update(time, still)}`. It reads the campfire's coordinates from `summitFacilities` and sets its base with `alpineHeight`. Update those shared coordinates before construction to relocate the hearth. The module adds no input, collision, interaction or travel rules.
+
+The hearth radius is **1.65 m**. The caller must remove the old `summit-campfire` and its flame, spark and light updates, and align its collision/interaction data with the shared location. Keep this module outside static batching: its instanced flame geometry, shader uniforms and particle attributes are dynamic. Call `update` every frame; `still=true` freezes flame flow, sparks and light flicker.
+
+The hearth includes seven irregular charred logs with colored end faces, growth rings and radial splits, 44 glowing coals, a basalt stone rim and an iron liner. Eleven GPU-instanced translucent flame sheets use flowing procedural noise and moving vertices; they are not opaque cone meshes. Twenty-eight small rising sparks and one warm point light complete the fire. The flame effect is authored and stylized, not a claim of photographic fire simulation.
+
+The distant landscape uses three continuous heightfield meshes, layered snow/rock vertex colors, and 240 instanced winter firs. All terrain vertices are beyond the playable mountain radius; the front edge begins at world Z −420, and the far edge ends at Z −1020. Terrain edges meet Y=0, rather than hanging above the world. The background changes no active slope geometry or paths. Camera far plane and weather fog still belong to the caller: a far plane of 750 and fog ending at 330 will hide the most distant layers from some views.
+
+Five tests in `tests/resort-scenery.test.mjs` cover shared positioning, background separation and grounded boundaries, translucent flame/reduced-motion behavior, tree roots touching actual terrain triangles, and finite geometry/draw-call budget. A separate headless Chrome WebGL preview compiled both custom shaders with no errors and rendered close-up fire and panorama images. That isolated preview does not replace an in-world boarding, roasting, collision or mobile check.

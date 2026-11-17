@@ -17,7 +17,7 @@ export async function communityAPI(request,env,self,admin){
  if(!['/api/wishes','/api/reports','/api/admin','/api/events','/api/quiz'].includes(path))return null;
  try{
  if(path==='/api/wishes'&&request.method==='GET'){
-  const rows=await DB.prepare('SELECT w.id,w.author_name AS name,w.message,w.visibility,w.created_at AS createdAt,CASE WHEN w.author=? THEN 1 ELSE 0 END AS mine,(SELECT COUNT(*) FROM wish_reactions r WHERE r.wish_id=w.id) AS reactions,EXISTS(SELECT 1 FROM wish_reactions r WHERE r.wish_id=w.id AND r.author=?) AS reacted FROM wishes w WHERE w.room=? AND (w.visibility=\'public\' OR w.author=?) ORDER BY w.created_at DESC LIMIT 160').bind(self.id,self.id,self.room,self.id).all();return json({wishes:rows.results||[]});
+  const rows=await DB.prepare('SELECT w.id,w.author AS guestKey,(SELECT kind FROM tree_decorations d WHERE d.id=w.id) AS kind,(SELECT color FROM tree_decorations d WHERE d.id=w.id) AS color,w.message,w.visibility,w.created_at AS createdAt,CASE WHEN w.author=? THEN 1 ELSE 0 END AS mine,(SELECT COUNT(*) FROM wish_reactions r WHERE r.wish_id=w.id) AS reactions,EXISTS(SELECT 1 FROM wish_reactions r WHERE r.wish_id=w.id AND r.author=?) AS reacted FROM wishes w WHERE w.room=? AND (w.visibility=\'public\' OR w.author=?) ORDER BY w.created_at DESC LIMIT 160').bind(self.id,self.id,self.room,self.id).all();const wishes=(rows.results||[]).map(({guestKey,...wish})=>({...wish,name:'게스트 '+String(guestKey).slice(0,4).toUpperCase()}));return json({wishes});
  }
  if(path==='/api/wishes'&&request.method==='POST'){
   const b=await bodyOf(request,512);if(b.action!=='react')return json({error:'장식을 선택해 소원을 달아 주세요.'},400);

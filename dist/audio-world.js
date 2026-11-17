@@ -1,3 +1,4 @@
+import {interiorAt} from './interior-layout.js';
 import {withinRink} from './retreat-layout.js';
 import {bridges,segmentDistance} from './world-layout.js';
 export const ambientSources=[
@@ -12,11 +13,16 @@ export const ambientSources=[
  {id:'festival',kind:'festival',x:0,y:2,z:5,radius:32,level:.13},
  {id:'greenhouse-falls',kind:'waterfall',x:-1.2,y:5,z:55.7,radius:14,level:.38},
  {id:'greenhouse-leaves',kind:'leaves',x:5,y:4,z:54,radius:12,level:.17},
+ {id:'ryokan-room',kind:'room',x:400,y:2,z:0,radius:28,level:.16},
+ {id:'ryokan-water',kind:'water',x:400,y:.3,z:-11,radius:14,level:.25},
+ {id:'conservatory-waterfall',kind:'waterfall',x:496,y:5,z:-3,radius:25,level:.35},
+ {id:'conservatory-leaves',kind:'leaves',x:508,y:3,z:2,radius:26,level:.2},
  {id:'quiz-room',kind:'room',x:46,y:2,z:27,radius:15,level:.1}
 ];
 export function sourceLevel(source,position){const d=Math.hypot(position.x-source.x,(position.y-source.y)*.35,position.z-source.z),n=Math.max(0,1-d/source.radius);return n*n*source.level;}
 export function nearestSources(position,limit=4){return ambientSources.map(s=>({...s,gain:sourceLevel(s,position)})).filter(s=>s.gain>.002).sort((a,b)=>b.gain-a.gain).slice(0,limit);}
 export function surfaceAt(x,z,mode=''){
+ if(interiorAt(x,z))return mode==='bath'?'water':'indoor';
  if(withinRink(x,z))return'ice';
  if(mode==='bath'||mode==='footbath')return'water';if(x>1&&x<24&&z>118&&z<136)return'indoor';
  if(bridges.some(([a,b])=>segmentDistance(x,z,a,b)<2.7&&Math.hypot(x-a.x,z-a.z)>a.r-1&&Math.hypot(x-b.x,z-b.z)>b.r-1))return'wood';

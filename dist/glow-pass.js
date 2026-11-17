@@ -1,0 +1,13 @@
+import * as T from './vendor/three.module.js';
+// Thresholded HDR highlights only; the scene's original depth and sharpness are preserved.
+export function createGlowPass(renderer){
+ const size=new T.Vector2(),scene=new T.Scene(),camera=new T.OrthographicCamera(-1,1,1,-1,0,1),geometry=new T.PlaneGeometry(2,2),quad=new T.Mesh(geometry);scene.add(quad);
+ const target=new T.WebGLRenderTarget(1,1,{type:T.HalfFloatType,depthBuffer:true}),blur=new T.WebGLRenderTarget(1,1,{type:T.HalfFloatType,depthBuffer:false});let quality='medium',width=0,height=0;
+ const vertex='varying vec2 vUv;void main(){vUv=uv;gl_Position=vec4(position.xy,0.,1.);}';
+ const highlight=new T.ShaderMaterial({depthTest:false,depthWrite:false,uniforms:{source:{value:target.texture},texel:{value:new T.Vector2()}},vertexShader:vertex,fragmentShader:`varying vec2 vUv;uniform sampler2D source;uniform vec2 texel;void main(){vec3 sum=vec3(0.);float total=0.;for(int x=-2;x<=2;x++)for(int y=-2;y<=2;y++){vec3 c=texture2D(source,vUv+vec2(float(x),float(y))*texel*3.).rgb;float bright=max(c.r,max(c.g,c.b));float w=exp(-float(x*x+y*y)*.35);sum+=c*smoothstep(1.25,2.5,bright)*w;total+=w;}gl_FragColor=vec4(sum/total,1.);}`});
+ const compose=new T.ShaderMaterial({depthTest:false,depthWrite:false,toneMapped:true,uniforms:{source:{value:target.texture},glow:{value:blur.texture},strength:{value:.12}},vertexShader:vertex,fragmentShader:`varying vec2 vUv;uniform sampler2D source;uniform sampler2D glow;uniform float strength;void main(){gl_FragColor=vec4(texture2D(source,vUv).rgb+texture2D(glow,vUv).rgb*strength,1.);
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`});
+ return{setQuality(value){quality=value;compose.uniforms.strength.value=value==='high'?.16:.09;width=0;},render(world,view){if(quality==='low'){renderer.setRenderTarget(null);renderer.render(world,view);return;}renderer.getDrawingBufferSize(size);if(size.x!==width||size.y!==height){width=size.x;height=size.y;target.setSize(width,height);blur.setSize(Math.max(1,Math.round(width/4)),Math.max(1,Math.round(height/4)));highlight.uniforms.texel.value.set(1/width,1/height);}renderer.setRenderTarget(target);renderer.render(world,view);quad.material=highlight;renderer.setRenderTarget(blur);renderer.render(scene,camera);quad.material=compose;renderer.setRenderTarget(null);renderer.render(scene,camera);},dispose(){target.dispose();blur.dispose();geometry.dispose();highlight.dispose();compose.dispose();}};
+}

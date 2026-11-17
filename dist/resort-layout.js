@@ -8,24 +8,26 @@ function localHeight(x,z){
  const corridor=(1-smooth((Math.abs(x-localSkiCenter(z))-5)/5))*smooth((-z-94)/2)*(1-smooth((-z-135)/7));
  return terrain*(1-corridor)+(.09+26*t**1.4)*corridor;
 }
-export const summit={x:-8,z:-347,height:72.09,rx:42,rz:22};
+export const summit={x:-8,z:-347,height:72.09,rx:50,rz:27};
 export const peakSummit={x:45,z:-380,height:100.09,rx:20,rz:12};
 export const skiRuns=[
  {id:'main',name:'중급 슬로프',level:'중급',color:'#8fcbe8',startX:-12,startZ:-334,finish:-172,width:9.5},
  {id:'easy',name:'초급 슬로프',level:'초급',color:'#a7d8ba',startX:24,startZ:-294,finish:-172,width:12},
- {id:'curve',name:'커브 슬로프',level:'커브',color:'#e9b5d8',startX:4,startZ:-334,finish:-180,width:8},
+ {id:'curve',name:'숲길 슬로프',level:'중급',color:'#e9b5d8',startX:4,startZ:-334,finish:-180,width:8},
  {id:'advanced',name:'상급 슬로프',level:'상급',color:'#e8a18f',startX:34,startZ:-374,finish:-180,width:6.5},
  {id:'expert',name:'최상급 슬로프',level:'최상급',color:'#bfa7da',startX:52,startZ:-378,finish:-180,width:5.5}
 ];
 export const skiStarts=skiRuns.map(run=>({id:run.id,name:run.name,level:run.level,x:run.startX,z:run.startZ,r:3}));
 const mix=(a,b,t)=>a+(b-a)*t;
-function mainCenter(z){const t=clamp((z+334)/162),wave=smooth(t/.15)*(1-smooth((t-.85)/.15));return -12+20*t+8*Math.sin(t*Math.PI*2)*wave;}
-function curveCenter(z){const t=clamp((z+334)/154);return 4+52*smooth(t)+36*Math.sin(t*Math.PI)*smooth(t/.18)*(1-smooth((t-.85)/.15));}
+// Smooth, broad changes of direction follow two valleys and meet at the runouts.
+function pisteSpline(z,nodes){let i=0;while(i<nodes.length-2&&z>nodes[i+1][0])i++;const a=nodes[i],b=nodes[i+1],t=clamp((z-a[0])/(b[0]-a[0])),prev=nodes[Math.max(0,i-1)],next=nodes[Math.min(nodes.length-1,i+2)],m0=(b[1]-prev[1])/(b[0]-prev[0]),m1=(next[1]-a[1])/(next[0]-a[0]),d=b[0]-a[0];return(2*t**3-3*t*t+1)*a[1]+(t**3-2*t*t+t)*m0*d+(-2*t**3+3*t*t)*b[1]+(t**3-t*t)*m1*d;}
+function mainCenter(z){return pisteSpline(z,[[-334,-12],[-310,-4],[-283,10],[-251,-2],[-215,18],[-172,8]]);}
+function curveCenter(z){return pisteSpline(z,[[-334,4],[-312,28],[-281,49],[-253,41],[-219,61],[-180,56]]);}
 export function skiRunCenter(z,id='main'){
  if(id==='curve')return curveCenter(z);
- if(id==='easy'){const u=clamp((z+294)/122);return mix(24+25*Math.sin(u*Math.PI),mainCenter(z),smooth((z+244)/48));}
- if(id==='advanced')return z<=-334?mix(34,44,smooth((z+374)/40)):curveCenter(z)+40*(1-smooth((z+334)/74));
- if(id==='expert')return z<=-334?mix(52,69,smooth((z+378)/44)):skiRunCenter(z,'advanced')+25*(1-smooth((z+334)/46));
+ if(id==='easy'){const own=pisteSpline(z,[[-294,24],[-272,41],[-248,48],[-223,32],[-195,18],[-172,8]]);return mix(own,mainCenter(z),smooth((z+207)/30));}
+ if(id==='advanced'){const own=pisteSpline(z,[[-374,34],[-356,39],[-334,46],[-310,50],[-288,52]]);return z< -305?own:mix(own,curveCenter(z),smooth((z+305)/30));}
+ if(id==='expert'){const own=pisteSpline(z,[[-378,52],[-355,65],[-334,68],[-312,60],[-288,52]]);return z< -305?own:mix(own,curveCenter(z),smooth((z+305)/30));}
  return mainCenter(z);
 }
 export function skiRunHalfWidth(z,id='main'){const run=skiRuns.find(run=>run.id===id)||skiRuns[0];return 3.1+(run.width-3.1)*smooth((z-run.startZ-8)/40);}
@@ -33,28 +35,28 @@ export function skiRunAt(x,z){let nearest=skiRuns[0],distance=Infinity;const act
 function lowerHeight(z,length=162){return .09+72*(1-smooth((z+334)/length));}
 function descent(z,start,end,height,length,pitch=0){const v=clamp((z-start)/(end-start)),t=v+pitch*Math.sin(v*Math.PI)**2,q=clamp((end+334)/length),low=lowerHeight(end,length),slope=-72*6*q*(1-q)/length;return (2*t**3-3*t*t+1)*height+(-2*t**3+3*t*t)*low+(t**3-t*t)*slope*(end-start);}
 export function skiRunHeight(z,id='main'){
- if(id==='easy')return mix(lowerHeight(z,154),lowerHeight(z),smooth((z+244)/24));
- if(id==='advanced'||id==='expert')return z< -310?descent(z,id==='expert'?-378:-374,-310,100.09,154,id==='expert'?.15:0):lowerHeight(z,154);
- return lowerHeight(z,id==='curve'?154:162);
+ if(id==='easy')return lowerHeight(z);
+ if(id==='advanced'||id==='expert')return z< -310?descent(z,-374,-310,100.09,162,0):lowerHeight(z);
+ return lowerHeight(z);
 }
 export const beginnerAccess={start:{x:24,z:-334},end:{x:24,z:-294},halfWidth:5.5};
 export const skiRunouts=[{x:8,z:-172,rx:24,rz:18},{x:56,z:-180,rx:24,rz:18}];
 export const skiCenter=z=>skiRunCenter(z),skiHalfWidth=z=>skiRunHalfWidth(z);
 export function sledCenter(z){return 124+8*Math.sin(clamp((-z-196)/76)*Math.PI)-4*(1-smooth((-z-192)/20));}
 export const summitObstacles=[
- {x:-18,z:-357,w:4.15,d:1.85},{x:2,z:-357,w:4.15,d:1.85},{x:-8,z:-349,r:1.4},
- {x:-11.8,z:-349,w:.6,d:1.6},{x:-4.2,z:-349,w:.6,d:1.6},
+ {x:-10,z:-363,w:4.15,d:1.85},{x:10,z:-363,w:4.15,d:1.85},{x:-3,z:-350,r:1.65},
+ {x:-6.8,z:-350,w:.6,d:1.6},{x:.8,z:-350,w:.6,d:1.6},
  {x:11.1,z:-352,w:.2,d:2.4},{x:16.9,z:-352,w:.2,d:2.4},{x:14,z:-354.4,w:2.9,d:.2},{x:14,z:-349.6,w:2.9,d:.2,door:{x:14,w:1.1}}
 ];
 let summitRestroomOpen=true;
 export function setSummitRestroomOpen(open){summitRestroomOpen=!!open;return summitRestroomOpen;}
 export function summitPositionValid(x,z){if(!summitRestroomOpen&&Math.abs(x-14)<1.1&&Math.abs(z+349.6)<.22)return false;return !summitObstacles.some(o=>{if(o.door&&Math.abs(x-o.door.x)<o.door.w-.35)return false;return o.r?Math.hypot(x-o.x,z-o.z)<o.r+.35:Math.abs(x-o.x)<o.w+.35&&Math.abs(z-o.z)<o.d+.35;});}
 export const summitFacilities=[
- {id:'odeng',name:'어묵 트럭',x:-18,z:-352.5,model:{x:-18,z:-357},view:{distance:9,yaw:.25,pitch:.3}},
- {id:'marshmallow',name:'마시멜로 트럭',x:2,z:-352.5,model:{x:2,z:-357},view:{distance:9,yaw:.25,pitch:.3}},
- {id:'campfire',name:'모닥불',x:-8,z:-346.8,r:1.1,model:{x:-8,z:-349},view:{distance:11,yaw:.25,pitch:.3}},
+ {id:'odeng',name:'어묵 트럭',x:-10,z:-358.5,model:{x:-10,z:-363},view:{distance:9,yaw:.25,pitch:.3}},
+ {id:'marshmallow',name:'마시멜로 트럭',x:10,z:-358.5,model:{x:10,z:-363},view:{distance:9,yaw:.25,pitch:.3}},
+ {id:'campfire',name:'모닥불',x:-3,z:-347.5,r:1.4,model:{x:-3,z:-350},view:{distance:11,yaw:.25,pitch:.3}},
  {id:'restroom',name:'정상 화장실',x:14,z:-348,model:{x:14,z:-352},view:{distance:9,yaw:.25,pitch:.3}},
- {id:'upperlift',name:'상부 리프트',x:-33,z:-356.8,r:2.2,model:{x:-30,z:-358},view:{distance:10,yaw:1.5,pitch:.22}}
+ {id:'upperlift',name:'상부 리프트',x:-37,z:-358.6,r:2.8,model:{x:-37,z:-362},view:{distance:10,yaw:1.5,pitch:.22}}
 ];
 function alpineTerrainHeight(x,z){
  const original=.09+(localHeight(x/4,(z+260)/4-114)-.09)*4,lanes=skiRuns.filter(run=>z>=run.startZ-10&&z<=run.finish+16).map(run=>({center:skiRunCenter(z,run.id),half:skiRunHalfWidth(z,run.id),height:skiRunHeight(z,run.id),weight:smooth((z-run.startZ+10)/8)*(1-smooth((z-run.finish)/16))})).sort((a,b)=>a.center-b.center);
@@ -70,19 +72,22 @@ function alpineTerrainHeight(x,z){
   }
   piste=lane.height+.06;
  }
+ const inside=lanes.find(lane=>Math.abs(x-lane.center)<=lane.half);if(inside)piste=inside.height+.06*(Math.abs(x-inside.center)/inside.half)**2;
  // Grading the gaps between runs avoids vertical seams when adjacent courses
  // deliberately descend at different rates. The snowbanks stay below head height.
  if(lanes.length&&x>=lanes[0].center-lanes[0].half&&x<=lanes.at(-1).center+lanes.at(-1).half)corridor=Math.max(...lanes.map(lane=>lane.weight));
  let terrain=original*(1-corridor)+piste*corridor;
  // This open connecting snowfield reaches the beginner gate on the middle terrace.
  const accessBlend=(1-smooth((Math.abs(x-24)-beginnerAccess.halfWidth)/5))*smooth((z+342)/8)*(1-smooth((z+294)/8));
- terrain=mix(terrain,lowerHeight(z,154),accessBlend);
+ terrain=mix(terrain,lowerHeight(z),accessBlend);
  const sledDistance=Math.abs(x-sledCenter(z)),sledT=clamp((-z-192)/80),sledBlend=(1-smooth((sledDistance-5)/5))*smooth((z+282)/10)*(1-smooth((z+192)/8));
  terrain=terrain*(1-sledBlend)+(.09+19*smooth(sledT))*sledBlend;
  for(const area of [summit,peakSummit]){const d=Math.hypot((x-area.x)/area.rx,(z-area.z)/area.rz),terrace=1-smooth((d-.85)/.45);terrain=mix(terrain,area.height,terrace);}
+ const accessFinal=(1-smooth((Math.abs(x-24)-beginnerAccess.halfWidth)/5))*smooth((z+342)/8)*(1-smooth((z+294)/8));terrain=mix(terrain,lowerHeight(z),accessFinal);
  // Upper pistes cut through the shoulders of the lower terrace, rather than
  // inheriting its sideways cliff where the two elevations approach each other.
  for(const run of skiRuns.filter(run=>['advanced','expert'].includes(run.id))){if(z<run.startZ||z> -310)continue;const d=Math.abs(x-skiRunCenter(z,run.id)),half=skiRunHalfWidth(z,run.id),weight=1-smooth((d-half)/4);terrain=mix(terrain,skiRunHeight(z,run.id)+.06*Math.min(1,d/half)**2,weight);}
+ for(const run of skiRuns){if(z<run.startZ||z>run.finish)continue;const d=Math.abs(x-skiRunCenter(z,run.id)),half=skiRunHalfWidth(z,run.id);if(d<=half)terrain=skiRunHeight(z,run.id);}
  return terrain;
 }
 // Support spans, not terrain ripples, define the ascending cable. The gentle sag
@@ -96,7 +101,7 @@ export function liftPoint(progress){
  const u=(t-stops[i])/(stops[i+1]-stops[i]),a=liftBase+(liftTop-liftBase)*liftRise[i],b=liftBase+(liftTop-liftBase)*liftRise[i+1],sag=Math.min(.12,(b-a)*.18);
  return[liftLayout.x+liftLayout.dx*t,a+(b-a)*u-sag*4*u*(1-u),liftLayout.z+liftLayout.dz*t];
 }
-export const upperLiftLayout={x:-30,z:-358,dx:60,dz:-24,spacing:4,hanger:3.1,supports:[0,.25,.5,.75,1]};
+export const upperLiftLayout={x:-37,z:-362,dx:67,dz:-20,spacing:4,hanger:3.1,supports:[0,.25,.5,.75,1]};
 export function upperLiftPoint(progress){const t=clamp(progress);return[upperLiftLayout.x+upperLiftLayout.dx*t,summit.height+.6+(peakSummit.height-summit.height)*smooth(t/.95),upperLiftLayout.z+upperLiftLayout.dz*t];}
 export function alpineHeight(x,z){
  let terrain=alpineTerrainHeight(x,z);
@@ -117,7 +122,7 @@ export const resortDestinations=[
  {id:'ski',name:'설빛 산악 리조트',x:-36,z:-185,kind:'ski',view:{distance:10,yaw:1.5,pitch:.22,lookAhead:-1.8,lookHeight:0}},
  {id:'sled',name:'눈썰매 계곡',x:120,z:-192,kind:'sled',view:{distance:70,yaw:.45,pitch:.45,lookAhead:16,lookHeight:9}},
  {id:'onsen',name:'설림 노천 온천',x:-10,z:114,kind:'onsen',view:{distance:40,yaw:2.65,pitch:.62}},
- {id:'sauna',name:'편백 휴양관',x:12,z:115,kind:'sauna',view:{distance:32,yaw:2.65,pitch:.55}}
+ {id:'sauna',name:'편백 휴양관',x:12,z:113.6,kind:'sauna',view:{distance:32,yaw:2.65,pitch:.55}}
 ];
 export const restSeats={onsen:{x:-17.8,y:1.35,z:124,yaw:Math.PI/2},sauna:{x:7.5,y:1.55,z:125,yaw:Math.PI/2},healing:{x:50,y:1,z:35.5,yaw:Math.PI}};
 export const spaPavilion={x:12,z:126,w:24,d:22,sideDoorZ:121.5};

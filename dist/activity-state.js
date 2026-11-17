@@ -1,6 +1,7 @@
-const gestures=['','wave','bubble','warm','eat','roast','drink'];
+const gestures=['','wave','bubble','warm','eat','roast','drink','heart','joy','sad','surprise','dance'];
 export const activityGestures=[...gestures,'odeng-eat','marshmallow-carry','marshmallow-roast','marshmallow-toasted','marshmallow-eat','coffee-carry','coffee-drink','cocoa-carry','cocoa-drink','balloon-carry','icecream-carry','icecream-eat'];
 export function encodeActivity({gesture='',heldItem='',roast=0}={}){
+ if(['heart','joy','sad','surprise','dance'].includes(gesture))return gesture;
  if(['coffee','cocoa'].includes(heldItem))return heldItem+(gesture==='drink'?'-drink':'-carry');
  if(heldItem==='bubble-wand')return'bubble';
  if(['balloon','icecream'].includes(heldItem))return heldItem+(heldItem==='icecream'&&gesture==='eat'?'-eat':'-carry');

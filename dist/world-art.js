@@ -1,7 +1,10 @@
+import {pathRoutes} from './path-routes.js';
+import {postOffice,skateRental,rinkEntry} from './retreat-layout.js';
+import {festivalDestinations} from './festival-layout.js';
+import {buildConnectedTerrain} from './connected-terrain.js';
 import {parkWalkways} from './park-layout.js';
 import {createSnowPaths} from './snow-path.js';
 import {createAuroraLandmarks} from './aurora-landmarks.js';
-import {findPath,clearSegment} from './navigation.js';
 import * as THREE from './vendor/three.module.js';
 import {islands,bridges,bridgeHeight,exhibits,surfaceHeight} from './world-layout.js';
 
@@ -13,16 +16,7 @@ export function buildArchipelago(api){
   const aurora=createAuroraLandmarks(api);
   function noiseTexture(){const c=document.createElement('canvas');c.width=c.height=128;const ctx=c.getContext('2d');ctx.fillStyle='#d4d6d7';ctx.fillRect(0,0,128,128);for(let i=0;i<8;i++){const x=(i*47)%128,y=(i*67)%128,g=ctx.createRadialGradient(x,y,0,x,y,46);g.addColorStop(0,'#9aa6ad30');g.addColorStop(1,'#9aa6ad00');ctx.fillStyle=g;ctx.fillRect(0,0,128,128);}const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2,2);return t;}
   const grain=noiseTexture();
-  function terrain(island){
-    const mat=M(island.id==='nature'?'#c9d9d4':'#d7e3dd',.96);mat.map=grain;mat.bumpScale=0;
-    const top=cylinder(island.r,island.r-.3,.25,mat,island.x,-.15,island.z,scene,96);top.name='island-ground';const edge=top.geometry.attributes.position;for(let i=0;i<edge.count;i++){const x=edge.getX(i),z=edge.getZ(i),a=Math.atan2(z,x),scale=1+.025*Math.sin(a*5)+.022*Math.sin(a*9+.6);edge.setX(i,x*scale);edge.setZ(i,z*scale);}top.geometry.computeVertexNormals();
-    const rockGeo=new THREE.CylinderGeometry(island.r-.2,island.r*.55,6,64,5);const p=rockGeo.attributes.position;
-    for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),a=Math.atan2(z,x),v=1+.025*Math.sin(a*9+y*2)+.04*Math.sin(a*5-y);p.setXYZ(i,x*v,y,z*v);}rockGeo.computeVertexNormals();
-    mesh(rockGeo,M('#68717e',.95),island.x,-3.3,island.z);
-    for(let j=0;j<8;j++){const a=rand()*Math.PI*2,r=island.r*.75,x=island.x+Math.cos(a)*r,z=island.z+Math.sin(a)*r;const stone=mesh(new THREE.IcosahedronGeometry(.7+rand(),1),M('#78848c'),x,-1.7-rand()*3,z);stone.scale.set(1,2,1);}
-    for(let j=0;j<4;j++){const a=j*Math.PI/2+.6;const mist=halo(island.x+Math.cos(a)*island.r,-5,island.z+Math.sin(a)*island.r,island.color,22);mist.material.opacity=.075;}
-  }
-  for(const island of islands.filter((island,index)=>!island.hidden&&(index>0&&index<7||index>=10)))terrain(island);
+  buildConnectedTerrain(scene);
   // Bowed timber and warm stone share the exact walking profile used by navigation.
   const deckMaterial=M('#c5a17c',.88,0),edgeMaterial=M('#8c694f',.88,0),bridgeSnow=M('#e2e9e6',1,0),bridgeStone=M('#cbbba7',.94,0),bridgeRose=M('#edb7c5',.84,0);
   const lanternGlass=new THREE.MeshStandardMaterial({color:'#fff0cb',emissive:'#ffbd74',emissiveIntensity:.6,roughness:.35,metalness:.04});
@@ -53,15 +47,13 @@ export function buildArchipelago(api){
       const lo=mid.clone().add(new THREE.Vector3(0,.33,0)),hi=mid.clone().add(new THREE.Vector3(0,.89,0)),left=mid.clone().addScaledVector(v,-.25).add(new THREE.Vector3(0,.6,0)),right=mid.clone().addScaledVector(v,.25).add(new THREE.Vector3(0,.6,0));for(const [u,w]of [[lo,left],[left,hi],[hi,right],[right,lo]])rod(u.toArray(),w.toArray(),.022,gold);
       const medallion=torus(.09,.017,gold,mid.x,mid.y+.61,mid.z);medallion.rotation.y=yaw+Math.PI/2;
      }
-     if(j%6===3){const v=at(d,side*2.38);rod([p.x,p.y+1,p.z],[v.x,v.y+.62,v.z],.018,gold);const basket=cylinder(.2,.12,.22,edgeMaterial,v.x,v.y+.49,v.z,scene,12);for(let k=0;k<6;k++){const angle=k*2.4,leaf=ball(green,v.x+Math.cos(angle)*.16,v.y+.63-Math.max(0,k-3)*.09,v.z+Math.sin(angle)*.16,.11);leaf.scale.set(1.2,.45,.7);if(k<3)ball(bridgeRose,v.x+Math.cos(angle)*.15,v.y+.7,v.z+Math.sin(angle)*.15,.065);}}
+
     }
-    // Repeating structural arches keep the long mountain crossing from floating like a plank.
-    const bays=Math.max(1,Math.ceil(span/10));for(let bay=0;bay<bays;bay++){const low=start+span*bay/bays,high=start+span*(bay+1)/bays,arc=[];for(let j=0;j<=24;j++){const t=j/24,p=at(low+(high-low)*t,side*1.92);p.y-=1.85-1.58*Math.sin(t*Math.PI);arc.push(p);}mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(arc),28,.18,8,false),bridgeStone);}
-    for(let j=0;j<=bays;j++){const p=at(start+span*j/bays,side*1.92);cylinder(.36,.5,3.5,bridgeStone,p.x,p.y-1.8,p.z,scene,12);cylinder(.57,.62,.3,edgeMaterial,p.x,p.y-3.5,p.z,scene,12);}
+
    }
    for(const d of [start,end]){const p=at(d),stone=box(4.8,.08,1.15,bridgeStone,p.x,p.y-.025,p.z);stone.rotation.y=yaw;for(const side of [-1,1]){const v=at(d,side*2.48);cylinder(.4,.48,.38,bridgeStone,v.x,v.y+.12,v.z,scene,12);const cap=ball(bridgeSnow,v.x,v.y+.34,v.z,.43);cap.scale.y=.18;}}
   }
-  const bridgeMesh=new THREE.InstancedMesh(plankGeo,deckMaterial,planks.length),dummy=new THREE.Object3D();planks.forEach(({p,yaw,tilt},i)=>{dummy.position.copy(p);dummy.position.y-=.005;dummy.rotation.set(0,yaw,0);dummy.rotateX(-tilt);dummy.updateMatrix();bridgeMesh.setMatrixAt(i,dummy.matrix);bridgeMesh.setColorAt(i,new THREE.Color().setScalar(.94+(i%7)*.008));});bridgeMesh.receiveShadow=true;scene.add(bridgeMesh);
+  const bridgeMesh=new THREE.InstancedMesh(plankGeo,deckMaterial,planks.length),dummy=new THREE.Object3D();planks.forEach(({p,yaw,tilt},i)=>{dummy.position.copy(p);dummy.position.y-=.065;dummy.rotation.set(0,yaw,0);dummy.rotateX(-tilt);dummy.updateMatrix();bridgeMesh.setMatrixAt(i,dummy.matrix);bridgeMesh.setColorAt(i,new THREE.Color().setScalar(.94+(i%7)*.008));});bridgeMesh.receiveShadow=true;scene.add(bridgeMesh);
   function groupAt(i,x=0,z=0){const g=new THREE.Group();g.position.set(i.x+x,0,i.z+z);scene.add(g);return g;}
   function ringFloor(parent,r,mat){cylinder(r,r+.2,.22,mat,0,.1,0,parent,64);const ring=torus(r-.1,.04,gold,0,.23,0,parent);ring.rotation.x=-Math.PI/2;}
   const canopyGeo=new THREE.SphereGeometry(1,32,24),cp=canopyGeo.attributes.position;
@@ -90,15 +82,12 @@ export function buildArchipelago(api){
   // The old clock, gear wheels and decorative boats are intentionally removed.
   // Designed promenades and planted borders replace random grass and pebble rings.
   const soil=M('#2a3938',1),bedStone=M('#606771',.8);
-  const promenade=createSnowPaths({root:scene,stone:[M('#a3adae',1,0),M('#adb6b4',1,0),M('#a7afac',1,0)],snow:bridgeSnow,heightAt:surfaceHeight});
+  const promenade=createSnowPaths({root:scene,stone:[M('#a3adae',1,0),M('#adb6b4',1,0),M('#a7afac',1,0)],snow:bridgeSnow,heightAt:surfaceHeight,deferBuild:true});
   for(const route of parkWalkways)promenade(route.points,route.width);
-  // Every branch reaches a bridge landing or a real front door. No decorative dead ends.
-  const drawn=new Set();function connect(a,b){const route=findPath(a,b);if(!route.length)return;const key=[a.x,a.z,b.x,b.z].join('/');if(drawn.has(key))return;drawn.add(key);promenade([[a.x,a.z],...route.map(p=>[p.x,p.z])]);}
-  for(const island of islands.slice(0,7).filter(island=>!island.hidden)){
-    const hub=island.spawn;for(const [a,b]of bridges){const other=a===island?b:b===island?a:null;if(!other)continue;const len=Math.hypot(other.x-island.x,other.z-island.z),r=island.r-1.1;connect(hub,{x:island.x+(other.x-island.x)/len*r,z:island.z+(other.z-island.z)/len*r});}
-    if(island.id==='philosophy')connect(hub,{x:44,z:24});
-  }
-  for(const island of islands.slice(10)){const hub=island.spawn;for(const [a,b] of bridges){const other=a===island?b:b===island?a:null;if(other){const length=Math.hypot(other.x-island.x,other.z-island.z);connect(hub,{x:island.x+(other.x-island.x)/length*(island.r-1.1),z:island.z+(other.z-island.z)/length*(island.r-1.1)});}}if(island.id==='festival')for(const [x,z]of [[-63,-3.9],[-72,10.8],[-54,12.4],[-75,-6.1],[-77,-13]])connect(hub,{x,z});if(island.id==='rink'){connect(hub,{x:-43,z:94});connect(hub,{x:-43,z:101.3});}}
+  // Keep the original blurred snow-path material; only connect its authored routes.
+  for(const route of pathRoutes)promenade(route.points,route.width);
+  for(const [a,b]of bridges){const len=Math.hypot(b.x-a.x,b.z-a.z),ux=(b.x-a.x)/len,uz=(b.z-a.z)/len;promenade([[a.x+ux*(a.r-2),a.z+uz*(a.r-2)],[b.x-ux*(b.r-2),b.z-uz*(b.r-2)]],3.5);}
+  promenade.flush();
   function planter(parent,x,z,rx,rz,color){const base=cylinder(1,1.03,.19,bedStone,x,.1,z,parent,40);base.scale.set(rx,1,rz);const inside=cylinder(.91,.91,.035,soil,x,.21,z,parent,40);inside.scale.set(rx,1,rz);const bloom=M(color,.92,0),foliage=M('#4b6d64',.98,0);for(const [dx,dz,scale] of [[-.38,.08,.48],[.16,-.24,.6],[.45,.26,.35]]){const bush=mesh(canopyGeo,foliage,x+dx*rx,.37,z+dz*rz,parent);bush.scale.set(rx*scale,.26,rz*scale);}for(const [dx,dz,h] of [[-.43,-.15,.65],[-.12,.34,.61],[.23,-.39,.71],[.54,.12,.62],[.02,-.01,.78]]){const fx=x+dx*rx,fz=z+dz*rz;rod([fx,.22,fz],[fx,h,fz],.014,foliage,parent);for(let j=0;j<5;j++){const a=j*Math.PI*2/5,petal=ball(bloom,fx+Math.cos(a)*.075,h,fz+Math.sin(a)*.075,.069,parent);petal.scale.set(1,.45,.9);}ball(ivory,fx,h+.025,fz,.038,parent);}}
   for(const [x,z] of [[-3.7,-2.8],[3.7,-2.8],[-3.8,2.7],[3.8,2.7]])planter(garden,x,z,.85,1.05,'#d0b6d1');
   for(const island of islands.slice(1,7).filter(island=>!island.hidden)){

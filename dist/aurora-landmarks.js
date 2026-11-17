@@ -58,6 +58,15 @@ export function createAuroraLandmarks(api){
 
   function quiz(parent){
     parent.name='quiz-pavilion';
+    const pearl=M('#ecedf0',.34,.2),lilac=M('#223b61',.32,.3),rose=M('#713e50',.4,.25);
+    const quizGlow=new THREE.MeshStandardMaterial({color:'#ffe6b8',emissive:'#ffd59a',emissiveIntensity:3.4,roughness:.22});
+    // Lights follow the existing architecture, leaving the arrival and exhibits clear.
+    for(let i=0;i<56;i++){const a=i/55*Math.PI,x=Math.cos(a)*4.56,y=2.6+Math.sin(a)*4.56;ball(quizGlow,x,y,4.38,.055,parent);}
+    for(let i=0;i<40;i++){const a=i/40*Math.PI*2;ball(quizGlow,Math.cos(a)*6.6,.15,Math.sin(a)*6.6,.035,parent);}
+    const constellations=[[-3.3,8.2,3.9],[-1.9,8.7,4.1],[-.4,8.45,4],[1.25,9.1,4.15],[3.2,8.4,3.95]];
+    for(let i=0;i<constellations.length;i++){const [x,y,z]=constellations[i];mesh(starGeometry(.12+i%2*.06,.035),quizGlow,x,y,z,parent);if(i)rod(constellations[i-1],constellations[i],.012,brass,parent);}
+    for(const side of [-1,1]){const lamp=new THREE.PointLight('#ffd59a',16,13,2);lamp.position.set(side*4.6,3.6,3.5);parent.add(lamp);}
+
     cylinder(6.8,6.9,.1,pearl,0,.025,0,parent,80);
     for(const r of [5.85,6.65])horizontalRing(parent,r,.09,brass,.023);
     // The floor remains flush; the tall constellation frames the square behind the arrival.

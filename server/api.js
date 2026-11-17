@@ -1,3 +1,5 @@
+import {decorationKinds,validDecorationColor} from '../dist/decorations.js';
+import {interiorPositionValid} from '../dist/interior-layout.js';
 import {assistAPI} from './assist-api.js';
 import {amusementPositionValid} from '../dist/festival-layout.js';
 import {withinRink} from '../dist/retreat-layout.js';
@@ -36,7 +38,7 @@ export async function handleAPI(request,env){
   const admin=await isOwner(request,env),invitation=await env.DB.prepare('SELECT salt,password_hash FROM invite_rooms WHERE id=?').bind(room).first();
   const previous=token(request),previousId=previous?await digest(previous):null;
   if(previousId&&await env.DB.prepare('SELECT id FROM visitor_blocks WHERE id=?').bind(previousId).first())return json({error:'이 기기의 입장이 제한되었습니다.'},403);
-  if(previousId){const restored=await env.DB.prepare('SELECT id,room,name FROM visitors WHERE id=? AND room=?').bind(previousId,room).first();if(restored){await env.DB.prepare('UPDATE visitors SET seen=? WHERE id=?').bind(now,previousId).run();return json(restored);}}
+  if(previousId){const restored=await env.DB.prepare('SELECT id,room,name,x,y,z FROM visitors WHERE id=? AND room=?').bind(previousId,room).first();if(restored){await env.DB.prepare('UPDATE visitors SET seen=? WHERE id=?').bind(now,previousId).run();return json(restored);}}
   if(!admin&&room!=='winter-plaza'){
    if(!invitation)return json({error:'유효한 초대 링크로 입장해 주세요.'},403);
    const address=request.headers.get('cf-connecting-ip')||request.headers.get('x-real-ip')||'anonymous',attemptId=await digest(room+':'+address);
@@ -55,19 +57,23 @@ export async function handleAPI(request,env){
   if(!result.meta?.changes)return json({error:'이 공간에는 12명이 있어요. 새 초대 공간을 만들어 주세요.'},409);
   const secure=url.protocol==='https:'?'; Secure':'';return json({id,room,name},200,{'Set-Cookie':`winter_session=${secret}; Path=/api; HttpOnly; SameSite=Lax${secure}; Max-Age=2592000`});
  }
- const secret=token(request);if(!secret)return json({error:'초대 링크로 입장해 주세요.'},401);const id=await digest(secret),self=await env.DB.prepare('SELECT id,room,name FROM visitors WHERE id=?').bind(id).first();if(!self)return json({error:'연결이 만료됐어요. 다시 입장해 주세요.'},401);
+ const secret=token(request);if(!secret)return json({error:'초대 링크로 입장해 주세요.'},401);const id=await digest(secret),self=await env.DB.prepare('SELECT id,room,name,x,y,z FROM visitors WHERE id=?').bind(id).first();if(!self)return json({error:'연결이 만료됐어요. 다시 입장해 주세요.'},401);
  if(await env.DB.prepare('SELECT id FROM visitor_blocks WHERE id=?').bind(id).first())return json({error:'이 기기의 이용이 제한되었습니다.'},403);
  const assisted=await assistAPI(request,env,self);if(assisted)return assisted;
  const community=await communityAPI(request,env,self,path==='/api/admin'?await isOwner(request,env):false);if(community)return community;
- if(path==='/api/tree'&&request.method==='GET'){const rows=await env.DB.prepare('SELECT id,kind,color,angle,height FROM tree_decorations WHERE room=? ORDER BY created_at LIMIT 160').bind(self.room).all();return json({decorations:rows.results||[]});}
+ if(path==='/api/tree'&&request.method==='GET'){const rows=await env.DB.prepare('SELECT id,kind,color,angle,height,origin_x AS originX,origin_y AS originY,origin_z AS originZ,created_at AS createdAt,CASE WHEN author=? THEN 1 ELSE 0 END AS mine FROM tree_decorations WHERE room=? ORDER BY created_at LIMIT 160').bind(self.id,self.room).all();return json({decorations:rows.results||[]});}
  if(path==='/api/name'&&request.method==='POST'){const raw=await request.text();if(raw.length>256)return json({error:'닉네임은 16자까지 입력하세요.'},413);const name=String(JSON.parse(raw).name||'').normalize().replace(/[<>\u0000-\u001f]/g,'').trim();if(!name||name.length>16)return json({error:'닉네임은 1~16자로 입력하세요.'},400);await env.DB.prepare('UPDATE visitors SET name=? WHERE id=?').bind(name,id).run();return json({name});}
  if(path==='/api/leave'&&request.method==='POST'){await env.DB.prepare('DELETE FROM visitors WHERE id=?').bind(id).run();return json({ok:true});}
  if(path==='/api/tree'&&request.method==='POST'){
   const raw=await request.text();if(raw.length>1024)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);
-  if(!['ball','star','bell','bow','moon','icicle','letter','snowflake'].includes(b.kind)||!['#cc6b73','#e5bb6b','#b8cfd1','#d7b5f0','#91dbc3','#f4e8de'].includes(b.color)||!Number.isFinite(b.angle)||!Number.isFinite(b.height)||b.height<3||b.height>27||Math.abs(b.angle)>Math.PI*2)return json({error:'장식 위치를 확인해 주세요.'},400);
+  if(!decorationKinds.includes(b.kind)||!validDecorationColor(b.color)||!Number.isFinite(b.angle)||!Number.isFinite(b.height)||b.height<3||b.height>27||Math.abs(b.angle)>Math.PI*2)return json({error:'장식 위치를 확인해 주세요.'},400);
   let wishMessage='';try{if(b.message)wishMessage=messageText(b.message);}catch(e){return json({error:e.message},400);}
   if(b.visibility&&!['public','private'].includes(b.visibility))return json({error:'공개 범위를 확인해 주세요.'},400);
-  const ornament=crypto.randomUUID(),result=await env.DB.prepare('INSERT INTO tree_decorations(id,room,author,kind,color,angle,height,created_at) SELECT ?,?,?,?,?,?,?,? WHERE (SELECT COUNT(*) FROM tree_decorations WHERE room=?)<160 AND NOT EXISTS (SELECT 1 FROM tree_decorations WHERE author=? AND created_at>?)').bind(ornament,self.room,id,b.kind,b.color,b.angle,b.height,now,self.room,id,now-1000).run();if(!result.meta?.changes)return json({error:'잠시 후 다시 시도해 주세요. 트리는 160개까지 꾸밀 수 있어요.'},429);if(wishMessage){try{await env.DB.prepare('INSERT INTO wishes(id,room,author,author_name,message,visibility,created_at) VALUES(?,?,?,?,?,?,?)').bind(ornament,self.room,id,b.anonymous?'익명':self.name,wishMessage,b.visibility||'public',now).run();}catch(e){await env.DB.prepare('DELETE FROM tree_decorations WHERE id=?').bind(ornament).run();throw e;}}return json({id:ornament});
+  const ornament=crypto.randomUUID(),result=await env.DB.prepare('INSERT INTO tree_decorations(id,room,author,kind,color,angle,height,created_at,origin_x,origin_y,origin_z) SELECT ?,?,?,?,?,?,?,?,?,?,? WHERE (SELECT COUNT(*) FROM tree_decorations WHERE room=?)<160 AND NOT EXISTS (SELECT 1 FROM tree_decorations WHERE author=? AND created_at>?)').bind(ornament,self.room,id,b.kind,b.color,b.angle,b.height,now,self.x,self.y+.4,self.z,self.room,id,now-1000).run();if(!result.meta?.changes)return json({error:'잠시 후 다시 시도해 주세요. 트리는 160개까지 꾸밀 수 있어요.'},429);if(wishMessage){try{await env.DB.prepare('INSERT INTO wishes(id,room,author,author_name,message,visibility,created_at) VALUES(?,?,?,?,?,?,?)').bind(ornament,self.room,id,'게스트 '+self.id.slice(0,4).toUpperCase(),wishMessage,b.visibility==='public'?'public':'private',now).run();}catch(e){await env.DB.prepare('DELETE FROM tree_decorations WHERE id=?').bind(ornament).run();throw e;}}return json({id:ornament});
+ }
+ if(path==='/api/tree'&&request.method==='PATCH'){
+  const raw=await request.text();if(raw.length>256)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);if(typeof b.id!=='string'||b.id.length>80||!validDecorationColor(b.color))return json({error:'색상을 확인해 주세요.'},400);
+  const result=await env.DB.prepare('UPDATE tree_decorations SET color=? WHERE id=? AND room=? AND author=?').bind(b.color,b.id,self.room,self.id).run();if(!result.meta?.changes)return json({error:'자신이 단 장식만 바꿀 수 있습니다.'},403);return json({ok:true});
  }
  if(path==='/api/tree'&&request.method==='DELETE'){const raw=await request.text();if(raw.length>256)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);const target=String(b.id||'');await env.DB.prepare('DELETE FROM wish_reactions WHERE wish_id IN (SELECT id FROM wishes WHERE id=? AND room=? AND author=?)').bind(target,self.room,id).run();await env.DB.prepare('DELETE FROM wishes WHERE id=? AND room=? AND author=?').bind(target,self.room,id).run();await env.DB.prepare('DELETE FROM tree_decorations WHERE id=? AND room=? AND author=?').bind(target,self.room,id).run();return json({ok:true});}
  if(path==='/api/chat'&&request.method==='POST'){
@@ -78,9 +84,9 @@ export async function handleAPI(request,env){
   const raw=await request.text();if(raw.length>2048)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);
   const restOK=b.mode==='rest'&&Object.values(restSeats).some(p=>Math.hypot(b.x-p.x,b.z-p.z)<.15&&Math.abs(b.y-p.y)<.15);
   const groundOK=canStandAt(b.x,b.z)&&b.y>=surfaceHeight(b.x,b.z)+.5&&b.y<=surfaceHeight(b.x,b.z)+3;
-  if(!Number.isFinite(b.x)||!Number.isFinite(b.z)||!Number.isFinite(b.yaw)||!Number.isFinite(b.y)||!(groundOK||restOK||(b.mode==='skate'&&withinRink(b.x,b.z,.5)&&Math.abs(b.y-1.04)<.1)||amusementPositionValid(b.x,b.y,b.z,b.mode)||spaPositionValid(b.x,b.y,b.z,b.mode)||resortRidePosition(b.x,b.y,b.z,b.mode)))return json({error:'이동 위치를 확인해 주세요.'},400);
+  if(!Number.isFinite(b.x)||!Number.isFinite(b.z)||!Number.isFinite(b.yaw)||!Number.isFinite(b.y)||!(interiorPositionValid(b.x,b.y,b.z)||groundOK||restOK||(b.mode==='skate'&&withinRink(b.x,b.z,.5)&&Math.abs(b.y-1.04)<.1)||amusementPositionValid(b.x,b.y,b.z,b.mode)||spaPositionValid(b.x,b.y,b.z,b.mode)||resortRidePosition(b.x,b.y,b.z,b.mode)))return json({error:'이동 위치를 확인해 주세요.'},400);
   const color=/^#[0-9a-f]{6}$/i.test(b.color)?b.color:'#f4eee5',accessory=normalizeWardrobe(b.accessory),gesture=activityGestures.includes(b.gesture)?b.gesture:'';
-  await env.DB.prepare('UPDATE visitors SET x=?,z=?,yaw=?,y=?,mode=?,color=?,accessory=?,seen=?,gesture=?,gesture_at=? WHERE id=? AND seen<=?').bind(b.x,b.z,b.yaw,b.y,['lift','summit','ski','sled','rest','bath','sauna','lie','tea','carousel','ferris','teacups','bumper','train','skate'].includes(b.mode)?b.mode:'',color,accessory,now,gesture,gesture?now:0,id,now-500).run();
+  await env.DB.prepare('UPDATE visitors SET x=?,z=?,yaw=?,y=?,mode=?,color=?,accessory=?,seen=?,gesture=?,gesture_at=? WHERE id=? AND seen<=?').bind(b.x,b.z,b.yaw,b.y,['lift','summit','ski','sled','rest','bath','sauna','lie','tea','carousel','ferris','teacups','bumper','skate'].includes(b.mode)?b.mode:'',color,accessory,now,gesture,gesture?now:0,id,now-500).run();
   await env.DB.prepare("UPDATE visitors SET chat='',chat_at=0 WHERE room=? AND chat_at>0 AND chat_at<?").bind(self.room,now-600000).run();
   const people=await env.DB.prepare('SELECT id,name,color,accessory,x,z,yaw,y,mode,gesture,gesture_at AS gestureAt,chat,chat_at AS chatAt FROM visitors WHERE room=? AND seen>? AND id<>? ORDER BY seen DESC LIMIT 11').bind(self.room,now-age,id).all();return json({people:people.results||[],count:(people.results?.length||0)+1});
  }

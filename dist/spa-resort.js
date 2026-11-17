@@ -25,10 +25,6 @@ export function buildSpaResort(api){
  const ground=shape(outline(spa.x,spa.z,spa.r,spa.r,128,.012));
  for(const p of pools)ground.holes.push(new T.Path(outline(p.x,p.z,p.rx,p.rz,64).reverse()));
  const groundGeo=new T.ShapeGeometry(ground,1);groundGeo.rotateX(-Math.PI/2);mesh(groundGeo,snow,0,.09,0);
- // Continuous irregular rock strata, no capped cylinder beneath the recessed pools.
- const sidePos=[],sideIdx=[];for(let ring=0;ring<5;ring++)for(let i=0;i<=128;i++){const a=i/128*Math.PI*2,r=spa.r*(1-ring*.095)*(1+.025*Math.sin(a*5+ring*.3)+.015*Math.sin(a*11)),y=ring===0?0:-ring*2.1+.35*Math.sin(a*4+ring);sidePos.push(Math.cos(a)*r,y,spa.z+Math.sin(a)*r);if(ring<4&&i<128){const n=ring*129+i;sideIdx.push(n,n+129,n+1,n+1,n+129,n+130);}}
- const sideGeo=new T.BufferGeometry();sideGeo.setAttribute('position',new T.Float32BufferAttribute(sidePos,3));sideGeo.setIndex(sideIdx);sideGeo.computeVertexNormals();mesh(sideGeo,rock);
- for(let i=0;i<34;i++){const a=i/34*Math.PI*2,r=spa.r-1,sz=1.4+rand()*1.5;const b=oval(i%3?rock:rockShade,Math.cos(a)*r,-1.9-rand()*3,spa.z+Math.sin(a)*r,sz,2+rand()*2,sz*.7);b.rotation.set(rand()*.2,a,rand()*.25);}
  const paving=createSnowPaths({root,stone:[M('#b9b4a5',1,0),M('#b0aea1',1,0),M('#c2bdaf',1,0)],snow});
  // Compacted snow branches share one softly blended field through the junction.
  paving([[0,88],[0,96],[-.8,104],[0,110]],3.8);
