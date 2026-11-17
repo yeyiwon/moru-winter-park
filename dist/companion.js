@@ -28,6 +28,12 @@ export function createCompanion({detail='full'}={}){
   fur.setColorAt(i,new THREE.Color().setScalar(.78+.19*Math.max(0,y*.65+v.z*.3)+random()*.025));
  }
  let lastFluff=-1;
+ function setViewDetail(pixels=Infinity){
+  // At walking-camera distance most fibres are subpixel. Preserve full grooming
+  // in close-ups and the wardrobe, and use the same uniformly distributed fur.
+  const density=THREE.MathUtils.clamp((Math.max(0,pixels)/220)**1.25,detail==='remote'?.28:.06,1);
+  fur.count=Math.min(count,Math.max(1,Math.round(count*density)));
+ }
  function groom(fluff){if(lastFluff===fluff)return;lastFluff=fluff;
   for(let i=0;i<count;i++){const f=fibres[i],eyeDistance=Math.min(Math.hypot((f.position.x-.205)/.13,(f.position.y-.075)/.15),Math.hypot((f.position.x+.205)/.13,(f.position.y-.075)/.15)),faceBlend=f.position.z>.45?1-Math.exp(-eyeDistance*eyeDistance*1.5):1;
    dummy.position.copy(f.position);dummy.quaternion.setFromUnitVectors(up,f.normal);dummy.rotateY(f.twist);
@@ -250,5 +256,5 @@ export function createCompanion({detail='full'}={}){
   const blink=mode==='lie'?.12:still?1:blinkGate*(mode==='ski'?.86:spa?.72+Math.sin(time*.6)*.035:1);
   eyes.forEach((e,i)=>{const profile=eyeProfiles[i];e.scale.y=profile.scale[1]*(profile.closed?1:blink);e.position.x=(i?1:-1)*.205+Math.max(-.025,Math.min(.025,look));});
  }
- customize({});return{group,eyes,feet,customize,pose,equip,get displayHeight(){return heldSkewer.visible&&currentHeldItem==='balloon'?Math.max(nameHeight,1.65):nameHeight;},get nameHeight(){return relaxing?1.08:nameHeight;},get gear(){return wardrobeGear;},get winterReady(){return ['ski','board'].includes(equipped)&&boots.every(b=>b.visible);}};
+ customize({});return{group,eyes,feet,customize,pose,equip,setViewDetail,get displayHeight(){return heldSkewer.visible&&currentHeldItem==='balloon'?Math.max(nameHeight,1.65):nameHeight;},get nameHeight(){return relaxing?1.08:nameHeight;},get gear(){return wardrobeGear;},get winterReady(){return ['ski','board'].includes(equipped)&&boots.every(b=>b.visible);}};
 }

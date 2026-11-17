@@ -1,0 +1,88 @@
+{
+  "method": "Same Node process settings and fixed world time, separate cold processes. CPU only; no WebGL/browser/GPU FPS. Geometry bytes include unique scene geometry attributes and indices, not total process/GPU memory.",
+  "beforeCommit": "69580a9259850718012129c03d8a0b7265824d8d",
+  "before": {
+    "geometryBytes": 394266404,
+    "geometryVertices": 11658013,
+    "environment": "Node v22.4.1 darwin arm64",
+    "measurement": "CPU-only scene construction/update and frustum workload estimates. No browser/GPU FPS measurement.",
+    "constructionMs": 2596.9687080000003,
+    "meshObjects": 642,
+    "occluders": 471,
+    "sceneTriangles": 5222830,
+    "views": [
+      {
+        "name": "plaza",
+        "visibleMeshDraws": 418,
+        "visibleTriangles": 3636792,
+        "shadowTriangles": 2551021,
+        "pointLights": 24,
+        "coldCameraMs": 98.69475000000011,
+        "updateMeanMs": 5.1353027499999975,
+        "updateP95Ms": 15.677000000000135
+      },
+      {
+        "name": "castle",
+        "visibleMeshDraws": 322,
+        "visibleTriangles": 3175532,
+        "shadowTriangles": 2108681,
+        "pointLights": 24,
+        "coldCameraMs": 109.12587500000018,
+        "updateMeanMs": 2.671134700000001,
+        "updateP95Ms": 7.917167000000063
+      },
+      {
+        "name": "ski",
+        "visibleMeshDraws": 54,
+        "visibleTriangles": 1772439,
+        "shadowTriangles": 867023,
+        "pointLights": 24,
+        "coldCameraMs": 349.253459,
+        "updateMeanMs": 4.067388916666657,
+        "updateP95Ms": 12.213541999999961
+      }
+    ]
+  },
+  "after": {
+    "geometryBytes": 222168186,
+    "geometryVertices": 5516430,
+    "environment": "Node v22.4.1 darwin arm64",
+    "measurement": "CPU-only scene construction/update and frustum workload estimates. No browser/GPU FPS measurement.",
+    "constructionMs": 2424.3409170000004,
+    "meshObjects": 642,
+    "occluders": 471,
+    "sceneTriangles": 4489630,
+    "views": [
+      {
+        "name": "plaza",
+        "visibleMeshDraws": 418,
+        "visibleTriangles": 2980662,
+        "shadowTriangles": 2551021,
+        "pointLights": 6,
+        "coldCameraMs": 55.865458999999646,
+        "updateMeanMs": 0.5292305333333464,
+        "updateP95Ms": 1.4487910000002557
+      },
+      {
+        "name": "castle",
+        "visibleMeshDraws": 322,
+        "visibleTriangles": 2483342,
+        "shadowTriangles": 2108681,
+        "pointLights": 6,
+        "coldCameraMs": 39.91091600000027,
+        "updateMeanMs": 0.4476826166666494,
+        "updateP95Ms": 0.8922919999999976
+      },
+      {
+        "name": "ski",
+        "visibleMeshDraws": 54,
+        "visibleTriangles": 1039239,
+        "shadowTriangles": 867023,
+        "pointLights": 0,
+        "coldCameraMs": 168.75154199999997,
+        "updateMeanMs": 0.9966944166666811,
+        "updateP95Ms": 3.0326669999999467
+      }
+    ]
+  }
+}

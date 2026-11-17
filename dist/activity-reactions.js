@@ -12,6 +12,7 @@ export function createActivityReactions(scene){
   const particles=Array.from({length:limit},()=>({age:10,life:3,x:0,y:0,z:0,vx:0,vy:0,vz:0,r:0,phase:0})),matrix=new T.Matrix4();let cursor=0,emission=0,count=0,lastTime=0,seed=47;
   const random=()=>{seed=seed*16807%2147483647;return(seed-1)/2147483646;};
   return {
+    suspend(){bubbles.visible=hearts.visible=false;for(const p of particles)p.age=p.life;count=emission=0;},
     dispose(){scene.remove(bubbles,hearts);geometry.dispose();material.dispose();heartGeometry.dispose();heartMaterial.dispose();},
     get state(){return {count,capacity:limit};},
     update({gesture='',mode='',x=0,y=0,z=0,yaw=0,time=0,dt=0,still=false}={}){

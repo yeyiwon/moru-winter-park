@@ -1,3 +1,4 @@
+import {mergeMeshGeometry} from './mesh-batch.js';
 import {treeLayout,treeShift} from './tree-layout.js';
 import {createTreeAtmosphere} from './tree-atmosphere.js';
 import {createSnowPaths} from './snow-path.js';
@@ -98,7 +99,7 @@ export function buildWinterWorld(api){
 
  // Batch static geometry by material; retain moving chairs, steam and hit targets.
  root.updateMatrixWorld(true);const groups=new Map();root.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||o.userData.snowTrail||Array.isArray(o.material)||moving.has(o))return;let parent=o.parent;while(parent&&parent!==root){if(moving.has(parent))return;parent=parent.parent;}if(!o.geometry.attributes.normal||!o.geometry.attributes.uv)return;const key=o.material.uuid;if(!groups.has(key))groups.set(key,{material:o.material,items:[]});groups.get(key).items.push(o);});
- for(const {material,items} of groups.values()){if(items.length<2)continue;const chunks={position:[],normal:[],uv:[]};let count=0;for(const item of items){let geo=item.geometry.clone().applyMatrix4(item.matrixWorld);if(geo.index)geo=geo.toNonIndexed();for(const key in chunks)chunks[key].push(geo.attributes[key].array);count+=geo.attributes.position.count;item.removeFromParent();geo.dispose();}const geo=new THREE.BufferGeometry();for(const key in chunks){const size=key==='uv'?2:3,out=new Float32Array(count*size);let offset=0;for(const a of chunks[key]){out.set(a,offset);offset+=a.length;}geo.setAttribute(key,new THREE.BufferAttribute(out,size));}geo.computeBoundingSphere();mesh(geo,material,0,0,0,root);}
+ for(const {material,items} of groups.values()){if(items.length<2)continue;const geo=mergeMeshGeometry(items);for(const item of items)item.removeFromParent();mesh(geo,material,0,0,0,root);}
  const destinations=[{id:'tree',name:'겨울의 큰 트리',...treeLayout.arrival,kind:'tree',view:{distance:42,yaw:-1.25,pitch:.12,lookHeight:12}},...resortDestinations,{id:'healing',name:'고요한 쉼터',x:50,z:37,kind:'healing'}];
  const obstacles=[{x:treeLayout.x,z:treeLayout.z,r:treeLayout.radius},...resortObstacles];
  return{setQuality(value){retreat.setQuality(value);mountain.setQuality(value);treeAtmosphere.setQuality(value);},root,interactive:[...interactive,...mountain.interactive,...retreat.interactive],destinations,obstacles,rides,rideChair,dynamic:[...moving],update(t,still){treeAtmosphere.update(t,still);ribbonTime.value=still?0:t;mountain.update(t,still);retreat.update(t,still);if(still)return;for(const s of steam){const v=(t*.15+s.phase)%1;s.puff.position.set(s.x+Math.sin(t*.45+s.phase)*.25,.55+v*2.2,s.z);s.puff.scale.setScalar(1.1+v*1.3);s.puff.material.opacity=Math.sin(v*Math.PI)*.09;}for(const {g,offset,a,b}of chairs){const v=(t*.035+offset)%1;g.position.lerpVectors(a,b,v);g.rotation.z=Math.sin(t*.8+offset)*.025;}}};
