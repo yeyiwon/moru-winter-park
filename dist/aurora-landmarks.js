@@ -1,4 +1,5 @@
 import * as THREE from './vendor/three.module.js';
+import {conservatoryLayout as glasshouse,conservatoryWalkPoint} from './conservatory-layout.js';
 
 // Sculpted surfaces share a small palette so the world can batch their opaque geometry.
 export function createAuroraLandmarks(api){
@@ -6,9 +7,10 @@ export function createAuroraLandmarks(api){
   const brass=M('#c9ab76',.28,.72),pearl=M('#f1dfeb',.24,.32),rose=M('#efb7d3',.3,.22),aqua=M('#b3e9df',.22,.26),lilac=M('#bca9eb',.28,.26);
   for(const material of [pearl,rose,aqua,lilac])material.side=THREE.DoubleSide;
   const light=new THREE.MeshStandardMaterial({color:'#fff0d3',emissive:'#ffd6ab',emissiveIntensity:.8,roughness:.23,metalness:.1});
+  const gardenLight=light.clone();
   const glass=new THREE.MeshPhysicalMaterial({color:'#e3e6ff',roughness:.13,metalness:.16,transparent:true,opacity:.16,side:THREE.DoubleSide,depthWrite:false,clearcoat:1,iridescence:.8,iridescenceIOR:1.3});
   const sparkMaterial=new THREE.PointsMaterial({color:'#ffdfef',size:.065,map:glowMap,transparent:true,opacity:.7,depthWrite:false,blending:THREE.AdditiveBlending});
-  const sparks=[];
+  const sparks=[],dynamic=[],waterUniforms=[],vapor=[];
 
   function surface(width,height,depth){
     const positions=[],normals=[],uv=[],indices=[],across=10,along=24;
@@ -79,9 +81,7 @@ export function createAuroraLandmarks(api){
     for(const [x,z] of [[-7.8,-2.8],[7.8,-2.8]]){
       const obelisk=new THREE.Group();obelisk.position.set(x,0,z);parent.add(obelisk);
       cylinder(.72,.85,.14,pearl,0,.1,0,obelisk,32);cylinder(.26,.39,2.2,aqua,0,1.25,0,obelisk,8);
-      const jewel=mesh(new THREE.OctahedronGeometry(.55),lilac,0,2.95,0,obelisk);jewel.scale.y=1.3;
-      for(const r of [.7,.82]){const orbit=torus(r,.018,brass,0,2.95,0,obelisk);orbit.rotation.set(.9,r*2,.2);}
-      ball(light,0,3.8,0,.09,obelisk);
+
     }
     for(const [x,z,yaw] of [[-7,5,Math.PI/3],[7,5,-Math.PI/3]])bench(parent,x,z,yaw);
     // The arch carries separate jewel clasps, leafwork and inset light beads.
@@ -100,64 +100,79 @@ export function createAuroraLandmarks(api){
       curve(parent,[[x,1.93,z],[x+side*.05,2.28,z],[x+side*.38,2.32,z],[x+side*.43,2.17,z]],.024);lantern(parent,x+side*.43,1.75,z,.9);
       const base=torus(.22,.02,brass,x,.25,z,parent);base.rotation.x=Math.PI/2;
     }
+    // Cabinet exhibits share the existing obelisk footprints, keeping the central route open.
+    const walnut=M('#6c4e47',.8,.04),pages=M('#e9dcc6',.98,0);
+    for(const side of [-1,1]){
+      const g=new THREE.Group();g.name=side<0?'quiz-natural-history-cabinet':'quiz-orrery-cabinet';g.position.set(side*7.8,0,-2.8);parent.add(g);
+      cylinder(.59,.64,.14,walnut,0,2.15,0,g,32);cylinder(.61,.61,.035,brass,0,2.24,0,g,32);
+      const enclosure=mesh(new THREE.CylinderGeometry(.58,.58,1.3,24,1,true),glass,0,2.91,0,g);enclosure.name='quiz-exhibit-glazing';
+      mesh(new THREE.SphereGeometry(.58,24,12,0,Math.PI*2,0,Math.PI/2),glass,0,3.56,0,g);ball(brass,0,4.17,0,.06,g);
+      for(let j=0;j<4;j++){const a=j*Math.PI/2;rod([Math.cos(a)*.59,2.24,Math.sin(a)*.59],[Math.cos(a)*.59,3.58,Math.sin(a)*.59],.018,brass,g);}
+      if(side<0){
+        const shell=mesh(new THREE.TorusGeometry(.26,.09,8,32,Math.PI*1.78),pearl,0,2.92,0,g);shell.rotation.x=.35;
+        for(let j=0;j<12;j++){const a=j*.47,r=.1+j*.012;curve(g,[[Math.cos(a)*r,2.92+Math.sin(a)*r,.03],[Math.cos(a+.16)*r,2.92+Math.sin(a+.16)*r,.13],[Math.cos(a+.31)*r,2.92+Math.sin(a+.31)*r,.03]],.009,brass);}
+      }else{
+        const orbit=new THREE.Group();orbit.name='quiz-mechanical-orrery';orbit.position.y=2.94;orbit.userData.speed=.16;g.add(orbit);dynamic.push(orbit);ball(light,0,0,0,.13,orbit);
+        for(let j=0;j<3;j++){const r=.24+j*.12,ring=torus(r,.009,brass,0,0,0,orbit);ring.rotation.set(Math.PI/2,.15*j,j*.2);const a=j*2.3;ball([aqua,rose,lilac][j],Math.cos(a)*r,Math.sin(a)*r*.2,Math.sin(a)*r,.055+j*.015,orbit);rod([0,-.3,0],[Math.cos(a)*r,Math.sin(a)*r*.2,Math.sin(a)*r],.009,brass,orbit);}
+      }
+      const plaque=box(.51,.15,.025,brass,0,2.12,.6,g);plaque.rotation.x=-.25;
+      for(let i=0;i<4;i++)box(.055,.006,.004,walnut,-.13+i*.085,2.13,.62,g);
+    }
+    // Open books show curved page blocks and gilded bindings instead of flat boxes.
+    for(const side of [-1,1]){const g=new THREE.Group();g.position.set(side*4.55,.32,4.2);g.rotation.y=side*.18;parent.add(g);
+      for(const sign of [-1,1]){const sheet=new THREE.Shape();sheet.moveTo(0,0);sheet.quadraticCurveTo(sign*.27,.11,sign*.5,.04);sheet.lineTo(sign*.5,.68);sheet.quadraticCurveTo(sign*.25,.75,0,.65);sheet.closePath();const book=mesh(new THREE.ExtrudeGeometry(sheet,{depth:.08,bevelEnabled:true,bevelSize:.015,bevelThickness:.012,bevelSegments:2}),pages,0,1.45,.45,g);book.rotation.x=-1.1;for(let j=0;j<5;j++)curve(g,[[sign*.06,1.52+j*.06,.5],[sign*.27,1.56+j*.06,.5],[sign*.44,1.54+j*.06,.5]],.0035,walnut);}
+    }
     sparkleCloud(parent,6.4,6,62);
   }
 
   function conservatory(parent){
     parent.name='aurora-conservatory';
-    const leafDark=M('#609b83',.88,0),leafLight=M('#a0cdb0',.86,0),cedar=M('#c6a58a',.84,0);leafDark.side=leafLight.side=THREE.DoubleSide;
-    const leafPositions=[],leafUvs=[],leafIndices=[];
-    for(let j=0;j<=8;j++)for(let i=0;i<3;i++){const t=j/8,s=i-1;leafPositions.push(s*Math.sin(t*Math.PI)*.085,t*.45,Math.sin(t*Math.PI)*(.06+(1-Math.abs(s))*.025));leafUvs.push(i/2,t);if(j<8&&i<2){const k=j*3+i;leafIndices.push(k,k+1,k+3,k+1,k+4,k+3);}}
-    const blade=new THREE.BufferGeometry();blade.setAttribute('position',new THREE.Float32BufferAttribute(leafPositions,3));blade.setAttribute('uv',new THREE.Float32BufferAttribute(leafUvs,2));blade.setIndex(leafIndices);blade.computeVertexNormals();
-    function glazedPot(x,y,z,r=.4){
-      const profile=[[r*.6,0],[r*.75,.05],[r*.92,.12],[r,.45],[r*1.08,.49],[r*1.08,.54],[r*.88,.54],[r*.88,.46],[0,.46]].map(([xx,yy])=>new THREE.Vector2(xx,yy));mesh(new THREE.LatheGeometry(profile,24),pearl,x,y,z,parent);
-      for(const yy of [.08,.5]){const ring=torus(r*(yy<.2?.75:1.075),.016,brass,x,y+yy,z,parent);ring.rotation.x=Math.PI/2;}
-      cylinder(r*.86,r*.86,.015,cedar,x,y+.475,z,parent,24);
+    const c=glasshouse,leafDark=M('#254f43',.91,0),leafLight=M('#51876b',.84,0),cedar=M('#886e52',.91,0),rock=M('#465c57',.95,0),moss=M('#38674e',.97,0);
+    leafDark.side=leafLight.side=THREE.DoubleSide;
+    const floor=cylinder(c.radius,c.radius+.2,.18,pearl,0,.12,0,parent,96);floor.name='conservatory-floor';
+    const glazingPositions=[],glazingUvs=[],glazingIndices=[];
+    function patch(phiStart,phiLength,thetaStart,thetaLength,cols,rows){const base=glazingPositions.length/3;for(let row=0;row<=rows;row++)for(let col=0;col<=cols;col++){const p=phiStart+col/cols*phiLength,t=thetaStart+row/rows*thetaLength;glazingPositions.push(-c.radius*Math.cos(p)*Math.sin(t),c.floor+c.height*Math.cos(t),c.radius*Math.sin(p)*Math.sin(t));glazingUvs.push(col/cols,row/rows);if(col<cols&&row<rows){const k=base+row*(cols+1)+col;glazingIndices.push(k,k+1,k+cols+1,k+1,k+cols+2,k+cols+1);}}}
+    const doorTheta=Math.acos((3.3-c.floor)/c.height);
+    patch(0,Math.PI*2,0,doorTheta,64,24);
+    for(let panel=0;panel<32;panel++)if(![7,8,23,24].includes(panel))patch(panel*Math.PI/16,Math.PI/16,doorTheta,Math.PI/2-doorTheta,2,4);
+    const glazing=new THREE.BufferGeometry();glazing.setAttribute('position',new THREE.Float32BufferAttribute(glazingPositions,3));glazing.setAttribute('uv',new THREE.Float32BufferAttribute(glazingUvs,2));glazing.setIndex(glazingIndices);glazing.computeVertexNormals();
+    const skin=mesh(glazing,glass,0,0,0,parent);skin.name='conservatory-glass-dome';
+    // Tall thin ribs define a room at architectural scale; both entry axes stay open.
+    for(let j=0;j<16;j++){const a=j*Math.PI/8+Math.PI/16,points=[];for(let k=0;k<=40;k++){const t=k/40*Math.PI/2;points.push([Math.cos(a)*(c.radius+.025)*Math.cos(t),c.floor+Math.sin(t)*c.height,Math.sin(a)*(c.radius+.025)*Math.cos(t)]);}curve(parent,points,.052,brass);}
+    for(const y of [3.3,7.8,12,15.6])horizontalRing(parent,c.radius*Math.sqrt(1-((y-c.floor)/c.height)**2)+.03,y,brass,.035);
+    for(const side of [-1,1]){const z=side*c.radius;
+      for(const x of [-2.15,2.15]){cylinder(.1,.16,3.25,brass,x,1.84,z*.984,parent,12);cylinder(.2,.25,.25,pearl,x,.34,z*.984,parent,16);}
+      curve(parent,[[-2.15,3.3,z*.984],[-1.4,3.83,z], [0,4.03,z],[1.4,3.83,z],[2.15,3.3,z*.984]],.07,brass);
+      for(const x of [-2.65,2.65])lantern(parent,x,2.5,z*.96,.95);
     }
-    function fern(g,x,y,z,size=1){
-      for(let j=0;j<7;j++){const a=j*2.399,dx=Math.cos(a),dz=Math.sin(a),h=(.55+j%3*.08)*size;curve(g,[[x,y,z],[x+dx*.22*size,y+h,z+dz*.22*size],[x+dx*.6*size,y+h*.55,z+dz*.6*size]],.008*size,leafDark);
-        for(let k=0;k<3;k++)for(const side of [-1,1]){const u=.35+k*.22,leaf=mesh(blade,j%2?leafDark:leafLight,x+dx*.6*u*size,y+Math.sin(u*Math.PI*.85)*h,z+dz*.6*u*size,g);leaf.scale.setScalar(size*(.68-k*.12));leaf.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(dx*.35-dz*side*.7,.24-k*.12,dz*.35+dx*side*.7).normalize());}}
-    }
-    function gardenBench(x,z,yaw){
-      const seat=new THREE.Group();seat.position.set(x,0,z);seat.rotation.y=yaw;parent.add(seat);
-      for(const side of [-1,1]){curve(seat,[[side*.97,.08,.32],[side*1.06,.57,.27],[side*1.16,.78,.02],[side*1.04,.82,-.36]],.045);curve(seat,[[side*.97,.08,-.3],[side*.97,.6,-.3],[side*.97,1.15,-.4]],.045);ball(pearl,side*.97,1.2,-.4,.065,seat);}
-      for(let j=0;j<5;j++)box(2.45,.095,.125,cedar,0,.56,-.28+j*.14,seat);
-      for(const y of [.84,1.13])curve(seat,[[-1.08,y,-.39],[0,y+.05,-.42],[1.08,y,-.39]],.028);
-      for(let j=-3;j<=3;j++){const curl=torus(.115,.014,brass,j*.29,.99,-.4,seat);curl.scale.set(.82,1.15,1);rod([j*.29,.82,-.4],[j*.29,1.16,-.4],.011,brass,seat);}
-      const cushion=ball(rose,.64,.65,.02,.35,seat);cushion.scale.set(1,.22,.8);const cushion2=ball(aqua,-.64,.65,.02,.35,seat);cushion2.scale.set(1,.22,.8);
-    }
-    cylinder(4.7,4.85,.18,pearl,0,.12,0,parent,72);horizontalRing(parent,4.6,.225);
-    // One glazing mesh keeps the two walk-through doorways open and limits transparent draws.
-    const positions=[],uv=[],indices=[];
-    function patch(phiStart,phiLength,thetaStart,thetaLength,cols,rows){const base=positions.length/3;for(let row=0;row<=rows;row++)for(let col=0;col<=cols;col++){const p=phiStart+col/cols*phiLength,t=thetaStart+row/rows*thetaLength;positions.push(-4.7*Math.cos(p)*Math.sin(t),.3+6.016*Math.cos(t),4.7*Math.sin(p)*Math.sin(t));uv.push(col/cols,row/rows);if(col<cols&&row<rows){const k=base+row*(cols+1)+col;indices.push(k,k+1,k+cols+1,k+1,k+cols+2,k+cols+1);}}}
-    patch(0,Math.PI*2,0,1.08,48,16);for(let panel=0;panel<12;panel++)if(![2,3,8,9].includes(panel))patch(panel*Math.PI/6,Math.PI/6,1.08,Math.PI/2-1.08,6,6);
-    const glazing=new THREE.BufferGeometry();glazing.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));glazing.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));glazing.setIndex(indices);glazing.computeVertexNormals();mesh(glazing,glass,0,0,0,parent);
-    for(let j=0;j<4;j++){const a=j*Math.PI/4+Math.PI/8,points=[];for(let k=0;k<=40;k++){const t=k/40*Math.PI;points.push([Math.cos(t)*4.72*Math.cos(a),.3+Math.sin(t)*6.03,Math.cos(t)*4.72*Math.sin(a)]);}curve(parent,points,.042);}
-    horizontalRing(parent,4.12,3.2,brass,.025);horizontalRing(parent,2.45,5.45,brass,.025);
-    cylinder(2.4,2.55,.16,aqua,0,.3,0,parent,64);
-    for(const r of [1.85,2.25])horizontalRing(parent,r,.39,light,.013);
-    const heart=new THREE.Group();heart.position.y=.4;parent.add(heart);
-    for(let i=0;i<11;i++){const a=i*Math.PI*2/11,leaf=mesh(surface(.55,2.25,.55),i%2?rose:pearl,0,0,0,heart);leaf.rotation.set(1.08,a,0,'YXZ');}
-    const stems=[[[0,0,0],[-.5,1.5,.15],[-1.1,2.5,.3],[-.65,3.6,.25]],[[0,0,0],[.55,1.6,-.2],[.7,2.9,-.6],[.2,4.2,-.5]],[[0,0,0],[.4,1.4,.6],[1.1,2.4,.6],[1.35,3.2,.3]]];
-    for(let i=0;i<stems.length;i++){curve(heart,stems[i],.045);const tip=stems[i].at(-1);blossom(heart,...tip,.8,i%2?aqua:rose);}
-    for(let j=0;j<9;j++){const a=j*2.4,y=.85+j*.3,x=Math.sin(a)*.52,z=Math.cos(a)*.5;const leaf=mesh(surface(.24,.9,.2),j%2?aqua:lilac,x,y,z,heart);leaf.rotation.set(.75,a,.45);}
-    for(let j=0;j<12;j++){const a=j*Math.PI/6,r=2.6,x=Math.cos(a)*r,z=Math.sin(a)*r;const end=3.1+Math.sin(j*2)*.45;curve(parent,[[x*.6,5.85,z*.6],[x,4.9,z],[x,end+.43,z]],.012);lantern(parent,x,end,z,.9);}
-    const crown=mesh(starGeometry(.42,.07),light,0,6.55,0,parent);crown.rotation.y=.4;
-    for(const side of [-1,1]){gardenBench(side*9,.4,-side*Math.PI/2);for(let j=0;j<3;j++){const x=side*(5.8+j*1.05),z=2.4+Math.sin(j)*.7;glazedPot(x,.12,z,.34+j*.035);fern(parent,x,.65,z,.65);curve(parent,[[x,.65,z],[x+.15,1.05,z],[x,1.35+j*.15,z]],.018);blossom(parent,x,1.35+j*.15,z,.4+j*.055,j%2?aqua:rose);}}
-    // Lattice lanterns and botanical displays sit beyond the dome, away from both doors.
-    for(const x of [-5.8,5.8])for(const z of [-5.8,5.8]){cylinder(.24,.3,.14,pearl,x,.17,z,parent,20);cylinder(.055,.09,2.35,brass,x,1.35,z,parent,12);const collar=torus(.12,.018,brass,x,.4,z,parent);collar.rotation.x=Math.PI/2;curve(parent,[[x,2.52,z],[x+.1,2.82,z],[x+.43,2.76,z],[x+.45,2.58,z]],.025);lantern(parent,x+.45,2.17,z,1);}
-    const display=new THREE.Group();display.position.set(-6.7,0,-2.8);parent.add(display);
-    box(2.5,.13,1.05,cedar,0,.89,0,display);box(2.35,.08,.82,cedar,0,.34,0,display);
-    for(const x of [-1.05,1.05])for(const z of [-.36,.36]){cylinder(.035,.06,.8,brass,x,.47,z,display,10);ball(pearl,x,.08,z,.065,display);}
-    for(const x of [-.61,.61]){
-      cylinder(.38,.42,.08,pearl,x,1,0,display,32);const rim=torus(.385,.018,brass,x,1.05,0,display);rim.rotation.x=Math.PI/2;
-      mesh(new THREE.CylinderGeometry(.35,.35,.42,24,1,true),glass,x,1.28,0,display);mesh(new THREE.SphereGeometry(.35,24,12,0,Math.PI*2,0,Math.PI/2),glass,x,1.49,0,display);ball(brass,x,1.86,0,.045,display);fern(display,x,1.07,0,.34);
-      const plaque=box(.32,.12,.025,brass,x,1.03,.4,display);plaque.rotation.x=-.22;
-    }
-    const can=mesh(new THREE.LatheGeometry([[.13,0],[.2,.04],[.2,.3],[.16,.35],[.12,.35],[.12,.3],[0,.29]].map(([x,y])=>new THREE.Vector2(x,y)),20),aqua,0,.38,0,display);can.rotation.y=.15;
-    curve(display,[[.17,.48,0],[.4,.62,0],[.5,.73,0]],.035,aqua);const handle=torus(.16,.025,brass,-.19,.58,0,display);handle.scale.y=1.1;const spout=mesh(new THREE.CylinderGeometry(.065,.045,.055,12),brass,.5,.75,0,display);spout.rotation.z=-.4;
-    sparkleCloud(parent,4.15,5.7,74);
+    // A continuous ascending promenade shares its exact profile with movement.
+    const rp=[],ru=[],ri=[];for(let i=0;i<=144;i++){const t=i/144;for(const side of [-1,1]){const v=conservatoryWalkPoint(t,side);rp.push(v.x,v.y,v.z-c.z);ru.push(side<0?0:1,t*24);}if(i<144){const k=i*2;ri.push(k,k+1,k+2,k+1,k+3,k+2);}}
+    const rampGeometry=new THREE.BufferGeometry();rampGeometry.setAttribute('position',new THREE.Float32BufferAttribute(rp,3));rampGeometry.setAttribute('uv',new THREE.Float32BufferAttribute(ru,2));rampGeometry.setIndex(ri);rampGeometry.computeVertexNormals();const ramp=mesh(rampGeometry,cedar,0,0,0,parent);ramp.name='conservatory-canopy-walk';ramp.material.side=THREE.DoubleSide;
+    for(const side of [-1,1]){const rail=[],edge=[];for(let i=0;i<=144;i++){const v=conservatoryWalkPoint(i/144,side);rail.push([v.x,v.y+1.12,v.z-c.z]);edge.push([v.x,v.y-.06,v.z-c.z]);}curve(parent,rail,.042,brass);curve(parent,edge,.09,cedar);}
+    for(let i=0;i<=54;i++){const t=i/54;for(const side of [-1,1]){const v=conservatoryWalkPoint(t,side);rod([v.x,v.y,v.z-c.z],[v.x,v.y+1.12,v.z-c.z],.025,brass,parent);if(i%3===0)ball(gardenLight,v.x,v.y+1.14,v.z-c.z,.044,parent);}if(i%6===0){const v=conservatoryWalkPoint(t,0);if(v.y>.7){cylinder(.1,.16,v.y-.22,brass,v.x,(v.y+.22)/2,v.z-c.z,parent,10);for(const side of [-1,1]){const b=conservatoryWalkPoint(t,side*.75);rod([v.x,Math.max(.3,v.y-1),v.z-c.z],[b.x,b.y-.08,b.z-c.z],.045,brass,parent);}}}}
+    for(let i=0;i<=120;i++){const a=conservatoryWalkPoint(i/120,-1),b=conservatoryWalkPoint(i/120,1);rod([a.x,a.y+.006,a.z-c.z],[b.x,b.y+.006,b.z-c.z],.009,brass,parent);}
+    const endA=conservatoryWalkPoint(1,-1),endB=conservatoryWalkPoint(1,1);rod([endA.x,endA.y+1.12,endA.z-c.z],[endB.x,endB.y+1.12,endB.z-c.z],.045,brass,parent);
+    // A planted rock face rises through several levels, beside the circulation route.
+    const mp=[],mu=[],mi=[],layers=16,sides=44;
+    for(let row=0;row<=layers;row++){const u=row/layers,y=.25+u*10.8,rr=2.6*(1-u*.8)+Math.sin(u*Math.PI*6)*.13;for(let j=0;j<=sides;j++){const a=j/sides*Math.PI*2,r=rr*(1+.1*Math.sin(a*5+u*2)+.06*Math.cos(a*9-u*4));mp.push(-3.2+Math.cos(a)*r+u*.42,y,.8+Math.sin(a)*r*.92-u*.3);mu.push(j/sides,u);if(row<layers&&j<sides){const k=row*(sides+1)+j;mi.push(k,k+sides+1,k+1,k+1,k+sides+1,k+sides+2);}}}
+    const mountain=new THREE.BufferGeometry();mountain.setAttribute('position',new THREE.Float32BufferAttribute(mp,3));mountain.setAttribute('uv',new THREE.Float32BufferAttribute(mu,2));mountain.setIndex(mi);mountain.computeVertexNormals();mesh(mountain,rock,0,0,0,parent).name='conservatory-living-mountain';
+    const basinWater=new THREE.MeshPhysicalMaterial({color:'#6aa99a',roughness:.22,metalness:.1,transparent:true,opacity:.72,depthWrite:false,clearcoat:.35});const pool=cylinder(1,1,.055,basinWater,-3.2,.257,.8,parent,64);pool.scale.set(3.05,1,3.25);pool.name='conservatory-waterfall-pool';
+    for(const side of [-1,1]){const points=[];for(let j=0;j<=48;j++){const a=j/48*Math.PI*2,r=side<0?2.85:3.06;points.push([-3.2+Math.cos(a)*r,.31,.8+Math.sin(a)*r*1.06]);}curve(parent,points,.065,rock);}
+    const waterShader={time:{value:0}};waterUniforms.push(waterShader);
+    const fallingWater=new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,uniforms:waterShader,vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying vec2 vUv;uniform float time;void main(){float threads=.6+.4*sin(vUv.x*110.+sin(vUv.y*11.-time*2.));float foam=.4+.6*pow(.5+.5*sin(vUv.y*65.+time*5.),3.);float edge=smoothstep(0.,.15,vUv.x)*smoothstep(1.,.8,vUv.x);gl_FragColor=vec4(.67,.9,.85,edge*(.13+threads*.18+foam*.12));}'});
+    for(let j=0;j<3;j++){const points=[new THREE.Vector3(-2.15+j*.3,9.8,1.4),new THREE.Vector3(-1.7+j*.3,7.5,2.05),new THREE.Vector3(-1.45+j*.33,4.5,2.4),new THREE.Vector3(-1.2+j*.35,.35,2.7)];const path=new THREE.CatmullRomCurve3(points),pos=[],uv=[],idx=[];for(let k=0;k<=48;k++){const p=path.getPoint(k/48);for(const side of [-1,1]){pos.push(p.x+side*(.13+k/48*.1),p.y,p.z);uv.push(side<0?0:1,k/48);}if(k<48){const n=k*2;idx.push(n,n+1,n+2,n+1,n+3,n+2);}}const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(idx);geo.computeVertexNormals();mesh(geo,fallingWater,0,0,0,parent).name='conservatory-waterfall';}
+    const lp=[],lu=[],li=[];for(let j=0;j<=8;j++)for(let i=0;i<3;i++){const u=j/8,v=i-1;lp.push(v*Math.sin(u*Math.PI)*.26,u,Math.sin(u*Math.PI)*(.1+(1-Math.abs(v))*.08));lu.push(i/2,u);if(j<8&&i<2){const k=j*3+i;li.push(k,k+1,k+3,k+1,k+4,k+3);}}const leafGeometry=new THREE.BufferGeometry();leafGeometry.setAttribute('position',new THREE.Float32BufferAttribute(lp,3));leafGeometry.setAttribute('uv',new THREE.Float32BufferAttribute(lu,2));leafGeometry.setIndex(li);leafGeometry.computeVertexNormals();const leaves=new THREE.InstancedMesh(leafGeometry,leafDark,900),paleLeaves=new THREE.InstancedMesh(leafGeometry,leafLight,900),dummy=new THREE.Object3D(),leafCounts=[0,0];leaves.name='conservatory-deep-leaves';paleLeaves.name='conservatory-new-leaves';parent.add(leaves,paleLeaves);
+    const plots=[];for(let tier=0;tier<5;tier++){const y=.65+tier*2.05,r=2.6-tier*.41;for(let j=0;j<9;j++){const a=j*2.399+tier*.6;if(Math.sin(a)>.55&&Math.cos(a)>.1)continue;plots.push({x:-3.2+Math.cos(a)*r,y,z:.8+Math.sin(a)*r*.92,size:.65+(j%3)*.17});}}
+    for(let j=0;j<15;j++){const a=j*Math.PI*2/15;if(Math.abs(Math.cos(a))<.3)continue;const r=9.85;plots.push({x:Math.cos(a)*r,y:.35,z:Math.sin(a)*r,size:1.15+(j%4)*.22});const bed=cylinder(.7,.8,.18,moss,Math.cos(a)*r,.31,Math.sin(a)*r,parent,16);bed.scale.z=.7;}
+    for(const [index,p]of plots.entries()){for(let frond=0;frond<6;frond++){const a=frond*2.399+index*.41,dx=Math.cos(a),dz=Math.sin(a),h=p.size*(.6+(frond%3)*.14);curve(parent,[[p.x,p.y,p.z],[p.x+dx*.35*p.size,p.y+h,p.z+dz*.35*p.size],[p.x+dx*.85*p.size,p.y+h*.6,p.z+dz*.85*p.size]],.012,leafDark);for(let k=0;k<3;k++)for(const side of [-1,1]){const u=.3+k*.23;dummy.position.set(p.x+dx*.85*u*p.size,p.y+Math.sin(u*Math.PI*.86)*h,p.z+dz*.85*u*p.size);dummy.quaternion.setFromUnitVectors(new THREE.Vector3(0,1,0),new THREE.Vector3(dx*.4-dz*side*.55,.3-k*.09,dz*.4+dx*side*.55).normalize());dummy.scale.setScalar(p.size*(.67-k*.12));dummy.updateMatrix();const n=(index+frond+k)%2,target=n?paleLeaves:leaves;if(leafCounts[n]<900)target.setMatrixAt(leafCounts[n]++,dummy.matrix);}}}
+    leaves.count=leafCounts[0];paleLeaves.count=leafCounts[1];leaves.instanceMatrix.needsUpdate=true;paleLeaves.instanceMatrix.needsUpdate=true;leaves.castShadow=paleLeaves.castShadow=true;leaves.receiveShadow=paleLeaves.receiveShadow=true;
+    for(let j=0;j<11;j++){const a=j*2.399,r=2.1-j%3*.36,y=1.2+(j%5)*1.8;blossom(parent,-3.2+Math.cos(a)*r,y,.8+Math.sin(a)*r,.3+j%2*.12,j%2?aqua:lilac);}
+    for(const [x,z]of [[5,-3.2],[3.5,3.2],[-4.8,-8.3]]){const seat=new THREE.Group();seat.position.set(x,0,z);seat.rotation.y=Math.atan2(x,z);parent.add(seat);for(let j=0;j<5;j++)box(2,.09,.13,cedar,0,.6,-.28+j*.14,seat);for(const side of [-1,1]){rod([side*.8,.24,-.26],[side*.8,.6,-.26],.045,brass,seat);rod([side*.8,.24,.26],[side*.8,.6,.26],.045,brass,seat);}curve(seat,[[-.9,1.05,-.34],[0,1.13,-.38],[.9,1.05,-.34]],.035,brass);}
+    for(let i=0;i<9;i++){const a=i*2.399,x=-3.2+Math.cos(a)*1.65,z=.8+Math.sin(a)*1.6;const mist=new THREE.Sprite(new THREE.SpriteMaterial({map:glowMap,color:'#aedfd4',transparent:true,opacity:.08,depthWrite:false}));mist.position.set(x,.9,z);mist.scale.set(3.6,2.1,1);parent.add(mist);vapor.push({object:mist,x,z,phase:i*.37});}
+    for(const [x,y,z,color,power]of [[-3,7,.7,'#70c4ae',23],[4,5,-2,'#a6c8df',18]]){const l=new THREE.PointLight(color,power,16,2);l.position.set(x,y,z);parent.add(l);}
+    for(const x of [-3.1,3.1])lantern(parent,x,1.6,-12,.95);
+    sparkleCloud(parent,9.4,12.4,48);
   }
 
-  return {quiz,conservatory,update(t){light.emissiveIntensity=.73+Math.sin(t*.7)*.09;for(let i=0;i<sparks.length;i++)sparks[i].rotation.y=Math.sin(t*.035+i)*.045;}};
+  return {quiz,conservatory,dynamic,gardenLighting(color){gardenLight.color.set(color);gardenLight.emissive.set(color);},update(t){light.emissiveIntensity=.73+Math.sin(t*.7)*.09;for(let i=0;i<sparks.length;i++)sparks[i].rotation.y=Math.sin(t*.035+i)*.045;for(const u of waterUniforms)u.time.value=t;for(const v of vapor){const p=(t*.065+v.phase)%1;v.object.position.set(v.x+Math.sin(t*.1+v.phase)*.3,.45+p*2.1,v.z);v.object.material.opacity=Math.sin(p*Math.PI)*.12;}for(const o of dynamic)o.rotation.y=t*(o.userData.speed||.1);}};
 }

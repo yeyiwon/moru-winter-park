@@ -23,7 +23,7 @@ function closest(p,connect=false){
 // A small cached navigation grid keeps clicks on the far side of rides reachable.
 export function findPath(start,requested){
   if(!Number.isFinite(requested.x+requested.z)||Math.abs(requested.x)>146||requested.z< -407||requested.z>153)return [];
-  const end=closest(requested);if(end.id<0||end.dist>4)return [];
+  const end=closest(requested,canStandAt(requested.x,requested.z));if(end.id<0||end.dist>4)return [];
   const goal=canStandAt(requested.x,requested.z)?requested:point(end.id);
   if(clearSegment(start,goal))return [{...goal}];
   const first=closest(start,true);if(first.id<0)return [];

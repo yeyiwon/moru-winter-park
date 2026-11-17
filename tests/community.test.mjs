@@ -1,0 +1,30 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import {spawnSync} from 'node:child_process';import {handleAPI} from '../server/api.js';import questions from '../dist/content/daily-trivia.json' with {type:'json'};
+const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'winter-community-')),db=path.join(tmp,'test.sqlite');
+const py="import sqlite3,json,sys\np=json.load(sys.stdin)\nc=sqlite3.connect(p['db']);c.row_factory=sqlite3.Row\nif 'schema' in p:c.executescript(p['schema']);c.commit();print('{}')\nelse:\n r=c.execute(p['sql'],p['args']);rows=[dict(x) for x in r.fetchall()];n=c.total_changes;c.commit();print(json.dumps({'results':rows,'meta':{'changes':n}}))";
+function query(p){const r=spawnSync('python3',['-c',py],{input:JSON.stringify({db,...p}),encoding:'utf8'});if(r.status)throw Error(r.stderr);return JSON.parse(r.stdout);}
+query({schema:fs.readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort().map(f=>fs.readFileSync('drizzle/'+f,'utf8')).join('\n')});
+const env={OWNER_EMAIL:'owner@example.test',DB:{prepare(sql){return{bind(...args){return{async run(){return query({sql,args});},async all(){return query({sql,args});},async first(){return query({sql,args}).results[0]||null;}};}};}}};
+const owner={'oai-authenticated-user-id':'site-owner','oai-authenticated-user-email':'owner@example.test'};
+async function req(route,body,headers={}){const request=new Request('https://winter.test/api/'+route,{method:body===undefined?'GET':'POST',headers:{Origin:'https://winter.test','content-type':'application/json',...headers},body:body===undefined?undefined:JSON.stringify(body)});return handleAPI(request,env);}
+
+test('accountless public guests reconnect to their session; wishes remain private and admin access is server verified',async t=>{
+ t.after(()=>fs.rmSync(tmp,{recursive:true,force:true}));
+ const a=await req('join',{name:'테스트 A'}),b=await req('join',{name:'테스트 B'});assert.equal(a.status,200);assert.equal(b.status,200);const ca=a.headers.get('set-cookie').split(';')[0],cb=b.headers.get('set-cookie').split(';')[0],aa=await a.json(),bb=await b.json();
+ const again=await (await req('join',{name:'다른 이름'},{cookie:ca})).json();assert.equal(again.id,aa.id);assert.equal(query({sql:'SELECT COUNT(*) AS n FROM visitors',args:[]}).results[0].n,2);
+ assert.equal((await req('admin',undefined,{cookie:cb})).status,403);assert.equal((await req('admin',{action:'block',id:aa.id,admin:true},{cookie:cb})).status,403);
+ const privateAdded=await req('tree',{kind:'letter',color:'#e5bb6b',height:12,angle:1,message:'나만 보는 소원',visibility:'private'},{cookie:ca});assert.equal(privateAdded.status,200);const privateId=(await privateAdded.json()).id;
+ query({sql:'UPDATE tree_decorations SET created_at=0',args:[]});
+ const publicAdded=await req('tree',{kind:'snowflake',color:'#b8cfd1',height:15,angle:2,message:'모두에게 보이는 소원',visibility:'public',anonymous:true},{cookie:ca});assert.equal(publicAdded.status,200);const publicId=(await publicAdded.json()).id;
+ const own=await(await req('wishes',undefined,{cookie:ca})).json(),other=await(await req('wishes',undefined,{cookie:cb})).json();assert.equal(own.wishes.length,2);assert.equal(other.wishes.length,1);assert.equal(other.wishes[0].name,'익명');assert.equal(other.wishes[0].id,publicId);
+ assert.equal((await req('wishes',{action:'react',id:privateId},{cookie:cb})).status,404);assert.equal((await req('reports',{type:'wish',id:privateId,reason:'검사'},{cookie:cb})).status,404);assert.equal((await req('wishes',{action:'react',id:publicId},{cookie:cb})).status,200);assert.equal((await req('reports',{type:'wish',id:publicId,reason:'테스트 신고'},{cookie:cb})).status,200);
+ assert.equal((await req('chat',{message:'<img src=x onerror=alert(1)>'},{cookie:ca})).status,400);assert.equal((await req('chat',{message:'안녕하세요'},{cookie:ca})).status,200);assert.equal((await req('chat',{message:'연속 전송'},{cookie:ca})).status,429);
+ const presence=await(await req('presence',{x:0,y:.95,z:24,yaw:0,mode:''},{cookie:cb})).json();assert.equal(presence.people.find(p=>p.id===aa.id).chat,'안녕하세요');
+ query({sql:'UPDATE visitors SET chat_at=? WHERE id=?',args:[Date.now()-610000,aa.id]});await req('presence',{x:0,y:.95,z:24,yaw:0,mode:''},{cookie:cb});assert.equal(query({sql:'SELECT chat FROM visitors WHERE id=?',args:[aa.id]}).results[0].chat,'');
+ await req('access',undefined,owner);const adminData=await(await req('admin',undefined,{...owner,cookie:cb})).json();assert.equal(JSON.stringify(adminData).includes('나만 보는 소원'),false);assert.equal(adminData.reports.length,1);
+ assert.equal((await req('admin',{action:'remove-wish',id:publicId},{...owner,cookie:cb})).status,200);assert.equal((await(await req('wishes',undefined,{cookie:cb})).json()).wishes.length,0);
+ assert.equal((await req('admin',{action:'block',id:aa.id},{...owner,cookie:cb})).status,200);assert.equal((await req('join',{name:'다시'},{cookie:ca})).status,403);assert.equal((await req('wishes',undefined,{cookie:ca})).status,403);
+ const quiz=questions[0];assert.equal((await req('admin',{action:'remove-quiz',id:quiz.id},{...owner,cookie:cb})).status,200);assert.equal((await(await req('quiz',undefined,{cookie:cb})).json()).overrides.find(q=>q.id===quiz.id).disabled,true);assert.equal((await req('assist',{kind:'quiz',questionId:quiz.id},{cookie:cb})).status,404);
+ const custom={...quiz,question:'관리자가 등록한 검증 문제',explanation:'관리자가 수정한 해설입니다.'};assert.equal((await req('admin',{action:'save-quiz',id:'custom-verified',quiz:custom},{...owner,cookie:cb})).status,200);assert.equal((await(await req('assist',{kind:'quiz',questionId:'custom-verified'},{cookie:cb})).json()).text,custom.explanation);
+ assert.equal((await req('admin',{action:'save-event',title:'점검 이벤트',kind:'lights',startsAt:Date.now(),endsAt:Date.now()-1000},{...owner,cookie:cb})).status,400);
+ const fromOtherSite=new Request('https://winter.test/api/chat',{method:'POST',headers:{origin:'https://other.test',cookie:cb},body:JSON.stringify({message:'cross-site'})});assert.equal((await handleAPI(fromOtherSite,env)).status,403);
+});

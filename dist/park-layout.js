@@ -1,5 +1,5 @@
 // Props, collision and the walking network share the same authored layout.
-export const carouselLayout={x:16,z:3.8,scale:1.25,r:5.1};
+export const carouselLayout={x:16,z:3.8,scale:1.6,r:6.1};
 export const parkStalls=[{x:-24,z:14,yaw:.7,kind:'popcorn'},{x:-14,z:22,yaw:.4,kind:'candy'},{x:-7,z:24,yaw:0,kind:'waffle'}];
 export const parkBenches=[{x:-7,z:14,yaw:0},{x:11,z:17,yaw:0},{x:26,z:-6,yaw:-Math.PI/2},{x:-7,z:-12,yaw:.5}];
 export const parkLamps=[...[-1,1].flatMap(side=>[22,9,2,-7].map(z=>({x:side*3.8,z}))),{x:-12,z:12},{x:-27,z:3},{x:24,z:11},{x:22,z:-12}];

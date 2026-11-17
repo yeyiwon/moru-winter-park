@@ -1,3 +1,4 @@
+import {conservatorySurfaceAt} from './conservatory-layout.js';
 import {alpineHeight,resortGround} from './resort-layout.js';
 export const islands=[
   {id:'park',name:'별빛 놀이공원',subject:'관람차 · 회전목마',x:0,z:0,r:32,color:'#c9adff',spawn:{x:0,z:30}},
@@ -11,7 +12,9 @@ export const islands=[
   {id:'wish',name:'소원나무 섬',subject:'크리스마스 · 산책',x:108,z:35,r:27,color:'#d7be91',spawn:{x:108,z:53}},
   {id:'spa',name:'설림 온천 마을',subject:'노천 온천 · 편백 휴양관',x:0,z:119,r:31,color:'#b5cdc0',spawn:{x:0,z:96}}
 ];
-export const bridges=[[islands[0],islands[3]],[islands[0],islands[4]],[islands[0],islands[7]],[islands[4],islands[9]],[islands[3],islands[8]]];
+islands.push({id:'festival',name:'겨울 축제',subject:'회전 컵 · 범퍼카 · 기차',x:-63,z:0,r:25,color:'#e0b7d2',spawn:{x:-42,z:0}});
+islands.push({id:'rink',name:'아이스링크',subject:'스케이트 · 소원 우체국',x:-58,z:94,r:22,color:'#b4dcdf',spawn:{x:-39,z:94}});
+export const bridges=[[islands[0],islands[3]],[islands[0],islands[4]],[islands[0],islands[7]],[islands[4],islands[9]],[islands[3],islands[8]],[islands[0],islands[10]],[islands[9],islands[11]]];
 export function bridgeHeight(x,z){for(const [a,b] of bridges){const length=Math.hypot(b.x-a.x,b.z-a.z),d=((x-a.x)*(b.x-a.x)+(z-a.z)*(b.z-a.z))/length,start=a.r-1,end=length-b.r+1;if(d>=start&&d<=end&&segmentDistance(x,z,a,b)<2.7)return .09+Math.sin((d-start)/(end-start)*Math.PI)*.35;}return .09;}
 export function segmentDistance(x,z,a,b){const dx=b.x-a.x,dz=b.z-a.z,t=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/(dx*dx+dz*dz)));return Math.hypot(x-a.x-t*dx,z-a.z-t*dz);}
 export function terrainAt(x,z){return islands.some(i=>!i.hidden&&Math.hypot(x-i.x,z-i.z)<=i.r-1.3)||bridges.some(([a,b])=>segmentDistance(x,z,a,b)<1.65);}
@@ -39,4 +42,4 @@ export const exhibits=[
 {id:'harbour-memory',room:'memory',island:'history',name:'항구 · 기억 서재',x:-52,z:-23,color:'#aac9d0',review:true}
 ];
 
-export function surfaceHeight(x,z){let h=Math.max(bridgeHeight(x,z),resortGround(x,z));for(const [cx,cz,r]of [[47,-30,5.5],[0,53,4.7],[-46,25,6]]){const d=Math.hypot(x-cx,z-cz),t=Math.max(0,Math.min(1,(r+.2-d)/.6));h=Math.max(h,.09+.13*t);}return h;}
+export function surfaceHeight(x,z){let h=Math.max(bridgeHeight(x,z),resortGround(x,z),conservatorySurfaceAt(x,z)??0);for(const [cx,cz,r]of [[47,-30,5.5],[0,53,4.7],[-46,25,6]]){const d=Math.hypot(x-cx,z-cz),t=Math.max(0,Math.min(1,(r+.2-d)/.6));h=Math.max(h,.09+.13*t);}return h;}

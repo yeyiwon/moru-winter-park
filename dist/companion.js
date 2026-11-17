@@ -1,4 +1,5 @@
 import {selectedItems,normalizeWardrobe} from './wardrobe.js';
+import {createStyleAccessories} from './character-accessories.js';
 import * as THREE from './vendor/three.module.js';
 // Short, dense down follows the body; face trimming blends radially around each eye.
 export function createCompanion({detail='full'}={}){
@@ -40,17 +41,22 @@ export function createCompanion({detail='full'}={}){
  const roundEye=eyes[0].geometry,flatEye=new THREE.CapsuleGeometry(.014,.135,5,12);flatEye.rotateZ(Math.PI/2);
  const closedEye=new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(-.081,.016,0),new THREE.Vector3(0,-.012,.006),new THREE.Vector3(.081,.016,0)]),16,.013,8,false);
  const contentEye=new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(-.073,-.006,0),new THREE.Vector3(0,.023,.005),new THREE.Vector3(.073,-.006,0)]),16,.012,8,false);
- function symbolEye(kind){const outline=new THREE.Shape();if(kind==='heart'){outline.moveTo(0,-.085);outline.bezierCurveTo(-.17,0,-.09,.15,0,.065);outline.bezierCurveTo(.09,.15,.17,0,0,-.085);}else{for(let i=0;i<10;i++){const a=i*Math.PI/5+Math.PI/2,r=i%2?.043:.1;i?outline.lineTo(Math.cos(a)*r,Math.sin(a)*r):outline.moveTo(Math.cos(a)*r,Math.sin(a)*r);}outline.closePath();}const geometry=new THREE.ExtrudeGeometry(outline,{depth:.012,bevelEnabled:true,bevelSize:.005,bevelThickness:.004,bevelSegments:2});geometry.center();return geometry;}
- const starEye=symbolEye('star'),heartEye=symbolEye('heart'),heartEyeMaterial=new THREE.MeshStandardMaterial({color:'#ad5076',roughness:.4});
+ function symbolEye(kind){
+  const outline=new THREE.Shape();
+  if(kind==='heart'){outline.moveTo(0,-.079);outline.bezierCurveTo(-.02,-.052,-.097,.001,-.087,.054);outline.bezierCurveTo(-.081,.093,-.022,.109,0,.062);outline.bezierCurveTo(.022,.109,.081,.093,.087,.054);outline.bezierCurveTo(.097,.001,.02,-.052,0,-.079);}
+  else {for(let i=0;i<10;i++){const a=i*Math.PI/5+Math.PI/2,r=i%2?.045:.091;i?outline.lineTo(Math.cos(a)*r,Math.sin(a)*r):outline.moveTo(Math.cos(a)*r,Math.sin(a)*r);}}
+  outline.closePath();const geometry=new THREE.ExtrudeGeometry(outline,{depth:.014,bevelEnabled:true,bevelSize:.006,bevelThickness:.005,bevelSegments:3,curveSegments:20});geometry.center();return geometry;
+ }
+ const starEye=symbolEye('star'),heartEye=symbolEye('heart'),heartEyeMaterial=new THREE.MeshPhysicalMaterial({color:'#be577f',roughness:.3,clearcoat:.6});
  let eyeProfiles=[],selectedEyeStyle='',activeEyeReaction='';
  function styleEyes(style='',reaction=''){
   activeEyeReaction=reaction;
   eyeProfiles=eyes.map((eye,i)=>{
-   const side=i?1:-1,content=reaction==='content'||style==='eyes-happy',symbol=style==='eyes-star'||style==='eyes-heart',closed=content||symbol||style==='eyes-flat'||style==='eyes-sleepy'||style==='eyes-wink'&&i===1,goofy=style==='eyes-goofy'&&!content;
+   const side=i?1:-1,content=reaction==='content'||style==='eyes-happy',symbol=style==='eyes-star'||style==='eyes-heart',closed=content||symbol||style==='eyes-flat'||style==='eyes-sleepy',goofy=style==='eyes-goofy'&&!content;
    eye.name=i?'right-eye':'left-eye';eye.geometry=content?contentEye:style==='eyes-star'?starEye:style==='eyes-heart'?heartEye:style==='eyes-flat'?flatEye:closed?closedEye:roundEye;eye.material=style==='eyes-heart'&&!content?heartEyeMaterial:goofy?eyeWhite:eyeMat;
-   const scale=closed?[1,1,1]:goofy?[.108,.117,.052]:style==='eyes-round'||style==='eyes-wink'?[.077,.077,.046]:[.068,.094,.046];
+   const scale=closed?[1,1,1]:goofy?[.093,.097,.049]:style==='eyes-round'?[.077,.077,.046]:[.068,.094,.046];
    eye.scale.set(...scale);eye.rotation.z=style==='eyes-sleepy'&&!content?side*.12:0;eye.position.y=goofy?.085:.075;eye.position.z=closed?.711:.663;
-   const pupil=eye.children[0];pupil.visible=!closed;pupil.material=goofy?eyeMat:eyeWhite;pupil.position.set(goofy?(i?.22:-.27):-.25,goofy?(i?.13:-.12):.32,.94);pupil.scale.set(goofy?.34:.16,goofy?.37:.12,goofy?.15:.1);
+   const pupil=eye.children[0];pupil.visible=!closed||symbol&&!content;pupil.material=goofy?eyeMat:eyeWhite;pupil.position.set(symbol?-.024:goofy?0:-.25,symbol?.031:goofy?-.035:.32,symbol?.014:.94);pupil.scale.set(symbol?.013:goofy?.31:.16,symbol?.009:goofy?.32:.12,symbol?.004:goofy?.15:.1);
    return {scale,closed};
   });
  }
@@ -107,15 +113,9 @@ export function createCompanion({detail='full'}={}){
  }
  const smileCurve=new THREE.CatmullRomCurve3([new THREE.Vector3(-.041,-.115,.723),new THREE.Vector3(0,-.13,.727),new THREE.Vector3(.041,-.115,.723)]),reactionGeometry=facialGeometry(new THREE.TubeGeometry(smileCurve,16,.0075,8,false)),pursedGeometry=facialGeometry(new THREE.TorusGeometry(.018,.006,8,24).translate(0,-.115,.73));
  const reactions=new THREE.Mesh(reactionGeometry,[eyeMat,new THREE.MeshStandardMaterial({color:'#d9a2aa',roughness:1,transparent:true,opacity:.5,depthWrite:false})]);reactions.name='content-cheeks-smile';reactions.visible=false;shape.add(reactions);
- const glasses=new THREE.Group();glasses.name='sunglasses';shape.add(glasses);
- const frameMat=new THREE.MeshStandardMaterial({color:'#17151f',roughness:.3,metalness:.15}),lensMat=new THREE.MeshPhysicalMaterial({color:'#172333',roughness:.14,metalness:.4,clearcoat:1});
- for(const side of [-1,1]){
-  orb(frameMat,side*.245,.12,.704,.248,.188,.068,glasses);
-  orb(lensMat,side*.245,.12,.755,.209,.146,.035,glasses);
-  const arm=new THREE.Mesh(new THREE.BoxGeometry(.045,.045,.43),frameMat);arm.position.set(side*.47,.15,.51);arm.rotation.y=side*-.28;glasses.add(arm);
-  const glint=orb(new THREE.MeshBasicMaterial({color:'#8a9ba9'}),side*.245-.045,.18,.785,.07,.012,.006,glasses);glint.rotation.z=-.35;
- }
- const bridge=new THREE.Mesh(new THREE.CapsuleGeometry(.025,.12,4,8),frameMat);bridge.rotation.z=Math.PI/2;bridge.position.set(0,.16,.73);glasses.add(bridge);
+ const {glasses,silverGlasses,crown,brooch,ribbon,scarf}=createStyleAccessories({detail});
+ shape.add(glasses,silverGlasses,crown,brooch,ribbon,scarf);
+ const frameMat=new THREE.MeshStandardMaterial({color:'#17151f',roughness:.3,metalness:.15});
  const goggles=new THREE.Group();goggles.name='ski-goggles';shape.add(goggles);
  // One curved panoramic lens, a shallow nose relief and a wide textile strap.
  const strap=new THREE.Mesh(new THREE.CylinderGeometry(.745,.745,.135,48,1,true),frameMat);strap.scale.z=.91;strap.position.y=.1;goggles.add(strap);
@@ -141,11 +141,7 @@ export function createCompanion({detail='full'}={}){
  for(let i=0;i<2;i++){dummy.position.set((i?1:-1)*.72,.22,-.05);dummy.rotation.set(0,0,0);dummy.scale.set(.12,.25,.24);dummy.updateMatrix();pads.setMatrixAt(i,dummy.matrix);}
  const vents=new THREE.InstancedMesh(new THREE.BoxGeometry(.042,.009,.13),paddingMat,12);helmet.add(vents);let ventIndex=0;
  for(const x of [-.36,-.18,.18,.36])for(const z of [-.22,.08,.36]){const y=.23+.72*Math.sqrt(1-(x/.79)**2-(z/.70)**2);dummy.position.set(x,y+.007,z);dummy.quaternion.setFromUnitVectors(up,new THREE.Vector3(x/(.79*.79),(y-.23)/(.72*.72),z/(.70*.70)).normalize());dummy.scale.set(1,1,1);dummy.updateMatrix();vents.setMatrixAt(ventIndex++,dummy.matrix);}
- const accents=new THREE.Group();shape.add(accents);
- const pin=new THREE.Shape();for(let i=0;i<10;i++){const a=i*Math.PI/5+Math.PI/2,r=i%2?.075:.16;i?pin.lineTo(Math.cos(a)*r,Math.sin(a)*r):pin.moveTo(Math.cos(a)*r,Math.sin(a)*r);}pin.closePath();const brooch=new THREE.Mesh(new THREE.ExtrudeGeometry(pin,{depth:.025,bevelEnabled:true,bevelSize:.012,bevelThickness:.012,bevelSegments:3}),new THREE.MeshStandardMaterial({color:'#c5a578',metalness:.65,roughness:.3}));brooch.position.set(.43,.47,.4);brooch.rotation.z=-.2;accents.add(brooch);brooch.visible=false;
- const ribbon=new THREE.Group();ribbon.position.set(-.4,.5,.35);ribbon.rotation.z=.2;accents.add(ribbon);const satin=new THREE.MeshPhysicalMaterial({color:'#9684b2',roughness:.7,sheen:1});for(const side of [-1,1]){const loop=orb(satin,side*.11,0,0,.13,.085,.045,ribbon);loop.rotation.z=side*.35;}orb(satin,0,0,.035,.045,.06,.04,ribbon);ribbon.visible=false;
  function mergeAccessory(parts){const arrays={position:[],normal:[],uv:[]},geometry=new THREE.BufferGeometry();for(const part of parts){const g=part.index?part.toNonIndexed():part;for(const name in arrays)arrays[name].push(...g.attributes[name].array);if(g!==part)g.dispose();part.dispose();}for(const [name,values]of Object.entries(arrays))geometry.setAttribute(name,new THREE.Float32BufferAttribute(values,name==='uv'?2:3));return geometry;}
- const scarfRing=new THREE.TorusGeometry(.65,.073,10,64);scarfRing.rotateX(Math.PI/2);scarfRing.translate(0,-.37,0);const scarf=new THREE.Mesh(mergeAccessory([scarfRing,new THREE.CapsuleGeometry(.062,.3,6,12).rotateZ(.12).translate(-.24,-.59,.55),new THREE.CapsuleGeometry(.057,.2,6,12).rotateZ(-.18).translate(-.1,-.55,.61)]),satin);scarf.name='winter-scarf';shape.add(scarf);scarf.visible=false;
  const muffCurve=new THREE.CatmullRomCurve3(Array.from({length:33},(_,i)=>{const a=i/32*Math.PI;return new THREE.Vector3(Math.cos(a)*.76,.18+Math.sin(a)*.66,-.05);})),earmuffs=new THREE.Mesh(mergeAccessory([new THREE.TubeGeometry(muffCurve,32,.035,8,false),...[-1,1].map(side=>new THREE.SphereGeometry(1,24,16).scale(.14,.21,.18).translate(side*.73,.18,-.05))]),earVelvet);earmuffs.name='winter-earmuffs';shape.add(earmuffs);earmuffs.visible=false;
  const santa=new THREE.Group();santa.name='santa-hat';santa.position.set(0,.62,0);shape.add(santa);
  const red=new THREE.MeshStandardMaterial({color:'#a5444b',roughness:.95}),white=new THREE.MeshStandardMaterial({color:'#f7f2e9',roughness:1});
@@ -155,6 +151,7 @@ export function createCompanion({detail='full'}={}){
  const brim=new THREE.Mesh(new THREE.TorusGeometry(.44,.065,8,32),white);brim.rotation.x=Math.PI/2;brim.scale.y=.83;santa.add(brim);orb(white,.38,.41,0,.105,.11,.105,santa);
  const skiMat=new THREE.MeshPhysicalMaterial({color:'#171923',roughness:.34,metalness:.18,clearcoat:.65,clearcoatRoughness:.24});
  const boots=[];for(const foot of feet){const boot=orb(skiMat,0,.13,-.06,1.1,1.18,1.04,foot);boot.visible=false;boots.push(boot);}
+ const skateParts=[];for(const foot of feet){const skate=new THREE.Group();foot.add(skate);const boot=orb(skiMat,0,.14,-.03,1.05,1.2,1.1,skate);const blade=new THREE.Mesh(new THREE.BoxGeometry(.14,.2,1.9),new THREE.MeshStandardMaterial({color:'#d9e2e6',metalness:.85,roughness:.22}));blade.position.set(0,-.78,.1);skate.add(blade);skate.visible=false;skateParts.push(skate);}
  const skis=new THREE.Group();skis.name='ski-equipment';shape.add(skis);
  const skiParts=[new THREE.BoxGeometry(.16,.045,1.65).translate(0,-.87,.12),new THREE.TubeGeometry(new THREE.CatmullRomCurve3([new THREE.Vector3(0,-.87,.92),new THREE.Vector3(0,-.85,1.02),new THREE.Vector3(0,-.77,1.13)]),8,.07,5,false)],skiGeometry=new THREE.BufferGeometry();
  for(const name of ['position','normal','uv']){const values=[];for(const part of skiParts){const geometry=part.toNonIndexed();values.push(...geometry.attributes[name].array);geometry.dispose();}skiGeometry.setAttribute(name,new THREE.Float32BufferAttribute(values,name==='uv'?2:3));}skiParts.forEach(part=>part.dispose());
@@ -192,13 +189,13 @@ export function createCompanion({detail='full'}={}){
  function armPose(index,hand,shoulderY=-.12){const side=index?1:-1;armStart.set(side*.59,shoulderY,.08);armEnd.set(...hand);armDirection.copy(armEnd).sub(armStart);const length=armDirection.length();dummy.position.copy(armStart).add(armEnd).multiplyScalar(.5);dummy.quaternion.setFromUnitVectors(up,armDirection.normalize());dummy.scale.set(1,length/.43,1);dummy.updateMatrix();arms.setMatrixAt(index,dummy.matrix);}
  function stancePose(object,target){object.matrixAutoUpdate=false;object.matrix.copy(inverseShape).multiply(target);object.matrix.decompose(object.position,object.quaternion,object.scale);object.matrixWorldNeedsUpdate=true;}
  let appearanceItems=[],relaxing=false;
- let wardrobeGear='none',equipped='none';function equip(kind=wardrobeGear){equipped=kind;skis.visible=kind==='ski';board.visible=kind==='board';sled.visible=kind==='sled';boots.forEach(b=>b.visible=kind==='ski'||kind==='board');}equip();
+ let wardrobeGear='none',equipped='none';function equip(kind=wardrobeGear){equipped=kind;skateParts.forEach(s=>s.visible=kind==='skates');skis.visible=kind==='ski';board.visible=kind==='board';sled.visible=kind==='sled';boots.forEach(b=>b.visible=kind==='ski'||kind==='board');}equip();
  let roundness=0,nameHeight=.9;
- function customize(o){const items=selectedItems(normalizeWardrobe(o.accessory));appearanceItems=items;wardrobeGear=items.includes('board')?'board':items.includes('ski')?'ski':'none';equip();goggles.visible=items.includes('goggles');velvet.color.set(o.fur||'#f4eee5');fibreMaterial.color.copy(velvet.color);groom(o.fluff??100);glasses.visible=items.includes('sunglasses');roundness=((o.roundness??50)-50)/500;shape.scale.set(1+roundness,1-roundness*.5,1);brooch.visible=items.includes('star');ribbon.visible=items.includes('ribbon');santa.visible=items.includes('santa');helmet.visible=items.includes('helmet');const ears=items.find(item=>earShapes[item]);headband.visible=!!ears;headband.userData.kind=ears||'';if(ears)headband.geometry=earShapes[ears];selectedEyeStyle=items.find(item=>item.startsWith('eyes-'))||'';styleEyes(selectedEyeStyle);const headTop=ears?Math.max(.8,headband.geometry.boundingBox.max.y):items.includes('santa')?1.15:items.includes('helmet')?.97:items.includes('earmuffs')?.94:.8,headScale=1-roundness*.5;nameHeight=headTop*headScale+.86*(headScale-1)+.1;}
+ function customize(o){const items=selectedItems(normalizeWardrobe(o.accessory));appearanceItems=items;wardrobeGear=items.includes('board')?'board':items.includes('ski')?'ski':'none';equip();goggles.visible=items.includes('goggles');velvet.color.set(o.fur||'#f4eee5');fibreMaterial.color.copy(velvet.color);groom(o.fluff??100);glasses.visible=items.includes('sunglasses');silverGlasses.visible=items.includes('silver-glasses');crown.visible=items.includes('crown');scarf.visible=items.includes('scarf');earmuffs.visible=items.includes('earmuffs');roundness=((o.roundness??50)-50)/500;shape.scale.set(1+roundness,1-roundness*.5,1);brooch.visible=items.includes('star');ribbon.visible=items.includes('ribbon');santa.visible=items.includes('santa');helmet.visible=items.includes('helmet');const ears=items.find(item=>earShapes[item]);headband.visible=!!ears;headband.userData.kind=ears||'';if(ears)headband.geometry=earShapes[ears];selectedEyeStyle=items.find(item=>item.startsWith('eyes-'))||'';styleEyes(selectedEyeStyle);const headTop=ears?Math.max(.8,headband.geometry.boundingBox.max.y):items.includes('santa')?1.15:items.includes('helmet')?.97:items.includes('earmuffs')?.94:items.includes('crown')?1.01:.8,headScale=1-roundness*.5;nameHeight=headTop*headScale+.86*(headScale-1)+.1;}
  function pose({phase=0,walking=false,time=0,landing=0,still=false,look=0,mode='',lean=0,tilt=0,speed=0,brake=false,gesture='',heldItem,roast=0}={}){
   heldItem=heldItem??(['ski','lift','bath','sauna','lie','tea'].includes(mode)?'':appearanceItems.find(v=>['coffee','cocoa','odeng','marshmallow','bubble-wand','balloon','icecream'].includes(v))||'');
   if(heldItem==='bubble-wand'&&!gesture)gesture='bubble';
-  group.rotation.order='YXZ';const spa=['bath','sauna','lie','tea'].includes(mode),snack=gesture==='snack'&&mode!=='ski'&&mode!=='lift',warming=gesture==='warm'&&mode!=='ski'&&mode!=='lift',bubbling=gesture==='bubble'&&!spa&&mode!=='ski'&&mode!=='lift',waving=gesture==='wave'&&!spa&&mode!=='ski'&&mode!=='lift';if(spa!==relaxing){relaxing=spa;equip(spa?'none':wardrobeGear);}bathTowel.visible=spa;teaCup.visible=mode==='tea'||snack||['coffee','cocoa'].includes(heldItem);cupMaterial.color.set(heldItem==='coffee'?'#b7b0cd':heldItem==='cocoa'?'#ac857b':'#f0e3cd');tea.material.color.set(heldItem==='coffee'?'#4f3028':heldItem==='cocoa'?'#6c3b2a':'#976e42');santa.visible=!spa&&appearanceItems.includes('santa');helmet.visible=!spa&&appearanceItems.includes('helmet');headband.visible=!spa&&!!headband.userData.kind;scarf.visible=!spa&&appearanceItems.includes('scarf');earmuffs.visible=!spa&&appearanceItems.includes('earmuffs');goggles.visible=!spa&&appearanceItems.includes('goggles');glasses.visible=!spa&&appearanceItems.includes('sunglasses');group.rotation.x=mode==='lie'?-Math.PI/2:mode==='ski'?tilt:0;
+  group.rotation.order='YXZ';const spa=['bath','sauna','lie','tea'].includes(mode),snack=gesture==='snack'&&mode!=='ski'&&mode!=='lift',warming=gesture==='warm'&&mode!=='ski'&&mode!=='lift',bubbling=gesture==='bubble'&&!spa&&mode!=='ski'&&mode!=='lift',waving=gesture==='wave'&&!spa&&mode!=='ski'&&mode!=='lift';if(spa!==relaxing){relaxing=spa;equip(spa?'none':wardrobeGear);}bathTowel.visible=spa;teaCup.visible=mode==='tea'||snack||['coffee','cocoa'].includes(heldItem);cupMaterial.color.set(heldItem==='coffee'?'#b7b0cd':heldItem==='cocoa'?'#ac857b':'#f0e3cd');tea.material.color.set(heldItem==='coffee'?'#4f3028':heldItem==='cocoa'?'#6c3b2a':'#976e42');santa.visible=!spa&&appearanceItems.includes('santa');helmet.visible=!spa&&appearanceItems.includes('helmet');headband.visible=!spa&&!!headband.userData.kind;scarf.visible=!spa&&appearanceItems.includes('scarf');earmuffs.visible=!spa&&appearanceItems.includes('earmuffs');goggles.visible=!spa&&appearanceItems.includes('goggles');glasses.visible=!spa&&appearanceItems.includes('sunglasses');silverGlasses.visible=!spa&&appearanceItems.includes('silver-glasses');crown.visible=!spa&&appearanceItems.includes('crown');group.rotation.x=mode==='lie'?-Math.PI/2:mode==='ski'?tilt:0;
   if(gesture!==lastGesture){lastGesture=gesture;gestureStartedAt=time;}const gestureTime=Math.max(0,time-gestureStartedAt),carrying=!!skewerShapes[heldItem]&&mode!=='ski'&&mode!=='lift';heldSkewer.visible=carrying;
   if(carrying){if(currentHeldItem!==heldItem){currentHeldItem=heldItem;skewerMesh.geometry=skewerShapes[heldItem];lastRoast=-1;}const cooked=THREE.MathUtils.clamp(roast,0,1);if(cooked!==lastRoast){lastRoast=cooked;skewerWood.color.set(heldItem==='balloon'?'#e1d7c8':'#b38b60');skewerFood.roughness=heldItem==='balloon'?.28:.78;if(heldItem==='balloon')skewerFood.color.set('#d9a0ce');else if(heldItem==='icecream')skewerFood.color.set('#f1d8c5');else if(heldItem==='odeng')skewerFood.color.set('#dcb079');else skewerFood.color.copy(cooked<.5?toastWhite:toastTan).lerp(cooked<.5?toastTan:toastBrown,cooked<.5?cooked*2:(cooked-.5)*2);}}
   let sipProgress=0,blowProgress=0,eatProgress=0;bubbleWand.visible=bubbling&&!carrying;if(carrying)teaCup.visible=false;
@@ -214,12 +211,13 @@ export function createCompanion({detail='full'}={}){
   const sin=Math.sin(group.rotation.z),cos=Math.cos(group.rotation.z);
   const lowest=Math.min(...feet.map(f=>f.position.x*shape.scale.x*sin+f.position.y*shape.scale.y*cos-Math.hypot(f.scale.x*shape.scale.x*sin,f.scale.y*shape.scale.y*cos)));
   shape.position.y=(-.86-lowest)/cos;
-  if(mode==='lift'){
+  if(['lift','carousel','ferris','teacups','bumper','train'].includes(mode)){
    group.rotation.z=0;shape.position.y=0;shape.rotation.x=-.06;
    feet.forEach(f=>{f.position.y=-.5;f.position.z=.65;});
    skis.position.set(0,.3,.52);board.position.set(0,.3,.52);
    for(let i=0;i<2;i++)armPose(i,[(i?1:-1)*.5,-.38,.52]);
   }
+  if(mode==='skate'){group.rotation.z=-lean*.1;shape.rotation.x=.06+Math.min(speed/15,.12);for(let i=0;i<2;i++){const side=i?1:-1,sweep=still?0:Math.sin(time*3+i*Math.PI)*Math.min(speed/8,1);feet[i].position.x=side*(.27+Math.max(0,sweep)*.22);feet[i].position.z=.1+sweep*.2;feet[i].rotation.y=side*Math.max(0,sweep)*.25;armPose(i,[side*(.65+Math.abs(sweep)*.12),-.18,.3]);}}
   if(mode==='ski'){
    const pace=THREE.MathUtils.clamp(speed/22,0,1),carve=THREE.MathUtils.clamp(lean,-1,1),crouch=.035+pace*.085+Math.abs(carve)*.035+(brake?.035:0),edge=carve*.065;
    shape.scale.y-=crouch;shape.scale.x+=crouch*.2;shape.position.set(0,-crouch*.7,.03+pace*.055);shape.rotation.set(.045+pace*.12-(brake?.09:0),0,carve*.08);

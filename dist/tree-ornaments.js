@@ -2,7 +2,7 @@ import * as T from './vendor/three.module.js';
 
 // The server kinds stay separate from the two shared finishes and their settings.
 export function createTreeOrnamentMeshes(root){
- const capacity=160,kinds=['ball','star','bell','bow','moon','icicle'];
+ const capacity=160,kinds=['ball','star','bell','bow','moon','icicle','letter','snowflake'];
  const jewel=new T.MeshPhysicalMaterial({color:'#ffffff',roughness:.2,metalness:.18,clearcoat:1,iridescence:.9,iridescenceIOR:1.32,emissive:'#ffe8d7',emissiveIntensity:.075});
  const gold=new T.MeshStandardMaterial({color:'#ffe7b2',roughness:.25,metalness:.64,emissive:'#c78643',emissiveIntensity:.045});
  function joined(parts){
@@ -49,7 +49,14 @@ export function createTreeOrnamentMeshes(root){
  const crystal=new T.BufferGeometry();crystal.setAttribute('position',new T.Float32BufferAttribute(crystalPositions,3));crystal.setAttribute('uv',new T.Float32BufferAttribute(crystalUvs,2));crystal.setIndex(crystalIndices);const icicle=faceted(crystal);
  const icicleFrame=joined([...hanger(.45),hoop(.235,.25,.012)]);
 
- const geometries={ball,star,bell,bow,moon,icicle},settings={ball:ballFrame,star:starFrame,bell:bellFrame,bow:bowFrame,moon:moonFrame,icicle:icicleFrame},meshes={},frames={};
+ const envelope=new T.Shape();envelope.moveTo(-.42,-.27);envelope.lineTo(.42,-.27);envelope.quadraticCurveTo(.46,-.27,.46,-.23);envelope.lineTo(.46,.23);envelope.quadraticCurveTo(.46,.27,.42,.27);envelope.lineTo(-.42,.27);envelope.quadraticCurveTo(-.46,.27,-.46,.23);envelope.lineTo(-.46,-.23);envelope.quadraticCurveTo(-.46,-.27,-.42,-.27);envelope.closePath();
+ const letter=extruded(envelope,.075,.015);
+ const seal=new T.CylinderGeometry(.09,.09,.025,20);seal.rotateX(Math.PI/2);seal.translate(0,-.02,.085);
+ const letterFrame=joined([...hanger(.31),tube([[-.43,.24,.065],[0,-.04,.085],[.43,.24,.065]],.011,16),tube([[-.43,-.24,.065],[-.17,-.02,.07]],.009,8),tube([[.43,-.24,.065],[.17,-.02,.07]],.009,8),seal,new T.TorusGeometry(.058,.008,4,20).translate(0,-.02,.102)]);
+ const snowParts=[];function crystalArm(a,b,r){const av=new T.Vector3(...a),bv=new T.Vector3(...b),d=bv.clone().sub(av),g=new T.CylinderGeometry(r,r,d.length(),6);g.applyQuaternion(new T.Quaternion().setFromUnitVectors(new T.Vector3(0,1,0),d.normalize()));g.translate(...av.add(bv).multiplyScalar(.5).toArray());return g;}
+ for(let j=0;j<6;j++){const a=j*Math.PI/3+Math.PI/2,point=(r,side=0)=>[Math.cos(a)*r-Math.sin(a)*side,Math.sin(a)*r+Math.cos(a)*side,0];snowParts.push(crystalArm(point(.05),point(.56),.025));for(const r of [.25,.4])for(const sign of [-1,1])snowParts.push(crystalArm(point(r),point(r-.12,sign*.12),.017));snowParts.push(new T.OctahedronGeometry(.06).translate(...point(.56)));}
+ const snowflake=joined(snowParts),snowflakeFrame=joined([...hanger(.63),new T.TorusGeometry(.115,.012,5,24),new T.OctahedronGeometry(.075).translate(0,0,.075)]);
+ const geometries={ball,star,bell,bow,moon,icicle,letter,snowflake},settings={ball:ballFrame,star:starFrame,bell:bellFrame,bow:bowFrame,moon:moonFrame,icicle:icicleFrame,letter:letterFrame,snowflake:snowflakeFrame},meshes={},frames={};
  for(const kind of kinds){meshes[kind]=new T.InstancedMesh(geometries[kind],jewel,capacity);frames[kind]=new T.InstancedMesh(settings[kind],gold,capacity);for(const [object,name]of [[meshes[kind],'ornament'],[frames[kind],'setting']]){object.name=`tree-${name}-${kind}`;object.count=0;object.frustumCulled=false;object.castShadow=true;object.receiveShadow=true;object.instanceMatrix.setUsage(T.DynamicDrawUsage);root.add(object);}}
 
  // One small point cloud follows the supplied instance matrices; no extra render wiring.
@@ -57,9 +64,15 @@ export function createTreeOrnamentMeshes(root){
  sparkGeometry.setAttribute('position',new T.BufferAttribute(positions,3).setUsage(T.DynamicDrawUsage));sparkGeometry.setAttribute('color',new T.BufferAttribute(colors,3).setUsage(T.DynamicDrawUsage));sparkGeometry.setAttribute('alpha',new T.BufferAttribute(alphas,1).setUsage(T.DynamicDrawUsage));sparkGeometry.setDrawRange(0,0);
  const sparkleMaterial=new T.ShaderMaterial({transparent:true,depthWrite:false,blending:T.AdditiveBlending,vertexColors:true,vertexShader:`attribute float alpha;varying vec3 vColor;varying float vAlpha;void main(){vColor=color;vAlpha=alpha;vec4 p=modelViewMatrix*vec4(position,1.);gl_Position=projectionMatrix*p;gl_PointSize=clamp(250./max(1.,-p.z),2.,18.);}`,fragmentShader:`varying vec3 vColor;varying float vAlpha;void main(){vec2 p=gl_PointCoord-.5;float core=exp(-dot(p,p)*70.);float rayX=pow(max(0.,1.-abs(p.x)*10.),2.)*pow(max(0.,1.-abs(p.y)*2.),3.);float rayY=pow(max(0.,1.-abs(p.y)*10.),2.)*pow(max(0.,1.-abs(p.x)*2.),3.);float a=clamp(core+(rayX+rayY)*.32,0.,1.)*vAlpha;if(a<.012)discard;gl_FragColor=vec4(vColor,a);}`});
  const sparkles=new T.Points(sparkGeometry,sparkleMaterial);sparkles.name='tree-ornament-sparkles';sparkles.frustumCulled=false;sparkles.visible=false;root.add(sparkles);
+ // Small physical bulbs and two bounded pools of light illuminate branches and snow.
+ const bulbMaterial=new T.MeshStandardMaterial({color:'#ffefd0',emissive:'#ffd291',emissiveIntensity:1.15,roughness:.28,metalness:.05}),bulbs=new T.InstancedMesh(new T.SphereGeometry(.052,8,6),bulbMaterial,220),bulbTransform=new T.Object3D();
+ bulbs.name='tree-warm-fairy-bulbs';
+ for(let i=0;i<220;i++){const t=i/219,a=t*Math.PI*2*8.4+1.5,r=32*.29*(1-t*.94)+.16;bulbTransform.position.set(Math.cos(a)*r,2.3+t*32*.82,Math.sin(a)*r);bulbTransform.scale.setScalar(.86+(i%5)*.06);bulbTransform.updateMatrix();bulbs.setMatrixAt(i,bulbTransform.matrix);bulbs.setColorAt(i,new T.Color(i%9?'#ffe8b7':'#ffe2d4'));}root.add(bulbs);
+ for(const [x,y,z,power,range]of [[0,6,1,78,23],[0,27.5,0,27,10]]){const light=new T.PointLight('#ffd4a0',power,range,2);light.position.set(x,y,z);root.add(light);}
+ const groundShimmer=new T.Mesh(new T.CircleGeometry(11,64),new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,uniforms:{time:{value:0}},vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying vec2 vUv;uniform float time;void main(){vec2 p=vUv-.5;float r=length(p),edge=smoothstep(.5,.17,r);float light=.76+.1*sin(p.x*17.+time*.2)*sin(p.y*15.);gl_FragColor=vec4(1.,.72,.35,edge*light*.11);}'}));groundShimmer.name='tree-light-on-snow';groundShimmer.rotation.x=-Math.PI/2;groundShimmer.position.y=.245;root.add(groundShimmer);
  const matrix=new T.Matrix4(),position=new T.Vector3(),color=new T.Color(),white=new T.Color('#fff7e9');
  function update(time=0,still=false){
-  const t=still||!Number.isFinite(time)?0:time;jewel.emissiveIntensity=still?.075:.075+Math.sin(t*.55)*.018;let count=0;
+  const t=still||!Number.isFinite(time)?0:time;bulbMaterial.emissiveIntensity=1.15+Math.sin(t*.55)*.08;groundShimmer.material.uniforms.time.value=t;jewel.emissiveIntensity=still?.075:.075+Math.sin(t*.55)*.018;let count=0;
   for(let i=0;i<capacity&&count<capacity;i++)for(let k=0;k<kinds.length&&count<capacity;k++){
    const object=meshes[kinds[k]];if(i>=object.count)continue;const phase=i*2.399+k*1.1;object.getMatrixAt(i,matrix);position.set(Math.sin(phase+t*.18)*.16,.16+Math.cos(phase+t*.21)*.09,.48).applyMatrix4(matrix);position.toArray(positions,count*3);
    if(object.instanceColor)object.getColorAt(i,color);else color.set('#ffffff');color.lerp(white,.65).toArray(colors,count*3);alphas[count]=still?.52:.3+Math.pow((Math.sin(phase+t*.7)+1)*.5,2)*.45;count++;

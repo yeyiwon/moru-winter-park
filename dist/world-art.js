@@ -22,7 +22,7 @@ export function buildArchipelago(api){
     for(let j=0;j<8;j++){const a=rand()*Math.PI*2,r=island.r*.75,x=island.x+Math.cos(a)*r,z=island.z+Math.sin(a)*r;const stone=mesh(new THREE.IcosahedronGeometry(.7+rand(),1),M('#78848c'),x,-1.7-rand()*3,z);stone.scale.set(1,2,1);}
     for(let j=0;j<4;j++){const a=j*Math.PI/2+.6;const mist=halo(island.x+Math.cos(a)*island.r,-5,island.z+Math.sin(a)*island.r,island.color,22);mist.material.opacity=.075;}
   }
-  for(const island of islands.slice(1,7).filter(island=>!island.hidden))terrain(island);
+  for(const island of islands.filter((island,index)=>!island.hidden&&(index>0&&index<7||index>=10)))terrain(island);
   // Bowed timber and warm stone share the exact walking profile used by navigation.
   const deckMaterial=M('#c5a17c',.88,0),edgeMaterial=M('#8c694f',.88,0),bridgeSnow=M('#e2e9e6',1,0),bridgeStone=M('#cbbba7',.94,0),bridgeRose=M('#edb7c5',.84,0);
   const lanternGlass=new THREE.MeshStandardMaterial({color:'#fff0cb',emissive:'#ffbd74',emissiveIntensity:.6,roughness:.35,metalness:.04});
@@ -98,17 +98,18 @@ export function buildArchipelago(api){
     const hub=island.spawn;for(const [a,b]of bridges){const other=a===island?b:b===island?a:null;if(!other)continue;const len=Math.hypot(other.x-island.x,other.z-island.z),r=island.r-1.1;connect(hub,{x:island.x+(other.x-island.x)/len*r,z:island.z+(other.z-island.z)/len*r});}
     if(island.id==='philosophy')connect(hub,{x:44,z:24});
   }
+  for(const island of islands.slice(10)){const hub=island.spawn;for(const [a,b] of bridges){const other=a===island?b:b===island?a:null;if(other){const length=Math.hypot(other.x-island.x,other.z-island.z);connect(hub,{x:island.x+(other.x-island.x)/length*(island.r-1.1),z:island.z+(other.z-island.z)/length*(island.r-1.1)});}}if(island.id==='festival')for(const [x,z]of [[-63,-3.9],[-72,10.8],[-54,12.4],[-75,-6.1],[-77,-13]])connect(hub,{x,z});if(island.id==='rink'){connect(hub,{x:-43,z:94});connect(hub,{x:-43,z:101.3});}}
   function planter(parent,x,z,rx,rz,color){const base=cylinder(1,1.03,.19,bedStone,x,.1,z,parent,40);base.scale.set(rx,1,rz);const inside=cylinder(.91,.91,.035,soil,x,.21,z,parent,40);inside.scale.set(rx,1,rz);const bloom=M(color,.92,0),foliage=M('#4b6d64',.98,0);for(const [dx,dz,scale] of [[-.38,.08,.48],[.16,-.24,.6],[.45,.26,.35]]){const bush=mesh(canopyGeo,foliage,x+dx*rx,.37,z+dz*rz,parent);bush.scale.set(rx*scale,.26,rz*scale);}for(const [dx,dz,h] of [[-.43,-.15,.65],[-.12,.34,.61],[.23,-.39,.71],[.54,.12,.62],[.02,-.01,.78]]){const fx=x+dx*rx,fz=z+dz*rz;rod([fx,.22,fz],[fx,h,fz],.014,foliage,parent);for(let j=0;j<5;j++){const a=j*Math.PI*2/5,petal=ball(bloom,fx+Math.cos(a)*.075,h,fz+Math.sin(a)*.075,.069,parent);petal.scale.set(1,.45,.9);}ball(ivory,fx,h+.025,fz,.038,parent);}}
   for(const [x,z] of [[-3.7,-2.8],[3.7,-2.8],[-3.8,2.7],[3.8,2.7]])planter(garden,x,z,.85,1.05,'#d0b6d1');
   for(const island of islands.slice(1,7).filter(island=>!island.hidden)){
     const g=groupAt(island);
-    const positions={science:[[-10,-6,2,1.2]],law:[[-8,-5,1.4,2.2],[8,-5,1.7,1.3]],philosophy:[[-9,-4,1.5,2],[9,5,1.8,1.2]],nature:[[-10,-6,1.7,2.6],[9,7,2.2,1.5],[9,-5,1.3,2]],art:[],history:[[-10,-6,1.8,1.1],[10,4,1.4,2]]}[island.id];
+    const positions={science:[[-10,-6,2,1.2]],law:[[-8,-5,1.4,2.2],[8,-5,1.7,1.3]],philosophy:[[-9,-4,1.5,2],[9,5,1.8,1.2]],nature:[],art:[],history:[[-10,-6,1.8,1.1],[10,4,1.4,2]]}[island.id];
     for(const [x,z,rx,rz] of positions)planter(g,x,z,rx,rz,island.color);
-    for(const [x,z] of (island.id==='nature'?[[-12,-2],[10,-8]]:island.id==='philosophy'?[]:[[-11,-7]]))tree(g,x,z,3.2,island.id==='nature'?'#619781':'#71788e');
+    for(const [x,z] of (island.id==='nature'?[]:island.id==='philosophy'?[]:[[-11,-7]]))tree(g,x,z,3.2,island.id==='nature'?'#619781':'#71788e');
     const lampMat=new THREE.MeshBasicMaterial({color:'#f4d5ab'});
-    for(const [x,z] of (island.id==='science'?[[-5,8]]:island.id==='nature'?[[-5,-9],[6,6]]:island.id==='art'?[[8,3],[-7,4]]:[[-5,8],[8,2]])){cylinder(.055,.11,1.65,gold,x,.82,z,g,10);cylinder(.16,.19,.33,lampMat,x,1.8,z,g,8);cylinder(0,.25,.19,gold,x,2.06,z,g,8);halo(x,1.8,z,'#f8d6a8',1.6,g);}
+    for(const [x,z] of (island.id==='science'?[[-5,8]]:island.id==='nature'?[[-3,-12],[3,-12]]:island.id==='art'?[[8,3],[-7,4]]:[[-5,8],[8,2]])){cylinder(.055,.11,1.65,gold,x,.82,z,g,10);cylinder(.16,.19,.33,lampMat,x,1.8,z,g,8);cylinder(0,.25,.19,gold,x,2.06,z,g,8);halo(x,1.8,z,'#f8d6a8',1.6,g);}
   }
   // Soft environmental reflections on brass and glass; no external texture downloads.
   const envCanvas=document.createElement('canvas');envCanvas.width=512;envCanvas.height=256;const ctx=envCanvas.getContext('2d'),grad=ctx.createLinearGradient(0,0,0,256);grad.addColorStop(0,'#293754');grad.addColorStop(.45,'#a7b8cd');grad.addColorStop(.52,'#677e9b');grad.addColorStop(1,'#172b30');ctx.fillStyle=grad;ctx.fillRect(0,0,512,256);const env=new THREE.CanvasTexture(envCanvas);env.mapping=THREE.EquirectangularReflectionMapping;env.colorSpace=THREE.SRGBColorSpace;scene.environment=env;scene.environmentIntensity=.35;
-  return {grain,tree,planter,strings,dynamic:rotations.map(r=>r.g),update(t){for(const {g,s,balance} of rotations){if(balance)g.rotation.z=Math.sin(t*.4)*.06;else g.rotation.z=t*s;}aurora.update(t);}};
+  return {grain,tree,planter,strings,gardenLighting:aurora.gardenLighting,dynamic:[...rotations.map(r=>r.g),...(aurora.dynamic||[])],update(t){for(const {g,s,balance} of rotations){if(balance)g.rotation.z=Math.sin(t*.4)*.06;else g.rotation.z=t*s;}aurora.update(t);}};
 }

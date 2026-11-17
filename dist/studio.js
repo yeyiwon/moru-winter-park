@@ -32,10 +32,10 @@ studio.querySelector('[role=tablist]').addEventListener('keydown',e=>{if(!['Arro
 for(const [id,key] of [['light-color','light'],['light-level','brightness'],['fur-length','fluff'],['roundness','roundness']])document.getElementById(id).addEventListener('input',e=>{appearance[key]=key==='light'?e.target.value:Number(e.target.value);update();});
 
 const map=document.getElementById('island-map');
-const mapPositions={alpine:[50,10],park:[50,32],nature:[24,57],philosophy:[76,57],spa:[24,84],wish:[76,84]};
+const mapPositions={festival:[18,32],rink:[18,80],alpine:[50,9],park:[50,35],nature:[50,61],philosophy:[82,46],spa:[50,87],wish:[82,80]};
 const point=i=>({x:mapPositions[i.id][0],y:mapPositions[i.id][1]});
 map.innerHTML='<svg class="map-lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true">'+bridges.map(([a,b])=>{const p=point(a),q=point(b);return `<line x1="${p.x}" y1="${p.y}" x2="${q.x}" y2="${q.y}"/>`;}).join('')+'</svg>'+islands.filter(i=>!i.hidden).map(i=>{const p=point(i);return `<button data-island="${i.id}" aria-label="${i.name} 이동" style="--island:${i.color};left:${p.x}%;top:${p.y}%"><span class="island-dot"></span><span>${i.name}<small>${i.subject}</small></span></button>`;}).join('');
-const mapDestinations={alpine:'ski',philosophy:'quiz',spa:'onsen',wish:'tree'};
+const mapDestinations={rink:'skating',festival:'teacups',alpine:'ski',philosophy:'quiz',spa:'onsen',wish:'tree'};
 map.addEventListener('click',e=>{const b=e.target.closest('[data-island]');if(!b)return;closeStudio();const destination=mapDestinations[b.dataset.island];if(destination)window.travelToPlace?.(destination);else window.travelToIsland?.(b.dataset.island);});
 window.addEventListener('lab:region',e=>map.querySelectorAll('button').forEach(b=>b.setAttribute('aria-current',b.dataset.island===e.detail?'location':'false')));
 update();

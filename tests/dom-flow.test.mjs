@@ -34,11 +34,7 @@ test('timbre experiment requires prediction, reports unavailable audio, and conn
  const calls=[];a.w.labTone=async kind=>{calls.push(kind);return true};a.click('[data-sim=timbre-b]');await new Promise(r=>setTimeout(r,0));assert.deepEqual(calls,['rich']);assert.match(a.text(),/높이와 질감을 비교/);assert.match(a.text(),/220 Hz/);a.dom.window.close();
 });
 test('audio synthesis preserves the 220 Hz fundamental and mute prevents playback',async()=>{
- const a=await boot(),oscillators=[],gains=[];
- const param=()=>({value:0,setValueAtTime(v){this.value=v},linearRampToValueAtTime(v){this.value=v},exponentialRampToValueAtTime(v){this.value=v},setTargetAtTime(v){this.value=v}});
- class Audio{constructor(){this.state='running';this.currentTime=0;this.destination={};}async resume(){}createGain(){const g={gain:param(),connect(){},disconnect(){}};gains.push(g);return g;}createOscillator(){const o={frequency:param(),connect(){},disconnect(){},start(){},stop(){}};oscillators.push(o);return o;}}
- a.w.AudioContext=Audio;vm.runInContext(fs.readFileSync(path.join(root,'effects.js'),'utf8'),a.dom.getInternalVMContext());
- assert.equal(await a.w.labTone('pure'),true);assert.deepEqual(oscillators.map(o=>o.frequency.value),[220]);oscillators.length=0;
- assert.equal(await a.w.labTone('rich'),true);assert.deepEqual(oscillators.map(o=>o.frequency.value),[220,440,660]);
- a.click('#sound');assert.equal(gains[0].gain.value,0);assert.equal(await a.w.labTone('pure'),false);assert.equal(oscillators.length,3);a.dom.window.close();
+ const a=await boot(),{mockAudio}=await import('./audio-context.mjs'),{createAudioEngine}=await import('../dist/audio-engine.js');const {Audio,oscillators,gains}=mockAudio();a.w.AudioContext=Audio;const engine=createAudioEngine(a.w);
+ assert.equal(engine.tone('pure'),true);assert.deepEqual(oscillators.map(o=>o.frequency.value),[220]);oscillators.length=0;
+ assert.equal(engine.tone('rich'),true);assert.deepEqual(oscillators.map(o=>o.frequency.value),[220,440,660]);engine.settings({muted:true});assert.equal(gains[0].gain.value,0);assert.equal(engine.tone('pure'),false);assert.equal(oscillators.length,3);a.dom.window.close();
 });

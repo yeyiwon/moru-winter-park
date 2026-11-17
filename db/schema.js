@@ -8,3 +8,11 @@ export const treeDecorations=sqliteTable('tree_decorations',{
 export const spaceOwner=sqliteTable('space_owner',{id:text('id').primaryKey(),userId:text('user_id').notNull()});
 export const inviteRooms=sqliteTable('invite_rooms',{id:text('id').primaryKey(),salt:text('salt').notNull(),passwordHash:text('password_hash').notNull(),createdAt:integer('created_at').notNull()});
 export const inviteAttempts=sqliteTable('invite_attempts',{id:text('id').primaryKey(),attempts:integer('attempts').notNull(),resetAt:integer('reset_at').notNull()});
+export const wishes=sqliteTable('wishes',{
+ id:text('id').primaryKey(),room:text('room').notNull(),author:text('author').notNull(),authorName:text('author_name').notNull(),message:text('message').notNull(),visibility:text('visibility').notNull().default('public'),createdAt:integer('created_at').notNull()
+},t=>[index('wishes_room').on(t.room)]);
+export const wishReactions=sqliteTable('wish_reactions',{wishId:text('wish_id').notNull(),author:text('author').notNull()},t=>[index('wish_reactions_wish').on(t.wishId)]);
+export const reports=sqliteTable('reports',{id:text('id').primaryKey(),room:text('room').notNull(),reporter:text('reporter').notNull(),targetType:text('target_type').notNull(),targetId:text('target_id').notNull(),reason:text('reason').notNull(),createdAt:integer('created_at').notNull(),resolved:integer('resolved').notNull().default(0)},t=>[index('reports_room').on(t.room)]);
+export const visitorBlocks=sqliteTable('visitor_blocks',{id:text('id').primaryKey(),createdAt:integer('created_at').notNull()});
+export const quizOverrides=sqliteTable('quiz_overrides',{id:text('id').primaryKey(),payload:text('payload').notNull(),updatedAt:integer('updated_at').notNull()});
+export const worldEvents=sqliteTable('world_events',{id:text('id').primaryKey(),title:text('title').notNull(),startsAt:integer('starts_at').notNull(),endsAt:integer('ends_at').notNull(),kind:text('kind').notNull(),enabled:integer('enabled').notNull().default(1)});

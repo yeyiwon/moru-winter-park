@@ -10,7 +10,7 @@ test('void, non-finite clicks and wall shortcuts are rejected',()=>{assert.deepE
 test('every island arrival and exhibit is reachable, with a route through both conservatory entrances',()=>{
  for(const island of layout.islands.filter(i=>!i.hidden))checkRoute(home,island.spawn);
  for(const exhibit of layout.exhibits.filter(e=>!layout.islands.find(i=>i.id===e.island).hidden))checkRoute(home,exhibit);
- for(const side of [-1,1]){checkRoute({x:0,z:47.5},{x:side*3.6,z:53});checkRoute({x:side*3.6,z:53},{x:0,z:58.5});}
+ for(const side of [-1,1]){checkRoute({x:0,z:47.5},{x:side<0?-7:3.6,z:53});checkRoute({x:side<0?-7:3.6,z:53},{x:0,z:58.5});}
  assert.equal(canStandAt(0,53),false,'the pool is not a walkable surface');
  assert.equal(layout.surfaceHeight(3.6,53),.22);
  assert.equal(layout.surfaceHeight(2.6,8),.09);

@@ -1,0 +1,632 @@
+[
+  {
+    "id": "daily-sci-01",
+    "category": "과학",
+    "question": "밤하늘의 달이 밝게 보이는 주된 이유는?",
+    "options": [
+      "달이 햇빛을 반사해서",
+      "달 표면에 불이 타서",
+      "지구의 가로등을 모아서",
+      "달 속의 전구가 켜져서"
+    ],
+    "answer": 0,
+    "explanation": "달은 태양처럼 스스로 빛을 내는 별이 아니에요. 태양빛이 달 표면에 반사되어 우리 눈에 들어옵니다.",
+    "source": {
+      "title": "NASA · Top Moon Questions",
+      "url": "https://science.nasa.gov/moon/top-moon-questions/"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-sci-02",
+    "category": "과학",
+    "question": "얼음이 물에 뜨는 이유는?",
+    "options": [
+      "얼음의 온도가 항상 0℃라서",
+      "얼음의 밀도가 액체 물보다 작아서",
+      "얼음에 자기력이 있어서",
+      "물속에 중력이 없어서"
+    ],
+    "answer": 1,
+    "explanation": "물이 얼면 부피가 늘어나 같은 질량의 액체 물보다 밀도가 작아져요. 그래서 얼음이 물 위에 뜹니다.",
+    "source": {
+      "title": "USGS · Water Density",
+      "url": "https://www.usgs.gov/water-science-school/science/water-density"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-sci-03",
+    "category": "과학",
+    "question": "지구에 계절이 생기는 주된 이유는?",
+    "options": [
+      "태양의 크기가 매달 바뀌어서",
+      "달이 햇빛을 가려서",
+      "기울어진 자전축을 유지하며 태양 주위를 돌아서",
+      "지구의 자전이 겨울에 멈춰서"
+    ],
+    "answer": 2,
+    "explanation": "지구의 자전축이 기울어져 있어 공전하는 동안 햇빛이 닿는 각도와 낮의 길이가 달라져요. 남반구와 북반구의 계절이 반대인 이유도 여기에 있습니다.",
+    "source": {
+      "title": "NASA Space Place · What Causes the Seasons?",
+      "url": "https://spaceplace.nasa.gov/seasons/en/"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-sci-04",
+    "category": "과학",
+    "question": "차가운 음료를 담은 컵 바깥의 물방울은 주로 어디에서 올까요?",
+    "options": [
+      "컵 안의 물이 유리를 통과해서",
+      "컵이 녹아서",
+      "공기 속 산소가 물로 바뀌어서",
+      "공기 중 수증기가 컵 표면에서 물로 변해서"
+    ],
+    "answer": 3,
+    "explanation": "차가운 컵 근처의 수증기가 식으면 액체 물방울이 될 수 있어요. 기체가 액체로 변하는 현상을 응결이라고 합니다.",
+    "source": {
+      "title": "USGS · Condensation and the Water Cycle",
+      "url": "https://www.usgs.gov/water-science-school/science/condensation-and-water-cycle"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-sci-05",
+    "category": "과학",
+    "question": "물컵에 비스듬히 꽂은 빨대가 꺾여 보이는 주된 이유는?",
+    "options": [
+      "빛이 물과 공기 사이를 지나며 굴절해서",
+      "물이 빨대를 실제로 접어서",
+      "빨대가 자기장을 만들어서",
+      "물속에서 빛이 완전히 사라져서"
+    ],
+    "answer": 0,
+    "explanation": "빛은 물과 공기처럼 서로 다른 물질의 경계를 비스듬히 지날 때 진행 방향이 달라져요. 이 굴절 때문에 물속 빨대의 위치가 달라 보입니다.",
+    "source": {
+      "title": "OpenStax · The Law of Refraction",
+      "url": "https://openstax.org/books/college-physics-2e/pages/25-3-the-law-of-refraction"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-hist-01",
+    "category": "역사",
+    "question": "훈민정음을 창제한 조선의 왕은?",
+    "options": [
+      "정조",
+      "세종",
+      "태조",
+      "영조"
+    ],
+    "answer": 1,
+    "explanation": "세종은 백성이 쉽게 읽고 쓸 수 있도록 훈민정음을 창제했어요. 1443년에 창제하고 1446년에 반포했습니다.",
+    "source": {
+      "title": "국가유산청 국가유산포털 · 훈민정음(해례본)",
+      "url": "https://www.heritage.go.kr/heri/html/HtmlPage.do?pageNo=5_4_2&pg=%2Funesco%2FMemHeritage%2FMemHeritage_01.jsp"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-hist-02",
+    "category": "역사",
+    "question": "로제타석이 고대 이집트 문자 해독에 중요한 단서가 된 이유는?",
+    "options": [
+      "그림만 그려져 있어서",
+      "현대 영어 번역이 있어서",
+      "같은 내용이 서로 다른 세 문자로 적혀 있어서",
+      "모든 글자가 숫자여서"
+    ],
+    "answer": 2,
+    "explanation": "로제타석에는 이집트 상형문자, 이집트 민중문자, 그리스 문자로 같은 내용이 담겨 있어요. 읽을 수 있던 그리스어와 비교하는 일이 해독의 단서가 됐습니다.",
+    "source": {
+      "title": "British Museum · Hieroglyphs: Unlocking Ancient Egypt",
+      "url": "https://www.britishmuseum.org/sites/default/files/2022-10/Hieroglyphs_unlocking_ancient_Egypt_large_print_guide_The_British_Museum.pdf"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-hist-03",
+    "category": "역사",
+    "question": "페루의 마추픽추를 건설한 문명은?",
+    "options": [
+      "고대 로마",
+      "마야",
+      "고대 이집트",
+      "잉카"
+    ],
+    "answer": 3,
+    "explanation": "마추픽추는 안데스산맥에 자리한 잉카 문명의 유적이에요. 산악 지형에 맞춘 건축과 계단식 경작지를 볼 수 있습니다.",
+    "source": {
+      "title": "UNESCO World Heritage Centre · Historic Sanctuary of Machu Picchu",
+      "url": "https://whc.unesco.org/en/list/274/"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-hist-04",
+    "category": "역사",
+    "question": "1896년 최초의 근대 올림픽이 열린 도시는?",
+    "options": [
+      "아테네",
+      "런던",
+      "로마",
+      "파리"
+    ],
+    "answer": 0,
+    "explanation": "최초의 근대 올림픽은 1896년 그리스 아테네에서 열렸어요. 고대 올림픽과 근대 올림픽은 시대를 구분해 부릅니다.",
+    "source": {
+      "title": "IOC · Celebrate Olympic Games",
+      "url": "https://www.olympics.com/ioc/celebrate-olympic-games"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-hist-05",
+    "category": "역사",
+    "question": "인류가 처음 달 표면에 착륙한 유인 우주 임무는?",
+    "options": [
+      "아폴로 8호",
+      "아폴로 11호",
+      "보이저 1호",
+      "제미니 4호"
+    ],
+    "answer": 1,
+    "explanation": "아폴로 11호는 1969년 인류 최초의 유인 달 착륙에 성공했어요. 닐 암스트롱과 버즈 올드린이 달 표면을 걸었습니다.",
+    "source": {
+      "title": "NASA · Apollo 11",
+      "url": "https://www.nasa.gov/mission/apollo-11/"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-geo-01",
+    "category": "지리",
+    "question": "지구에서 면적이 가장 넓은 대양은?",
+    "options": [
+      "북극해",
+      "인도양",
+      "태평양",
+      "대서양"
+    ],
+    "answer": 2,
+    "explanation": "태평양은 지구에서 면적이 가장 넓은 대양이에요. 지구의 대양 중 평균 수심도 가장 깊습니다.",
+    "source": {
+      "title": "NOAA Ocean Exploration · How Big Is the Pacific Ocean?",
+      "url": "https://oceanexplorer.noaa.gov/ocean-fact/pacific-size/"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-geo-02",
+    "category": "지리",
+    "question": "지리적 남극점이 있는 대륙은?",
+    "options": [
+      "유럽",
+      "아프리카",
+      "북아메리카",
+      "남극 대륙"
+    ],
+    "answer": 3,
+    "explanation": "지리적 남극점은 남극 대륙에 있어요. 남극 대륙의 표면은 대부분 두꺼운 얼음으로 덮여 있습니다.",
+    "source": {
+      "title": "NASA Space Place · What Is Antarctica?",
+      "url": "https://spaceplace.nasa.gov/antarctica/en/"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-geo-03",
+    "category": "지리",
+    "question": "그레이트배리어리프가 있는 나라는?",
+    "options": [
+      "호주",
+      "캐나다",
+      "이탈리아",
+      "칠레"
+    ],
+    "answer": 0,
+    "explanation": "그레이트배리어리프는 호주 북동쪽 해안에 있는 대규모 산호초 지대예요. 여러 산호초와 섬이 모여 이루어진 곳입니다.",
+    "source": {
+      "title": "UNESCO World Heritage Centre · Great Barrier Reef",
+      "url": "https://whc.unesco.org/en/list/154/"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-geo-04",
+    "category": "지리",
+    "question": "에펠탑이 있는 도시는?",
+    "options": [
+      "베를린",
+      "파리",
+      "마드리드",
+      "빈"
+    ],
+    "answer": 1,
+    "explanation": "에펠탑은 프랑스 파리의 샹드마르스에 있어요. 탑을 운영하는 공식 사이트에서도 파리의 주소를 안내합니다.",
+    "source": {
+      "title": "Eiffel Tower Official Website · Access",
+      "url": "https://www.toureiffel.paris/en/access-map"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-geo-05",
+    "category": "지리",
+    "question": "위도 0°를 나타내는 선은?",
+    "options": [
+      "본초 자오선",
+      "북회귀선",
+      "적도",
+      "남극권"
+    ],
+    "answer": 2,
+    "explanation": "위도는 적도에서 북쪽이나 남쪽으로 얼마나 떨어졌는지를 각도로 나타낸 값이에요. 적도는 위도 0°이며, 본초 자오선은 경도 0°입니다.",
+    "source": {
+      "title": "Royal Museums Greenwich · What Is Longitude?",
+      "url": "https://www.rmg.co.uk/stories/time/what-longitude"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-animal-01",
+    "category": "동물",
+    "question": "문어의 심장은 몇 개일까요?",
+    "options": [
+      "1개",
+      "2개",
+      "4개",
+      "3개"
+    ],
+    "answer": 3,
+    "explanation": "문어는 심장이 세 개예요. 두 개는 아가미로 혈액을 보내고, 나머지 하나는 몸의 다른 부분으로 혈액을 보냅니다.",
+    "source": {
+      "title": "Monterey Bay Aquarium · Red Octopus",
+      "url": "https://www.montereybayaquarium.org/animals-the-ocean/animals-a-to-z/red-octopus"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-animal-02",
+    "category": "동물",
+    "question": "보통 거미의 걷는 다리는 몇 개일까요?",
+    "options": [
+      "8개",
+      "6개",
+      "10개",
+      "12개"
+    ],
+    "answer": 0,
+    "explanation": "거미는 다리가 네 쌍, 모두 여덟 개예요. 다리가 세 쌍인 곤충과는 다른 무리에 속합니다.",
+    "source": {
+      "title": "Australian Museum · Spider Anatomy",
+      "url": "https://australian.museum/learn/teachers/learning/spider-anatomy/"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-animal-03",
+    "category": "동물",
+    "question": "돌고래는 무엇으로 숨을 쉴까요?",
+    "options": [
+      "아가미",
+      "폐",
+      "지느러미",
+      "비늘"
+    ],
+    "answer": 1,
+    "explanation": "돌고래는 물고기가 아니라 포유류예요. 폐로 공기를 마시기 때문에 숨을 쉬러 수면으로 올라옵니다.",
+    "source": {
+      "title": "NOAA Ocean Service · Are Dolphins Fish?",
+      "url": "https://oceanservice.noaa.gov/facts/dolphin.html"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-animal-04",
+    "category": "동물",
+    "question": "펭귄은 다음 중 어느 무리에 속할까요?",
+    "options": [
+      "포유류",
+      "파충류",
+      "조류",
+      "양서류"
+    ],
+    "answer": 2,
+    "explanation": "펭귄은 날지 못하지만 새예요. 깃털과 날개가 있으며, 날개는 물속에서 헤엄치는 데 쓰입니다.",
+    "source": {
+      "title": "San Diego Zoo · Penguin",
+      "url": "https://zoo.sandiegozoo.org/animals/penguin"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-animal-05",
+    "category": "동물",
+    "question": "나비가 애벌레 다음에 거치는 단계는?",
+    "options": [
+      "알",
+      "올챙이",
+      "성체",
+      "번데기"
+    ],
+    "answer": 3,
+    "explanation": "나비는 알, 애벌레, 번데기, 성체의 순서로 자라요. 번데기 안에서 성체의 몸으로 변화합니다.",
+    "source": {
+      "title": "Smithsonian Gardens · About Butterflies",
+      "url": "https://gardens.si.edu/learn/for-educators/cultivating-habitat/butterfly-gardening/about-butterflies/"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-nature-01",
+    "category": "자연",
+    "question": "별 모양 눈 결정의 기본 대칭은 보통 몇 갈래일까요?",
+    "options": [
+      "여섯 갈래",
+      "다섯 갈래",
+      "일곱 갈래",
+      "아홉 갈래"
+    ],
+    "answer": 0,
+    "explanation": "얼음의 분자 배열 때문에 별 모양 눈 결정에는 여섯 갈래의 기본 구조가 나타나요. 모든 눈 결정이 똑같은 별 모양인 것은 아니며 기둥이나 바늘 모양도 있습니다.",
+    "source": {
+      "title": "NOAA · How Do Snowflakes Form?",
+      "url": "https://www.noaa.gov/stories/how-do-snowflakes-form-science-behind-snow"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-nature-02",
+    "category": "자연",
+    "question": "낮의 맑은 하늘이 파랗게 보이는 주된 이유는?",
+    "options": [
+      "바다색이 그대로 반사되어서",
+      "대기에서 짧은 파장의 빛이 더 잘 산란해서",
+      "공기 분자가 파란 물감이라서",
+      "달빛이 낮에도 파랗게 비쳐서"
+    ],
+    "answer": 1,
+    "explanation": "햇빛에는 여러 색이 섞여 있어요. 대기의 작은 입자와 분자가 짧은 파장의 빛을 더 잘 흩뜨리는 현상이 파란 하늘을 설명합니다.",
+    "source": {
+      "title": "NASA Space Place · Why Is the Sky Blue?",
+      "url": "https://spaceplace.nasa.gov/blue-sky/en/"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-nature-03",
+    "category": "자연",
+    "question": "오로라의 빛은 주로 어떻게 생길까요?",
+    "options": [
+      "눈이 달빛을 반사해서",
+      "구름 속 무지개가 얼어서",
+      "에너지를 받은 대기 기체가 빛을 내서",
+      "별들이 지구 가까이 내려와서"
+    ],
+    "answer": 2,
+    "explanation": "태양에서 온 입자들이 지구 주변의 자기장과 상호작용해 대기 기체에 에너지를 전달해요. 산소와 질소 같은 기체가 빛을 내면서 오로라가 보입니다.",
+    "source": {
+      "title": "NASA Space Place · What Is an Aurora?",
+      "url": "https://spaceplace.nasa.gov/aurora/en/"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-nature-04",
+    "category": "자연",
+    "question": "식물이 광합성으로 당을 만들 때 사용하는 공기 중 기체는?",
+    "options": [
+      "헬륨",
+      "아르곤",
+      "수소",
+      "이산화탄소"
+    ],
+    "answer": 3,
+    "explanation": "식물은 빛에너지를 이용해 이산화탄소와 물을 바탕으로 당을 만들어요. 이산화탄소의 탄소는 식물 몸을 이루는 물질의 재료가 됩니다.",
+    "source": {
+      "title": "OpenStax Biology 2e · Overview of Photosynthesis",
+      "url": "https://openstax.org/books/biology-2e/pages/8-1-overview-of-photosynthesis"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-nature-05",
+    "category": "자연",
+    "question": "흔히 보이는 1차 무지개에서 바깥쪽에 놓이는 색은?",
+    "options": [
+      "빨간색",
+      "보라색",
+      "초록색",
+      "파란색"
+    ],
+    "answer": 0,
+    "explanation": "1차 무지개는 바깥쪽이 빨간색, 안쪽이 보라색이에요. 물방울 안에서 빛이 두 번 반사되어 생기는 2차 무지개는 색 순서가 반대입니다.",
+    "source": {
+      "title": "NOAA NESDIS · What Causes a Rainbow?",
+      "url": "https://www.nesdis.noaa.gov/about/k-12-education/optical-phenomena/what-causes-rainbow"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-art-01",
+    "category": "예술",
+    "question": "「별이 빛나는 밤」을 그린 화가는?",
+    "options": [
+      "클로드 모네",
+      "빈센트 반 고흐",
+      "파블로 피카소",
+      "살바도르 달리"
+    ],
+    "answer": 1,
+    "explanation": "「별이 빛나는 밤」은 빈센트 반 고흐의 작품이에요. 뉴욕 현대미술관 MoMA의 작품 기록에서 작가를 확인할 수 있습니다.",
+    "source": {
+      "title": "MoMA · Vincent van Gogh, The Starry Night",
+      "url": "https://www.moma.org/collection/works/79802?locale=en"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-art-02",
+    "category": "예술",
+    "question": "「모나리자」를 그린 화가는?",
+    "options": [
+      "렘브란트",
+      "미켈란젤로",
+      "레오나르도 다빈치",
+      "산드로 보티첼리"
+    ],
+    "answer": 2,
+    "explanation": "「모나리자」는 레오나르도 다빈치의 작품이에요. 프랑스 루브르 박물관이 소장하고 있습니다.",
+    "source": {
+      "title": "Louvre · From the Mona Lisa to the Wedding Feast at Cana",
+      "url": "https://www.louvre.fr/en/explore/the-palace/from-the-mona-lisa-to-the-wedding-feast-at-cana"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-art-03",
+    "category": "예술",
+    "question": "음악에서 템포는 주로 무엇을 가리킬까요?",
+    "options": [
+      "음의 높낮이",
+      "악기의 종류",
+      "소리의 크기",
+      "음악의 빠르기"
+    ],
+    "answer": 3,
+    "explanation": "템포는 음악이 얼마나 빠르거나 느리게 진행되는지를 말해요. 소리의 크기를 나타내는 셈여림과는 구분합니다.",
+    "source": {
+      "title": "Carnegie Hall · Musical Expression Through Movement",
+      "url": "https://www.carnegiehall.org/Education/Programs/Music-Educators-Toolbox/K-Musical-Expression-Through-Movement"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-art-04",
+    "category": "예술",
+    "question": "높이·너비·깊이가 있는 입체 형태를 직접 만드는 미술은?",
+    "options": [
+      "조각",
+      "서예",
+      "수채화",
+      "소묘"
+    ],
+    "answer": 0,
+    "explanation": "조각은 실제 공간에서 입체 형태를 만드는 미술이에요. 보는 방향을 바꾸면 형태의 다른 면을 살펴볼 수 있습니다.",
+    "source": {
+      "title": "National Gallery of Art · The Elements of Art: Form",
+      "url": "https://www.nga.gov/educational-resources/elements-art/elements-art-form"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-art-05",
+    "category": "예술",
+    "question": "같은 높이와 비슷한 크기의 음도 악기마다 다르게 들리는 소리의 특성은?",
+    "options": [
+      "박자",
+      "음색",
+      "쉼표",
+      "조표"
+    ],
+    "answer": 1,
+    "explanation": "음색은 같은 높이와 크기의 소리를 서로 구별하게 해주는 특성이에요. 배음의 구성과 소리가 시작되고 줄어드는 방식 등이 영향을 줍니다.",
+    "source": {
+      "title": "UNSW Physclips · Pitch, Loudness and Timbre",
+      "url": "https://www.animations.physics.unsw.edu.au/jw/sound-pitch-loudness-timbre.htm"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-general-01",
+    "category": "일반",
+    "question": "전통적인 점자의 기본 한 칸에는 점 자리가 몇 개일까요?",
+    "options": [
+      "4개",
+      "5개",
+      "6개",
+      "9개"
+    ],
+    "answer": 2,
+    "explanation": "기본 6점 점자 한 칸은 가로 2칸, 세로 3칸의 여섯 자리로 이루어져요. 점의 조합으로 글자나 기호를 나타냅니다.",
+    "source": {
+      "title": "American Foundation for the Blind · What Is Braille?",
+      "url": "https://www.afb.org/blindness-and-low-vision/braille/what-braille"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-general-02",
+    "category": "일반",
+    "question": "체스에서 비숍이 움직이는 방향은?",
+    "options": [
+      "가로로만",
+      "세로로만",
+      "ㄱ자 모양으로",
+      "대각선으로"
+    ],
+    "answer": 3,
+    "explanation": "비숍은 현재 칸에서 이어지는 대각선으로 움직여요. 다른 말이 막고 있으면 그 말을 뛰어넘을 수 없습니다.",
+    "source": {
+      "title": "FIDE Handbook · Laws of Chess, Articles 3.2 and 3.5",
+      "url": "https://handbook.fide.com/chapter/e012023"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-general-03",
+    "category": "일반",
+    "question": "올림픽 상징에 서로 연결된 고리는 몇 개일까요?",
+    "options": [
+      "5개",
+      "4개",
+      "6개",
+      "7개"
+    ],
+    "answer": 0,
+    "explanation": "올림픽 상징은 같은 크기의 고리 다섯 개로 구성돼요. 세계 여러 대륙의 선수들이 올림픽에서 만나는 것을 나타냅니다.",
+    "source": {
+      "title": "IOC · Olympic Rings",
+      "url": "https://www.olympics.com/ioc/olympic-rings"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-general-04",
+    "category": "일반",
+    "question": "화면의 색 표현에 쓰이는 RGB에 포함되지 않는 색은?",
+    "options": [
+      "빨강",
+      "노랑",
+      "초록",
+      "파랑"
+    ],
+    "answer": 1,
+    "explanation": "RGB는 Red, Green, Blue의 앞 글자예요. 빨강·초록·파랑 빛의 세기를 조합해 여러 색을 표현합니다.",
+    "source": {
+      "title": "MDN · RGB",
+      "url": "https://developer.mozilla.org/en-US/docs/Glossary/RGB"
+    },
+    "verifiedAt": "2026-11-17"
+  },
+  {
+    "id": "daily-general-05",
+    "category": "일반",
+    "question": "자기 나침반의 바늘이 방향을 잡는 데 이용하는 것은?",
+    "options": [
+      "주변 공기의 습도",
+      "달의 밝기",
+      "지구의 자기장",
+      "지구의 공전 속도"
+    ],
+    "answer": 2,
+    "explanation": "나침반 바늘은 그 위치의 자기장 방향에 맞춰 돌아가요. 지리적 북쪽과 항상 정확히 일치하는 것은 아니며, 주변 자석의 영향도 받을 수 있습니다.",
+    "source": {
+      "title": "NOAA NCEI · Geomagnetism Frequently Asked Questions",
+      "url": "https://www.ncei.noaa.gov/products/geomagnetism-frequently-asked-questions"
+    },
+    "verifiedAt": "2026-11-17"
+  }
+]
