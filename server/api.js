@@ -11,6 +11,7 @@ import {normalizeWardrobe} from '../dist/wardrobe.js';
 import {resortRidePosition,restSeats,spaPositionValid} from '../dist/resort-layout.js';
 import {surfaceHeight} from '../dist/world-layout.js';
 import {canStandAt} from '../dist/movement.js';
+import {spaceURL} from '../dist/space-links.js';
 const json=(data,status=200,headers={})=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store',...headers}});
 const age=20000;
 const digest=async value=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)))).map(v=>v.toString(16).padStart(2,'0')).join('');
@@ -32,7 +33,7 @@ export async function handleAPI(request,env){
   if(typeof b.password!=='string'||b.password.length<4||b.password.length>128)return json({error:'비밀번호는 4~128자로 정해 주세요.'},400);
   const room=crypto.randomUUID().replaceAll('-',''),salt=hex(crypto.getRandomValues(new Uint8Array(16))),hash=await passwordHash(b.password,salt);
   await env.DB.prepare('INSERT INTO invite_rooms(id,salt,password_hash,created_at) VALUES(?,?,?,?)').bind(room,salt,hash,now).run();
-  return json({room,url:url.origin+'/?room='+room});
+  return json({room,url:spaceURL(room)});
  }
  if(path==='/api/join'&&request.method==='POST'){
   const raw=await request.text();if(raw.length>2048)return json({error:'요청이 너무 큽니다.'},413);const body=JSON.parse(raw),room=String(body.room||'winter-plaza');if(!/^[a-zA-Z0-9_-]{8,48}$/.test(room))return json({error:'초대 주소를 확인해 주세요.'},400);
@@ -56,6 +57,8 @@ export async function handleAPI(request,env){
   // Conditional insert caps each room atomically, including concurrent joins.
   const result=await env.DB.prepare('INSERT INTO visitors(id,room,name,color,accessory,x,z,yaw,seen,gesture,gesture_at) SELECT ?,?,?,?,?,0,30,0,?,\'\',0 WHERE (SELECT COUNT(*) FROM visitors WHERE room=? AND seen>?) < 12').bind(id,room,name,'#f4eee5','none',now,room,now-age).run();
   if(!result.meta?.changes)return json({error:'이 공간에는 12명이 있어요. 새 초대 공간을 만들어 주세요.'},409);
+  // A successful room switch must not leave an active copy of the host in the old room.
+  if(previousId){await env.DB.prepare('UPDATE visitors SET seen=? WHERE id=?').bind(now-age,previousId).run();await env.DB.prepare('DELETE FROM ride_seats WHERE visitor=?').bind(previousId).run();}
   const secure=url.protocol==='https:'?'; Secure':'';return json({id,room,name},200,{'Set-Cookie':`winter_session=${secret}; Path=/api; HttpOnly; SameSite=Lax${secure}; Max-Age=2592000`});
  }
  const secret=token(request);if(!secret)return json({error:'초대 링크로 입장해 주세요.'},401);const id=await digest(secret),self=await env.DB.prepare('SELECT id,room,name,x,y,z FROM visitors WHERE id=?').bind(id).first();if(!self)return json({error:'연결이 만료됐어요. 다시 입장해 주세요.'},401);

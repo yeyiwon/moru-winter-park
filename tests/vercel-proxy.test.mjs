@@ -4,3 +4,9 @@ test('Vercel rejects cross-origin writes and arbitrary forwarding targets before
 test('Vercel reports an upstream timeout or unexpected login HTML as a connection failure',async()=>{const request=new Request('https://park.vercel.app/api/health');assert.equal((await proxyRequest(request,async()=>{throw Error('timeout');})).status,502);assert.equal((await proxyRequest(request,async()=>new Response('<html/>',{headers:{'Content-Type':'text/html'}}))).status,502);});
 
 test('Vercel forwards authenticated boarding and individual exit to the shared backend',async()=>{for(const method of ['POST','DELETE']){let forwarded;const r=await proxyRequest(new Request('https://park.vercel.app/api/ride',{method,headers:{Origin:'https://park.vercel.app',Cookie:'winter_session='+ 'a'.repeat(64)},body:method==='POST'?JSON.stringify({kind:'ferris'}):undefined}),async(url,options)=>{forwarded={url,method:options.method};return Response.json({ok:true});});assert.equal(r.status,200);assert.equal(forwarded.url,backendOrigin+'/api/ride');assert.equal(forwarded.method,method);}});
+test('upstream hosting cookies cannot replace the guest session on Vercel',async()=>{
+ const request=new Request('https://park.vercel.app/api/access');
+ const cookie='winter_session='+'a'.repeat(64)+'; Path=/api; HttpOnly; Secure; SameSite=Lax';
+ const response=await proxyRequest(request,async()=>{const headers=new Headers();headers.append('Set-Cookie','hosting_cookie=ignore; Path=/');headers.append('Set-Cookie',cookie);return Response.json({ok:true},{headers});});assert.equal(response.headers.get('set-cookie'),cookie);
+ const onlyHosting=await proxyRequest(request,async()=>Response.json({ok:true},{headers:{'Set-Cookie':'hosting_cookie=ignore; Path=/'}}));assert.equal(onlyHosting.headers.has('set-cookie'),false);
+});

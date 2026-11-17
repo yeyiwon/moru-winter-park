@@ -1,8 +1,10 @@
 import {createGuestName,isNumberedGuest} from './guest-names.js';
 import {encodeActivity} from './activity-state.js';
 import {closeDialog} from './ui-motion.js';
+import {invitationRoom,publicRoom,spaceURL} from './space-links.js';
 const $=s=>document.querySelector(s),form=$('#join-form'),status=$('#social-status'),people=$('#social-people'),roomInput=$('#room-code'),nameInput=$('#visitor-name'),passwordInput=$('#room-password'),studio=$('#studio');
-const invited=new URL(location.href).searchParams.get('room');let room=/^[a-zA-Z0-9_-]{8,48}$/.test(invited||'')?invited:'winter-plaza',joined=false,admin=false,busy=false,gesture='',failures=0,inviteURL='';roomInput.value=room;
+let invited=invitationRoom(new URL(location.href).searchParams.get('room')),room=invited||publicRoom,joined=false,admin=false,busy=false,gesture='',failures=0,inviteURL='',pendingInvitation=null;roomInput.value=room;
+$('#owner-signin').href='/signin-with-chatgpt?return_to='+encodeURIComponent('/'+(invited?'?room='+invited:''));
 try{nameInput.value=localStorage.getItem('winter-visitor-name')||'';}catch{}
 if(isNumberedGuest(nameInput.value))nameInput.value=createGuestName();
 function setName(name){nameInput.value=name;$('#profile-name').value=name;$('#self-name').textContent=name;try{localStorage.setItem('winter-visitor-name',name);}catch{}}
@@ -11,17 +13,35 @@ function showPeople(list){people.replaceChildren();list=list.filter(p=>!window.i
 function openInvite(){ $('#open-social').click(); }
 function endGate(){document.body.classList.remove('invite-gate');$('.studio-head>span').textContent='설정';}
 
-function entered(data){room=data.room;roomInput.value=room;joined=true;window.labSocialJoined=true;window.labGuestId=data.id;failures=0;setName(data.name);passwordInput.value='';$('#leave-room').hidden=false;$('#wave').hidden=false;form.hidden=true;$('#profile-form').hidden=false;status.textContent='접속 중 · 1명';if(typeof chatStatus!=='undefined')chatStatus.textContent='';endGate();window.dispatchEvent(new CustomEvent('lab:room',{detail:room}));}
-let joining=null;function join(password){if(joining)return joining;joining=(async()=>{try{const data=await request('join',{name:nameInput.value,room:roomInput.value,password});entered(data);await sync();}finally{joining=null;}})();return joining;}
+function updateRoomLinks(){
+ const localURL=new URL(spaceURL(room,location.origin));history.replaceState(null,'',localURL.pathname+localURL.search);
+ $('#owner-signin').href='/signin-with-chatgpt?return_to='+encodeURIComponent(localURL.pathname+localURL.search);
+ $('#social-room').textContent=invited?'초대 공간 · '+room.slice(0,6).toUpperCase():'광장';
+ inviteURL=spaceURL(room);$('#invite-url').value=inviteURL;$('#room-share').hidden=false;
+ $('#invite-form button[type=submit]').textContent=invited?'새 초대 공간 만들기':'초대 링크 만들기';
+}
+function entered(data){
+ if(window.labGuestId&&window.labGuestId!==data.id){showPeople([]);recentChats.length=0;seenChats.clear();chatLog.replaceChildren();selfBubble.hidden=true;window.labRideSeats=[];if(window.labRideReservation)window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));window.labRideReservation=null;}
+ room=data.room;invited=invitationRoom(room);roomInput.value=room;joined=true;window.labSocialJoined=true;window.labGuestId=data.id;failures=0;setName(data.name);passwordInput.value='';$('#leave-room').hidden=false;$('#wave').hidden=false;form.hidden=true;$('#profile-form').hidden=false;status.textContent='접속 중 · 1명';chatStatus.textContent='';updateRoomLinks();endGate();window.dispatchEvent(new CustomEvent('lab:room',{detail:room}));
+}
+let joining=null,joiningRoom='';function join(password,targetRoom=roomInput.value){if(joining)return joiningRoom===targetRoom?joining:joining.then(()=>join(password,targetRoom));joiningRoom=targetRoom;joining=(async()=>{try{await syncing;const data=await request('join',{name:nameInput.value,room:targetRoom,password});entered(data);}finally{joining=null;}})();return joining.then(()=>sync());}
 form.addEventListener('submit',async e=>{e.preventDefault();const button=form.querySelector('button');button.disabled=true;status.textContent='입장 중…';try{await join(passwordInput.value);closeDialog(studio);}catch(e){status.textContent=e.message;}finally{button.disabled=false;}});
 let syncing=null;
-function sync(force=false){if(syncing)return force?syncing.then(()=>sync(true)):syncing;if(!joined||(!force&&document.hidden)||!window.labPlayerState)return Promise.resolve();syncing=performSync().finally(()=>{syncing=null;});return syncing;}
+function sync(force=false){if(syncing)return force?syncing.then(()=>sync(true)):syncing;if(!joined||joining||(!force&&document.hidden)||!window.labPlayerState)return Promise.resolve();syncing=performSync().finally(()=>{syncing=null;});return syncing;}
 async function performSync(){busy=true;try{const a=window.labAppearance||{},data=await request('presence',{...window.labPlayerState,color:a.fur,accessory:a.accessory,gesture:gesture||encodeActivity(window.labPlayerState)});gesture='';failures=0;window.labServerOffset=data.serverTime-Date.now();window.labRideSeats=data.rideSeats||[];if(window.labRideReservation&&!window.labRideSeats.some(s=>s.id===window.labGuestId))window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));showPeople(data.people);status.textContent='접속 중 · '+data.count+'명';}catch(e){failures++;if(e.status===401||e.status===403){joined=false;window.labSocialJoined=false;showPeople([]);form.hidden=false;if(e.status===401&&!invited){joining=null;void join().catch(()=>{});}}status.textContent=e.message;if(failures>2)showPeople([]);}finally{busy=false;}}
-$('#leave-room').onclick=async()=>{joined=false;window.labSocialJoined=false;showPeople([]);chatLog.replaceChildren();seenChats.clear();selfBubble.hidden=true;try{await request('leave',{});}catch{}status.textContent='연결 종료';$('#leave-room').hidden=true;$('#wave').hidden=true;form.hidden=!invited;};
+$('#leave-room').onclick=async()=>{joined=false;window.labSocialJoined=false;showPeople([]);chatLog.replaceChildren();seenChats.clear();selfBubble.hidden=true;$('#room-share').hidden=true;try{await request('leave',{});}catch{}status.textContent='연결 종료';$('#leave-room').hidden=true;$('#wave').hidden=true;form.hidden=!invited;};
 $('#wave').onclick=()=>{if(!joined)return;gesture='wave';window.dispatchEvent(new Event('lab:wave'));sync();};
-$('#invite-form').addEventListener('submit',async e=>{e.preventDefault();const button=e.target.querySelector('button');button.disabled=true;$('#invite-result').textContent='링크를 만드는 중…';try{const data=await request('invite',{password:$('#invite-password').value});inviteURL=data.url;roomInput.value=data.room;$('#invite-url').value=inviteURL;$('#invite-url').hidden=false;$('#copy-room').hidden=false;$('#enter-owned-room').hidden=false;$('#invite-password').value='';$('#invite-result').textContent='링크와 방금 정한 비밀번호를 전달하세요.';}catch(e){$('#invite-result').textContent=e.message;}finally{button.disabled=false;}});
+$('#invite-form').addEventListener('submit',async e=>{
+ e.preventDefault();const button=e.target.querySelector('button');button.disabled=true;$('#invite-result').textContent='초대 공간에 연결 중…';$('#room-share').hidden=true;
+ try{
+  // Do not offer a link until the host has joined its room. A failed join retries
+  // the same invitation, rather than silently creating another room.
+  pendingInvitation??=await request('invite',{password:$('#invite-password').value});
+  await join(undefined,pendingInvitation.room);pendingInvitation=null;$('#invite-password').value='';
+  $('#invite-result').textContent='이 공간에 입장했습니다. 링크와 비밀번호를 전달하세요.';
+ }catch(e){$('#invite-result').textContent=e.message+' 다시 누르면 연결을 재시도합니다.';}finally{button.disabled=false;}
+});
 $('#copy-room').onclick=async()=>{try{await navigator.clipboard.writeText(inviteURL);$('#invite-result').textContent='링크를 복사했습니다.';}catch{$('#invite-url').select();$('#invite-result').textContent='선택된 링크를 복사하세요.';}};
-$('#enter-owned-room').onclick=async()=>{try{await join();history.replaceState(null,'','?room='+room);closeDialog(studio);}catch(e){status.textContent=e.message;}};
 setInterval(sync,1000);// Inactive presence expires after 20 seconds; retain the cookie identity across reloads.
 const chatForm=$('#chat-form'),chatInput=$('#chat-input'),chatStatus=$('#chat-status'),chatToggle=$('#chat-toggle'),chatLog=$('#chat-log'),selfBubble=$('#self-bubble');
 const seenChats=new Set(),blocked=new Set(),recentChats=[];
