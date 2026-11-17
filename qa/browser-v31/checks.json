@@ -1,0 +1,35 @@
+{
+  "automatedSuite": {
+    "passed": 287,
+    "failed": 0,
+    "note": "Full suite before final fire-facing fix; affected experience and carousel tests rerun below."
+  },
+  "finalTargetedTests": {
+    "passed": 17,
+    "failed": 0,
+    "includesNewFireFacingCase": true
+  },
+  "build": "passed",
+  "buildVercel": "passed",
+  "gitDiffCheck": "passed",
+  "budget": {
+    "files": 140,
+    "allBytes": 21811614,
+    "codeBytes": 2792045,
+    "codeGzipBytes": 881306,
+    "audioBytes": 16329748
+  },
+  "limits": {
+    "allBytes": 25165824,
+    "codeGzipBytes": 1280000
+  },
+  "browserReports": [
+    "verification.json",
+    "verification-facilities.json",
+    "ui-extra.json",
+    "audio-playback.json",
+    "performance-desktop.json",
+    "performance-mobile-emulation.json"
+  ],
+  "physicalMobile": false
+}

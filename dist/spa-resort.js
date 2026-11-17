@@ -8,7 +8,7 @@ export function buildSpaResort(api){
  // Keep authored joinery in its original local frame; translate the whole district once.
  const spa={...worldSpa,z:worldSpa.z-spaShift},spaPavilion={...worldPavilion,z:worldPavilion.z-spaShift,sideDoorZ:worldPavilion.sideDoorZ-spaShift};
  const spaActivities=Object.fromEntries(Object.entries(worldActivities).map(([id,p])=>[id,{...p,z:p.z-spaShift,...(p.pool?{pool:{...p.pool,z:p.pool.z-spaShift}}:{})}]));
- const hitMaterial=new T.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false});
+ const hitMaterial=new T.MeshBasicMaterial({visible:false,colorWrite:false,depthTest:false,transparent:true,opacity:0,depthWrite:false});
  const {scene,M}=api,root=new T.Group();root.name='spa-resort';scene.add(root);
  const interactive=[],moving=new Set();
  const snow=M('#e8eeeb',.98,0),stone=M('#858d88',.94,0),stoneLight=M('#b5b8a8',.96,0),stoneDark=M('#5e6863',.94,0),rock=M('#5c6c70',.97,0),rockShade=M('#485b62',.98,0),cedar=M('#b17e52',.92,0),cedarLight=M('#d2aa72',.96,0),cedarDark=M('#70513b',.94,0),slate=M('#3e5358',.86,.04),brass=M('#b59b72',.6,.2),cloth=M('#ece4d0',1,0),green=M('#335b50',1,0),greenLight=M('#4d7262',1,0);

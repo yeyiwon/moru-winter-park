@@ -1,0 +1,67 @@
+desktop UI alignment {"palette":6,"form":{"r":{"x":460,"y":12,"width":520,"height":876,"top":12,"right":980,"bottom":888,"left":460},"overflow":false}}
+laptop UI alignment {"palette":6,"form":{"r":{"x":252,"y":12,"width":520,"height":676,"top":12,"right":772,"bottom":688,"left":252},"overflow":false}}
+tablet UI alignment {"palette":6,"form":{"r":{"x":124,"y":12,"width":520,"height":930.6875,"top":12,"right":644,"bottom":942.6875,"left":124},"overflow":false}}
+phone UI alignment {"palette":6,"form":{"r":{"x":19,"y":12,"width":352,"height":820,"top":12,"right":371,"bottom":832,"left":19},"overflow":false}}
+small UI alignment {"palette":6,"form":{"r":{"x":19,"y":12,"width":282,"height":616,"top":12,"right":301,"bottom":628,"left":19},"overflow":false}}
+landscape UI alignment {"palette":6,"form":{"r":{"x":162,"y":12,"width":520,"height":374,"top":12,"right":682,"bottom":386,"left":162},"overflow":false}}
+wish saves selected color; panel closes; peer animates once true
+two guests board independent seats of the same lift [{"cabin":358987108,"seat":0},{"cabin":358987108,"seat":1}]
+lift avatar remains aligned with physical seat {"seat":0,"local":[-0.6250000000000001,0.8199999999999998,-1.4210854715202007e-14],"camera":[-26.889679534643903,4.894526596632273,-102.78087246842448]}
+live ski steering completes with equipment, camera and UI cleanup {"mode":"","gear":"none","accessory":"eyes-heart","phase":"Idle","ui":[true,true,true]}
+carousel framing [
+  [ -0.022427652908364726, -0.06310038563874035, 0.9781673744037414 ],
+  [ -0.023499934921335477, 0.4143714023587623, 0.9771155719533445 ]
+] {
+  player: {
+    x: 11.80350353271803,
+    y: 3.390583234558053,
+    z: 1.9133581685730723,
+    yaw: 2.697356124166654,
+    mode: 'carousel',
+    speed: 0.4610288466057218,
+    gesture: '',
+    heldItem: '',
+    roast: 0
+  },
+  camera: {
+    target: [ 11.747913154600116, 2.849797971577125, 2.054243264032519 ],
+    yaw: -8.563057988447321,
+    pitch: 0.22000032773031813,
+    distance: 9.100265124296817,
+    targetDistance: 9.1
+  },
+  actual: [ 5.012867353168046, 4.834863126429942, -3.72405935381334 ]
+}
+carousel camera framing and dismount cleanup [[-0.022427652908364726,-0.06310038563874035,0.9781673744037414],[-0.023499934921335477,0.4143714023587623,0.9771155719533445]]
+ferris framing [
+  [ 0.5456692113178594, -0.8590539625831033, 0.9458665847009466 ],
+  [ 0.5656428769835268, 0.2547318170163511, 0.9438789850018222 ]
+] {
+  player: {
+    x: -40.60208621626631,
+    y: 1.3920099601945775,
+    z: -4.408876042379993,
+    yaw: 0.35,
+    mode: 'ferris',
+    speed: 0.35710984970044707,
+    gesture: '',
+    heldItem: '',
+    roast: 0
+  },
+  camera: {
+    target: [ -40.25438220171982, 2.0333470998244323, -2.8826954806345046 ],
+    yaw: -4.362388992900528,
+    pitch: 0.12000053598027764,
+    distance: 8.600313769574914,
+    targetDistance: 8.6
+  },
+  actual: [ -36.77868963880738, 2.318347695842533, -5.049256457296313 ]
+}
+ferris camera framing and dismount cleanup [[0.5456692113178594,-0.8590539625831033,0.9458665847009466],[0.5656428769835268,0.2547318170163511,0.9438789850018222]]
+campfire activity ends on movement true
+interior-tea activity and movement exit true
+interior-footbath activity and movement exit true
+interior-dining activity and movement exit true
+interior-rest activity and movement exit true
+triggers remain invisible and runtime healthy {"count":8,"allHidden":true}
+mobile simultaneous movement and jump preserved true

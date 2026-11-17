@@ -9,7 +9,7 @@ import * as THREE from './vendor/three.module.js';
 
 // Shared winter landmarks, including a dedicated tree island.
 export function buildWinterWorld(api){
- const hitMaterial=new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false});
+ const hitMaterial=new THREE.MeshBasicMaterial({visible:false,colorWrite:false,depthTest:false,transparent:true,opacity:0,depthWrite:false});
  const {scene,mesh,ball,cylinder,box,rod,torus,halo,M}=api;
  const root=new THREE.Group();root.name='winter-places';scene.add(root);
  const snow=M('#edf2f2',.96,0),stone=M('#7c8792',.88,0),darkStone=M('#415268',.78,.05),brass=M('#c5aa7f',.4,.45),cedar=M('#8e6d58',.88,0),cedarLight=M('#b08b6a',.9,0),ink=M('#19293e',.5,.15),ivory=M('#e9dfca',.8,0);

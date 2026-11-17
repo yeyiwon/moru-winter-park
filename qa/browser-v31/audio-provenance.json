@@ -1,0 +1,35 @@
+[
+  {
+    "id": "snow-globe",
+    "title": "Snow Globe",
+    "artist": "ondrosik",
+    "source": "https://pixabay.com/music/christmas-snow-globe-432443/",
+    "download": "https://cdn.pixabay.com/download/audio/2025/11/06/audio_4262dc3efd.mp3?filename=ondrosik-snow-globe-432443.mp3",
+    "originalSha256": "692716f8c5525f13192bf7067eed0f0c06308d0be1c8d2393312e00b5fda7fd8",
+    "sha256": "c0f916f67ffe87a0882323620a0c7629e0df3e648297810899de87e02db7c7b6",
+    "bytes": 1330587,
+    "gainDB": -1
+  },
+  {
+    "id": "wonderful-night",
+    "title": "Wonderful Night",
+    "artist": "moodmode",
+    "source": "https://pixabay.com/music/christmas-wonderful-night-178596/",
+    "download": "https://cdn.pixabay.com/download/audio/2023/11/28/audio_eb5d8afa85.mp3?filename=moodmode-wonderful-night-178596.mp3",
+    "originalSha256": "b84cdc5a308d6999568a558bb471bd2240accffca79ea9e507efd9a0c4cc7aae",
+    "sha256": "3459e599123284a005a23be4149de7cc215f187d9ec095c17fe46867b1da2d71",
+    "bytes": 1704625,
+    "gainDB": -6
+  },
+  {
+    "id": "ethereal-winter-ballet-02",
+    "title": "Ethereal Winter Ballet Instrumental 02",
+    "artist": "alanajordan",
+    "source": "https://pixabay.com/music/orchestral-ethereal-winter-ballet-instrumental-02-475693/",
+    "download": "https://cdn.pixabay.com/download/audio/2026/01/28/audio_5e9607bdc8.mp3?filename=alanajordan-ethereal-winter-ballet-instrumental-02-475693.mp3",
+    "originalSha256": "295a4178d9a427ffb44c4e915a5631bb5d6b6e47425241bacd50c1eb768f6afb",
+    "sha256": "193be288bde68f8842fdba946d343173238dab29f3132f1f819c652db9804cd9",
+    "bytes": 1815149,
+    "gainDB": -2.2
+  }
+]

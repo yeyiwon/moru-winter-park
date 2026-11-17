@@ -70,3 +70,15 @@ test('food truck tyres sit on the rendered graded apron, including the rear mars
  const layout=modules.get(path.join(root,'resort-layout.js')).namespace,terrain=scene.getObjectByName('alpine-heightfield'),ray=new T.Raycaster();
  for(const stop of layout.summitFacilities.filter(p=>['odeng','marshmallow'].includes(p.id))){const base=layout.alpineHeight(stop.model.x,stop.model.z);for(const dx of [-2.5,2.6])for(const dz of [-1.48,1.48]){ray.set(new T.Vector3(stop.model.x+dx,150,stop.model.z+dz),new T.Vector3(0,-1,0));const ground=ray.intersectObject(terrain,false)[0];assert.ok(ground);assert.ok(Math.abs(ground.point.y-base)<.15,stop.id+JSON.stringify(ground.point));}}
 });
+
+
+test('interaction targets are pickable without writing visible trigger rectangles',()=>{
+ assert.ok(world.winter.interactive.length>0);
+ for(const target of world.winter.interactive){
+  assert.equal(target.material.visible,false);assert.equal(target.material.colorWrite,false);assert.equal(target.material.depthWrite,false);
+  const geometry=target.geometry,a=new T.Vector3(),b=new T.Vector3(),c=new T.Vector3(),normal=new T.Vector3();
+  for(let i=0;i<(geometry.index?.count||geometry.attributes.position.count);i+=3){[a,b,c].forEach((p,k)=>p.fromBufferAttribute(geometry.attributes.position,geometry.index?geometry.index.getX(i+k):i+k).applyMatrix4(target.matrixWorld));normal.crossVectors(b.clone().sub(a),c.clone().sub(a));if(normal.lengthSq()>1e-8)break;}
+  normal.normalize();const center=a.add(b).add(c).multiplyScalar(1/3),ray=new T.Raycaster(center.clone().addScaledVector(normal,10),normal.clone().negate(),0,20);
+  assert.ok(ray.intersectObject(target,false).length>0,'hidden material preserves click detection');
+ }
+});

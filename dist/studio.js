@@ -11,7 +11,7 @@ for(const [key,min,max] of [['brightness',55,150],['fluff',50,100],['roundness',
 appearance.accessory=normalizeWardrobe(appearance.accessory);
 delete appearance.sunglasses;
 window.labAppearance=appearance;
-let winterSnapshot=null;window.addEventListener('lab:return-winter',()=>{if(winterSnapshot===null)return;appearance.accessory=winterSnapshot;winterSnapshot=null;update(false);});
+let winterSnapshot=null;window.addEventListener('lab:return-winter',()=>{if(winterSnapshot===null)return;appearance.accessory=normalizeWardrobe(selectedItems(winterSnapshot).filter(v=>!['ski','board'].includes(v)).join(','));winterSnapshot=null;update(false);});
 window.addEventListener('lab:equip-winter',()=>{if(winterSnapshot===null)winterSnapshot=appearance.accessory;let items=selectedItems(appearance.accessory);if(!items.some(v=>['ski','board'].includes(v)))items.push('ski');if(!items.some(v=>['sunglasses','goggles'].includes(v)))items.push('goggles');if(!items.includes('helmet')){items=items.filter(v=>!['santa','bunny-ears','cat-ears','bear-ears'].includes(v));items.push('helmet');}appearance.accessory=normalizeWardrobe(items.join(','));update(false);});
 window.addEventListener('lab:unequip-winter',()=>{if(winterSnapshot!==null){appearance.accessory=winterSnapshot;winterSnapshot=null;update(false);return;}appearance.accessory=normalizeWardrobe(selectedItems(appearance.accessory).filter(v=>!['ski','board'].includes(v)).join(','));update();});
 const studio=document.getElementById('studio'),tabs=[...studio.querySelectorAll('[data-studio]')];

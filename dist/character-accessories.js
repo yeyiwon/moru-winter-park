@@ -7,7 +7,7 @@ const materials={
  black:new THREE.MeshPhysicalMaterial({color:'#101116',roughness:.28,metalness:.04,clearcoat:.75}),
  smoke:new THREE.MeshPhysicalMaterial({color:'#171d26',roughness:.18,metalness:.08,clearcoat:.9}),
  lensGlint:new THREE.MeshBasicMaterial({color:'#b4c9d3',transparent:true,opacity:.32}),
- silver:new THREE.MeshStandardMaterial({color:'#d6e2e6',metalness:.92,roughness:.23}),
+ silver:new THREE.MeshStandardMaterial({color:'#d6e2e6',metalness:.68,roughness:.2,emissive:'#b5c8ce',emissiveIntensity:.07}),
  crystal:new THREE.MeshPhysicalMaterial({color:'#d7ebef',transparent:true,opacity:.13,roughness:.09,metalness:.1,depthWrite:false}),
  glint:new THREE.MeshBasicMaterial({color:'#dcebf0',transparent:true,opacity:.6}),
  gold:new THREE.MeshStandardMaterial({color:'#dcb877',metalness:.86,roughness:.25,side:THREE.DoubleSide}),
@@ -70,15 +70,18 @@ function sunglasses(style='classic'){
 function silverGlasses(){
  const parts=[],add=(geometry,material)=>parts.push({geometry,material});
  for(const side of [-1,1]){
-  const shape=new THREE.Shape();shape.absellipse(side*.225,.092,.175,.137,0,Math.PI*2,false);
-  const points=shape.getPoints(48).map(p=>[p.x,p.y,.773-.035*(p.x/.5)**2]);
-  add(tube(points,.009,48,8,true),0);
-  const lens=new THREE.ShapeGeometry(shape,32);lens.translate(0,0,.767);add(lens,1);
-  add(tube([[side*.397,.135,.75],[side*.58,.16,.47],[side*.68,.13,.03],[side*.65,.08,-.17]],.009,24,7),0);
-  add(sphere([side*.074,.04,.725],[.017,.029,.009]),1);
-  add(tube([[side*.14,.171,.773],[side*.22,.192,.774],[side*.28,.179,.772]],.003,10,5),2);
+  const outline=new THREE.Shape();outline.absellipse(side*.215,.092,.174,.14,0,Math.PI*2,false);
+  const inner=new THREE.Path();inner.absellipse(side*.215,.092,.16,.126,0,Math.PI*2,true);outline.holes.push(inner);
+  // The lens and beveled rim use the same facial curvature; a flat lens used to cut across the rim.
+  add(curveEyewear(extrude(outline,.012,.003,28)),0);
+  const lensShape=new THREE.Shape();lensShape.absellipse(side*.215,.092,.159,.125,0,Math.PI*2,false);
+  add(curveEyewear(new THREE.ShapeGeometry(lensShape,32).translate(0,0,.004)),1);
+  add(tube([[side*.385,.128,.727],[side*.54,.15,.49],[side*.675,.12,.07],[side*.65,.055,-.17]],.011,28,8),0);
+  add(sphere([side*.39,.125,.725],[.025,.017,.018]),0);
+  add(sphere([side*.067,.038,.724],[.018,.028,.011]),1);
+  add(curveEyewear(tube([[side*.13,.172,.018],[side*.21,.193,.018],[side*.27,.18,.018]],.0025,12,6)),2);
  }
- add(tube([[-.055,.102,.776],[0,.136,.785],[.055,.102,.776]],.01,14,8),0);
+ add(tube([[-.048,.103,.782],[0,.135,.79],[.048,.103,.782]],.011,18,8),0);
  return {geometry:merge(parts),materials:[materials.silver,materials.crystal,materials.glint],name:'silver-glasses'};
 }
 function crown(){
@@ -98,10 +101,10 @@ function crown(){
 function brooch(){
  const parts=[{geometry:extrude(star(.139,.068),.024,.009),material:0}];
  parts.push({geometry:extrude(star(.105,.048),.012,.004).translate(0,0,.034),material:1});
- parts.push({geometry:new THREE.OctahedronGeometry(.03).scale(1,1,.65).translate(0,0,.062),material:2});
+ parts.push({geometry:new THREE.OctahedronGeometry(.03).scale(1,1,.65).translate(0,0,.062),material:2});for(let i=0;i<5;i++){const a=Math.PI/2+i*Math.PI*2/5;parts.push({geometry:new THREE.OctahedronGeometry(.012).translate(Math.cos(a)*.095,Math.sin(a)*.095,.043),material:2});}
  parts.push({geometry:new THREE.CapsuleGeometry(.011,.19,4,8).rotateZ(Math.PI/2).translate(0,0,-.018),material:0});
  parts.push({geometry:new THREE.TorusGeometry(.035,.008,6,12,Math.PI).rotateY(Math.PI/2).translate(-.07,0,-.02),material:0});
- return {geometry:merge(parts),materials:[materials.gold,materials.satin,materials.gem],name:'star-hairpin',position:[.41,.48,.438],rotation:[-.3,.5,-.22]};
+ return {geometry:merge(parts),materials:[materials.gold,materials.gem,materials.crystal],name:'star-hairpin',position:[.41,.48,.438],rotation:[-.3,.5,-.22]};
 }
 function ribbonSurface(side,tail=false){
  const p=[],uv=[],idx=[],rows=tail?20:32,cols=8;

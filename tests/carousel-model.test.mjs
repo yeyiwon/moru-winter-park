@@ -42,11 +42,24 @@ test('the horse and rider face the actual direction of travel',()=>{
 
 test('carousel camera frames horse and rider through the full turn and only fades individual obstructing columns',async()=>{
  const {carouselCameraView,carouselLayout}=await import('../dist/park-layout.js'),{createCameraClearance}=await import('../dist/camera-clearance.js');const center=carouselLayout,guard=createCameraClearance();
- model.root.position.set(center.x,0,center.z);const seatPosition=new T.Vector3(),forward=new T.Vector3();const architecture=meshes;const columns=meshes.filter(o=>o.userData.rideCameraFade);assert.equal(columns.length,8);
+ model.root.position.set(center.x,0,center.z);const seatPosition=new T.Vector3(),forward=new T.Vector3();const architecture=meshes;const columns=meshes.filter(o=>o.userData.rideCameraFade);assert.equal(columns.length,24);
  for(const mobile of [false,true])for(let time=0;time<63;time+=3){model.update(time);model.root.updateMatrixWorld(true);const socket=model.seats[0];socket.getWorldPosition(seatPosition);socket.getWorldDirection(forward);const seat={x:seatPosition.x,y:seatPosition.y+.82,z:seatPosition.z},view=carouselCameraView(seat,mobile),focus=new T.Vector3(seat.x,seat.y+1.2+view.lookHeight,seat.z),camera=new T.PerspectiveCamera(view.fov,mobile?390/844:1440/900,.1,200);
   assert.ok(Math.abs(focus.y-2.85)<1e-9,'saddle bob does not move the horizon');camera.position.set(focus.x+Math.sin(view.yaw)*Math.cos(view.pitch)*view.distance,focus.y+Math.sin(view.pitch)*view.distance,focus.z+Math.cos(view.yaw)*Math.cos(view.pitch)*view.distance);
   guard.update(camera,focus,architecture,1/30,{mode:'carousel',minDistance:4.2});assert.ok(camera.position.distanceTo(focus)>7.5,'columns must not force the camera into the face');camera.lookAt(focus);camera.updateMatrixWorld(true);
   for(const point of [new T.Vector3(seat.x,seat.y+1,seat.z),new T.Vector3(seat.x,.65,seat.z),seatPosition.clone().addScaledVector(forward,1.6)]){point.project(camera);assert.ok(Math.abs(point.x)<.9&&Math.abs(point.y)<.9,'horse and rider stay inside the viewport');}
  }
  guard.reset();assert.ok(columns.every(o=>!o.material.transparent));model.root.position.set(0,0,0);
+});
+
+
+test('carousel clearance tolerates the camera follow lag beside moving lift poles',async()=>{
+ const {carouselCameraView,carouselLayout}=await import('../dist/park-layout.js'),{createCameraClearance}=await import('../dist/camera-clearance.js');const guard=createCameraClearance(),seatPoint=new T.Vector3(),previous=new T.Vector3();model.root.position.set(carouselLayout.x,0,carouselLayout.z);
+ for(let time=0;time<63;time+=1.5){
+  guard.reset(); // Each sample teleports to an independent point in the revolution.
+  model.update(time-.32);model.root.updateMatrixWorld(true);model.seats[0].getWorldPosition(previous);
+  model.update(time);model.root.updateMatrixWorld(true);model.seats[0].getWorldPosition(seatPoint);
+  const seat={x:seatPoint.x,y:seatPoint.y+.82,z:seatPoint.z},view=carouselCameraView(seat),focus=previous.clone().setY(2.85),camera=new T.PerspectiveCamera(view.fov,1.6,.1,200);
+  camera.position.copy(focus).add(new T.Vector3(Math.sin(view.yaw+.032)*Math.cos(view.pitch),Math.sin(view.pitch),Math.cos(view.yaw+.032)*Math.cos(view.pitch)).multiplyScalar(view.distance));
+  guard.update(camera,seatPoint.clone().add(new T.Vector3(0,1.12,0)),meshes,1/30,{mode:'carousel',minDistance:4.2});assert.ok(camera.position.distanceTo(focus)>7,'the moving support must not collapse the camera into the rider at '+time);
+ }guard.reset();model.root.position.set(0,0,0);
 });

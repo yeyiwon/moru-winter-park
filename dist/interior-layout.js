@@ -15,6 +15,8 @@ export const ryokanFixtures=[
  {id:'sauna-bench-side',x:-18,z:-8.5,rx:1,rz:4.2},
  {id:'sauna-stove',x:-8.6,z:-11,rx:1.05,rz:1.05},
  {id:'footbath',x:0,z:-11,rx:2.9,rz:2},
+ {id:'omakase-counter',x:12,z:0,rx:4,rz:.9},
+ ...[10,12,14].map(x=>({id:'dining-seat-'+x,x,z:2.1,r:.55})),
  {id:'locker',x:17.7,z:4.8,rx:2,rz:.7},
  ...[[-18.5,13],[-18.5,-1.5],[18.5,14],[18,0],[5,-14.7]].map(([x,z],i)=>({id:'planter-'+i,x,z,r:.65})),
  // Wide doors in the sauna's south wall and east screen connect it to the hall.
@@ -29,6 +31,7 @@ export const interiorInteractions=[
  {id:'interior-tea',name:'차',room:'ryokan',kind:'tea',x:387,z:8.7},
  {id:'interior-sauna',name:'찜질',room:'ryokan',kind:'sauna',x:387,z:-11.7},
  {id:'interior-rest',name:'다다미',room:'ryokan',kind:'rest',x:410,z:-5},
+ {id:'interior-dining',name:'오마카세',room:'ryokan',kind:'dining',x:412,z:3.7},
  {id:'interior-footbath',name:'족욕',room:'ryokan',kind:'footbath',x:400,z:-7.8},
 ];
 // Interaction markers occupy free floor; activity poses deliberately sit on furniture.
@@ -37,6 +40,7 @@ export const interiorActivityPoses={
  'interior-tea':{room:'ryokan',x:387,y:1.4975,z:10,yaw:Math.PI,seatY:.6775},
  'interior-sauna':{room:'ryokan',x:387,y:1.56,z:-13.7,yaw:0,seatY:.74},
  'interior-rest':{room:'ryokan',x:409,y:1.13,z:-6,yaw:Math.PI,seatY:.31},
+ 'interior-dining':{room:'ryokan',x:412,y:1.57,z:2.1,yaw:Math.PI,seatY:.75},
  'interior-footbath':{room:'ryokan',x:400,y:1.31,z:-9.05,yaw:Math.PI,seatY:.49},
 };
 export function interiorActivityPoseValid(x,y,z){return Number.isFinite(x+y+z)&&Object.values(interiorActivityPoses).some(p=>Math.hypot(x-p.x,z-p.z)<.22&&Math.abs(y-p.y)<.2);}

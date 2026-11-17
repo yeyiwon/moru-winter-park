@@ -1,0 +1,131 @@
+{
+  "physicalMobile": false,
+  "devices": [
+    {
+      "mobile": false,
+      "initial": {
+        "count": 11,
+        "players": [
+          {
+            "preload": "none",
+            "ready": 0,
+            "paused": true
+          },
+          {
+            "preload": "none",
+            "ready": 0,
+            "paused": true
+          }
+        ]
+      },
+      "tracks": [
+        {
+          "id": "snow-globe",
+          "title": "Snow Globe",
+          "artist": "ondrosik",
+          "time": 3.012907,
+          "duration": 108.648005,
+          "ready": 4,
+          "error": null,
+          "active": 1,
+          "context": "running"
+        },
+        {
+          "id": "wonderful-night",
+          "title": "Wonderful Night",
+          "artist": "moodmode",
+          "time": 3.013765,
+          "duration": 139.248005,
+          "ready": 4,
+          "error": null,
+          "active": 1,
+          "context": "running"
+        },
+        {
+          "id": "ethereal-winter-ballet-02",
+          "title": "Ethereal Winter Ballet Instrumental 02",
+          "artist": "alanajordan",
+          "time": 3.014466,
+          "duration": 152.088005,
+          "ready": 4,
+          "error": null,
+          "active": 1,
+          "context": "running"
+        }
+      ],
+      "playlistControls": true,
+      "independentVolumes": true,
+      "errors": [],
+      "loadedTracks": [
+        "/audio/first-snow.m4a",
+        "/audio/snow-globe.m4a",
+        "/audio/wonderful-night.m4a",
+        "/audio/ethereal-winter-ballet-02.m4a",
+        "/audio/christmas-cinematic-dream-piano.m4a"
+      ]
+    },
+    {
+      "mobile": true,
+      "initial": {
+        "count": 11,
+        "players": [
+          {
+            "preload": "none",
+            "ready": 0,
+            "paused": true
+          },
+          {
+            "preload": "none",
+            "ready": 0,
+            "paused": true
+          }
+        ]
+      },
+      "tracks": [
+        {
+          "id": "snow-globe",
+          "title": "Snow Globe",
+          "artist": "ondrosik",
+          "time": 3.009887,
+          "duration": 108.648005,
+          "ready": 4,
+          "error": null,
+          "active": 1,
+          "context": "running"
+        },
+        {
+          "id": "wonderful-night",
+          "title": "Wonderful Night",
+          "artist": "moodmode",
+          "time": 3.004082,
+          "duration": 139.248005,
+          "ready": 4,
+          "error": null,
+          "active": 1,
+          "context": "running"
+        },
+        {
+          "id": "ethereal-winter-ballet-02",
+          "title": "Ethereal Winter Ballet Instrumental 02",
+          "artist": "alanajordan",
+          "time": 3.007556,
+          "duration": 152.088005,
+          "ready": 4,
+          "error": null,
+          "active": 1,
+          "context": "running"
+        }
+      ],
+      "playlistControls": true,
+      "independentVolumes": true,
+      "errors": [],
+      "loadedTracks": [
+        "/audio/first-snow.m4a",
+        "/audio/snow-globe.m4a",
+        "/audio/wonderful-night.m4a",
+        "/audio/ethereal-winter-ballet-02.m4a",
+        "/audio/snow-fall-winter.m4a"
+      ]
+    }
+  ]
+}

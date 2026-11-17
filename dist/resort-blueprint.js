@@ -59,8 +59,8 @@ export function summitPositionValid(x,z){return !summitObstacles.some(o=>o.r?Mat
 export const summitFacilities=[
  {id:'odeng',name:'어묵 트럭',x:-10,z:-358.5,model:{x:-10,z:-363},view:{distance:9,yaw:.25,pitch:.3}},
  {id:'marshmallow',name:'마시멜로 트럭',x:10,z:-358.5,model:{x:10,z:-363},view:{distance:9,yaw:.25,pitch:.3}},
- {id:'campfire',name:'모닥불',x:-3,z:-347.5,r:1.4,model:{x:-3,z:-350},view:{distance:11,yaw:.25,pitch:.3}},
- {id:'upperlift',name:'상부 리프트',...upperLiftEntry,r:2.8,model:{x:upperLiftLayout.x,z:upperLiftLayout.z},view:{distance:10,yaw:1.5,pitch:.22}}
+ {id:'campfire',name:'모닥불',x:-3,z:-347.2,r:2.2,model:{x:-3,z:-350},view:{distance:11,yaw:.25,pitch:.3}},
+ {id:'upperlift',name:'정상 리프트',...upperLiftEntry,r:5.5,model:{x:upperLiftLayout.x,z:upperLiftLayout.z},view:{distance:10,yaw:1.5,pitch:.22}}
 ];
 function alpineTerrainHeight(x,z){
  const original=.09+(localHeight(x/4,(z+260)/4-114)-.09)*4,lanes=skiRuns.filter(run=>z>=run.startZ-10&&z<=run.finish+16).map(run=>({center:skiRunCenter(z,run.id),half:skiRunHalfWidth(z,run.id),height:skiRunHeight(z,run.id),weight:smooth((z-run.startZ+10)/8)*(1-smooth((z-run.finish)/16))})).sort((a,b)=>a.center-b.center);
@@ -86,7 +86,12 @@ function alpineTerrainHeight(x,z){
  terrain=mix(terrain,lowerHeight(z),accessBlend);
  const sledDistance=Math.abs(x-sledCenter(z)),sledT=clamp((-z-192)/80),sledBlend=(1-smooth((sledDistance-5)/5))*smooth((z+282)/10)*(1-smooth((z+192)/8));
  terrain=terrain*(1-sledBlend)+(.09+19*smooth(sledT))*sledBlend;
- for(const area of [summit,peakSummit]){const d=Math.hypot((x-area.x)/area.rx,(z-area.z)/area.rz),terrace=1-smooth((d-.85)/.68);terrain=mix(terrain,area.height,terrace);}
+ for(const area of [summit,peakSummit]){
+  const d=Math.hypot((x-area.x)/area.rx,(z-area.z)/area.rz);
+  // The upper ridge may soften the mountain shoulder, never the occupied lower terrace.
+  const lowerClearance=area===peakSummit?smooth((Math.hypot((x-summit.x)/summit.rx,(z-summit.z)/summit.rz)-.85)/.45):1;
+  terrain=mix(terrain,area.height,(1-smooth((d-.85)/1.04))*lowerClearance);
+ }
  // A graded service apron supports the entire truck footprint, not only its origin.
  for(const stop of summitFacilities.filter(p=>['odeng','marshmallow'].includes(p.id))){const dx=Math.max(0,Math.abs(x-stop.model.x)-5.3),dz=Math.max(0,Math.abs(z-stop.model.z)-6),blend=1-smooth(Math.hypot(dx,dz)/9);terrain=mix(terrain,summit.height,blend);}
  // Smooth pedestrian grading spans the whole approach and its landing apron.

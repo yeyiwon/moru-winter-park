@@ -1,0 +1,74 @@
+{
+  "checks": [
+    {
+      "name": "desktop tree palette, fixed tray and map travel",
+      "result": {
+        "overflow": false,
+        "box": {
+          "x": 485,
+          "y": 450,
+          "width": 470,
+          "height": 432,
+          "top": 450,
+          "right": 955,
+          "bottom": 882,
+          "left": 485
+        }
+      }
+    },
+    {
+      "name": "phone tree palette, fixed tray and map travel",
+      "result": {
+        "overflow": false,
+        "box": {
+          "x": 12,
+          "y": 405,
+          "width": 366,
+          "height": 427,
+          "top": 405,
+          "right": 378,
+          "bottom": 832,
+          "left": 12
+        }
+      }
+    },
+    {
+      "name": "small tree palette, fixed tray and map travel",
+      "result": {
+        "overflow": false,
+        "box": {
+          "x": 12,
+          "y": 212,
+          "width": 296,
+          "height": 416,
+          "top": 212,
+          "right": 308,
+          "bottom": 628,
+          "left": 12
+        }
+      }
+    },
+    {
+      "name": "landscape tree palette, fixed tray and map travel",
+      "result": {
+        "overflow": false,
+        "box": {
+          "x": 12,
+          "y": 12,
+          "width": 370,
+          "height": 366,
+          "top": 12,
+          "right": 382,
+          "bottom": 378,
+          "left": 12
+        }
+      }
+    },
+    {
+      "name": "accessory previews use the live shared character models",
+      "result": true
+    }
+  ],
+  "errors": [],
+  "physicalMobile": false
+}

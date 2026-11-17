@@ -16,7 +16,7 @@ export function createActivityReactions(scene){
     dispose(){scene.remove(bubbles,hearts);geometry.dispose();material.dispose();heartGeometry.dispose();heartMaterial.dispose();},
     get state(){return {count,capacity:limit};},
     update({gesture='',mode='',x=0,y=0,z=0,yaw=0,time=0,dt=0,still=false}={}){
-      const happy=['bath','tea','sauna','lie','rest'].includes(mode)||['eat','warm','wave'].includes(gesture),pulse=still?.5:(time%5)/5;
+      const happy=['bath','tea','dining','sauna','lie','rest'].includes(mode)||['eat','warm','wave'].includes(gesture),pulse=still?.5:(time%5)/5;
       hearts.visible=happy&&(still||pulse<.42);heartMaterial.opacity=still?.55:Math.sin(Math.min(1,pulse/.42)*Math.PI)*.7;
       if(hearts.visible)for(let i=0;i<3;i++){heartPose.position.set(x+Math.cos(yaw)*((i%2?1:-1)*(1.05+i*.15)),y+.65+i*.3+(still?0:pulse*.8),z-Math.sin(yaw)*((i%2?1:-1)*(1.05+i*.15)));heartPose.rotation.set(0,yaw,(i-1)*.2);heartPose.scale.setScalar(.18+i*.015);heartPose.updateMatrix();hearts.setMatrixAt(i,heartPose.matrix);}hearts.instanceMatrix.needsUpdate=true;
       dt=Math.max(0,Math.min(.1,dt));if(time<lastTime)for(const p of particles)p.age=p.life;lastTime=time;

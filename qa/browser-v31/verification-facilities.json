@@ -1,0 +1,73 @@
+{
+  "checks": [
+    {
+      "name": "carousel camera framing and dismount cleanup",
+      "result": [
+        [
+          -0.02158837667888283,
+          -0.06345564677404833,
+          0.9781308065012221
+        ],
+        [
+          -0.022622966597359767,
+          0.4148449015411945,
+          0.9770747709557178
+        ]
+      ]
+    },
+    {
+      "name": "ferris camera framing and dismount cleanup",
+      "result": [
+        [
+          0.5442382357163152,
+          -0.8134939040686758,
+          0.9481166743690965
+        ],
+        [
+          0.5784798979472717,
+          0.2554967283273058,
+          0.9448418608517227
+        ]
+      ]
+    },
+    {
+      "name": "campfire faces flame after arriving on foot",
+      "result": {
+        "angleError": 0.0000017510934893216758
+      }
+    },
+    {
+      "name": "campfire activity ends on movement",
+      "result": true
+    },
+    {
+      "name": "interior-tea activity and movement exit",
+      "result": true
+    },
+    {
+      "name": "interior-footbath activity and movement exit",
+      "result": true
+    },
+    {
+      "name": "interior-dining activity and movement exit",
+      "result": true
+    },
+    {
+      "name": "interior-rest activity and movement exit",
+      "result": true
+    },
+    {
+      "name": "triggers remain invisible and runtime healthy",
+      "result": {
+        "count": 8,
+        "allHidden": true
+      }
+    },
+    {
+      "name": "mobile simultaneous movement and jump preserved",
+      "result": true
+    }
+  ],
+  "errors": [],
+  "physicalMobile": false
+}

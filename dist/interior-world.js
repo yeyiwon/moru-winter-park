@@ -1,3 +1,4 @@
+import {createRyokanMeal} from './ryokan-meal.js';
 import * as T from './vendor/three.module.js';
 import {createRetreatAtmosphere} from './retreat-atmosphere.js';
 import {interiorRooms,ryokanFixtures} from './interior-layout.js';
@@ -82,6 +83,12 @@ function buildRyokan(root,m){
  for(const o of ryokanFixtures.filter(o=>o.id.includes('bench'))){b.box(o.rx*2,.5,o.rz*2,m.endgrain,o.x,.35,o.z);const alongX=o.rx>o.rz,n=Math.ceil((alongX?o.rz:o.rx)*2/.2);for(let j=0;j<n;j++)b.box(alongX?o.rx*2:.17,.075,alongX?.17:o.rz*2,m.lightWood,o.x+(alongX?0:-o.rx+.1+j*.2),.64,o.z+(alongX?-o.rz+.1+j*.2:0));if(o.id.includes('sauna')){b.box(o.rx*2,.25,o.rz*1.3,m.cedar,o.x,.45,o.z+.35);for(let j=-1;j<=1;j++)b.box(.85,.06,.55,m.linen,o.x+(alongX?j*2:0),.71,o.z+(alongX?0:j*2));}}
  // Reception has a bowed front, joinery, luggage niche and a discreet lamp.
  const desk=ryokanFixtures.find(o=>o.id==='reception');b.box(8,1.15,2.2,m.endgrain,desk.x,.67,desk.z);for(let i=0;i<40;i++){const x=desk.x-3.9+i*.2,z=desk.z+1.12+.12*Math.cos((i/39-.5)*Math.PI);b.box(.12,1.05,.09,m.lightWood,x,.67,z);}b.box(8.2,.13,2.45,m.darkStone,desk.x,1.32,desk.z);makeLantern(b,m,16,1.39,10,.6);b.box(1.3,.06,.75,m.cream,12,1.42,10);
+ // A clear front aisle serves the dining counter, separate from reception and the tatami route.
+ const counter=ryokanFixtures.find(o=>o.id==='omakase-counter');b.box(8.1,.18,1.9,m.lightWood,counter.x,1.06,counter.z);b.box(7.7,.85,1.55,m.cedar,counter.x,.55,counter.z);
+ for(let i=0;i<34;i++)b.box(.09,.8,.035,m.endgrain,8.2+i*.23,.55,.79);
+ for(const x of [10,12,14]){b.mesh(new T.CylinderGeometry(.45,.48,.12,32),m.linen,x,.69,2.1);b.mesh(new T.CylinderGeometry(.31,.34,.53,20),m.endgrain,x,.365,2.1);b.ring(.4,.025,m.brass,x,.47,2.1);const meal=createRyokanMeal();meal.position.set(x,1.15,.25);root.add(meal);b.mesh(new T.LatheGeometry([[.13,0],[.2,.05],[.21,.16],[.18,.19],[.15,.05]].map(p=>new T.Vector2(...p)),24),m.darkStone,x+.75,1.15,.1);b.rod([x-.6,6.6,.1],[x-.6,3.9,.1],.014,m.endgrain);makeLantern(b,m,x-.6,3.2,.1,.8);}
+ // Layered shoji panels slide from a clear doorway; the collision opening remains unchanged.
+ const doors=[];for(const side of [-1,1]){const door=new T.Group();door.name='ryokan-sliding-door';door.userData.keepGroup=true;door.position.set(side*1.55,0,16.6);root.add(door);const db=makeBuilder(door);db.box(2.9,3.8,.07,m.cream,0,2.0,0);for(const x of [-1.43,1.43])db.box(.09,3.9,.12,m.endgrain,x,2,0);for(const y of [.1,1.4,2.7,3.95])db.box(2.9,.065,.12,m.endgrain,0,y,0);for(let i=-3;i<=3;i++)db.box(.03,3.8,.1,m.lightWood,i*.36,2,0);db.box(.04,.23,.04,m.brass,-side*1.1,1.9,-.08);mergeFinish(door);doors.push({root:door,side});}
  const stove=ryokanFixtures.find(o=>o.id==='sauna-stove');b.mesh(new T.CylinderGeometry(.8,.9,1.2,24),m.darkStone,stove.x,.7,stove.z);for(let i=0;i<20;i++){const a=i*2.399,r=.65*Math.sqrt(i/20);b.oval(m.stone,stove.x+Math.cos(a)*r,1.32+(i%3)*.08,stove.z+Math.sin(a)*r,.24,.16,.22);}for(let j=0;j<20;j++){const a=j*Math.PI/10;b.rod([stove.x+Math.cos(a)*1,.2,stove.z+Math.sin(a)*1],[stove.x+Math.cos(a)*1,1.45,stove.z+Math.sin(a)*1],.035,m.cedar);}b.ring(1,.04,m.lightWood,stove.x,1.45,stove.z);
  const bath=ryokanFixtures.find(o=>o.id==='footbath');b.box(bath.rx*2,.28,bath.rz*2,m.darkStone,bath.x,.16,bath.z);b.box(5.3,.035,3.5,m.water,bath.x,.32,bath.z);for(const z of [-1,1])b.box(6.2,.16,.45,m.cedar,bath.x,.41,bath.z+z*1.95);for(const x of [-1,1])b.box(.45,.16,3.5,m.cedar,bath.x+x*2.85,.41,bath.z);
  for(const o of ryokanFixtures.filter(o=>['locker','tatami-cabinet'].includes(o.id))){b.box(o.rx*2,1.8,o.rz*2,m.cedar,o.x,1,o.z);for(let i=0;i<4;i++)for(let j=0;j<3;j++){const xx=o.x-o.rx+.5+i*(o.rx*2/4),y=.5+j*.55;b.box(o.rx*.43,.5,.04,m.lightWood,xx,y,o.z+o.rz+.035);b.oval(m.brass,xx+.12,y,o.z+o.rz+.065,.025,.025,.015);}}
@@ -91,10 +98,10 @@ function buildRyokan(root,m){
  const light=new T.PointLight('#ffc991',75,38,2);light.position.set(0,5,0);root.add(light);const fill=new T.HemisphereLight('#ffe4bf','#685743',1.5);root.add(fill);
  const atmosphere=createRetreatAtmosphere(root,{name:'ryokan',
   waters:[{x:bath.x,y:.344,z:bath.z,rx:2.64,rz:1.74,rect:true,lights:[[0,5.5,-6],[-12,5.5,-8],[12,5.5,-8]]}],
-  vapour:[{x:bath.x,y:.34,z:bath.z-.5,rx:2.15,rz:1.05,rise:1.25,size:.9,count:20,opacity:.11},{x:-13,y:1.25,z:7,rx:.18,rz:.18,rise:.65,size:.32,count:6,opacity:.1},{x:12,y:1.25,z:-9,rx:.18,rz:.18,rise:.65,size:.32,count:6,opacity:.1},{x:stove.x,y:1.5,z:stove.z,rx:.65,rz:.65,rise:1.6,size:.6,count:8,opacity:.065}],
+  vapour:[{x:bath.x,y:.34,z:bath.z-.5,rx:2.15,rz:1.05,rise:1.25,size:.9,count:20,opacity:.11},{x:-13,y:1.25,z:7,rx:.18,rz:.18,rise:.65,size:.32,count:6,opacity:.1},{x:12,y:1.38,z:.1,rx:.2,rz:.2,rise:.6,size:.26,count:5,opacity:.08},{x:12,y:1.25,z:-9,rx:.18,rz:.18,rise:.65,size:.32,count:6,opacity:.1},{x:stove.x,y:1.5,z:stove.z,rx:.65,rz:.65,rise:1.6,size:.6,count:8,opacity:.065}],
   lamps:[[-12,7],[12,10],[-12,-8],[12,-8],[0,-6],[0,8]].map(([x,z])=>({x,y:.143,z,rx:3.3,rz:2.5}))
  });
- mergeFinish(root);return{root,walls,ceiling:ceil,uniforms:[],atmosphere};
+ mergeFinish(root);return{root,walls,doors,doorOpen:0,ceiling:ceil,uniforms:[],atmosphere};
 }
 
 export function buildInteriors(scene,{lazy=false,onLoad=()=>{},onRelease=()=>{},retainMs=90000}={}){
@@ -106,7 +113,7 @@ export function buildInteriors(scene,{lazy=false,onLoad=()=>{},onRelease=()=>{},
  function maintain(now,nearEntrance=false){if(active||nearEntrance)lastUsed=now;if(lazy&&!active&&!nearEntrance&&now-lastUsed>retainMs)for(const id of Object.keys(rooms))release(id);}
  function setActive(id){active=id&&ensure(id)?id:null;root.visible=!!active;for(const [key,room]of Object.entries(rooms))room.root.visible=key===active;}
  function setCamera(position){const room=rooms[active];if(!room||!position)return;const local={x:position.x-room.layout.x,z:position.z-room.layout.z};for(const wall of room.walls){const axis=wall.userData.cutawayAxis,sign=wall.userData.cutawaySign;wall.visible=local[axis]*sign<room.layout[axis==='x'?'rx':'rz']*.15;}if(room.ceiling)room.ceiling.visible=position.y<3&&Math.hypot(local.x,local.z)<5;}
- function update(time,still=false,quality){const room=rooms[active];if(!room)return;if(!still)for(const u of room.uniforms||[])u.time.value=time;room.atmosphere.update(time,still,quality);}
+ function update(time,still=false,quality){const room=rooms[active];if(!room)return;if(!still)for(const u of room.uniforms||[])u.time.value=time;room.atmosphere.update(time,still,quality);const p=globalThis.window?.labPlayerState,near=!!p&&Math.hypot(p.x-room.layout.x,p.z-16.6)<7;if(near!==room.doorNear){room.doorNear=near;globalThis.window?.labSound?.('sliding-door');}const dt=Math.min(.1,Math.max(0,time-(room.doorTime??time)));room.doorTime=time;room.doorOpen+=(Number(near)-room.doorOpen)*(still?1:1-Math.exp(-8*dt));for(const d of room.doors)d.root.position.x=d.side*(1.55+room.doorOpen*2.7);}
  function setQuality(value){quality=value;for(const room of Object.values(rooms))room.atmosphere.setQuality(value);}
  return{root,rooms,occluders,ensure,release,maintain,setActive,setCamera,update,setQuality,dispose(){active=null;for(const id of Object.keys(rooms))release(id);root.removeFromParent();},get active(){return active;}};
 }

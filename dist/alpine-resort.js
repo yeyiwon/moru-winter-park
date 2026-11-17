@@ -11,7 +11,7 @@ import {alpineShift} from './resort-layout.js';
 
 // Geometry and ride code sample the same height function: no decorative ramp above an unrelated floor.
 export function buildAlpineResort(api){
- const hitMaterial=new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false});
+ const hitMaterial=new THREE.MeshBasicMaterial({visible:false,colorWrite:false,depthTest:false,transparent:true,opacity:0,depthWrite:false});
  const {scene,mesh,ball,cylinder,box,rod,torus,M}=api;
  const root=new THREE.Group();root.name='alpine-mountain';scene.add(root);
  const snow=M('#e5edf0',.96,0),groomed=M('#f0f4f4',.92,0),bankSnow=M('#d3e0e7',.98,0),rock=M('#526276',.92,.02),rockLight=M('#71828d',.95,0),timber=M('#80634d',.88,0),oak=M('#a38a6b',.83,0),ink=M('#233448',.72,.08),metal=M('#9bacae',.45,.4),brass=M('#b99e73',.48,.4),red=M('#9f4c4b',.66,.02),blue=M('#5d89a4',.7,.02),pine=[M('#294d4e',.98,0),M('#365c57',.98,0),M('#41685e',.98,0)];
@@ -125,8 +125,8 @@ export function buildAlpineResort(api){
  function chair(){const g=new THREE.Group();g.name='alpine-lift-chair';root.add(g);dynamic.add(g);
  rod([0,liftLayout.hanger,0],[0,2.72,-.65],.065,metal,g);rod([0,2.72,-.65],[0,.72,-.65],.065,metal,g);box(.14,.11,.32,ink,0,liftLayout.hanger,0,g);
  box(2.5,.16,1.4,oak,0,0,0,g);box(2.5,.85,.13,ink,0,.55,-.65,g);for(const x of [-.63,.63]){box(1.14,.11,1.1,ink,x,.12,.06,g);box(1.14,.59,.08,oak,x,.55,-.56,g);}
- for(const side of [-1,1]){rod([side*1.15,.1,-.6],[side*1.15,.9,.65],.045,metal,g);rod([side*1.15,.8,-.6],[0,2.3,-.65],.045,metal,g);}
- rod([-1.15,.9,.65],[1.15,.9,.65],.055,metal,g);rod([-1.1,-.45,1],[1.1,-.45,1],.045,metal,g);
+ for(const side of [-1,1]){rod([side*1.15,.1,-.6],[side*1.15,.48,.94],.045,metal,g);rod([side*1.15,.64,-.6],[0,2.3,-.65],.045,metal,g);}
+ rod([-1.15,.48,.94],[1.15,.48,.94],.055,metal,g);rod([-1.1,-.45,1],[1.1,-.45,1],.045,metal,g);
  // Each animated chair needs only three material draws, independent of its frame detail.
  g.scale.x=1.52;g.updateMatrixWorld(true);for(const mat of [metal,oak,ink]){const items=g.children.filter(o=>o.isMesh&&o.material===mat);if(items.length<2)continue;const chunks={position:[],normal:[],uv:[]};let n=0;for(const o of items){let geo=o.geometry.clone().applyMatrix4(o.matrix);if(geo.index)geo=geo.toNonIndexed();n+=geo.attributes.position.count;for(const key in chunks)chunks[key].push(geo.attributes[key].array);o.removeFromParent();geo.dispose();}const geo=new THREE.BufferGeometry();for(const key in chunks){const size=key==='uv'?2:3,out=new Float32Array(n*size);let off=0;for(const a of chunks[key]){out.set(a,off);off+=a.length;}geo.setAttribute(key,new THREE.BufferAttribute(out,size));}mesh(geo,mat,0,0,0,g).userData.rideCameraFade=true;}return g;}
  function pathPoint(t){const p=liftPoint(t);return new THREE.Vector3(...p);}
@@ -186,7 +186,7 @@ export function buildAlpineResort(api){
  }
  station(upperLiftPoint(0),'alpine-peak-base-terminal',false,upperAxis,false);station(upperLiftPoint(1),'alpine-peak-top-terminal',true,upperAxis,false);
  for(let i=0;i<4;i++){const g=chair(),offset=i/4,pose=upperLoopPose(offset);g.position.copy(pose.position);g.rotation.y=pose.yaw;upperChairs.push({g,offset});}
- const upperStop=summitFacilities.find(p=>p.id==='upperlift');plaque(['상부 리프트'],upperStop.x-3.8,alpineHeight(upperStop.x-3.8,upperStop.z)+2.5,upperStop.z,2.3,.6,root);
+ const upperStop=summitFacilities.find(p=>p.id==='upperlift');plaque(['정상 리프트'],upperStop.x-3.8,alpineHeight(upperStop.x-3.8,upperStop.z)+2.5,upperStop.z,2.3,.6,root);
  // The summit is an actual rest terrace; the front remains a broad, clear launch apron.
  const foodMat=M('#efd8b7',.8,0),truckRose=M('#bf747d',.65,.05),truckMint=M('#98c5b8',.65,.05),steamMat=new THREE.MeshBasicMaterial({color:'#fff4df',transparent:true,opacity:.11,depthWrite:false});
  function foodTruck(stop,paint,marshmallow=false){

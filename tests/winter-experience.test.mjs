@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {JSDOM} from 'jsdom';
 import {createWinterExperience} from '../dist/winter-experience.js';
-import {resortRides,resortDestinations,skiStarts,alpineShift} from '../dist/resort-layout.js';
+import {resortRides,resortDestinations,skiStarts,skiRunCenter,alpineShift} from '../dist/resort-layout.js';
 import {walkToStart} from './ski-driver.mjs';
 import * as T from '../dist/vendor/three.module.js';
 import {ferrisDimensions} from '../dist/ferris-layout.js';
@@ -11,7 +11,7 @@ function setup(t){const dom=new JSDOM(fs.readFileSync(new URL('../dist/index.htm
 test('marshmallow stays in hand, toasts at the fire, survives walking and can be eaten',t=>{
  const {e,click}=setup(t);e.rides.start('lift');e.update(45);e.proximity(10,-358.5+alpineShift);click();assert.equal(e.heldItem,'marshmallow');e.update(.1,{x:1});assert.equal(e.heldItem,'marshmallow');assert.equal(e.roast,0);
  e.proximity(-3,-347.5+alpineShift);click();e.update(2,{});assert.equal(e.gesture,'roast');assert.ok(e.roast>.3);e.update(.1,{x:1});assert.equal(e.gesture,'');const saved=e.roast;assert.equal(e.heldItem,'marshmallow');
- e.proximity(-3,-347.5+alpineShift);click();e.update(4,{});assert.ok(e.roast>saved);assert.equal(e.roast,1);assert.equal(e.gesture,'');e.proximity(-3,-347.5+alpineShift);assert.match(document.querySelector('#place-actions button').textContent,/먹기/);click();assert.equal(e.gesture,'eat');e.update(3,{});assert.equal(e.heldItem,'');
+ e.proximity(-3,-340+alpineShift);e.proximity(-3,-347.5+alpineShift);click();e.update(4,{});assert.ok(e.roast>saved);assert.equal(e.roast,1);assert.equal(e.gesture,'');e.proximity(-3,-340+alpineShift);e.proximity(-3,-347.5+alpineShift);assert.match(document.querySelector('#place-actions button').textContent,/먹기/);click();assert.equal(e.gesture,'eat');e.update(3,{});assert.equal(e.heldItem,'');
  e.proximity(-10,-358.5+alpineShift);click();assert.equal(e.heldItem,'odeng');assert.equal(e.gesture,'');e.useHeldItem();assert.equal(e.gesture,'eat');e.update(3,{});assert.equal(e.heldItem,'');
 });
 test('physical gates show one contextual action and stopping skis never teleports down',t=>{
@@ -46,4 +46,22 @@ test('the facing Ferris pair shares a camera focus between the seats',async t=>{
  const pose=e.update(0,{}),offset=ferrisDimensions.seatDepth*ferrisDimensions.scale;assert.ok(Math.abs(pose.view.focus.x-(pose.x-Math.sin(ferrisDimensions.yaw)*offset))<1e-9);assert.ok(Math.abs(pose.view.focus.z-(pose.z-Math.cos(ferrisDimensions.yaw)*offset))<1e-9);
  const aim=new T.Vector3(pose.view.focus.x,pose.y+.65,pose.view.focus.z),v=pose.view,camera=new T.PerspectiveCamera(v.fov,390/844,.1,100);camera.position.set(aim.x+Math.sin(v.yaw)*Math.cos(v.pitch)*v.distance,aim.y+Math.sin(v.pitch)*v.distance,aim.z+Math.cos(v.yaw)*Math.cos(v.pitch)*v.distance);camera.lookAt(aim);camera.updateMatrixWorld();
  for(const side of [-1,1]){const anchor=aim.clone();anchor.x+=Math.sin(ferrisDimensions.yaw)*offset*side;anchor.z+=Math.cos(ferrisDimensions.yaw)*offset*side;anchor.y=pose.y;for(const dx of [-.9,.9])for(const dz of [-.9,.9])for(const dy of [-.65,.95]){const screen=anchor.clone().add(new T.Vector3(dx,dy,dz)).project(camera);assert.ok(Math.abs(screen.x)<.96&&Math.abs(screen.y)<.96);}}
+});
+
+test('ski completion zeros motion, returns gear and leaves no repeat-ride UI',t=>{
+ const {e,click}=setup(t);let returns=0;window.addEventListener('lab:return-winter',()=>returns++);
+ e.show('ski');click();e.update(45);const gate=walkToStart(e.rides,'main');e.proximity(gate.x,gate.z);click();let p=e.update(0,{});
+ for(let i=0;i<10000&&!p.finished;i++){const desired=Math.atan2(skiRunCenter(p.z+6,'main')-p.x,6),delta=Math.atan2(Math.sin(p.heading-desired),Math.cos(p.heading-desired));p=e.update(.025,{push:true,steer:Math.max(-1,Math.min(1,delta*2.5))});}
+ assert.ok(p.finished);assert.equal(p.speed,0);assert.equal(p.mode,'');assert.equal(e.active,false);assert.equal(returns,1);assert.equal(e.lifecycle.state,'Idle');
+ for(const selector of ['#place-card','#ride-hud','#ski-controls'])assert.equal(document.querySelector(selector).hidden,true);
+ assert.equal(document.querySelector('#ride-label').textContent,'');e.proximity(p.x,p.z);assert.equal(document.querySelector('#place-card').hidden,true);
+ e.proximity(-36,-185+alpineShift);assert.equal(document.querySelector('#place-card').hidden,false);click();assert.equal(e.rides.mode,'lift');
+});
+test('dismissed facility prompts stay hidden until leaving, including after seated actions',t=>{
+ const {e,click}=setup(t);e.proximity(387,8.7);click();assert.equal(e.active,true);e.update(.1,{x:1});e.proximity(387,8.7);assert.equal(document.querySelector('#place-card').hidden,true);e.proximity(400,12);e.proximity(387,8.7);assert.equal(document.querySelector('#place-card').hidden,false);
+ document.querySelector('#close-place').click();e.proximity(387,8.7);assert.equal(document.querySelector('#place-card').hidden,true);
+});
+
+test('walking up to a fire faces it without creating a ride and movement releases facing',t=>{
+ const {e,click}=setup(t);e.proximity(-3,-347.5+alpineShift);click();assert.equal(e.update(.1,{}),null);assert.equal(e.focusGesture,'warm');assert.equal(e.facing,Math.PI);assert.equal(e.rides.mode,'');e.update(.1,{x:1});assert.equal(e.facing,null);assert.equal(e.focusGesture,'');
 });

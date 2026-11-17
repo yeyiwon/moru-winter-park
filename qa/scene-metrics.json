@@ -1,10 +1,10 @@
 {
   "environment": "Node v22.4.1 darwin arm64",
   "measurement": "CPU scene geometry construction; no browser, WebGL or GPU rendering",
-  "sceneConstructionMs": 63786.15,
+  "sceneConstructionMs": 148022.1,
   "meshObjects": 771,
   "materials": 214,
-  "triangles": 4200466.333333334,
+  "triangles": 4200658.333333334,
   "renderFPS": null,
   "largestMeshes": [
     {
@@ -49,11 +49,6 @@
     },
     {
       "name": "",
-      "parent": "alpine-mountain",
-      "triangles": 74792
-    },
-    {
-      "name": "",
       "parent": "",
       "triangles": 71448
     },
@@ -61,6 +56,11 @@
       "name": "",
       "parent": "",
       "triangles": 70528
+    },
+    {
+      "name": "",
+      "parent": "alpine-mountain",
+      "triangles": 68660
     },
     {
       "name": "",

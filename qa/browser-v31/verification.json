@@ -1,0 +1,262 @@
+{
+  "checks": [
+    {
+      "name": "desktop UI alignment",
+      "result": {
+        "palette": 6,
+        "form": {
+          "r": {
+            "x": 460,
+            "y": 12,
+            "width": 520,
+            "height": 876,
+            "top": 12,
+            "right": 980,
+            "bottom": 888,
+            "left": 460
+          },
+          "overflow": false
+        }
+      }
+    },
+    {
+      "name": "laptop UI alignment",
+      "result": {
+        "palette": 6,
+        "form": {
+          "r": {
+            "x": 252,
+            "y": 12,
+            "width": 520,
+            "height": 676,
+            "top": 12,
+            "right": 772,
+            "bottom": 688,
+            "left": 252
+          },
+          "overflow": false
+        }
+      }
+    },
+    {
+      "name": "tablet UI alignment",
+      "result": {
+        "palette": 6,
+        "form": {
+          "r": {
+            "x": 124,
+            "y": 12,
+            "width": 520,
+            "height": 930.6875,
+            "top": 12,
+            "right": 644,
+            "bottom": 942.6875,
+            "left": 124
+          },
+          "overflow": false
+        }
+      }
+    },
+    {
+      "name": "phone UI alignment",
+      "result": {
+        "palette": 6,
+        "form": {
+          "r": {
+            "x": 19,
+            "y": 12,
+            "width": 352,
+            "height": 820,
+            "top": 12,
+            "right": 371,
+            "bottom": 832,
+            "left": 19
+          },
+          "overflow": false
+        }
+      }
+    },
+    {
+      "name": "small UI alignment",
+      "result": {
+        "palette": 6,
+        "form": {
+          "r": {
+            "x": 19,
+            "y": 12,
+            "width": 282,
+            "height": 616,
+            "top": 12,
+            "right": 301,
+            "bottom": 628,
+            "left": 19
+          },
+          "overflow": false
+        }
+      }
+    },
+    {
+      "name": "landscape UI alignment",
+      "result": {
+        "palette": 6,
+        "form": {
+          "r": {
+            "x": 162,
+            "y": 12,
+            "width": 520,
+            "height": 374,
+            "top": 12,
+            "right": 682,
+            "bottom": 386,
+            "left": 162
+          },
+          "overflow": false
+        }
+      }
+    },
+    {
+      "name": "wish saves selected color; panel closes; peer animates once",
+      "result": true
+    },
+    {
+      "name": "two guests board independent seats of the same lift",
+      "result": [
+        {
+          "cabin": 358987108,
+          "seat": 0
+        },
+        {
+          "cabin": 358987108,
+          "seat": 1
+        }
+      ]
+    },
+    {
+      "name": "lift avatar remains aligned with physical seat",
+      "result": {
+        "seat": 0,
+        "local": [
+          -0.6250000000000001,
+          0.8199999999999998,
+          -1.4210854715202007e-14
+        ],
+        "camera": [
+          -26.889679534643903,
+          4.894526596632273,
+          -102.78087246842448
+        ]
+      }
+    },
+    {
+      "name": "live ski steering completes with equipment, camera and UI cleanup",
+      "result": {
+        "mode": "",
+        "gear": "none",
+        "accessory": "eyes-heart",
+        "phase": "Idle",
+        "ui": [
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    {
+      "name": " ",
+      "result": [
+        -0.023499934921335477,
+        0.4143714023587623,
+        0.9771155719533445
+      ]
+    },
+    {
+      "name": "  actual:",
+      "result": [
+        5.012867353168046,
+        4.834863126429942,
+        -3.72405935381334
+      ]
+    },
+    {
+      "name": "carousel camera framing and dismount cleanup",
+      "result": [
+        [
+          -0.022427652908364726,
+          -0.06310038563874035,
+          0.9781673744037414
+        ],
+        [
+          -0.023499934921335477,
+          0.4143714023587623,
+          0.9771155719533445
+        ]
+      ]
+    },
+    {
+      "name": " ",
+      "result": [
+        0.5656428769835268,
+        0.2547318170163511,
+        0.9438789850018222
+      ]
+    },
+    {
+      "name": "  actual:",
+      "result": [
+        -36.77868963880738,
+        2.318347695842533,
+        -5.049256457296313
+      ]
+    },
+    {
+      "name": "ferris camera framing and dismount cleanup",
+      "result": [
+        [
+          0.5456692113178594,
+          -0.8590539625831033,
+          0.9458665847009466
+        ],
+        [
+          0.5656428769835268,
+          0.2547318170163511,
+          0.9438789850018222
+        ]
+      ]
+    },
+    {
+      "name": "campfire activity ends on movement",
+      "result": true
+    },
+    {
+      "name": "interior-tea activity and movement exit",
+      "result": true
+    },
+    {
+      "name": "interior-footbath activity and movement exit",
+      "result": true
+    },
+    {
+      "name": "interior-dining activity and movement exit",
+      "result": true
+    },
+    {
+      "name": "interior-rest activity and movement exit",
+      "result": true
+    },
+    {
+      "name": "triggers remain invisible and runtime healthy",
+      "result": {
+        "count": 8,
+        "allHidden": true
+      }
+    },
+    {
+      "name": "mobile simultaneous movement and jump preserved",
+      "result": true
+    }
+  ],
+  "errors": [],
+  "physicalMobile": false,
+  "evidence": "gameplay-full.log",
+  "recoveredFromConsoleChecks": true
+}
