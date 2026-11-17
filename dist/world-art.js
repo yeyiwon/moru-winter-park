@@ -1,3 +1,5 @@
+import {buildMuseumLandmark} from './museum-world.js';
+import {buildConservatoryLandmark} from './conservatory-world.js';
 import {pathRoutes} from './path-routes.js';
 import {postOffice,skateRental,rinkEntry} from './retreat-layout.js';
 import {festivalDestinations} from './festival-layout.js';
@@ -86,7 +88,7 @@ export function buildArchipelago(api){
     for(let i=0;i<5;i++){const a=i*2.4+rand()*.5,lobe=mesh(canopyGeo,M(color,.96,0),dx+Math.cos(a)*height*.17*scale,height*dy+(rand()-.4)*height*.18,dz+Math.sin(a)*height*.16*scale,g);lobe.scale.set(height*.16*scale,height*.14*scale,height*.16*scale);}}
     return g;
   }
-  const quiz=groupAt(islands.find(i=>i.id==='philosophy'));aurora.quiz(quiz);
+  const museum=buildMuseumLandmark(scene),botanical=buildConservatoryLandmark(scene);
   const strings=[];
   // The old clock, gear wheels and decorative boats are intentionally removed.
   // Designed promenades and planted borders replace random grass and pebble rings.
@@ -98,15 +100,7 @@ export function buildArchipelago(api){
   for(const [a,b]of bridges){const len=Math.hypot(b.x-a.x,b.z-a.z),ux=(b.x-a.x)/len,uz=(b.z-a.z)/len;promenade([[a.x+ux*(a.r-2),a.z+uz*(a.r-2)],[b.x-ux*(b.r-2),b.z-uz*(b.r-2)]],6.4);}
   promenade.flush();
   function planter(parent,x,z,rx,rz,color){const base=cylinder(1,1.03,.19,bedStone,x,.1,z,parent,40);base.scale.set(rx,1,rz);const inside=cylinder(.91,.91,.035,soil,x,.21,z,parent,40);inside.scale.set(rx,1,rz);const bloom=M(color,.92,0),foliage=M('#4b6d64',.98,0);for(const [dx,dz,scale] of [[-.38,.08,.48],[.16,-.24,.6],[.45,.26,.35]]){const bush=mesh(canopyGeo,foliage,x+dx*rx,.37,z+dz*rz,parent);bush.scale.set(rx*scale,.26,rz*scale);}for(const [dx,dz,h] of [[-.43,-.15,.65],[-.12,.34,.61],[.23,-.39,.71],[.54,.12,.62],[.02,-.01,.78]]){const fx=x+dx*rx,fz=z+dz*rz;rod([fx,.22,fz],[fx,h,fz],.014,foliage,parent);for(let j=0;j<5;j++){const a=j*Math.PI*2/5,petal=ball(bloom,fx+Math.cos(a)*.075,h,fz+Math.sin(a)*.075,.069,parent);petal.scale.set(1,.45,.9);}ball(ivory,fx,h+.025,fz,.038,parent);}}
-  for(const island of islands.filter(island=>island.id==='philosophy')){
-    const g=groupAt(island);
-    const positions={science:[[-10,-6,2,1.2]],law:[[-8,-5,1.4,2.2],[8,-5,1.7,1.3]],philosophy:[[-9,-4,1.5,2],[9,5,1.8,1.2]],nature:[],art:[],history:[[-10,-6,1.8,1.1],[10,4,1.4,2]]}[island.id];
-    for(const [x,z,rx,rz] of positions)planter(g,x,z,rx,rz,island.color);
-    for(const [x,z] of (island.id==='nature'?[]:island.id==='philosophy'?[]:[[-11,-7]]))tree(g,x,z,3.2,island.id==='nature'?'#619781':'#71788e');
-    const lampMat=new THREE.MeshBasicMaterial({color:'#f4d5ab'});
-    for(const [x,z] of (island.id==='science'?[[-5,8]]:island.id==='nature'?[[-3,-12],[3,-12]]:island.id==='art'?[[8,3],[-7,4]]:[[-5,8],[8,2]])){cylinder(.055,.11,1.65,gold,x,.82,z,g,10);cylinder(.16,.19,.33,lampMat,x,1.8,z,g,8);cylinder(0,.25,.19,gold,x,2.06,z,g,8);halo(x,1.8,z,'#f8d6a8',1.6,g);}
-  }
   // Soft environmental reflections on brass and glass; no external texture downloads.
   const envCanvas=document.createElement('canvas');envCanvas.width=512;envCanvas.height=256;const ctx=envCanvas.getContext('2d'),grad=ctx.createLinearGradient(0,0,0,256);grad.addColorStop(0,'#293754');grad.addColorStop(.45,'#a7b8cd');grad.addColorStop(.52,'#677e9b');grad.addColorStop(1,'#172b30');ctx.fillStyle=grad;ctx.fillRect(0,0,512,256);const env=new THREE.CanvasTexture(envCanvas);env.mapping=THREE.EquirectangularReflectionMapping;env.colorSpace=THREE.SRGBColorSpace;scene.environment=env;scene.environmentIntensity=.35;
-  return {grain,tree,planter,strings,setQuality:treeIllumination.setQuality,dynamic:[treeIllumination.root,...rotations.map(r=>r.g),...(aurora.dynamic||[])],update(t){treeIllumination.update(t);for(const {g,s,balance} of rotations){if(balance)g.rotation.z=Math.sin(t*.4)*.06;else g.rotation.z=t*s;}aurora.update(t);}};
+  return {grain,tree,planter,strings,setQuality(q){treeIllumination.setQuality(q);museum.setQuality(q);botanical.setQuality(q);},dynamic:[museum.root,botanical.root,treeIllumination.root,...rotations.map(r=>r.g),...(aurora.dynamic||[])],update(t){museum.update(t);botanical.update(t);treeIllumination.update(t);for(const {g,s,balance} of rotations){if(balance)g.rotation.z=Math.sin(t*.4)*.06;else g.rotation.z=t*s;}aurora.update(t);}};
 }

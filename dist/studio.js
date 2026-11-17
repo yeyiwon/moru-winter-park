@@ -28,7 +28,7 @@ function update(persist=true){
 function selectTab(id){for(const b of tabs){const active=b.dataset.studio===id;b.setAttribute('aria-selected',active);b.tabIndex=active?0:-1;document.getElementById('pane-'+b.dataset.studio).hidden=!active;}window.labPreviewVisible=studio.open&&id==='fluff';window.dispatchEvent(new Event('lab:preview'));}
 function openStudio(tab){document.getElementById('park-menu').open=false;window.dismissParkDiscovery?.();if(!studio.open)studio.showModal();document.body.classList.add('studio-open');selectTab(tab);window.dispatchEvent(new Event('lab:pause'));window.labSound?.('open');}
 function closeStudio(){if(document.body.classList.contains('invite-gate'))return;closeDialog(studio);}
-document.getElementById('open-social').onclick=()=>openStudio('social');document.getElementById('open-map').onclick=()=>openStudio('map');document.getElementById('open-wardrobe').onclick=()=>openStudio('fluff');document.getElementById('open-settings').onclick=()=>openStudio('light');document.getElementById('close-studio').onclick=closeStudio;
+window.openWinterSettings=openStudio;document.getElementById('open-map').onclick=()=>openStudio('map');document.getElementById('open-settings').onclick=()=>openStudio('light');document.getElementById('close-studio').onclick=closeStudio;
 studio.addEventListener('close',()=>{document.body.classList.remove('studio-open');window.labPreviewVisible=false;window.dispatchEvent(new Event('lab:preview'));document.querySelector('#park-menu summary').focus({preventScroll:true});window.labSound?.('close');});
 studio.addEventListener('click',e=>{if(e.target===studio){const r=studio.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeStudio();}const b=e.target.closest('button');if(!b)return;if(b.dataset.studio){selectTab(b.dataset.studio);window.labSound?.('select');}for(const key of ['light','fur','accessory'])if(b.dataset[key]){appearance[key]=key==='accessory'?toggleItem(appearance[key],b.dataset[key]):b.dataset[key];update();window.labSound?.('select');}});
 studio.querySelector('[role=tablist]').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const current=tabs.indexOf(document.activeElement),index=e.key==='Home'?0:e.key==='End'?tabs.length-1:(current+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;selectTab(tabs[index].dataset.studio);tabs[index].focus();});
@@ -41,3 +41,13 @@ window.addEventListener('keydown',e=>{if(document.body.classList.contains('invit
 studio.addEventListener('click',e=>{const tab=e.target.closest('[data-custom-tab]');if(tab){studio.querySelectorAll('[data-custom-tab]').forEach(b=>b.setAttribute('aria-pressed',b===tab));studio.querySelectorAll('[data-custom-panel]').forEach(p=>p.hidden=p.dataset.customPanel!==tab.dataset.customTab);}if(e.target.closest('[data-reset-eyes]')){appearance.accessory=normalizeWardrobe(selectedItems(appearance.accessory).filter(v=>!v.startsWith('eyes-')).join(','));update();}});
 
 studio.addEventListener('cancel',e=>{e.preventDefault();closeStudio();});
+// Escape closes the topmost interaction first; only an unobstructed game opens settings.
+document.addEventListener('keydown',e=>{
+ if(e.key!=='Escape'||e.defaultPrevented||e.repeat||e.isComposing||document.body.classList.contains('invite-gate'))return;
+ if(document.querySelector('dialog[open], [popover]:popover-open')||document.body.matches('.chat-typing,.emote-open')||document.querySelector('#tree-tools:not([hidden])'))return;
+ if(e.target.closest?.('input,textarea,select,[contenteditable=true]'))return;
+ const menu=document.querySelector('#park-menu');if(menu.open){menu.open=false;return;}
+ e.preventDefault();openStudio('light');
+});
+
+window.addEventListener('lab:restore-appearance',e=>{const value=e.detail;if(!value)return;for(const key of ['fur','accessory','fluff','roundness'])if(value[key]!==undefined)appearance[key]=value[key];appearance.accessory=normalizeWardrobe(appearance.accessory);update();});

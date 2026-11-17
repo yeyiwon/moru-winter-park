@@ -17,7 +17,9 @@ export const ambientSources=[
  {id:'festival',kind:'festival',x:0,y:2,z:5,radius:32,level:.13},
  {id:'ryokan-room',kind:'room',x:400,y:2,z:0,radius:28,level:.16},
  {id:'ryokan-water',kind:'water',x:400,y:.3,z:-11,radius:14,level:.25},
- {id:'quiz-room',kind:'room',x:46,y:2,z:27,radius:15,level:.1}
+ {id:'quiz-room',kind:'room',x:600,y:2,z:0,radius:28,level:.1},
+ {id:'aquarium-water',kind:'water',x:388,y:2,z:15.1,radius:13,level:.12},
+ {id:'botanical-falls',kind:'waterfall',x:800,y:3,z:-6.7,radius:24,level:.22}
 ];
 export function sourceLevel(source,position){const d=Math.hypot(position.x-source.x,(position.y-source.y)*.35,position.z-source.z),n=Math.max(0,1-d/source.radius);return n*n*source.level;}
 export function nearestSources(position,limit=4){return ambientSources.map(s=>({...s,gain:sourceLevel(s,position)})).filter(s=>s.gain>.002).sort((a,b)=>b.gain-a.gain).slice(0,limit);}

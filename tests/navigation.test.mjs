@@ -16,7 +16,7 @@ test('every island arrival and exhibit is reachable, and the direct park-to-spa 
  assert.equal(layout.surfaceHeight(2.6,8),.09);
 });
 
-test('removed memory landmark leaves continuous snowfield without a redundant bridge',()=>{assert.equal(layout.terrainAt(-46,-27),true);assert.equal(layout.bridges.some(pair=>pair.some(i=>i.id==='history')),false);checkRoute(home,{x:44,z:24});});
+test('removed memory landmark leaves continuous snowfield without a redundant bridge',()=>{assert.equal(layout.terrainAt(-46,-27),true);assert.equal(layout.bridges.some(pair=>pair.some(i=>i.id==='history')),false);checkRoute(home,{x:33,z:25});});
 
 test('observatory removal leaves a direct unobstructed park to alpine bridge',()=>{assert.equal(layout.islands.find(i=>i.id==='science').hidden,true);for(let z=-32;z>=-82;z-=.5)assert.ok(canStandAt(0,z));checkRoute(home,{x:0,z:-82});});
 

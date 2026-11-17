@@ -57,6 +57,20 @@
       "when": 1794909805294,
       "tag": "0007_shared_ride_seats",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "6",
+      "when": 1794937908149,
+      "tag": "0008_regions_operations",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "6",
+      "when": 1794939535292,
+      "tag": "0009_appearance",
+      "breakpoints": true
     }
   ]
 }

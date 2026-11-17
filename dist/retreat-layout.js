@@ -2,8 +2,8 @@ import {treeLayout,treeShift} from './tree-layout.js';
 import {spaShift} from './resort-layout.js';
 // Shared footprints for the post office, rink and its accessible east gate.
 // Left of the eastbound bridge: a side court leaves the direct tree approach open.
-export const postOffice={x:88+treeShift,z:20,w:6,d:4,yaw:0,entry:{x:88+treeShift,z:23.5}};
-export const postOfficeHost={x:92+treeShift,z:24.5,r:.75};
+export const postOffice={x:35,z:10,w:6,d:4,yaw:0,entry:{x:35,z:13.5}};
+export const postOfficeHost={x:39,z:13.5,r:.75};
 export function boothPoint(p,x,z){const yaw=p.yaw||0;return{x:p.x+x*Math.cos(yaw)+z*Math.sin(yaw),z:p.z-x*Math.sin(yaw)+z*Math.cos(yaw)};}
 export const rinkBounds={x:-58,z:94+spaShift,rx:22,rz:15,iceY:.115,fenceRx:22.7,fenceRz:15.7,gateHalfWidth:2.4};
 export const rinkEntry={x:-34,z:94+spaShift};

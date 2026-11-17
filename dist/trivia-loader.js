@@ -13,3 +13,8 @@ export async function loadTrivia(win=typeof window==='undefined'?null:window){
  try{const r=await (win?.fetch||fetch)('/api/quiz',{signal:AbortSignal.timeout(2000)});if(r.ok){const data=await r.json(),map=new Map(items.map(q=>[q.id,q]));for(const q of data.overrides||[])if(validTrivia(q))map.set(q.id,q);items=[...map.values()];}}catch{}
  return items.filter(q=>!q.disabled).length?items:fallbackTrivia;
 }
+
+export function galleryQuestions(items,categories,date=new Date()){
+ const pool=items.filter(q=>validTrivia(q)&&!q.disabled&&categories.includes(q.category)).sort((a,b)=>a.id.localeCompare(b.id));if(!pool.length)return dailyQuestions(items,date);
+ const offset=Math.floor((date.getTime()+9*3600000)/86400000)%pool.length;return Array.from({length:Math.min(6,pool.length)},(_,i)=>pool[(offset+i)%pool.length]);
+}

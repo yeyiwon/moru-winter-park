@@ -19,17 +19,17 @@ test('every indoor activity can be reached on foot from the entrance',()=>{
 });
 
 test('interior assets use bounded finite geometry, real floor heights and camera-cutaway walls',()=>{
- const scene=new T.Scene(),asset=buildInteriors(scene);let count=0,triangles=0;scene.updateMatrixWorld(true);
+ const scene=new T.Scene(),asset=buildInteriors(scene,{lazy:true});asset.ensure('ryokan');let count=0,triangles=0;scene.updateMatrixWorld(true);
  scene.traverse(o=>{if(o.isMesh){count++;triangles+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;for(const a of Object.values(o.geometry.attributes))for(const v of a.array)assert.ok(Number.isFinite(v));}});
  assert.ok(count<100);assert.ok(triangles<180000);assert.equal(asset.root.visible,false);asset.setActive('ryokan');assert.equal(asset.rooms.ryokan.root.visible,true);assert.equal(asset.rooms.conservatory,undefined);
  const room=asset.rooms.ryokan;asset.setCamera({x:400,y:10,z:20});assert.equal(room.ceiling.visible,false);assert.ok(room.walls.some(w=>!w.visible));assert.ok(room.walls.every(w=>w.children.some(c=>c.isMesh)),'merged wall meshes retain their cutaway groups');
- asset.setActive('conservatory');assert.equal(asset.active,null);assert.equal(asset.root.visible,false);
+ asset.setActive('conservatory');assert.equal(asset.active,'conservatory');assert.equal(asset.rooms.ryokan.root.visible,false);assert.equal(asset.rooms.conservatory.root.visible,true);
 });
 
 test('activity poses align with their real furniture surface and remain valid for presence',()=>{
  const scene=new T.Scene(),asset=buildInteriors(scene);scene.updateMatrixWorld(true);
  for(const [id,pose]of Object.entries(interiorActivityPoses)){
-  assert.ok(Math.abs(pose.y-pose.seatY-.82)<1e-9,id);
+  if(pose.standing){assert.ok(interiorPositionValid(pose.x,pose.y,pose.z),id);continue;}assert.ok(Math.abs(pose.y-pose.seatY-.82)<1e-9,id);
   const ray=new T.Raycaster(new T.Vector3(pose.x,pose.seatY+.08,pose.z),new T.Vector3(0,-1,0),0,.12);
   const hits=ray.intersectObject(asset.rooms[pose.room].root,true);
   assert.ok(hits.some(h=>Math.abs(h.point.y-pose.seatY)<.006),id+' has a real cushion/seat under the avatar');

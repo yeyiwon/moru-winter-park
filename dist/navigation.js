@@ -7,7 +7,7 @@ export function clearSegment(a,b){
 }
 function gridFor(room){
  const key=room?.id||'outdoors';if(grids.has(key))return grids.get(key);
- const minX=room?room.x-room.rx:-146.2,minZ=room?room.z-room.rz:-407.15,width=room?Math.ceil(room.rx*2/STEP)+1:345,height=room?Math.ceil(room.rz*2/STEP)+1:670;
+ const minX=room?room.x-room.rx:-184.45,minZ=room?room.z-room.rz:-407.15,width=room?Math.ceil(room.rx*2/STEP)+1:390,height=room?Math.ceil(room.rz*2/STEP)+1:670;
  const point=i=>({x:minX+i%width*STEP,z:minZ+Math.floor(i/width)*STEP}),walkable=new Int8Array(width*height);
  // Unknown cells are evaluated on demand. Building the full 231k-cell world
  // grid synchronously made the first obstructed click freeze for several seconds.

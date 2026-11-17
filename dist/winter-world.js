@@ -63,19 +63,17 @@ export function buildWinterWorld(api){
   // The living leader reaches the crown; the topper no longer floats above a flat cut-off.
   cylinder(.022,.12,h*.1,cedar,x,h*.9,z,g,10);
   for(let tier=0;tier<5;tier++)for(let j=0;j<7;j++){const length=h*(.036-tier*.006),origin=new THREE.Vector3(x,h*(.855+tier*.018),z),a=j*Math.PI*2/7+tier*2.399;bough(origin,a,length,length*.17,length*.09,pine[(tier+j)%3]);if(j%2===0)bough(origin,a,length,length*.13,length*.09,snow,true);}
-  const opal=new THREE.MeshPhysicalMaterial({color:'#d8e7eb',emissive:'#a7d5ef',emissiveIntensity:.28,roughness:.26,metalness:.25,clearcoat:1,iridescence:.4,transparent:true,opacity:.72,depthWrite:false,iridescenceIOR:1.35,side:THREE.DoubleSide});
-  const ribbonGold=brass.clone();ribbonGold.emissive.set('#ffd59a');ribbonGold.emissiveIntensity=.38;
-  for(const material of [opal,ribbonGold]){material.onBeforeCompile=shader=>{shader.uniforms.uRibbonTime=ribbonTime;shader.vertexShader='uniform float uRibbonTime;varying float vRibbonHeight;\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvRibbonHeight=position.y;float wave=sin(position.y*.65-uRibbonTime*.65+position.x*.3);transformed.x+=wave*.38;transformed.z+=cos(position.y*.5-uRibbonTime*.75)*.38;transformed.y+=sin(position.y*.8+uRibbonTime)*.22;');shader.fragmentShader='uniform float uRibbonTime;varying float vRibbonHeight;\n'+shader.fragmentShader;shader.fragmentShader=shader.fragmentShader.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\nfloat pulse=pow(.5+.5*sin(vRibbonHeight*.75-uRibbonTime*1.4),10.);totalEmissiveRadiance+=vec3(.95,.67,.35)*pulse*.8;');};material.customProgramCacheKey=()=> 'animated-tree-ribbon-v3';}
+  const opal=new THREE.ShaderMaterial({transparent:true,depthWrite:false,side:THREE.DoubleSide,uniforms:{time:ribbonTime},vertexShader:`uniform float time;varying vec2 vUv;void main(){vUv=uv;vec3 p=position;p.x+=sin(position.y*.52-time*.36)*.12;p.z+=cos(position.y*.7-time*.29)*.13;p.y+=sin(position.y*.42+time*.3)*.08;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`,fragmentShader:`uniform float time;varying vec2 vUv;void main(){float edge=exp(-pow((vUv.y-.5)*5.,2.));float w=.5+.5*sin(vUv.x*63.-time*.36+sin(vUv.x*17.)*2.);float sweep=pow(.5+.5*sin(vUv.x*24.-time*.5),12.);float ends=smoothstep(0.,.04,vUv.x)*(1.-smoothstep(.96,1.,vUv.x));float alpha=edge*ends*(.025+w*.07+sweep*.2);gl_FragColor=vec4(mix(vec3(.8,.87,.84),vec3(1.,.85,.57),sweep),alpha);}`});
 
   const ribbonPositions=[],ribbonUvs=[],ribbonIndices=[],edges=[[],[]],pts=[];
   // An open spiral leaves room for the ornaments added by visitors.
   for(let i=0;i<=256;i++){
-   const t=i/256,a=t*Math.PI*2*4.3+.7,r=h*.29*(1-t*.94)+.1,y=2.6+t*h*.81,width=.19+(1-t)*.15;
+   const t=i/256,a=t*Math.PI*2*4.3+.7,r=h*.29*(1-t*.94)+.1,y=2.6+t*h*.81,width=.075+(1-t)*.055;
    for(let side=0;side<2;side++){const p=new THREE.Vector3(x+Math.cos(a)*r,y+(side?width:-width),z+Math.sin(a)*r);ribbonPositions.push(p.x,p.y,p.z);ribbonUvs.push(t,side);edges[side].push(p);}
    if(i<256){const k=i*2;ribbonIndices.push(k,k+1,k+2,k+1,k+3,k+2);}
   }
   const ribbonGeo=new THREE.BufferGeometry();ribbonGeo.setAttribute('position',new THREE.Float32BufferAttribute(ribbonPositions,3));ribbonGeo.setAttribute('uv',new THREE.Float32BufferAttribute(ribbonUvs,2));ribbonGeo.setIndex(ribbonIndices);ribbonGeo.computeVertexNormals();mesh(ribbonGeo,opal,0,0,0,g);
-  for(const edge of edges)mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(edge),200,.018,4,false),ribbonGold,0,0,0,g);
+
   for(let i=0;i<360;i++){
    const t=i/359,y=2.3+t*h*.82,a=t*Math.PI*2*7,r=h*.29*(1-t*.94)+.12,p=new THREE.Vector3(x+Math.cos(a)*r,y,z+Math.sin(a)*r);pts.push(p);
    if(i%3===0)ball(candle,p.x,p.y,p.z,.075+(1-t)*.016,g);
@@ -95,7 +93,6 @@ export function buildWinterWorld(api){
 
  const mountain=buildAlpineResort(api),retreat=buildSpaResort(api),rides=resortRides,rideChair=mountain.rideChair;
 
- const quiet=place(50,34,'quiet-garden');cylinder(2.3,2.5,.1,M('#687971',.94,0),0,.13,0,quiet,48);for(let i=0;i<5;i++){const a=i*1.26;const pad=oval(M('#b3a2a1',.95,0),Math.cos(a)*1.5,.28,Math.sin(a)*1.5,.48,.13,.4,quiet);pad.rotation.y=-a;}cylinder(.35,.4,.4,stone,0,.4,0,quiet,32);ball(candle,0,.65,0,.1,quiet);halo(0,.65,0,'#ffddb2',1.6,quiet);target(quiet,'healing',0,.7,0,4.5,1.4,4.5);
 
  // Batch static geometry by material; retain moving chairs, steam and hit targets.
  root.updateMatrixWorld(true);const groups=new Map();root.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||o.userData.snowTrail||Array.isArray(o.material)||moving.has(o))return;let parent=o.parent;while(parent&&parent!==root){if(moving.has(parent))return;parent=parent.parent;}if(!o.geometry.attributes.normal||!o.geometry.attributes.uv)return;const key=o.material.uuid+':'+spatialBatchKey(o);if(!groups.has(key))groups.set(key,{material:o.material,items:[]});groups.get(key).items.push(o);});

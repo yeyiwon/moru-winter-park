@@ -30,7 +30,7 @@ test('expressions use rounded geometry and remain distinct while blinking and sk
   const pet=createCompanion({detail:'remote'});
   pet.customize({accessory:'eyes-flat'});pet.pose({time:5.6});assert.equal(pet.eyes[0].geometry.type,'CapsuleGeometry');assert.equal(pet.eyes[0].children[0].visible,false);assert.equal(pet.eyes[0].scale.y,1);
   pet.customize({accessory:'eyes-round'});pet.pose({still:true});assert.equal(pet.eyes[0].scale.x,pet.eyes[0].scale.y);
-  pet.customize({accessory:'eyes-goofy'});pet.pose({still:true});assert.equal(pet.eyes[0].material.color.getHexString(),'fffaf3');assert.equal(pet.eyes[0].children[0].position.y,pet.eyes[1].children[0].position.y);
+  pet.customize({accessory:'eyes-goofy'});pet.pose({still:true});assert.equal(pet.eyes[0].material.color.getHexString(),'fff8ed');assert.equal(pet.eyes[0].children[0].position.y,pet.eyes[1].children[0].position.y);
   pet.customize({accessory:'eyes-wink'});assert.equal(normalizeWardrobe('eyes-wink'),'none');assert.ok(pet.eyes.every(eye=>eye.geometry.type==='SphereGeometry'));
   pet.customize({accessory:'eyes-sleepy,sunglasses'});pet.pose({mode:'ski',lean:1});assert.ok(pet.eyes.every(eye=>eye.geometry.type==='TubeGeometry'));assert.equal(pet.group.rotation.z,.2);assert.equal(pet.group.getObjectByName('sunglasses').visible,true);
   pet.customize({accessory:'none'});pet.pose({still:true});assert.equal(pet.eyes[0].geometry.type,'SphereGeometry');assert.equal(pet.eyes[0].scale.y,.094);assert.equal(pet.eyes[0].children[0].visible,true);

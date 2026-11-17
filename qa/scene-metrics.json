@@ -1,10 +1,10 @@
 {
   "environment": "Node v22.4.1 darwin arm64",
   "measurement": "CPU scene geometry construction; no browser, WebGL or GPU rendering",
-  "sceneConstructionMs": 148022.1,
-  "meshObjects": 771,
-  "materials": 214,
-  "triangles": 4200658.333333334,
+  "sceneConstructionMs": 25095.27,
+  "meshObjects": 802,
+  "materials": 213,
+  "triangles": 4188824.3333333335,
   "renderFPS": null,
   "largestMeshes": [
     {
@@ -33,6 +33,11 @@
       "triangles": 126720
     },
     {
+      "name": "",
+      "parent": "",
+      "triangles": 125184
+    },
+    {
       "name": "winter-palace-metal",
       "parent": "winter-palace",
       "triangles": 118892
@@ -49,16 +54,6 @@
     },
     {
       "name": "",
-      "parent": "",
-      "triangles": 71448
-    },
-    {
-      "name": "",
-      "parent": "",
-      "triangles": 70528
-    },
-    {
-      "name": "",
       "parent": "alpine-mountain",
       "triangles": 68660
     },
@@ -66,6 +61,11 @@
       "name": "",
       "parent": "spa-resort",
       "triangles": 67260
+    },
+    {
+      "name": "",
+      "parent": "",
+      "triangles": 63360
     }
   ],
   "browserVisualVerification": "Separate browser checks are documented in docs/urgent-rendering-repair.md; these metrics are CPU-only"

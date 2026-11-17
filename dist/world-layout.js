@@ -1,3 +1,4 @@
+import {museumLayout,conservatoryLayout} from './district-layout.js';
 import {treeLayout,treeShift} from './tree-layout.js';
 import {castleView} from './castle-layout.js';
 import {interiorAt,interiorSurfaceHeight} from './interior-layout.js';
@@ -6,7 +7,7 @@ export const islands=[
   {id:'park',name:'별빛 놀이공원',subject:'관람차 · 회전목마',x:0,z:0,r:32,color:'#c9adff',spawn:{x:0,z:24},view:castleView},
   {id:'science',hidden:true,name:'유리별 관측소',subject:'망원경 · 별빛',x:0,z:-53,r:16,color:'#97d6f2',spawn:{x:0,z:-44}},
   {id:'law',hidden:true,name:'달빛 기록원',subject:'법과 사회 · 생명윤리',x:46,z:-27,r:16,color:'#eac795',spawn:{x:40,z:-22}},
-  {id:'philosophy',name:'별빛 퀴즈',subject:'가볍게 맞히는 잡지식',x:46,z:27,r:16,color:'#c3aff1',spawn:{x:39,z:23}},
+  {id:'philosophy',name:'별빛 만물관',subject:'천체 · 과학 · 자연 · 역사 · 퍼즐',x:52,z:27,r:25,color:'#c3aff1',spawn:museumLayout.arrival},
   {id:'art',hidden:true,name:'진주빛 음악당',subject:'음악과 반짝임',x:-46,z:27,r:16,color:'#e9afc8',spawn:{x:-39,z:23}},
   {id:'history',hidden:true,name:'기억의 산책길',subject:'역사와 문화 · 세상과 언어',x:-46,z:-27,r:16,color:'#edc88d',spawn:{x:-39,z:-23}},
   {id:'alpine',name:'설빛 산악 리조트',subject:'스키 · 리프트 · 눈썰매',x:alpine.x,z:alpine.z,r:alpine.r,color:'#a8c8d7',spawn:{x:8,z:-172+alpineShift}},
@@ -20,15 +21,17 @@ export const promenadeTrees=[
  {x:11,z:26,h:4.1,r:.35},{x:89+treeShift,z:42,h:4.6,r:.35},
  {x:96+treeShift,z:26,h:4.4,r:.35},{x:-19,z:55,h:4.0,r:.35}
 ];
+islands.push({id:'conservatory',name:'오로라 식물원',subject:'유리 돔 · 폭포 · 공중 산책로',x:conservatoryLayout.x,z:0,r:29,color:'#a9ded4',spawn:conservatoryLayout.arrival});
 export const bridgeHalfWidth=3.6;
 const landing=(x,z)=>({x,z,r:1});
-export const bridges=[[[24,14],[34,20]],[[0,30],[0,91+spaShift]],[[0,-27],[0,-43]]].map(([a,b])=>[landing(...a),landing(...b)]);
+export const bridges=[[[24,14],[34,20]],[[0,30],[0,91+spaShift]],[[0,-27],[0,-43]],[[-99,0],[-116,0]]].map(([a,b])=>[landing(...a),landing(...b)]);
 export function bridgeHeight(x,z){for(const [a,b] of bridges){const length=Math.hypot(b.x-a.x,b.z-a.z),d=((x-a.x)*(b.x-a.x)+(z-a.z)*(b.z-a.z))/length;if(d>=0&&d<=length&&segmentDistance(x,z,a,b)<bridgeHalfWidth+.4)return .09+Math.sin(d/length*Math.PI)*Math.min(.7,length*.025);}return .09;}
 export function segmentDistance(x,z,a,b){const dx=b.x-a.x,dz=b.z-a.z,t=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-a.x-t*dx,z-a.z-t*dz);}
 // The west gardens and rides share ONE large island. Other districts have real air gaps.
 export const landforms=[
+ {id:'conservatory',x:-145,z:0,rx:31,rz:27,depth:23,phase:3.2},
  {id:'park',x:-29,z:0,rx:75,rz:34,depth:24,phase:.2},
- {id:'philosophy',x:46,z:27,rx:19,rz:18,depth:16,phase:1.7},
+ {id:'philosophy',x:50,z:29,rx:26,rz:23,depth:16,phase:1.7},
  {id:'wish',x:treeLayout.x,z:treeLayout.z,rx:30,rz:29,depth:25,phase:4.3},
  {id:'spa',x:0,z:119+spaShift,rx:37,rz:32,depth:24,phase:5.7},
  {id:'rink',x:-58,z:94+spaShift,rx:36,rz:29,depth:19,phase:2.4},

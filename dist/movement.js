@@ -1,3 +1,4 @@
+import {districtObstacles} from './district-layout.js';
 import {treeLayout,treeShift} from './tree-layout.js';
 import {createStaticColliderIndex} from './collision-grid.js';
 import {postOfficeHost} from './retreat-layout.js';
@@ -12,10 +13,10 @@ import {resortObstacles,alpineHeight,spaShift} from './resort-layout.js';
 import {terrainAt,bridges,bridgeHalfWidth,promenadeTrees} from './world-layout.js';
 // Pure ground movement shared by keyboard, touch and click navigation.
 export const obstacles = [
- ...promenadeTrees,postOfficeHost,{x:-47.3,z:-181.5+alpineShift,r:.75},...resortObstacles,...festivalObstacles,{x:12,z:126+spaShift,w:12,d:11},{x:treeLayout.x,z:treeLayout.z,r:9.4},
+ ...districtObstacles,...promenadeTrees,postOfficeHost,{x:-47.3,z:-181.5+alpineShift,r:.75},...resortObstacles,...festivalObstacles,{x:12,z:126+spaShift,w:12,d:11},{x:treeLayout.x,z:treeLayout.z,r:9.4},
   ...parkObstacles,{x:-6.5,z:3,r:1.02},
   ...castleObstacles,
-  {x:41.45,z:31.2,r:.5},{x:50.55,z:31.2,r:.5},{x:38.2,z:24.2,r:.65},{x:53.8,z:24.2,r:.65},
+
 ];
 export const bodyRadius=.35;
 const obstacleIndex=createStaticColliderIndex(obstacles,{padding:bodyRadius});

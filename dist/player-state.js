@@ -1,5 +1,5 @@
 const riding={ski:'Skiing',lift:'RidingLift',ferris:'RidingFerrisWheel',carousel:'RidingCarousel',skate:'Skating',sled:'Sledding'};
-const seated=new Set(['bath','sauna','lie','tea','dining','rest']);
+const seated=new Set(['bath','sauna','lie','tea','dining','rest','view']);
 export function createPlayerState(onTransition=()=>{}){
  let state='Idle',indoor=false;
  return{

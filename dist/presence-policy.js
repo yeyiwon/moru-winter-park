@@ -14,5 +14,5 @@ export function createPresenceCache(){
 }
 export function interestSnapshot(people,self,request,now,rideSeats=[]){
  const farBucket=Math.floor(now/5000),known=new Set(Array.isArray(request.farIds)?request.farIds.slice(0,11):[]),riders=new Set(rideSeats.map(s=>s.id));
- return{farBucket,people:people.map(p=>request.farBucket===farBucket&&known.has(p.id)&&!riders.has(p.id)&&Math.hypot(p.x-self.x,p.z-self.z)>90?{id:p.id,name:p.name,distant:true,chat:p.chat,chatAt:p.chatAt,gesture:p.gesture,gestureAt:p.gestureAt}:p)};
+ return{farBucket,people:people.map(p=>request.farBucket===farBucket&&known.has(p.id)&&!riders.has(p.id)&&Math.hypot(p.x-self.x,p.z-self.z)>90?{id:p.id,name:p.name,region:p.region,distant:true,chat:p.chat,chatAt:p.chatAt,gesture:p.gesture,gestureAt:p.gestureAt}:p)};
 }

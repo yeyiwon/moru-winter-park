@@ -1,3 +1,4 @@
+import {museumLayout,conservatoryLayout} from './district-layout.js';
 import {mergeMeshGeometry,spatialBatchKey} from './mesh-batch.js';
 import {createFixtureGlow} from './fixture-glow.js';
 import {alpineShift} from './resort-layout.js';
@@ -78,7 +79,7 @@ const gateArms=[];
 const targets=[];
 const festival=buildFestivalRides(scene),retreat=buildWinterRetreat(scene);
 const winter=buildWinterWorld({scene,mesh,ball,cylinder,box,rod,torus,halo,M,glowMap});
-winter.destinations.push({id:'post-office',name:'소원 우체국',x:postOffice.entry.x,z:postOffice.entry.z,kind:'wish'},{id:'skating',name:'아이스링크',x:skateRental.entry.x,z:skateRental.entry.z,kind:'skating'}, {id:'carousel',name:'회전목마',x:16,z:12.2,kind:'ride'},{id:'ski-gear',name:'스키 장비',x:-44,z:-181.8+alpineShift,kind:'gear'}, {id:'ferris',name:'관람차',...ferrisDimensions.entrance,kind:'ride'},...festival.destinations.filter(d=>d.kind==='ride'||d.kind==='photo'));
+winter.destinations= winter.destinations.filter(p=>!['quiz','healing'].includes(p.id));winter.destinations.push({id:'castle',name:'겨울 성',x:0,z:-7,kind:'photo'}, {id:'quiz',name:'별빛 만물관',...museumLayout.door,kind:'museum'},{id:'conservatory',name:'오로라 식물원',...conservatoryLayout.door,kind:'conservatory'},{id:'post-office',name:'소원 우체국',x:postOffice.entry.x,z:postOffice.entry.z,kind:'wish'},{id:'skating',name:'아이스링크',x:skateRental.entry.x,z:skateRental.entry.z,kind:'skating'}, {id:'carousel',name:'회전목마',x:16,z:12.2,kind:'ride'},{id:'ski-gear',name:'스키 장비',x:-44,z:-181.8+alpineShift,kind:'gear'}, {id:'ferris',name:'관람차',...ferrisDimensions.entrance,kind:'ride'},...festival.destinations.filter(d=>d.kind==='ride'||d.kind==='photo'));
 const snowfolk=[];for(const p of [postOfficeHost,{x:-47.3,z:-181.5+alpineShift}]){const g=createSnowfolk();g.position.set(p.x,surfaceHeight(p.x,p.z),p.z);scene.add(g);snowfolk.push(g);}
 const festivalWarm=new THREE.Color('#ffe0a1'),festivalRose=new THREE.Color('#c6e8ee');const ridePoint=new THREE.Vector3();winter.parkRides={...festival,seat(kind,index=0){if(kind==='carousel'){const seat=seats[index%seats.length];seat.updateWorldMatrix(true,false);ridePoint.set(0,0,0).applyMatrix4(seat.matrixWorld);return{x:ridePoint.x,y:ridePoint.y+.82,z:ridePoint.z,yaw:spinning.rotation.y+Math.atan2(seat.getWorldDirection(new THREE.Vector3()).x,seat.getWorldDirection(new THREE.Vector3()).z)-spinning.rotation.y};}if(kind==='ferris')return ferrisModel.seat(index%12,0);return festival.seat(kind,index);}};
 let coinPulse=0;const occluders=[];scene.traverse(o=>{if(o.isMesh&&!o.material.transparent&&!o.material.isShaderMaterial&&o!==sky)occluders.push(o);});
