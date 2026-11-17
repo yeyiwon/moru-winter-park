@@ -7,7 +7,14 @@ import {resortRides,resortDestinations,skiStarts,skiRunCenter,alpineShift} from 
 import {walkToStart} from './ski-driver.mjs';
 import * as T from '../dist/vendor/three.module.js';
 import {ferrisDimensions} from '../dist/ferris-layout.js';
+import {treeLayout} from '../dist/tree-layout.js';
 function setup(t){const dom=new JSDOM(fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8'),{url:'https://winter.test'}),w=dom.window;t.after(()=>w.close());Object.assign(globalThis,{window:w,document:w.document,Event:w.Event,CustomEvent:w.CustomEvent,localStorage:w.localStorage});let trips=0;const winter={rides:resortRides,destinations:resortDestinations,rideChair:{visible:false,position:{set(){}},rotation:{set(){}}}},companion={gear:'ski',winterReady:true,equip(){}};return{e:createWinterExperience(winter,companion,()=>trips++),get trips(){return trips;},click(){document.querySelector('#place-actions button').click();}};}
+test('tree decoration is available around the entire plaza, with its prompt near the visitor',t=>{
+ setup(t);let opened=0;window.addEventListener('lab:tree-open',()=>opened++);
+ const winter={rides:resortRides,destinations:[{id:'tree',name:'소원 트리',...treeLayout.arrival}],rideChair:{visible:false}},e=createWinterExperience(winter,{equip(){}},()=>{});
+ for(let i=0;i<12;i++){const angle=i*Math.PI/6,x=treeLayout.x+Math.cos(angle)*20,z=treeLayout.z+Math.sin(angle)*20;e.proximity(x,z);assert.equal(document.querySelector('#place-card').hidden,false);assert.equal(document.querySelector('#place-actions button').getAttribute('aria-label'),'트리 꾸미기');assert.ok(Math.hypot(e.anchor.x-x,e.anchor.z-z)<3);document.querySelector('#place-actions button').click();}
+ assert.equal(opened,12);e.proximity(treeLayout.x+40,treeLayout.z);assert.equal(document.querySelector('#place-card').hidden,true);
+});
 test('marshmallow stays in hand, toasts at the fire, survives walking and can be eaten',t=>{
  const {e,click}=setup(t);e.rides.start('lift');e.update(45);e.proximity(10,-358.5+alpineShift);click();assert.equal(e.heldItem,'marshmallow');e.update(.1,{x:1});assert.equal(e.heldItem,'marshmallow');assert.equal(e.roast,0);
  e.proximity(-3,-347.5+alpineShift);click();e.update(2,{});assert.equal(e.gesture,'roast');assert.ok(e.roast>.3);e.update(.1,{x:1});assert.equal(e.gesture,'');const saved=e.roast;assert.equal(e.heldItem,'marshmallow');

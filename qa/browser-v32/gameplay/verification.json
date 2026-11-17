@@ -1,0 +1,261 @@
+{
+  "checks": [
+    {
+      "name": "desktop UI alignment",
+      "result": {
+        "palette": 7,
+        "form": {
+          "r": {
+            "x": 500,
+            "y": 270,
+            "width": 440,
+            "height": 612,
+            "top": 270,
+            "right": 940,
+            "bottom": 882,
+            "left": 500
+          },
+          "overflow": false
+        }
+      }
+    },
+    {
+      "name": "laptop UI alignment",
+      "result": {
+        "palette": 7,
+        "form": {
+          "r": {
+            "x": 292,
+            "y": 206,
+            "width": 440,
+            "height": 476,
+            "top": 206,
+            "right": 732,
+            "bottom": 682,
+            "left": 292
+          },
+          "overflow": false
+        }
+      }
+    },
+    {
+      "name": "tablet UI alignment",
+      "result": {
+        "palette": 7,
+        "form": {
+          "r": {
+            "x": 164,
+            "y": 309.6875,
+            "width": 440,
+            "height": 696.3125,
+            "top": 309.6875,
+            "right": 604,
+            "bottom": 1006,
+            "left": 164
+          },
+          "overflow": false
+        }
+      }
+    },
+    {
+      "name": "phone UI alignment",
+      "result": {
+        "palette": 7,
+        "form": {
+          "r": {
+            "x": 19,
+            "y": 107.90625,
+            "width": 352,
+            "height": 726.09375,
+            "top": 107.90625,
+            "right": 371,
+            "bottom": 834,
+            "left": 19
+          },
+          "overflow": false
+        }
+      }
+    },
+    {
+      "name": "small UI alignment",
+      "result": {
+        "palette": 7,
+        "form": {
+          "r": {
+            "x": 19,
+            "y": 10,
+            "width": 282,
+            "height": 620,
+            "top": 10,
+            "right": 301,
+            "bottom": 630,
+            "left": 19
+          },
+          "overflow": false
+        }
+      }
+    },
+    {
+      "name": "landscape UI alignment",
+      "result": {
+        "palette": 7,
+        "form": {
+          "r": {
+            "x": 202,
+            "y": 2,
+            "width": 440,
+            "height": 370,
+            "top": 2,
+            "right": 642,
+            "bottom": 372,
+            "left": 202
+          },
+          "overflow": false
+        }
+      }
+    },
+    {
+      "name": "wish saves selected color; panel closes; peer animates once",
+      "result": true
+    },
+    {
+      "name": "two guests board independent seats of the same lift",
+      "result": [
+        {
+          "cabin": 1794948504538,
+          "seat": 0
+        },
+        {
+          "cabin": 1794948504538,
+          "seat": 1
+        }
+      ]
+    },
+    {
+      "name": "lift avatar remains aligned with physical seat",
+      "result": {
+        "seat": 0,
+        "local": [
+          -0.6250000000000001,
+          0.8199999999999952,
+          0
+        ],
+        "camera": [
+          -31.794761235665163,
+          17.434200585311054,
+          -116.76354552618454
+        ]
+      }
+    },
+    {
+      "name": "lift keeps the user-selected orbit",
+      "result": {
+        "target": [
+          -34.80295765441882,
+          26.07177767344625,
+          -129.921129215498
+        ],
+        "yaw": 1.0000066342661968,
+        "targetYaw": 0.9999999999999992,
+        "pitch": 0.33997181473547244,
+        "distance": 23.99999999959477,
+        "targetDistance": 24,
+        "activityOrbit": true
+      }
+    },
+    {
+      "name": "lower slope tracks continue to finish",
+      "result": {
+        "z": -108.23005118798278,
+        "tracks": 660
+      }
+    },
+    {
+      "name": "live ski steering completes with equipment, camera and UI cleanup",
+      "result": {
+        "mode": "",
+        "gear": "none",
+        "accessory": "eyes-heart",
+        "phase": "Idle",
+        "ui": [
+          true,
+          true,
+          true
+        ]
+      }
+    },
+    {
+      "name": "cotton candy can be carried away from the booth",
+      "result": true
+    },
+    {
+      "name": "carousel camera framing and dismount cleanup",
+      "result": [
+        [
+          -0.020347315808824196,
+          -0.11602541031974022,
+          0.9783275248970509
+        ],
+        [
+          -0.0213121887454854,
+          0.35527189728454667,
+          0.9772919086785026
+        ]
+      ]
+    },
+    {
+      "name": "ferris camera framing and dismount cleanup",
+      "result": [
+        [
+          0.5627665982545742,
+          -0.8006260667747871,
+          0.949043274513498
+        ],
+        [
+          0.5976035393497937,
+          0.24996233256971517,
+          0.9458785822761865
+        ]
+      ]
+    },
+    {
+      "name": "campfire faces flame after arriving on foot",
+      "result": {
+        "angleError": 0.0000011737930685207232
+      }
+    },
+    {
+      "name": "campfire activity ends on movement",
+      "result": true
+    },
+    {
+      "name": "interior-tea activity and movement exit",
+      "result": true
+    },
+    {
+      "name": "interior-footbath activity and movement exit",
+      "result": true
+    },
+    {
+      "name": "interior-dining activity and movement exit",
+      "result": true
+    },
+    {
+      "name": "interior-rest activity and movement exit",
+      "result": true
+    },
+    {
+      "name": "triggers remain invisible and runtime healthy",
+      "result": {
+        "count": 6,
+        "allHidden": true
+      }
+    },
+    {
+      "name": "mobile simultaneous movement and jump preserved",
+      "result": true
+    }
+  ],
+  "errors": [],
+  "physicalMobile": false
+}

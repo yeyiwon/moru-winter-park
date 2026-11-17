@@ -1,0 +1,76 @@
+{
+  "checks": [
+    {
+      "name": "desktop five opening tracks actually play",
+      "value": true
+    },
+    {
+      "name": "desktop transparent map, decoded atlas and marker travel",
+      "value": {
+        "type": "image/webp",
+        "w": 1600,
+        "h": 1400
+      }
+    },
+    {
+      "name": "desktop post office only composes wishes and focus uses one border",
+      "value": true
+    },
+    {
+      "name": "desktop ornament registration keeps camera fixed",
+      "value": true
+    },
+    {
+      "name": "desktop confirmed ornament retains dock and runs glints",
+      "value": true
+    },
+    {
+      "name": "desktop closing tree restores view after manual orbit",
+      "value": true
+    },
+    {
+      "name": "desktop park to museum camera visibility",
+      "value": {
+        "visible": 54,
+        "samples": 54
+      }
+    },
+    {
+      "name": "mobile five opening tracks actually play",
+      "value": true
+    },
+    {
+      "name": "mobile transparent map, decoded atlas and marker travel",
+      "value": {
+        "type": "image/webp",
+        "w": 1600,
+        "h": 1400
+      }
+    },
+    {
+      "name": "mobile post office only composes wishes and focus uses one border",
+      "value": true
+    },
+    {
+      "name": "mobile ornament registration keeps camera fixed",
+      "value": true
+    },
+    {
+      "name": "mobile confirmed ornament retains dock and runs glints",
+      "value": true
+    },
+    {
+      "name": "mobile closing tree restores view after manual orbit",
+      "value": true
+    },
+    {
+      "name": "mobile park to museum camera visibility",
+      "value": {
+        "visible": 57,
+        "samples": 57
+      }
+    }
+  ],
+  "errors": [],
+  "physicalMobile": false
+}

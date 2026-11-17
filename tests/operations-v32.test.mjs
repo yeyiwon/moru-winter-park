@@ -1,3 +1,4 @@
+import {interiorDoors} from '../dist/district-layout.js';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
 import {createLocalDatabase} from '../scripts/local-database.mjs';import {handleAPI} from '../server/api.js';import {maintainSessions} from '../server/operations.js';
 async function fixture(t){
@@ -12,10 +13,10 @@ async function fixture(t){
 test('server authorizes actual entrances, synchronizes regions and clears rides on exit',async t=>{
  const {DB,call,join}=await fixture(t),a=await join('첫 모루'),b=await join('둘째 모루');
  assert.equal((await call('region',{region:'museum'},a.cookie)).status,409);
- await DB.prepare('UPDATE visitors SET x=34.6,z=27,seen=? WHERE id=?').bind(Date.now()-1000,a.id).run();
+ await DB.prepare('UPDATE visitors SET x=?,z=?,seen=? WHERE id=?').bind(interiorDoors.museum.x,interiorDoors.museum.z,Date.now()-1000,a.id).run();
  let response=await call('region',{region:'museum'},a.cookie);assert.equal(response.status,200);const entry=await response.json();assert.equal(entry.region,'museum');assert.equal((await DB.prepare('SELECT region FROM visitors WHERE id=?').bind(a.id).first()).region,'museum');
  response=await call('presence',{x:0,y:.95,z:30,yaw:0},b.cookie);assert.equal(response.status,200);assert.equal((await response.json()).people.find(p=>p.id===a.id).region,'museum');
- response=await call('region',{region:'outdoors'},a.cookie);assert.equal(response.status,200);assert.deepEqual((await response.json()).position,{x:34.6,z:27});assert.equal((await call('region',{region:'outdoors'},a.cookie)).status,409);
+ response=await call('region',{region:'outdoors'},a.cookie);assert.equal(response.status,200);assert.deepEqual((await response.json()).position,{x:interiorDoors.museum.x,z:interiorDoors.museum.z});assert.equal((await call('region',{region:'outdoors'},a.cookie)).status,409);
 });
 test('only server-authenticated owner changes notices/content flags; blocked content rejects entry',async t=>{
  const {DB,call,join}=await fixture(t),guest=await join('모루');assert.equal((await call('operations',undefined,guest.cookie)).status,403);
@@ -23,7 +24,7 @@ test('only server-authenticated owner changes notices/content flags; blocked con
  assert.equal((await call('operations',{notice:'공지',disabled:['unknown']},guest.cookie,true)).status,400);
  assert.equal((await call('operations',{notice:'오늘의 공지',disabled:['museum']},guest.cookie,true)).status,200);
  const state=await(await call('world-state',undefined,guest.cookie)).json();assert.equal(state.notice,'오늘의 공지');assert.deepEqual(state.disabled,['museum']);
- await DB.prepare('UPDATE visitors SET x=34.6,z=27 WHERE id=?').bind(guest.id).run();assert.equal((await call('region',{region:'museum'},guest.cookie)).status,409);
+ await DB.prepare('UPDATE visitors SET x=?,z=? WHERE id=?').bind(interiorDoors.museum.x,interiorDoors.museum.z,guest.id).run();assert.equal((await call('region',{region:'museum'},guest.cookie)).status,409);
  const health=await(await call('health')).json();assert.equal(health.multiplayer,true);
 });
 test('session retention expires stale identity and transient messages without deleting wishes',async t=>{

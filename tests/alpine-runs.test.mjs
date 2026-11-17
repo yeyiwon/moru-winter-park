@@ -6,11 +6,6 @@ import {alpineHeight,skiRuns,skiRunCenter,skiRunHalfWidth,summitFacilities,summi
 import {canStandAt} from '../dist/movement.js';
 
 
-test('the separate sled valley does not cross any ski run',()=>{
- for(const p of resortRides.sled.points)for(const run of skiRuns)assert.ok(Math.abs(p[0]-skiRunCenter(p[2],run.id))>skiRunHalfWidth(p[2],run.id)+8);
- const p=resortRides.sled.points.at(-1);assert.ok(canStandAt(p[0],p[2]));
-});
-
 test('summit counters are accessible while solid props  block movement',()=>{
  for(const stop of summitFacilities){assert.ok(canStandAt(stop.x,stop.z));assert.ok(summitPositionValid(stop.x,stop.z));assert.ok(Math.abs(alpineHeight(stop.x,stop.z)-72.09)<.2);}
  for(const [x,z] of [[-10,(-363+alpineShift)],[10,(-363+alpineShift)],[-3,(-350+alpineShift)],[-6.8,(-350+alpineShift)]])assert.equal(summitPositionValid(x,z),false);

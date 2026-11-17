@@ -18,12 +18,12 @@ test('every indoor activity can be reached on foot from the entrance',()=>{
  }
 });
 
-test('interior assets use bounded finite geometry, real floor heights and camera-cutaway walls',()=>{
+test('interior assets use bounded finite geometry, real floor heights and opaque room boundaries',()=>{
  const scene=new T.Scene(),asset=buildInteriors(scene,{lazy:true});asset.ensure('ryokan');let count=0,triangles=0;scene.updateMatrixWorld(true);
  scene.traverse(o=>{if(o.isMesh){count++;triangles+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;for(const a of Object.values(o.geometry.attributes))for(const v of a.array)assert.ok(Number.isFinite(v));}});
  assert.ok(count<100);assert.ok(triangles<180000);assert.equal(asset.root.visible,false);asset.setActive('ryokan');assert.equal(asset.rooms.ryokan.root.visible,true);assert.equal(asset.rooms.conservatory,undefined);
- const room=asset.rooms.ryokan;asset.setCamera({x:400,y:10,z:20});assert.equal(room.ceiling.visible,false);assert.ok(room.walls.some(w=>!w.visible));assert.ok(room.walls.every(w=>w.children.some(c=>c.isMesh)),'merged wall meshes retain their cutaway groups');
- asset.setActive('conservatory');assert.equal(asset.active,'conservatory');assert.equal(asset.rooms.ryokan.root.visible,false);assert.equal(asset.rooms.conservatory.root.visible,true);
+ const room=asset.rooms.ryokan;asset.setCamera({x:400,y:10,z:20});assert.equal(room.ceiling.visible,true);assert.ok(room.walls.every(w=>w.visible));assert.ok(room.walls.every(w=>w.children.some(c=>c.isMesh)),'merged wall meshes retain their cutaway groups');
+ asset.setActive('museum');assert.equal(asset.active,'museum');assert.equal(asset.rooms.ryokan.root.visible,false);assert.equal(asset.rooms.museum.root.visible,true);assert.equal(asset.ensure('conservatory'),null);
 });
 
 test('activity poses align with their real furniture surface and remain valid for presence',()=>{

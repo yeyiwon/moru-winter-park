@@ -9,7 +9,7 @@ import {createTreeOrnamentMeshes} from '../dist/tree-ornaments.js';
 import {createGuestName,isNumberedGuest} from '../dist/guest-names.js';
 
 function setup(t){
- const dom=new JSDOM(fs.readFileSync('dist/index.html','utf8'),{url:'https://winter.test',runScripts:'outside-only',pretendToBeVisual:true});t.after(()=>dom.window.close());const w=dom.window;w.matchMedia=()=>({matches:true});w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};w.HTMLDialogElement.prototype.close=function(){this.open=false;this.dispatchEvent(new w.Event('close'));};w.joinSharedActivity=async()=>{};w.fetch=async()=>({ok:true,json:async()=>({wishes:[]})});
+ const dom=new JSDOM(fs.readFileSync('dist/index.html','utf8'),{url:'https://winter.test',runScripts:'outside-only',pretendToBeVisual:true});t.after(()=>dom.window.close());const w=dom.window;w.matchMedia=()=>({matches:true});w.HTMLDialogElement.prototype.show=function(){this.open=true;};w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};w.HTMLDialogElement.prototype.close=function(){this.open=false;this.dispatchEvent(new w.Event('close'));};w.joinSharedActivity=async()=>{};w.fetch=async()=>({ok:true,json:async()=>({wishes:[]})});
  const modules=new Map();async function load(file){const full=path.resolve(file);if(modules.has(full))return modules.get(full);const m=new vm.SourceTextModule(fs.readFileSync(full,'utf8'),{context:dom.getInternalVMContext(),identifier:full});modules.set(full,m);await m.link(s=>load(path.resolve(path.dirname(full),s)));return m;}
  return{w,d:w.document,run:async file=>{const m=await load(file);await m.evaluate();return m.namespace;}};
 }
@@ -23,11 +23,11 @@ test('shared glass picker supports keyboard selection, outside close and dynamic
  const extra=d.createElement('select');extra.innerHTML='<option>하나</option><option>둘</option>';d.body.append(extra);await new Promise(r=>setTimeout(r,0));assert.ok(extra.nextElementSibling.matches('.select-trigger'));
  trigger.click();trigger.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape',bubbles:true}));assert.equal(trigger.getAttribute('aria-expanded'),'false');
 });
-test('wish composition retains selected shape, color and private default without dropdown ambiguity',async t=>{
+test('wish composition retains selected shape, color and public sharing without dropdown ambiguity',async t=>{
  const {w,d,run}=setup(t);await run('dist/community-ui.js');let draft;w.submitTreeWish=async data=>{draft=data;return 'saved-wish';};w.openWishComposer();const form=d.querySelector('#wish-form');
  form.querySelector('[data-wish-kind=snowflake]').click();const color=form.querySelectorAll('[data-wish-color]')[2];color.click();assert.equal(color.getAttribute('aria-pressed'),'true');assert.equal(form.elements.kind.value,'snowflake');
- form.elements.message.value='  테스트 소원  ';form.dispatchEvent(new w.Event('submit',{cancelable:true}));await new Promise(r=>setTimeout(r,0));assert.equal(draft.message,'테스트 소원');assert.equal(draft.kind,'snowflake');assert.equal(draft.color,color.dataset.wishColor);assert.equal(draft.visibility,'private');assert.equal(d.querySelector('#wish-panel').open,false);
- w.openWishList();await new Promise(r=>setTimeout(r,0));assert.equal(form.hidden,true);assert.equal(d.querySelector('#wish-list').hidden,false);w.openWishComposer();assert.equal(form.hidden,false);
+ form.elements.message.value='  테스트 소원  ';form.dispatchEvent(new w.Event('submit',{cancelable:true}));await new Promise(r=>setTimeout(r,0));assert.equal(draft.message,'테스트 소원');assert.equal(draft.kind,'snowflake');assert.equal(draft.color,color.dataset.wishColor);assert.equal(draft.visibility,'public');assert.equal(d.querySelector('#wish-panel').open,false);
+ w.openWishList();await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('#wish-feed').open,true);assert.equal(d.body.classList.contains('studio-open'),false);assert.equal(d.querySelector('#wish-panel').open,false);w.openWishComposer();assert.equal(d.querySelector('#wish-feed').open,true);assert.equal(form.hidden,false);
 });
 test('ornament instance colors are distinct before first render and tint their night emission',()=>{
  const root=new T.Group(),{meshes}=createTreeOrnamentMeshes(root),red=new T.Color('#d94371'),blue=new T.Color('#398cdd'),actual=new T.Color();
@@ -45,7 +45,7 @@ test('one wish submission persists and displays its chosen decoration; failed sa
  const {createSharedTree}=await run('dist/shared-tree.js');createSharedTree(scene);await run('dist/community-ui.js');w.openWishComposer();
  const form=d.querySelector('#wish-form');form.querySelector('[data-wish-kind=snowflake]').click();const color=form.querySelectorAll('[data-wish-color]')[3];color.click();form.elements.message.value='눈 오는 겨울';
  form.dispatchEvent(new w.Event('submit',{cancelable:true}));form.dispatchEvent(new w.Event('submit',{cancelable:true}));await new Promise(r=>setTimeout(r,30));
- assert.equal(posts,1);assert.equal(stored[0].visibility,'private');assert.equal(stored[0].color,color.dataset.wishColor);assert.equal(d.querySelector('#wish-panel').open,false);
+ assert.equal(posts,1);assert.equal(stored[0].visibility,'public');assert.equal(stored[0].color,color.dataset.wishColor);assert.equal(d.querySelector('#wish-panel').open,false);
  const instances=[];scene.traverse(o=>{if(o.isInstancedMesh&&o.count&&/^tree-(ornament|setting)-/.test(o.name))instances.push(o);});assert.equal(instances.length,2);for(const mesh of instances){assert.equal(mesh.count,1);assert.ok(Number.isFinite(mesh.boundingSphere.radius)&&mesh.boundingSphere.radius>0);}
  fail=true;w.openWishComposer();form.elements.message.value='저장 실패 후에도 남아야 하는 소원';form.dispatchEvent(new w.Event('submit',{cancelable:true}));await new Promise(r=>setTimeout(r,30));
  assert.equal(d.querySelector('#wish-panel').open,true);assert.equal(form.elements.message.value,'저장 실패 후에도 남아야 하는 소원');assert.match(form.querySelector('output[role=status]').textContent,/연결 실패/);assert.equal(stored.length,1);assert.equal(form.querySelector('[type=submit]').disabled,false);

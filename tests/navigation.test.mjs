@@ -1,4 +1,4 @@
-import {spaShift} from '../dist/resort-layout.js';
+import {spaX,spaShift} from '../dist/resort-layout.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {layout,movement,navigation} from './load-world.mjs';
@@ -11,12 +11,12 @@ test('void, non-finite clicks and wall shortcuts are rejected',()=>{assert.deepE
 test('every island arrival and exhibit is reachable, and the direct park-to-spa bridge remains open',()=>{
  for(const island of layout.islands.filter(i=>!i.hidden))checkRoute(home,island.spawn);
  for(const exhibit of layout.exhibits.filter(e=>!layout.islands.find(i=>i.id===e.island).hidden&&canStandAt(e.x,e.z)))checkRoute(home,exhibit);
- checkRoute(home,{x:0,z:51.8});checkRoute(home,{x:12,z:113.6+spaShift});
+ checkRoute(home,{x:0,z:51.8});checkRoute(home,{x:spaX+12,z:113.6+spaShift});
  assert.equal(canStandAt(0,64),true);
  assert.equal(layout.surfaceHeight(2.6,8),.09);
 });
 
-test('removed memory landmark leaves continuous snowfield without a redundant bridge',()=>{assert.equal(layout.terrainAt(-46,-27),true);assert.equal(layout.bridges.some(pair=>pair.some(i=>i.id==='history')),false);checkRoute(home,{x:33,z:25});});
+test('removed memory landmark leaves continuous snowfield without a redundant bridge',()=>{assert.equal(layout.terrainAt(-40,-20),true);assert.equal(layout.bridges.some(pair=>pair.some(i=>i.id==='history')),false);checkRoute(home,{x:32,z:19});});
 
 test('observatory removal leaves a direct unobstructed park to alpine bridge',()=>{assert.equal(layout.islands.find(i=>i.id==='science').hidden,true);for(let z=-32;z>=-82;z-=.5)assert.ok(canStandAt(0,z));checkRoute(home,{x:0,z:-82});});
 
@@ -25,4 +25,12 @@ test('precomputed visual promenades stay traversable through the current collisi
  const {pathRoutes}=await import('../dist/path-routes.js');
  const {clearSegment}=await import('../dist/navigation.js');
  for(const route of pathRoutes)for(let i=1;i<route.points.length;i++){const [ax,az]=route.points[i-1],[bx,bz]=route.points[i];assert.ok(clearSegment({x:ax,z:az},{x:bx,z:bz}),`${ax},${az} → ${bx},${bz}`);}
+});
+
+test('promenades preserve a 2.2 metre clear corridor, including curved corners',async()=>{
+ const {pathRoutes}=await import('../dist/path-routes.js');const {canStandAt}=await import('../dist/movement.js');
+ for(const [routeIndex,route]of pathRoutes.entries())for(let i=1;i<route.points.length;i++){
+  const [ax,az]=route.points[i-1],[bx,bz]=route.points[i],dx=bx-ax,dz=bz-az,length=Math.hypot(dx,dz);if(length<.001)continue;
+  for(let t=0;t<=length;t+=.25)for(const side of [-1.1,0,1.1]){const x=ax+dx*t/length-dz/length*side,z=az+dz*t/length+dx/length*side;assert.ok(canStandAt(x,z),`route ${routeIndex}: blocked shoulder ${x},${z}`);}
+ }
 });

@@ -1,4 +1,4 @@
-import {museumLayout,conservatoryLayout} from './district-layout.js';
+import {museumLayout} from './district-layout.js';
 import {mergeMeshGeometry,spatialBatchKey} from './mesh-batch.js';
 import {createFixtureGlow} from './fixture-glow.js';
 import {alpineShift} from './resort-layout.js';
@@ -7,7 +7,7 @@ import {ferrisDimensions} from './ferris-layout.js';
 import {buildFerrisWheel} from './ferris-model.js';
 import {createSnowfolk} from './winter-costumes.js';
 import {buildCarousel} from './carousel-model.js';
-import {postOffice,postOfficeHost,skateRental} from './retreat-layout.js';
+import {postOffice,postOfficeHost} from './retreat-layout.js';
 import {festivalLamps} from './festival-layout.js';
 import {buildWinterRetreat} from './winter-retreat.js';
 import {buildFestivalRides} from './festival-rides.js';
@@ -66,7 +66,7 @@ for(const [x,z,h] of [[-26,9,4],[-27,-5,4.5],[-26,-20,4.8],[26,6,4.1],[24,-10,4.
 for(const p of promenadeTrees)archipelago.tree(scene,p.x,p.z,p.h,'#647387');
 stone.bumpScale=0;gold.roughness=.32;
 
-function batchStatic(root){root.updateMatrixWorld(true);const moving=new Set([castleModel.root,celestial,wheelRoot,carousel,sky,...lanterns.map(l=>l.g),...archipelago.dynamic,...archipelago.strings]),groups=new Map(),palette=new Map();function visit(parent){if(moving.has(parent))return;for(const child of [...parent.children]){if(moving.has(child))continue;if(child.isGroup){visit(child);continue;}const m=child.material;if(!child.isMesh||child.isInstancedMesh||!m||Array.isArray(m)||m.transparent||m.isShaderMaterial||!child.geometry.attributes.normal||!child.geometry.attributes.uv)continue;const signature=[m.type,m.color?.getHex(),m.roughness,m.metalness,m.emissive?.getHex(),m.emissiveIntensity,m.map?.uuid||''].join('/');if(!palette.has(signature))palette.set(signature,m);const location=child.getWorldPosition(new THREE.Vector3()),zone=islands.reduce((best,i)=>Math.hypot(location.x-i.x,location.z-i.z)<Math.hypot(location.x-best.x,location.z-best.z)?i:best,islands[0]);const key=zone.id+spatialBatchKey(child)+signature;if(!groups.has(key))groups.set(key,{material:palette.get(signature),items:[]});groups.get(key).items.push(child);}}visit(root);
+function batchStatic(root){root.updateMatrixWorld(true);const moving=new Set([castleModel.root,celestial,wheelRoot,carousel,sky,...lanterns.map(l=>l.g),...archipelago.dynamic,...archipelago.strings]),groups=new Map(),palette=new Map();function visit(parent){if(moving.has(parent))return;for(const child of [...parent.children]){if(moving.has(child))continue;if(child.isGroup){visit(child);continue;}const m=child.material;if(!child.isMesh||child.isInstancedMesh||!m||Array.isArray(m)||m.transparent||m.isShaderMaterial||!child.geometry.attributes.normal||!child.geometry.attributes.uv)continue;const signature=[m.type,m.color?.getHex(),m.roughness,m.metalness,m.emissive?.getHex(),m.emissiveIntensity,m.vertexColors,m.userData.lightingTheme||'',m.map?.uuid||''].join('/');if(!palette.has(signature))palette.set(signature,m);const location=child.getWorldPosition(new THREE.Vector3()),zone=islands.reduce((best,i)=>Math.hypot(location.x-i.x,location.z-i.z)<Math.hypot(location.x-best.x,location.z-best.z)?i:best,islands[0]);const key=zone.id+spatialBatchKey(child)+signature;if(!groups.has(key))groups.set(key,{material:palette.get(signature),items:[]});groups.get(key).items.push(child);}}visit(root);
 for(const {material,items} of groups.values()){const geo=mergeMeshGeometry(items);for(const item of items)item.removeFromParent();mesh(geo,material);}}
 batchStatic(scene);
 function batchMoving(parent){for(const child of parent.children)if(child.isGroup)batchMoving(child);const groups=new Map();for(const child of [...parent.children]){if(!child.isMesh||child.material.transparent||!child.geometry.attributes.uv||!child.geometry.attributes.normal)continue;const key=child.material.uuid;if(!groups.has(key))groups.set(key,[]);groups.get(key).push(child);}for(const list of groups.values()){if(list.length<2)continue;const g=mergeMeshGeometry(list,{world:false});for(const child of list)parent.remove(child);mesh(g,list[0].material,0,0,0,parent);}}
@@ -79,8 +79,8 @@ const gateArms=[];
 const targets=[];
 const festival=buildFestivalRides(scene),retreat=buildWinterRetreat(scene);
 const winter=buildWinterWorld({scene,mesh,ball,cylinder,box,rod,torus,halo,M,glowMap});
-winter.destinations= winter.destinations.filter(p=>!['quiz','healing'].includes(p.id));winter.destinations.push({id:'castle',name:'겨울 성',x:0,z:-7,kind:'photo'}, {id:'quiz',name:'별빛 만물관',...museumLayout.door,kind:'museum'},{id:'conservatory',name:'오로라 식물원',...conservatoryLayout.door,kind:'conservatory'},{id:'post-office',name:'소원 우체국',x:postOffice.entry.x,z:postOffice.entry.z,kind:'wish'},{id:'skating',name:'아이스링크',x:skateRental.entry.x,z:skateRental.entry.z,kind:'skating'}, {id:'carousel',name:'회전목마',x:16,z:12.2,kind:'ride'},{id:'ski-gear',name:'스키 장비',x:-44,z:-181.8+alpineShift,kind:'gear'}, {id:'ferris',name:'관람차',...ferrisDimensions.entrance,kind:'ride'},...festival.destinations.filter(d=>d.kind==='ride'||d.kind==='photo'));
-const snowfolk=[];for(const p of [postOfficeHost,{x:-47.3,z:-181.5+alpineShift}]){const g=createSnowfolk();g.position.set(p.x,surfaceHeight(p.x,p.z),p.z);scene.add(g);snowfolk.push(g);}
+winter.destinations= winter.destinations.filter(p=>!['quiz','healing'].includes(p.id));winter.destinations.push({id:'castle',name:'겨울 성',x:0,z:-7,kind:'photo'}, {id:'quiz',name:'별빛 만물관',...museumLayout.door,kind:'museum'},{id:'post-office',name:'소원 우체국',x:postOffice.entry.x,z:postOffice.entry.z,kind:'wish'}, {id:'carousel',name:'회전목마',x:16,z:12.2,kind:'ride'},{id:'ski-gear',name:'스키 장비',x:-44,z:-181.8+alpineShift,kind:'gear'}, {id:'ferris',name:'관람차',...ferrisDimensions.entrance,kind:'ride'},...festival.destinations.filter(d=>d.kind==='ride'||d.kind==='photo'||d.kind==='snack'));
+const snowfolk=[];for(const p of [postOfficeHost,{x:-47.3,z:-181.5+alpineShift}]){const g=createSnowfolk();g.position.set(p.x,surfaceHeight(p.x,p.z),p.z);g.rotation.y=p.yaw||0;g.name=p===postOfficeHost?'post-office-snowman':'ski-vendor-snowman';scene.add(g);snowfolk.push(g);}
 const festivalWarm=new THREE.Color('#ffe0a1'),festivalRose=new THREE.Color('#c6e8ee');const ridePoint=new THREE.Vector3();winter.parkRides={...festival,seat(kind,index=0){if(kind==='carousel'){const seat=seats[index%seats.length];seat.updateWorldMatrix(true,false);ridePoint.set(0,0,0).applyMatrix4(seat.matrixWorld);return{x:ridePoint.x,y:ridePoint.y+.82,z:ridePoint.z,yaw:spinning.rotation.y+Math.atan2(seat.getWorldDirection(new THREE.Vector3()).x,seat.getWorldDirection(new THREE.Vector3()).z)-spinning.rotation.y};}if(kind==='ferris')return ferrisModel.seat(index%12,0);return festival.seat(kind,index);}};
 let coinPulse=0;const occluders=[];scene.traverse(o=>{if(o.isMesh&&!o.material.transparent&&!o.material.isShaderMaterial&&o!==sky)occluders.push(o);});
 const fixtureGlow=createFixtureGlow(scene);

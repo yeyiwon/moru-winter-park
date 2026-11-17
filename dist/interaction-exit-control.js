@@ -5,7 +5,7 @@ const icons={
  skate:'M6 4v9l10 2q3 1 3 3H5V4m0 17h15',
  rest:'M5 20v-7h14v7M7 13V7h10v6',
 };
-const presets={carousel:['회전목마 내리기','ride'],ferris:['관람차 내리기','ride'],lift:['리프트 내리기','ride'],ski:['스키 벗기','skate'],sled:['썰매 내리기','ride'],skate:['스케이트 종료','skate'],bath:['탕에서 나오기','water'],smallbath:['탕에서 나오기','water'],footbath:['족욕 종료','water'],sauna:['일어나기','rest'],tea:['일어나기','rest'],dining:['일어나기','rest'],lie:['일어나기','rest'],rest:['일어나기','rest'],warm:['몸 녹이기 종료','walk'],roast:['굽기 종료','walk'],aquarium:['관람 종료','walk']};
+const presets={carousel:['회전목마 내리기','ride'],ferris:['관람차 내리기','ride'],lift:['리프트 내리기','ride'],ski:['스키 벗기','skate'],skate:['스케이트 종료','skate'],bath:['탕에서 나오기','water'],smallbath:['탕에서 나오기','water'],footbath:['족욕 종료','water'],sauna:['일어나기','rest'],tea:['일어나기','rest'],dining:['일어나기','rest'],lie:['일어나기','rest'],rest:['일어나기','rest'],warm:['몸 녹이기 종료','walk'],roast:['굽기 종료','walk'],aquarium:['관람 종료','walk']};
 // One semantic button owns pointer/keyboard activation for every facility.
 export function createInteractionExitControl({root,button,onExit}){
  let current='';button.type='button';button.classList.add('interaction-exit-control');

@@ -9,11 +9,11 @@ import {interiorAt,interiorCanStandAt,interiorCanMoveFrom} from './interior-layo
 import {retreatCanStandAt} from './retreat-layout.js';
 import {festivalObstacles} from './festival-layout.js';
 import {parkObstacles} from './park-layout.js';
-import {resortObstacles,alpineHeight,spaShift} from './resort-layout.js';
+import {resortObstacles,alpineHeight,spaX,spaShift} from './resort-layout.js';
 import {terrainAt,bridges,bridgeHalfWidth,promenadeTrees} from './world-layout.js';
 // Pure ground movement shared by keyboard, touch and click navigation.
 export const obstacles = [
- ...districtObstacles,...promenadeTrees,postOfficeHost,{x:-47.3,z:-181.5+alpineShift,r:.75},...resortObstacles,...festivalObstacles,{x:12,z:126+spaShift,w:12,d:11},{x:treeLayout.x,z:treeLayout.z,r:9.4},
+ ...districtObstacles,...promenadeTrees,postOfficeHost,{x:-47.3,z:-181.5+alpineShift,r:.75},...resortObstacles,...festivalObstacles,{x:spaX+12,z:126+spaShift,w:12,d:11},{x:treeLayout.x,z:treeLayout.z,r:9.4},
   ...parkObstacles,{x:-6.5,z:3,r:1.02},
   ...castleObstacles,
 

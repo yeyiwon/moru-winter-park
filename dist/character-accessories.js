@@ -11,7 +11,7 @@ const materials={
  crystal:new THREE.MeshPhysicalMaterial({color:'#d7ebef',transparent:true,opacity:.13,roughness:.09,metalness:.1,depthWrite:false}),
  glint:new THREE.MeshBasicMaterial({color:'#dcebf0',transparent:true,opacity:.6}),
  gold:new THREE.MeshStandardMaterial({color:'#dcb877',metalness:.86,roughness:.25,side:THREE.DoubleSide}),
- gem:new THREE.MeshPhysicalMaterial({color:'#a5d6d0',metalness:.18,roughness:.12,clearcoat:1}),
+ gem:new THREE.MeshPhysicalMaterial({color:'#e7edf8',metalness:.18,roughness:.12,clearcoat:1}),
  satin:new THREE.MeshPhysicalMaterial({color:'#a38caf',roughness:.5,side:THREE.DoubleSide,sheen:1,sheenColor:'#efd9f3',sheenRoughness:.36}),
  satinEdge:new THREE.MeshPhysicalMaterial({color:'#d0b3d8',roughness:.64,sheen:.9}),
  knit:new THREE.MeshPhysicalMaterial({color:'#d5c6b4',roughness:1,sheen:.8,sheenColor:'#f0e5d7'}),
@@ -96,7 +96,7 @@ function crown(){
  }
  const band=new THREE.BufferGeometry();band.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));band.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));band.setIndex(indices);band.computeVertexNormals();add(band,0);
  for(let i=0;i<8;i++){const a=i*Math.PI/4,x=Math.cos(a)*radius,z=Math.sin(a)*radius-.035;add(sphere([x,.978,z],[.025,.025,.025]),0);const gem=new THREE.OctahedronGeometry(.034,0).scale(.85,1.15,.56);gem.rotateY(-a+Math.PI/2);gem.translate(Math.cos(a)*(radius+.007),.811,Math.sin(a)*(radius+.007)-.035);add(gem,1);}
- return {geometry:merge(parts),materials:[materials.gold,materials.gem],name:'jewel-crown'};
+ return {geometry:merge(parts),materials:[materials.silver,materials.gem],name:'jewel-crown'};
 }
 function brooch(){
  const parts=[{geometry:extrude(star(.139,.068),.024,.009),material:0}];
@@ -104,7 +104,7 @@ function brooch(){
  parts.push({geometry:new THREE.OctahedronGeometry(.03).scale(1,1,.65).translate(0,0,.062),material:2});for(let i=0;i<5;i++){const a=Math.PI/2+i*Math.PI*2/5;parts.push({geometry:new THREE.OctahedronGeometry(.012).translate(Math.cos(a)*.095,Math.sin(a)*.095,.043),material:2});}
  parts.push({geometry:new THREE.CapsuleGeometry(.011,.19,4,8).rotateZ(Math.PI/2).translate(0,0,-.018),material:0});
  parts.push({geometry:new THREE.TorusGeometry(.035,.008,6,12,Math.PI).rotateY(Math.PI/2).translate(-.07,0,-.02),material:0});
- return {geometry:merge(parts),materials:[materials.gold,materials.gem,materials.crystal],name:'star-hairpin',position:[.41,.48,.438],rotation:[-.3,.5,-.22]};
+ return {geometry:merge(parts),materials:[materials.silver,materials.gem,materials.glint],name:'star-hairpin',position:[.41,.48,.438],rotation:[-.3,.5,-.22]};
 }
 function ribbonSurface(side,tail=false){
  const p=[],uv=[],idx=[],rows=tail?20:32,cols=8;

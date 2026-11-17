@@ -2,6 +2,6 @@
 import fs from 'node:fs';import path from 'node:path';
 import * as T from '../dist/vendor/three.module.js';import {buildInteriors} from '../dist/interior-world.js';
 const out=path.resolve(process.argv[2]||'qa/asset-review');fs.mkdirSync(out,{recursive:true});const scene=new T.Scene(),asset=buildInteriors(scene);
-for(const id of ['ryokan','conservatory']){asset.setActive(id);const room=asset.rooms[id];asset.setCamera({x:room.layout.x+28,y:25,z:28});scene.updateMatrixWorld(true);const records=[];
+for(const id of ['ryokan','museum']){asset.setActive(id);const room=asset.rooms[id];asset.setCamera({x:room.layout.x+28,y:25,z:28});scene.updateMatrixWorld(true);const records=[];
  room.root.traverse(o=>{if(!o.isMesh||Array.isArray(o.material))return;let visible=true;for(let p=o;p&&p!==scene;p=p.parent)visible=visible&&p.visible;const g=o.geometry,m=o.material,world=new T.Matrix4().copy(o.matrixWorld);world.elements[12]-=room.layout.x;world.elements[14]-=room.layout.z;records.push({name:o.name||'room-part',visible,positions:Array.from(g.attributes.position.array),indices:g.index?Array.from(g.index.array):null,matrix:world.toArray(),material:{color:m.color?.toArray()||[.25,.55,.53],emissive:m.emissive?.toArray()||[0,0,0],emissiveIntensity:m.emissiveIntensity||0,roughness:m.roughness??.5,metalness:m.metalness||0,opacity:m.transparent?m.opacity:1,shader:!!m.isShaderMaterial}});});
  fs.writeFileSync(path.join(out,id+'-interior.json'),JSON.stringify({id,records}));console.log(id,records.length,'meshes exported');}

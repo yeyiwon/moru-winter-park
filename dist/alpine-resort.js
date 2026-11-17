@@ -6,7 +6,7 @@ import {buildResortScenery} from './resort-scenery.js';
 import {createSnowPaths} from './snow-path.js';
 import {buildParkLamps} from './park-lamps.js';
 import * as THREE from './vendor/three.module.js';
-import {alpine,alpineHeight,summit as summitLayout,peakSummit,resortRides,liftLayout,liftPoint,upperLiftLayout,upperLiftPoint,skiRuns,skiRunCenter,skiRunHalfWidth,summitFacilities,summitTransfer,skiStarts,sledCenter,skiRunouts} from './resort-blueprint.js';
+import {alpine,alpineHeight,summit as summitLayout,peakSummit,resortRides,liftLayout,liftPoint,upperLiftLayout,upperLiftPoint,skiRuns,skiRunCenter,skiRunHalfWidth,summitFacilities,summitTransfer,skiStarts,skiRunouts} from './resort-blueprint.js';
 import {alpineShift} from './resort-layout.js';
 
 // Geometry and ride code sample the same height function: no decorative ramp above an unrelated floor.
@@ -43,11 +43,8 @@ export function buildAlpineResort(api){
  const terrainGeo=new THREE.BufferGeometry();terrainGeo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));terrainGeo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));terrainGeo.setIndex(indices);terrainGeo.computeVertexNormals();const colors=[],baseColor=new THREE.Color('#e5edf0'),runColor=new THREE.Color('#f2f5f4');for(let i=0;i<positions.length;i+=3){const x=positions[i],z=positions[i+2],inside=Math.max(0,...skiRuns.filter(run=>z>=run.startZ-3&&z<=run.finish).map(run=>1-Math.min(1,Math.max(0,(Math.abs(x-skiRunCenter(z,run.id))-skiRunHalfWidth(z,run.id)+2)/4)))),c=baseColor.clone().lerp(runColor,inside*.72);colors.push(c.r,c.g,c.b);}terrainGeo.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));const terrainMaterial=snow.clone();terrainMaterial.color.set('#ffffff');terrainMaterial.vertexColors=true;const terrain=mesh(terrainGeo,terrainMaterial,0,0,0,root);terrain.name='alpine-heightfield';terrain.userData.skiTerrain=true;
  function ribbon(points,width,mat,offset=.055){const pos=[],uv=[],idx=[],columns=Math.max(1,Math.ceil(width/.75));for(let i=0;i<points.length;i++){const p=points[i],prev=points[Math.max(0,i-1)],next=points[Math.min(points.length-1,i+1)],dx=next[0]-prev[0],dz=next[2]-prev[2],length=Math.hypot(dx,dz)||1,nx=-dz/length,nz=dx/length;for(let j=0;j<=columns;j++){const side=j/columns-.5,x=p[0]+nx*width*side,z=p[2]+nz*width*side;pos.push(x,alpineHeight(x,z)+offset,z);uv.push(j/columns,i/(points.length-1));if(i<points.length-1&&j<columns){const k=i*(columns+1)+j;idx.push(k,k+1,k+columns+1,k+1,k+columns+2,k+columns+1);}}}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return mesh(g,mat,0,0,0,root);}
 
- const sledPoints=resortRides.sled.points;
  // The piste is part of the terrain itself; no lifted strip can cover a skier.
- ribbon(sledPoints,6.5,groomed,.025);
  function fence(points,width,spacing,mat){for(let i=0;i<points.length;i+=spacing){const p=points[i];for(const side of [-1,1]){const x=p[0]+width*side,z=p[2],y=alpineHeight(x,z);rod([x,y,z],[x,y+1.3,z],.035,mat,root);box(.32,.25,.035,side<0?blue:red,x,y+1.14,z,root);}}}
- fence(sledPoints,4,5,oak);
  const safetyNet=new THREE.MeshStandardMaterial({color:'#b87c64',roughness:1,transparent:true,opacity:.28,side:THREE.DoubleSide,depthWrite:false});
  const runColors=Object.fromEntries(skiRuns.map(run=>[run.id,M(run.color,.6,0)]));
  // Boundaries disappear through shared junctions instead of fencing across another run.
@@ -72,7 +69,6 @@ export function buildAlpineResort(api){
   const canvas=document.createElement('canvas');canvas.width=512;canvas.height=128;const ctx=canvas.getContext('2d');ctx.fillStyle='#ffffff';ctx.font='600 46px "Apple SD Gothic Neo", sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(start.name,256,64);const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;
   const label=new THREE.MeshBasicMaterial({map:texture,transparent:true,depthWrite:false});for(const side of [-1,1]){const face=mesh(new THREE.PlaneGeometry(2.4,.72),label,0,2.1,side*.087,g);if(side<0)face.rotation.y=Math.PI;}
  }
- for(const side of [-1,1]){const pts=sledPoints.map(p=>new THREE.Vector3(p[0]+side*3.9,alpineHeight(p[0]+side*3.9,p[2])+.85,p[2]));mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts),100,.035,5,false),timber,0,0,0,root);}
 
  // One reusable irregular fir profile: layered boughs, quiet snow shelves, varied height and lean.
  function firGeometry(snowCap=false){
@@ -102,8 +98,7 @@ export function buildAlpineResort(api){
    for(let i=0;i<8;i++){const a=i*2.399,t=.24+(i%4)*.13,r=h*.39*(1-t),px=Math.cos(a)*r,pz=Math.sin(a)*r,py=h*(t+.12);rod([px,py,pz],[px,py-.16,pz],.007,brass,g);mesh(ornamentGeo,i%3?brass:windowMat,px,py-.22,pz,g);}
   }
  }
- // A few exposed, rounded rock faces belong to steep mountain shoulders, never the groomed routes.
- for(const [x,z,s]of [[-65,-286,9],[-70,-310,8],[-83,-282,7],[100,-288,8],[93,-312,8],[-47,-339,5],[99,-252,7]]){if(skiRuns.some(run=>Math.abs(x-skiRunCenter(z,run.id))<skiRunHalfWidth(z,run.id)+s+1))continue;const y=alpineHeight(x,z);const b=oval(rockLight,x,y-2,z,s,s*.5,s*.7);b.rotation.y=rand()*3;const cap=oval(bankSnow,x,y+s*.25,z,s*.94,.7,s*.64);cap.rotation.y=b.rotation.y;}
+ // Mid-slope shoulders remain a continuous snow surface, without placed boulder lumps.
 
  // Parallel cable spans share the rider path; smoothing a separate spline here
  // used to make the visible cable diverge from the actual chair near the summit.
@@ -154,7 +149,7 @@ export function buildAlpineResort(api){
   box(1.4,.4,1.65,metal,0,cable+.58,0,g);for(let j=0;j<8;j++)box(1.1,.025,.05,ink,0,cable+.8,-.65+j*.185,g);
   for(const side of [-1,1])rod([side*.55,cable+.33,0],[side*.55,roof-.28,0],.07,ink,g);
   if(!upper&&addLight){const light=new THREE.PointLight('#ffce91',8,14,2);light.position.set(-1,roof-.65,.6);g.add(light);}
-  plaque([upper?'정상 리프트':'리프트'],0,roof+.12,depth/2+.12,2.2,.55,g);
+  plaque([name.includes('peak')?'상부 리프트':'초급·중급 리프트'],0,roof+.12,depth/2+.12,2.2,.55,g);
   const wheel=torus(2,.085,metal,0,cable,0,g);wheel.rotation.x=Math.PI/2;
   for(let i=0;i<8;i++){const a=i/8*Math.PI*2;rod([0,cable,0],[Math.cos(a)*1.96,cable,Math.sin(a)*1.96],.035,metal,g);}for(let i=0;i<20;i++){const a=i/20*Math.PI*2;ball(brass,Math.cos(a)*1.88,cable-.06,Math.sin(a)*1.88,.045,g);}ring(1.93,.035,brass,0,cable-.04,0,g);cylinder(.36,.36,.3,ink,0,cable,0,g,16);
   // The actual cable turns around the terminal wheel rather than ending in air.
@@ -186,7 +181,7 @@ export function buildAlpineResort(api){
  }
  station(upperLiftPoint(0),'alpine-peak-base-terminal',false,upperAxis,false);station(upperLiftPoint(1),'alpine-peak-top-terminal',true,upperAxis,false);
  for(let i=0;i<4;i++){const g=chair(),offset=i/4,pose=upperLoopPose(offset);g.position.copy(pose.position);g.rotation.y=pose.yaw;upperChairs.push({g,offset});}
- const upperStop=summitFacilities.find(p=>p.id==='upperlift');plaque(['정상 리프트'],upperStop.x-3.8,alpineHeight(upperStop.x-3.8,upperStop.z)+2.5,upperStop.z,2.3,.6,root);
+ const upperStop=summitFacilities.find(p=>p.id==='upperlift');plaque(['상부 리프트','상급 · 최상급'],upperStop.x-3.8,alpineHeight(upperStop.x-3.8,upperStop.z)+2.5,upperStop.z,2.3,.6,root);
  // The summit is an actual rest terrace; the front remains a broad, clear launch apron.
  const foodMat=M('#efd8b7',.8,0),truckRose=M('#bf747d',.65,.05),truckMint=M('#98c5b8',.65,.05),steamMat=new THREE.MeshBasicMaterial({color:'#fff4df',transparent:true,opacity:.11,depthWrite:false});
  function foodTruck(stop,paint,marshmallow=false){
@@ -231,10 +226,10 @@ export function buildAlpineResort(api){
  // Low, snow-covered dismount apron follows ground directly beside the shared endpoint.
  const summit=liftPoints.at(-1),exit=resortRides.lift.exit;const apron=Array.from({length:15},(_,i)=>{const t=i/14,x=summit[0]+(exit[0]-summit[0])*t,z=summit[2]+(exit[2]-summit[2])*t;return[x,alpineHeight(x,z),z];});ribbon(apron,4.2,snow,.025);
  // Lamps mark the outer edge; the entire 4.8 m transfer lane stays free of posts.
- for(const p of summitTransfer.slice(0,-1))lamp(root,p.x-3.4,p.z,alpineHeight(p.x-3.4,p.z));
+ for(let i=0;i<summitTransfer.length-1;i++){const a=summitTransfer[i],b=summitTransfer[i+1],length=Math.hypot(b.x-a.x,b.z-a.z),x=(a.x+b.x)/2-(b.z-a.z)/length*6.5,z=(a.z+b.z)/2+(b.x-a.x)/length*6.5;lamp(root,x,z,alpineHeight(x,z));}
 
  const basePaths=createSnowPaths({root,stone:[M('#a1aaac',.98,0)],snow,heightAt:alpineHeight});
- basePaths(summitTransfer.map(p=>[p.x,p.z]),6.5);
+ basePaths(summitTransfer.map(p=>[p.x,p.z]),8.5);
  const trailToBase=Array.from({length:30},(_,i)=>{const t=i/29;return[8-44*t,-172-6*t+Math.sin(t*Math.PI)*3];});basePaths(trailToBase,4.8);
  basePaths([[-36,-170],[-36,-178],[-36,-184],[-36,-188]],5.6);
  // A wide, groomed queue approaches the chair directly; nothing crosses its mouth.
@@ -264,8 +259,7 @@ export function buildAlpineResort(api){
  for(const side of [-1,1]){const eave=box(1.85,.14,3.5,ink,side*.73,3.2,0,booth);eave.rotation.z=-side*.36;const cap=box(1.88,.14,3.6,snow,side*.73,3.35,0,booth);cap.rotation.z=eave.rotation.z;}
  for(let i=0;i<9;i++)ball(warm,-1.4+i*.35,2.95+Math.sin(i/8*Math.PI)*.2,1.77,.055,booth);
  const sign=place(-26,-184,'alpine-trail-board');for(const x of [-1.2,1.2])rod([x,0,0],[x,3.1,0],.08,timber,sign);box(3,1.9,.18,ink,0,2.4,0,sign);for(let i=0;i<3;i++){const line=box(1.8,.055,.02,i===0?blue:i===1?red:bankSnow,.15,2.9-i*.42,.11,sign);line.rotation.z=(i-1)*.12;const disc=cylinder(.12,.12,.025,i===0?blue:i===1?red:bankSnow,-1.03,2.9-i*.42,.11,sign,16);disc.rotation.x=Math.PI/2;}box(3.2,.16,.6,snow,0,3.43,0,sign);
- const sledBase=resortRides.sled.points.at(-1),sledRack=place(sledBase[0]-6,sledBase[2]+2,'alpine-sled-hut');for(const x of [-1.4,1.4])rod([x,0,-.7],[x,2.1,-.7],.08,timber,sledRack);box(3.5,.15,2.4,ink,0,2.15,0,sledRack);box(3.55,.14,2.5,snow,0,2.28,0,sledRack);for(let i=0;i<3;i++){const g=new THREE.Group();g.position.set(-1+i,1,.1);g.rotation.z=.2;sledRack.add(g);for(const side of [-1,1]){rod([side*.3,-.55,-.5],[side*.3,-.55,.5],.035,red,g);rod([side*.3,-.55,.5],[side*.3,-.3,.68],.035,red,g);}for(let j=0;j<5;j++)box(.68,.06,.15,oak,0,-.38,-.3+j*.17,g);}lamp(sledRack,-2.5,1.4);
- target(-36,alpineHeight(-36,-188)+1.3,-188,5,2.6,4,'ski');target(sledBase[0]-6,alpineHeight(sledBase[0]-6,sledBase[2]+2)+1.2,sledBase[2]+2,5,2.5,4,'sled');
+ target(-36,alpineHeight(-36,-188)+1.3,-188,5,2.6,4,'ski');
 
  // Use the same authored lanterns as the park, retaining the original lamp footprints.
  const alpineLamps=buildParkLamps({...api,scene:root},lampRequests.map(p=>({x:p.x,z:p.z})));
@@ -274,5 +268,5 @@ export function buildAlpineResort(api){
  root.updateMatrixWorld(true);const batches=new Map();root.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||o.userData.snowTrail||o.userData.skiTerrain||Array.isArray(o.material)||dynamic.has(o))return;for(let p=o.parent;p&&p!==root;p=p.parent)if(dynamic.has(p))return;if(!o.geometry.attributes.normal||!o.geometry.attributes.uv)return;const k=o.material.uuid+':'+spatialBatchKey(o);if(!batches.has(k))batches.set(k,{material:o.material,items:[]});batches.get(k).items.push(o);});
  for(const {material,items}of batches.values()){if(items.length<2)continue;const g=mergeMeshGeometry(items);for(const item of items)item.removeFromParent();mesh(g,material,0,0,0,root);}
  root.position.z=alpineShift;scene.add(rideChair);
- return{root,interactive,rideChair,setQuality:treeLights.setQuality,update(t,still){treeLights.update(t,still);const dummy=steamDummy;for(const system of steamSystems){for(let i=0;i<8;i++){const phase=((still?0:t*.2)+i/8)%1;dummy.position.set(system.x+Math.sin(i*2+phase)*.3,system.y+phase*2,system.z+Math.cos(i*3)*.2);const scale=Math.sin(phase*Math.PI)*(.18+phase*.4);dummy.scale.set(scale,scale*.75,scale);dummy.updateMatrix();system.mesh.setMatrixAt(i,dummy.matrix);}system.mesh.instanceMatrix.needsUpdate=true;}scenery.update(t,still);if(still)return;for(const {g,offset}of chairs){const pose=loopPose((t/94+offset)%1);g.position.copy(pose.position);g.rotation.set(0,pose.yaw,Math.sin(t*.6+offset)*.009);g.visible=!rideChair.visible||Math.hypot(g.position.x-rideChair.position.x,g.position.y-rideChair.position.y,g.position.z+alpineShift-rideChair.position.z)>14;}for(const {g,offset}of upperChairs){const pose=upperLoopPose((t/60+offset)%1);g.position.copy(pose.position);g.rotation.set(0,pose.yaw,Math.sin(t*.6+offset)*.009);g.visible=!rideChair.visible||Math.hypot(g.position.x-rideChair.position.x,g.position.y-rideChair.position.y,g.position.z+alpineShift-rideChair.position.z)>14;}}};
+ return{root,interactive,rideChair,setQuality:treeLights.setQuality,update(t,still){treeLights.update(t,still);const dummy=steamDummy;for(const system of steamSystems){for(let i=0;i<8;i++){const phase=((still?0:t*.2)+i/8)%1;dummy.position.set(system.x+Math.sin(i*2+phase)*.3,system.y+phase*2,system.z+Math.cos(i*3)*.2);const scale=Math.sin(phase*Math.PI)*(.18+phase*.4);dummy.scale.set(scale,scale*.75,scale);dummy.updateMatrix();system.mesh.setMatrixAt(i,dummy.matrix);}system.mesh.instanceMatrix.needsUpdate=true;}scenery.update(t,still);if(still)return;for(const {g,offset}of chairs){const pose=loopPose((t/(resortRides.lift.duration*2+4)+offset)%1);g.position.copy(pose.position);g.rotation.set(0,pose.yaw,Math.sin(t*.6+offset)*.009);g.visible=!rideChair.visible||Math.hypot(g.position.x-rideChair.position.x,g.position.y-rideChair.position.y,g.position.z+alpineShift-rideChair.position.z)>14;}for(const {g,offset}of upperChairs){const pose=upperLoopPose((t/(resortRides.upperlift.duration*2+4)+offset)%1);g.position.copy(pose.position);g.rotation.set(0,pose.yaw,Math.sin(t*.6+offset)*.009);g.visible=!rideChair.visible||Math.hypot(g.position.x-rideChair.position.x,g.position.y-rideChair.position.y,g.position.z+alpineShift-rideChair.position.z)>14;}}};
 }

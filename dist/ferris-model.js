@@ -1,3 +1,4 @@
+import {addLandmarkNightFill} from './landmark-lighting.js';
 import {mergePaintedGeometry} from './mesh-batch.js';
 import * as T from './vendor/three.module.js';
 
@@ -40,10 +41,10 @@ function cabinTemplate(materials){
  const section=(name,fade=false)=>{const group=new T.Group();group.name=name;group.userData={ferrisPart:name,ferrisCameraFade:fade};root.add(group);sections[name]=group;return batch(group,name,materials,{ferrisPart:name,ferrisCameraFade:fade});};
  const floor=section('floor'),roof=section('roof',true),frame=section('frame',true);
  // A rounded enamel cabin with a gilded lower skirt; seated faces retain an open sight line.
- floor.add(new T.CylinderGeometry(1.075,1.02,.10,48),'ivory','paint',[0,-1.365,0]);
+ floor.add(new T.CylinderGeometry(1.075,1.02,.10,40),'ivory','paint',[0,-1.365,0]);
  floor.add(ellipseRing(1.065,1.065,-1.31,.016),'gold');
  const shell=[new T.Vector2(.89,-1.44),new T.Vector2(1.02,-1.38),new T.Vector2(1.08,-1.30),new T.Vector2(1.09,-1.12),new T.Vector2(1.065,-.86),new T.Vector2(1.04,-.83)];
- floor.add(new T.LatheGeometry(shell,48),'ivory','paint');
+ floor.add(new T.LatheGeometry(shell,40),'ivory','paint');
  floor.add(ellipseRing(1.075,1.075,-1.26,.013),'gold');
  floor.add(ellipseRing(1.043,1.043,-.825,.022),'gold');
  floor.add(ellipseRing(1.071,1.071,-.88,.009),'warm','paint');
@@ -81,7 +82,7 @@ function cabinTemplate(materials){
   frame.add(tube(points,.016,18),'silver');
  }
  const canopy=[new T.Vector2(1.10,.12),new T.Vector2(1.10,.17),new T.Vector2(.99,.21),new T.Vector2(.86,.32),new T.Vector2(.58,.40),new T.Vector2(.20,.44),new T.Vector2(0,.45)];
- roof.add(new T.LatheGeometry(canopy,48),'blue','metal');
+ roof.add(new T.LatheGeometry(canopy,40),'blue','metal');
  roof.add(ellipseRing(1.10,1.10,.13,.020),'silver');
  roof.add(ellipseRing(1.085,1.085,.105,.010),'warm','light');
  // Tailored gold ribs and a scalloped illuminated valance restore the winter pavilion detail.
@@ -114,6 +115,7 @@ export function buildFerrisWheel(){
  const d=ferrisDimensions,root=new T.Group();root.name='winter-grand-ferris-wheel';root.position.set(d.center.x,d.center.y,d.center.z);root.rotation.y=d.yaw;root.scale.setScalar(d.scale);
  root.userData={asset:'winter-grand-ferris-wheel',dynamic:true,cabinCount:d.cabinCount,seatsPerCabin:d.seatsPerCabin};
  const materials={metal:new T.MeshStandardMaterial({color:'#ffffff',vertexColors:true,roughness:.31,metalness:.52}),paint:new T.MeshStandardMaterial({color:'#ffffff',vertexColors:true,roughness:.48,metalness:.12}),light:new T.MeshBasicMaterial({color:'#ffffff',vertexColors:true,toneMapped:false})};
+ addLandmarkNightFill(materials.metal,.08);addLandmarkNightFill(materials.paint,.12);
  const illuminationTime={value:0};
  materials.light.onBeforeCompile=shader=>{shader.uniforms.illuminationTime=illuminationTime;shader.vertexShader='varying vec3 vFixture;\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvFixture=position;');shader.fragmentShader='uniform float illuminationTime;varying vec3 vFixture;\n'+shader.fragmentShader;shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb*=1.8+.28*pow(.5+.5*sin(vFixture.y*.8+vFixture.x*.5-illuminationTime*.4),8.);');};
  materials.light.customProgramCacheKey=()=> 'ferris-illumination-v27';
@@ -141,7 +143,7 @@ export function buildFerrisWheel(){
 
  for(const z of [-.35,.35]){
   rim.add(new T.TorusGeometry(d.radius,.060,8,120),'silver','metal',[0,0,z]);rim.add(new T.TorusGeometry(d.radius-.28,.035,8,120),'gold','metal',[0,0,z]);
-  rim.add(new T.TorusGeometry(d.radius+.025,.013,6,120),'cool','light',[0,0,z+(z>0?.062:-.062)]);rim.add(new T.TorusGeometry(d.radius-.265,.009,6,120),'warm','light',[0,0,z+(z>0?.045:-.045)]);
+  rim.add(new T.TorusGeometry(d.radius+.025,.023,6,120),'cool','light',[0,0,z+(z>0?.062:-.062)]);rim.add(new T.TorusGeometry(d.radius-.265,.017,6,120),'warm','light',[0,0,z+(z>0?.045:-.045)]);
   for(let i=0;i<48;i++){
    const a=i/48*TAU,b=(i+.5)/48*TAU,c=(i+1)/48*TAU,outer=t=>[Math.cos(t)*d.radius,Math.sin(t)*d.radius,z],inner=t=>[Math.cos(t)*(d.radius-.28),Math.sin(t)*(d.radius-.28),z];
    rim.add(rod(outer(a),inner(b),.016),'gold');rim.add(rod(inner(b),outer(c),.016),'gold');
@@ -153,9 +155,21 @@ export function buildFerrisWheel(){
   for(const z of [-.30,.30]){
    const start=a;spokes.add(rod([Math.cos(start)*.39,Math.sin(start)*.39,z],[Math.cos(a)*(d.radius-.29),Math.sin(a)*(d.radius-.29),z],i%2?.018:.026),i%2?'gold':'silver');
   }
-  if(i%2===0)spokes.add(rod([Math.cos(a)*.57,Math.sin(a)*.57,.33],[Math.cos(a)*(d.radius-.35),Math.sin(a)*(d.radius-.35),.33],.008),'cool','light');
+  for(const z of [-.34,.34])spokes.add(rod([Math.cos(a)*.57,Math.sin(a)*.57,z],[Math.cos(a)*(d.radius-.35),Math.sin(a)*(d.radius-.35),z],i%2?.010:.016),i%2?'warm':'cool','light');
  }
  rim.finish();spokes.finish();
+ // One GPU point cloud supplies the visible halo of the rim bulbs at every distance.
+ // These decorative fixtures never consume the bounded real-light pool.
+ const glowPositions=[],glowColors=[];
+ for(const z of [-.43,.43])for(let i=0;i<120;i++){
+  const a=i/120*TAU,r=d.radius-(i%2?.27:0);glowPositions.push(Math.cos(a)*r,Math.sin(a)*r,z);
+  const color=new T.Color(i%2?colors.warm:colors.cool);glowColors.push(color.r,color.g,color.b);
+ }
+ const glowGeometry=new T.BufferGeometry();glowGeometry.setAttribute('position',new T.Float32BufferAttribute(glowPositions,3));glowGeometry.setAttribute('color',new T.Float32BufferAttribute(glowColors,3));
+ const glowMaterial=new T.ShaderMaterial({uniforms:{time:illuminationTime},transparent:true,depthWrite:false,blending:T.AdditiveBlending,toneMapped:false,vertexColors:true,
+  vertexShader:`uniform float time;varying vec3 vColor;varying float shine;void main(){vColor=color;shine=.64+.36*pow(.5+.5*sin(position.x*.7+position.y*.8-time*.35),6.);vec4 p=modelViewMatrix*vec4(position,1.);gl_PointSize=clamp(850./max(1.,-p.z),2.,18.);gl_Position=projectionMatrix*p;}`,
+  fragmentShader:`varying vec3 vColor;varying float shine;void main(){vec2 p=gl_PointCoord-.5;float core=exp(-dot(p,p)*80.);float halo=exp(-dot(p,p)*14.)*.22;float rays=exp(-abs(p.x)*75.)*exp(-abs(p.y)*7.)+exp(-abs(p.y)*75.)*exp(-abs(p.x)*7.);float a=(core+halo+rays*.25)*shine;if(a<.01)discard;gl_FragColor=vec4(vColor,a);}`});
+ const glow=new T.Points(glowGeometry,glowMaterial);glow.name='ferris-rim-fairy-lights';wheel.add(glow);
  hub.add(new T.CylinderGeometry(.23,.23,1.5,24),'silver','metal',[0,0,-.35],[Math.PI/2,0,0]);
  for(const z of [-1.03,.43]){
   hub.add(new T.CylinderGeometry(.40,.40,.12,40),'blue','paint',[0,0,z],[Math.PI/2,0,0]);hub.add(new T.TorusGeometry(.35,.024,8,40),'gold','metal',[0,0,z+.071]);hub.add(new T.TorusGeometry(.23,.014,6,32),'cool','light',[0,0,z+.075]);

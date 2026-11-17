@@ -1,5 +1,6 @@
 import {landforms,landRadius,segmentDistance} from './world-layout.js';
-import {alpine,alpineHeight,summit,peakSummit,skiRuns,skiRunCenter,skiRunHalfWidth,skiRunouts,sledCenter,liftPoint,upperLiftPoint,summitTransfer,summitFacilities} from './resort-blueprint.js';
+import {alpine,alpineHeight,summit,peakSummit,skiRuns,skiRunCenter,skiRunHalfWidth,skiRunouts,liftPoint,upperLiftPoint,summitTransfer,summitFacilities} from './resort-blueprint.js';
+import {worldPathLinks} from './world-paths.js';
 import {alpineShift} from './resort-layout.js';
 
 // Rendered trunks and movement use the same deterministic placements.
@@ -7,13 +8,13 @@ const worldForm=landforms.find(p=>p.id==='alpine'),form={...worldForm,z:worldFor
 const liftLines=[liftPoint,upperLiftPoint].map(point=>Array.from({length:49},(_,i)=>{const p=point(i/48);return{x:p[0]+2,z:p[2]};}));
 const distanceToLine=(x,z,points)=>Math.min(...points.slice(1).map((p,i)=>segmentDistance(x,z,points[i],p)));
 function clear(x,z,h){
+ if(worldPathLinks.some(([a,b,width])=>a[1]<-40&&b[1]<-40&&segmentDistance(x,z+alpineShift,{x:a[0],z:a[1]},{x:b[0],z:b[1]})<width/2+h*.2+1))return false;
  if(Math.hypot(x-alpine.x,z-alpine.z)>alpine.r-9||z>-169||z<alpine.z-118)return false;
  if(skiRunouts.some(a=>Math.hypot((x-a.x)/(a.rx+6),(z-a.z)/(a.rz+6))<1))return false;
  if([summit,peakSummit].some(s=>Math.hypot((x-s.x)/(s.rx+7),(z-s.z)/(s.rz+7))<1))return false;
  if(skiRuns.some(run=>z>run.startZ-8&&z<run.finish+14&&Math.abs(x-skiRunCenter(z,run.id))<skiRunHalfWidth(z,run.id)+8))return false;
  if(z>=-344&&z<=-284&&Math.abs(x-24)<14)return false;
  if(liftLines.some(line=>distanceToLine(x,z,line)<9)||distanceToLine(x,z,summitTransfer)<9)return false;
- if(Math.abs(x-sledCenter(z))<11&&z>-280&&z<-185)return false;
  if(Math.abs(x+55)<16&&Math.abs(z+176)<15)return false;
  if(Math.abs(x+36)<8&&z>-196&&z<-169)return false;
  if(summitFacilities.some(p=>Math.hypot(x-(p.model?.x??p.x),z-(p.model?.z??p.z))<h*.4+7))return false;

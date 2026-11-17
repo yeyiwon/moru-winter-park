@@ -3,7 +3,6 @@ import * as T from '../dist/vendor/three.module.js';
 import {createFishSchool} from '../dist/ryokan-aquarium.js';
 import {createOrbitPuzzle} from '../dist/museum-puzzle.js';
 import {interiorRooms,interiorCanStandAt,interiorSurfaceHeight} from '../dist/interior-layout.js';
-import {outdoorViewPosition} from '../dist/interior-view.js';
 import {findPath} from '../dist/navigation.js';
 import {buildInteriors} from '../dist/interior-world.js';
 import {createInteractionExitControl} from '../dist/interaction-exit-control.js';
@@ -15,16 +14,13 @@ test('freshwater fish remain inside glass and move with finite bounded steering'
 test('the orbit puzzle changes real quarter turns and solves only all aligned rings',()=>{
  const p=createOrbitPuzzle();assert.equal(p.turn(99),false);for(let i=0;i<3;i++)for(let turn=0;turn<3-i;turn++){const complete=p.turn(i);assert.equal(complete,i===2&&turn===0);}assert.deepEqual(p.steps,[0,0,0]);p.reset();assert.deepEqual(p.steps,[1,2,3]);
 });
-test('aquarium and elevated botanical gallery have a complete walkable route',()=>{
- for(const [id,destination]of [['ryokan',{x:388,z:11.8}],['conservatory',{x:800,z:-19}]]){const route=findPath(interiorRooms[id].entry,destination);assert.ok(route.length,id);assert.ok(Math.hypot(route.at(-1).x-destination.x,route.at(-1).z-destination.z)<.02);for(const p of route)assert.ok(interiorCanStandAt(p.x,p.z));}
- assert.equal(interiorSurfaceHeight(800,-19),3.09);
+test('aquarium and museum gallery have a complete walkable route',()=>{
+ for(const [id,destination]of [['ryokan',{x:388,z:11.8}],['museum',{x:587,z:-7.7}]]){const route=findPath(interiorRooms[id].entry,destination);assert.ok(route.length,id);assert.ok(Math.hypot(route.at(-1).x-destination.x,route.at(-1).z-destination.z)<.02);for(const p of route)assert.ok(interiorCanStandAt(p.x,p.z));}
+ assert.equal(interiorSurfaceHeight(800,-19),null);
 });
-test('live exterior view aligns the north-facing ryokan entrance and separate district centers',()=>{
- const center=outdoorViewPosition('ryokan',{x:400,y:3,z:0}),south=outdoorViewPosition('ryokan',{x:400,y:3,z:8});assert.ok(south.z<center.z);assert.deepEqual(outdoorViewPosition('unknown',{}),null);assert.equal(outdoorViewPosition('museum',{x:600,y:3,z:0}).x,52);
-});
-test('lazy rooms have bounded geometry and camera stays inside glass',()=>{
+test('lazy rooms have bounded geometry and camera stays inside solid room boundaries',()=>{
  const interiors=buildInteriors(new T.Scene(),{lazy:true});assert.equal(Object.keys(interiors.rooms).length,0);
- for(const id of ['museum','conservatory','ryokan']){interiors.setActive(id);const room=interiors.rooms[id];let count=0;room.root.traverse(o=>{if(o.isMesh){count++;for(const value of o.geometry.attributes.position.array)assert.ok(Number.isFinite(value));}});assert.ok(count<110,id+': '+count);const camera=new T.Vector3(room.layout.x+70,35,70);interiors.setCamera(camera);assert.ok(Math.abs(camera.x-room.layout.x)<room.layout.rx);assert.ok(Math.abs(camera.z)<room.layout.rz);assert.ok(camera.y<room.layout.ceiling);}
+ for(const id of ['museum','ryokan']){interiors.setActive(id);const room=interiors.rooms[id];let count=0;room.root.traverse(o=>{if(o.isMesh){count++;for(const value of o.geometry.attributes.position.array)assert.ok(Number.isFinite(value));}});assert.ok(count<110,id+': '+count);const camera=new T.Vector3(room.layout.x+70,35,70);interiors.setCamera(camera);assert.ok(Math.abs(camera.x-room.layout.x)<room.layout.rx);assert.ok(Math.abs(camera.z)<room.layout.rz);assert.ok(camera.y<room.layout.ceiling);}
  interiors.setActive(null);interiors.dispose();assert.equal(Object.keys(interiors.rooms).length,0);
 });
 test('one exit control invokes only the active action and fully disables after leaving',()=>{

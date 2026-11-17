@@ -1,12 +1,19 @@
-import {treeLayout,treeShift} from './tree-layout.js';
-import {spaShift,alpineShift} from './resort-layout.js';
-import {skateRental,rinkEntry,postOffice} from './retreat-layout.js';
+import {regions,regionBridges} from './region-layout.js';
+import {alpineShift,spaX,spaShift} from './resort-layout.js';
+import {postOffice} from './retreat-layout.js';
+const p=point=>[point.x,point.z],anchor=(id,other)=>{const bridge=regionBridges.find(b=>b.from===id&&b.to===other||b.to===id&&b.from===other);return p(bridge.from===id?bridge.approachStart:bridge.approachEnd);};
+// The bridge deck and its approach paths consume the same endpoints.
 export const worldPathLinks=[
-   [[0,24],[33,25],5.5],[[33,25],[34.6,27],5],[[33,25],[36,44],5.5],[[36,44],[54,48],5.5],[[54,48],[treeLayout.arrival.x,treeLayout.arrival.z],5.5],
-   [[33,25],[postOffice.entry.x,postOffice.entry.z],4.5],
-   [[-61,0],[-99,0],5.5],[[-99,0],[-115,0],6],[[0,24],[0,96+spaShift],5.5],[[0,96+spaShift],[-20,101+spaShift],6],[[-20,101+spaShift],[-29,98+spaShift],6],[[-29,98+spaShift],[-29,94+spaShift],5],
-   [[-29,94+spaShift],[rinkEntry.x,rinkEntry.z],4.6],[[-29,94+spaShift],[skateRental.entry.x,skateRental.entry.z],4.2],
-   [[0,-7],[0,-27],5.5],[[0,-27],[0,-43],6],[[0,-43],[-24,-160+alpineShift],6],[[-24,-160+alpineShift],[-36,-176+alpineShift],5],
-   [[-36,-176+alpineShift],[-44,-181.8+alpineShift],4.2],[[-44,-181.8+alpineShift],[-36,-185+alpineShift],4.2],
-   [[-10,-4],[-31,0],6],[[-31,0],[-37,4],6],[[-37,4],[-45,4],6],[[-45,4],[-61,0],6]
-  ];
+ ...regionBridges.flatMap(b=>[[p(b.approachStart),p(b.start),6],[p(b.start),p(b.end),6],[p(b.end),p(b.approachEnd),6]]),
+ [[0,24],anchor('park','tree'),6],[[0,24],[0,13],6],[[0,-7],anchor('park','ski'),5.5],
+ [anchor('ski','park'),[-24,-160+alpineShift],6],[[-24,-160+alpineShift],[-36,-176+alpineShift],5],
+ [[-36,-176+alpineShift],[-44,-181.8+alpineShift],4.2],[[-44,-181.8+alpineShift],[-38,-90],4.2],[[-38,-90],p(regions.ski.arrival),4.2],
+ [anchor('ski','spa'),[56,-90],6],[[56,-90],[8,-82],6],[[8,-82],[-24,-70],6],
+ [[0,24],[32,19],6],[[32,19],[36,-4],6],[[36,-4],[38,-14],6],[[38,-14],anchor('park','spa'),6],
+ [anchor('spa','park'),p(regions.spa.arrival),5.5],[anchor('spa','ski'),p(regions.spa.arrival),5.5],
+ [p(regions.spa.arrival),[spaX+12,113.6+spaShift],5],
+ [anchor('tree','park'),[-8,62],5],[[-8,62],p(postOffice.entry),5],[p(postOffice.entry),p(regions.tree.arrival),5],
+ [anchor('tree','park'),[12,68],5],[[12,68],[15,86],5],[[15,86],[0,99],5],[[0,99],[-16,89],5],[[-16,89],p(regions.tree.arrival),5],
+ [[-31,0],[-32,-10],5.5],[[-32,-10],anchor('park','museum'),5.5],
+ [anchor('museum','park'),p(regions.museum.arrival),5.5],
+];

@@ -5,6 +5,25 @@ import {createLocalLights} from '../dist/local-lights.js';
 import {createRenderBudget,projectedCharacterHeight} from '../dist/render-budget.js';
 import {mergeMeshGeometry} from '../dist/mesh-batch.js';
 import {createCompanion} from '../dist/companion.js';
+import {createLightingThemeManager} from '../dist/lighting-theme.js';
+import {createFixtureGlow} from '../dist/fixture-glow.js';
+test('batching preserves painted snow colors and uses white for unpainted vertices',()=>{
+ const painted=new T.Mesh(new T.PlaneGeometry(2,2),new T.MeshStandardMaterial({vertexColors:true})),plain=new T.Mesh(new T.PlaneGeometry(2,2),painted.material);
+ const colors=new Float32Array(painted.geometry.attributes.position.count*3);colors.fill(.8);painted.geometry.setAttribute('color',new T.BufferAttribute(colors,3));
+ const merged=mergeMeshGeometry([painted,plain]);assert.deepEqual(Array.from(merged.attributes.color.array.slice(0,colors.length)),Array.from(colors));assert.ok(merged.attributes.color.array.slice(colors.length).every(c=>c===1));
+});
+test('personal lighting transitions bulbs, reflections and pooled light without recoloring fixed landmarks',()=>{
+ const scene=new T.Scene(),fixture=new T.Group();fixture.userData.lampGlow=[{y:3,power:24}];scene.add(fixture);
+ const bulb=new T.Mesh(new T.SphereGeometry(.1),new T.MeshStandardMaterial({color:'#ffd5a1',emissive:'#ffd5a1'}));bulb.material.userData.lightingTheme='personal';fixture.add(bulb);
+ const fixed=new T.PointLight('#ffab72',10,10);fixed.position.set(80,3,0);scene.add(fixed);const fixedColor=fixed.color.clone();
+ const glow=createFixtureGlow(scene),theme=createLightingThemeManager(scene),pool=createLocalLights(scene,{limit:1}),camera=new T.PerspectiveCamera(60,1,.1,100);camera.position.set(0,3,8);camera.lookAt(0,1,0);scene.updateMatrixWorld(true);
+ theme.set('#91ccff',1.2);theme.update(1/60);assert.notEqual(bulb.material.color.getHexString(),'91ccff');
+ for(let i=0;i<120;i++)theme.update(1/60);pool.update(1,camera,new T.Vector3(0,0,0));
+ assert.equal(bulb.material.color.getHexString(),'91ccff');assert.equal(bulb.material.emissive.getHexString(),'91ccff');assert.ok(fixed.color.equals(fixedColor));
+ assert.equal(glow.root.children[1].material.uniforms.lightingColor.value.getHexString(),'91ccff');assert.equal(pool.activeCount,1);
+ const slot=scene.getObjectByName('pooled-local-light-0');assert.equal(slot.color.getHexString(),'91ccff');assert.equal(scene.children.filter(o=>o.isPointLight&&o.layers.isEnabled(0)).length,1);
+ pool.dispose();glow.dispose();
+});
 test('indexed batching preserves every transformed triangle and UV without vertex expansion',()=>{
  const scene=new T.Scene(),parent=new T.Group();parent.position.set(7,3,-8);parent.rotation.y=.4;scene.add(parent);const items=[];
  for(let i=0;i<3;i++){const mesh=new T.Mesh(new T.SphereGeometry(1,24,16),new T.MeshStandardMaterial());mesh.position.set(i*4,i,-i);mesh.scale.set(1,.8,1.3);parent.add(mesh);items.push(mesh);}scene.updateMatrixWorld(true);

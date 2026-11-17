@@ -1,5 +1,5 @@
 import {messageText,rateLimit} from './community-api.js';
-export const contentKeys=['museum','conservatory','skating','tree'];
+export const contentKeys=['museum','tree'];
 const defaults={notice:'',disabled:[]};
 export async function readWorldSettings(DB){const row=await DB.prepare('SELECT payload,updated_at AS updatedAt FROM world_settings WHERE id=?').bind('world').first();return row?{...JSON.parse(row.payload),updatedAt:row.updatedAt}:{...defaults,updatedAt:0};}
 export async function operationsAPI(request,DB,self,admin,now){

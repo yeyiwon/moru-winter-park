@@ -1,5 +1,5 @@
 import {buildMuseumInterior} from './museum-world.js';
-import {buildConservatoryInterior} from './conservatory-world.js';
+import {buildRyokanChef} from './ryokan-chef.js';
 import {buildRyokanAquarium} from './ryokan-aquarium.js';
 import {createRyokanMeal} from './ryokan-meal.js';
 import * as T from './vendor/three.module.js';
@@ -69,20 +69,20 @@ function buildRyokan(root,m){
  for(const o of ryokanFixtures.filter(o=>['locker','tatami-cabinet'].includes(o.id))){b.box(o.rx*2,1.8,o.rz*2,m.cedar,o.x,1,o.z);for(let i=0;i<4;i++)for(let j=0;j<3;j++){const xx=o.x-o.rx+.5+i*(o.rx*2/4),y=.5+j*.55;b.box(o.rx*.43,.5,.04,m.lightWood,xx,y,o.z+o.rz+.035);b.oval(m.brass,xx+.12,y,o.z+o.rz+.065,.025,.025,.015);}}
  for(const p of ryokanFixtures.filter(o=>o.id.startsWith('planter')))makePlanter(b,m,p.x,p.z);
  for(const [x,z]of [[-12,7],[12,10],[-12,-8],[12,-8],[0,-6],[0,8]]){makeLantern(b,m,x,5.25,z,1.1);b.rod([x,6.8,z],[x,6.05,z],.015,m.endgrain);}
- const aquarium=buildRyokanAquarium(root,m);
+ const aquarium=buildRyokanAquarium(root,m),chef=buildRyokanChef(root,m);
  const light=new T.PointLight('#ffc991',75,38,2);light.position.set(0,5,0);root.add(light);const fill=new T.HemisphereLight('#ffe4bf','#685743',1.5);root.add(fill);
  const atmosphere=createRetreatAtmosphere(root,{name:'ryokan',
   waters:[{x:bath.x,y:.344,z:bath.z,rx:2.64,rz:1.74,rect:true,lights:[[0,5.5,-6],[-12,5.5,-8],[12,5.5,-8]]}],
   vapour:[{x:bath.x,y:.34,z:bath.z-.5,rx:2.15,rz:1.05,rise:1.25,size:.9,count:20,opacity:.11},{x:-13,y:1.25,z:7,rx:.18,rz:.18,rise:.65,size:.32,count:6,opacity:.1},{x:12,y:1.38,z:.1,rx:.2,rz:.2,rise:.6,size:.26,count:5,opacity:.08},{x:12,y:1.25,z:-9,rx:.18,rz:.18,rise:.65,size:.32,count:6,opacity:.1},{x:stove.x,y:1.5,z:stove.z,rx:.65,rz:.65,rise:1.6,size:.6,count:8,opacity:.065}],
   lamps:[[-12,7],[12,10],[-12,-8],[12,-8],[0,-6],[0,8]].map(([x,z])=>({x,y:.143,z,rx:3.3,rz:2.5}))
  });
- mergeFinish(root);return{root,walls,doors,doorOpen:0,ceiling:ceil,uniforms:[],atmosphere,update:(t,still,p)=>aquarium.update(t,still,p),setQuality:q=>aquarium.setQuality(q),dispose:()=>aquarium.dispose()};
+ mergeFinish(root);return{root,walls,doors,doorOpen:0,ceiling:ceil,uniforms:[],atmosphere,update:(t,still,p)=>{aquarium.update(t,still,p);chef.update(t,still,p);},setQuality:q=>aquarium.setQuality(q),dispose:()=>aquarium.dispose()};
 }
 
 export function buildInteriors(scene,{lazy=false,onLoad=()=>{},onRelease=()=>{},retainMs=90000}={}){
  const root=new T.Group();root.name='independent-interiors';root.visible=false;scene.add(root);const rooms={},occluders=[];
  let active=null,quality='medium',lastUsed=0;
- function ensure(id){if(rooms[id])return rooms[id];const layout=interiorRooms[id];if(!layout)return null;const roomRoot=new T.Group();roomRoot.name=id+'-interior';roomRoot.position.set(layout.x,0,layout.z);roomRoot.visible=false;root.add(roomRoot);const palette=materials();palette.glass.userData.exteriorWindow=true;const asset=(id==='museum'?buildMuseumInterior:id==='conservatory'?buildConservatoryInterior:buildRyokan)(roomRoot,palette);asset.atmosphere.setQuality(quality);asset.setQuality?.(quality);rooms[id]={...asset,layout};roomRoot.traverse(o=>{if(o.isMesh&&!o.material.transparent&&!o.material.isShaderMaterial)occluders.push(o);});onLoad(roomRoot);return rooms[id];}
+ function ensure(id){if(rooms[id])return rooms[id];const layout=interiorRooms[id];if(!layout)return null;const roomRoot=new T.Group();roomRoot.name=id+'-interior';roomRoot.position.set(layout.x,0,layout.z);roomRoot.visible=false;root.add(roomRoot);const palette=materials();if(id==='ryokan'){palette.glass.transparent=false;palette.glass.opacity=1;palette.glass.color.set('#dfd6bd');palette.glass.emissive.set('#e3b779');palette.glass.emissiveIntensity=.07;}const asset=(id==='museum'?buildMuseumInterior:buildRyokan)(roomRoot,palette);asset.atmosphere.setQuality(quality);asset.setQuality?.(quality);rooms[id]={...asset,layout};roomRoot.traverse(o=>{if(o.isMesh&&!o.material.transparent&&!o.material.isShaderMaterial)occluders.push(o);});onLoad(roomRoot);return rooms[id];}
  if(!lazy)for(const id of Object.keys(interiorRooms))ensure(id);
  function release(id){const room=rooms[id];if(!room||id===active)return false;onRelease(room.root);for(let i=occluders.length-1;i>=0;i--){let node=occluders[i];while(node&&node!==room.root)node=node.parent;if(node)occluders.splice(i,1);}room.dispose?.();room.atmosphere.dispose();disposeOwnedScene(room.root);delete rooms[id];return true;}
  function maintain(now,nearEntrance=false){if(active||nearEntrance)lastUsed=now;if(lazy&&!active&&!nearEntrance&&now-lastUsed>retainMs)for(const id of Object.keys(rooms))release(id);}
@@ -91,8 +91,9 @@ export function buildInteriors(scene,{lazy=false,onLoad=()=>{},onRelease=()=>{},
  const bounds=room.layout,dx=position.x-bounds.x,dz=position.z-bounds.z;
  if(bounds.shape==='ellipse'){const curve=Math.sqrt(Math.max(.2,1-(Math.max(0,position.y)/bounds.ceiling)**2)),rx=(bounds.rx-1)*curve,rz=(bounds.rz-1)*curve,r=Math.hypot(dx/rx,dz/rz);if(r>1){position.x=bounds.x+dx/r;position.z=bounds.z+dz/r;}}
  else{position.x=Math.max(bounds.x-bounds.rx+1,Math.min(bounds.x+bounds.rx-1,position.x));position.z=Math.max(bounds.z-bounds.rz+1,Math.min(bounds.z+bounds.rz-1,position.z));}
- const local={x:position.x-room.layout.x,z:position.z-room.layout.z};for(const wall of room.walls){const axis=wall.userData.cutawayAxis,sign=wall.userData.cutawaySign;wall.visible=local[axis]*sign<room.layout[axis==='x'?'rx':'rz']*.15;}if(room.ceiling)room.ceiling.visible=position.y<3&&Math.hypot(local.x,local.z)<5;}
- function update(time,still=false,quality){const room=rooms[active];if(!room)return;if(!still)for(const u of room.uniforms||[])u.time.value=time;room.atmosphere.update(time,still,quality);room.update?.(time,still,globalThis.window?.labPlayerState);const p=globalThis.window?.labPlayerState,near=!!p&&Math.hypot(p.x-room.layout.x,p.z-16.6)<7;if(near!==room.doorNear){room.doorNear=near;globalThis.window?.labSound?.('sliding-door');}const dt=Math.min(.1,Math.max(0,time-(room.doorTime??time)));room.doorTime=time;room.doorOpen+=(Number(near)-room.doorOpen)*(still?1:1-Math.exp(-8*dt));for(const d of room.doors)d.root.position.x=d.side*(1.55+room.doorOpen*2.7);}
+ if(active==='museum'){const r=Math.hypot(position.x-bounds.x,position.z-bounds.z);position.y=Math.min(position.y,5.5+Math.sqrt(Math.max(0,21.6**2-r*r)));}
+ const local={x:position.x-room.layout.x,z:position.z-room.layout.z};for(const wall of room.walls){const axis=wall.userData.cutawayAxis,sign=wall.userData.cutawaySign;wall.visible=true;}if(room.ceiling)room.ceiling.visible=true;}
+ function update(time,still=false,quality){const room=rooms[active];if(!room)return;if(!still)for(const u of room.uniforms||[])u.time.value=time;room.atmosphere.update(time,still,quality);room.update?.(time,still,globalThis.window?.labPlayerState);const p=globalThis.window?.labPlayerState,near=active==='ryokan'&&!!p&&Math.hypot(p.x-room.layout.x,p.z-16.6)<7;if(near!==room.doorNear){room.doorNear=near;globalThis.window?.labSound?.('sliding-door');}const dt=Math.min(.1,Math.max(0,time-(room.doorTime??time)));room.doorTime=time;room.doorOpen+=(Number(near)-room.doorOpen)*(still?1:1-Math.exp(-8*dt));for(const d of room.doors)d.root.position.x=d.side*(1.55+room.doorOpen*2.7);}
  function setQuality(value){quality=value;for(const room of Object.values(rooms)){room.atmosphere.setQuality(value);room.setQuality?.(value);}}
  return{react(id,time){rooms.museum?.react?.(id,time);},puzzle(steps){rooms.museum?.puzzle?.(steps);},root,rooms,occluders,ensure,release,maintain,setActive,setCamera,update,setQuality,dispose(){active=null;for(const id of Object.keys(rooms))release(id);root.removeFromParent();},get active(){return active;}};
 }

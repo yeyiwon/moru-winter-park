@@ -1,50 +1,28 @@
-import {museumLayout,conservatoryLayout} from './district-layout.js';
+import {regions,regionBridges} from './region-layout.js';
+import {museumLayout} from './district-layout.js';
 import {treeLayout,treeShift} from './tree-layout.js';
 import {castleView} from './castle-layout.js';
 import {interiorAt,interiorSurfaceHeight} from './interior-layout.js';
 import {alpine,alpineHeight,resortGround,spaShift,alpineShift} from './resort-layout.js';
-export const islands=[
-  {id:'park',name:'별빛 놀이공원',subject:'관람차 · 회전목마',x:0,z:0,r:32,color:'#c9adff',spawn:{x:0,z:24},view:castleView},
-  {id:'science',hidden:true,name:'유리별 관측소',subject:'망원경 · 별빛',x:0,z:-53,r:16,color:'#97d6f2',spawn:{x:0,z:-44}},
-  {id:'law',hidden:true,name:'달빛 기록원',subject:'법과 사회 · 생명윤리',x:46,z:-27,r:16,color:'#eac795',spawn:{x:40,z:-22}},
-  {id:'philosophy',name:'별빛 만물관',subject:'천체 · 과학 · 자연 · 역사 · 퍼즐',x:52,z:27,r:25,color:'#c3aff1',spawn:museumLayout.arrival},
-  {id:'art',hidden:true,name:'진주빛 음악당',subject:'음악과 반짝임',x:-46,z:27,r:16,color:'#e9afc8',spawn:{x:-39,z:23}},
-  {id:'history',hidden:true,name:'기억의 산책길',subject:'역사와 문화 · 세상과 언어',x:-46,z:-27,r:16,color:'#edc88d',spawn:{x:-39,z:-23}},
-  {id:'alpine',name:'설빛 산악 리조트',subject:'스키 · 리프트 · 눈썰매',x:alpine.x,z:alpine.z,r:alpine.r,color:'#a8c8d7',spawn:{x:8,z:-172+alpineShift}},
-  {id:'wish',name:'트리 광장',subject:'크리스마스 · 산책',x:treeLayout.x,z:treeLayout.z,r:27,color:'#d7be91',spawn:treeLayout.arrival,view:{distance:42,yaw:-1.25,pitch:.15,lookHeight:12}},
-  {id:'spa',name:'설림 온천 마을',subject:'노천 온천 · 편백 휴양관',x:0,z:119+spaShift,r:31,color:'#b5cdc0',spawn:{x:0,z:96+spaShift}}
-];
-islands.push({id:'festival',name:'일루미네이션 가든',subject:'겨울 야경 · 포토 가든',x:-63,z:0,r:25,color:'#e0b7d2',spawn:{x:-42,z:4}});
-islands.push({id:'rink',name:'아이스링크',subject:'스케이트 · 겨울 라운지',x:-58,z:94+spaShift,r:29,color:'#b4dcdf',spawn:{x:-34,z:94+spaShift}});
-// Explicit landings keep wide bridges separate from the shape of each district.
-export const promenadeTrees=[
- {x:11,z:26,h:4.1,r:.35},{x:89+treeShift,z:42,h:4.6,r:.35},
- {x:96+treeShift,z:26,h:4.4,r:.35},{x:-19,z:55,h:4.0,r:.35}
-];
-islands.push({id:'conservatory',name:'오로라 식물원',subject:'유리 돔 · 폭포 · 공중 산책로',x:conservatoryLayout.x,z:0,r:29,color:'#a9ded4',spawn:conservatoryLayout.arrival});
+const terrainIds={park:'park',ski:'alpine',spa:'spa',tree:'wish',museum:'philosophy'};
+export const islands=Object.values(regions).map(r=>({id:terrainIds[r.id],name:r.name,...r.center,r:Math.min(r.size.rx,r.size.rz),spawn:r.arrival,color:r.id==='spa'?'#b5cdc0':'#bdd9e7',...(r.id==='park'?{view:castleView}:r.id==='tree'?{view:{distance:40,yaw:Math.PI,pitch:.15,lookHeight:12}}:{})}));
+// Legacy learning IDs are data-only, with no extra terrain, buildings or map destinations.
+for(const id of ['science','law','art','history'])islands.push({id,hidden:true,x:0,z:0,r:1,spawn:regions.park.arrival});
+export const promenadeTrees=[{x:11,z:26,h:4.1,r:.35},{x:treeLayout.x+15,z:treeLayout.z+12,h:4.6,r:.35},{x:treeLayout.x+16,z:treeLayout.z-12,h:4.4,r:.35}];
 export const bridgeHalfWidth=3.6;
-const landing=(x,z)=>({x,z,r:1});
-export const bridges=[[[24,14],[34,20]],[[0,30],[0,91+spaShift]],[[0,-27],[0,-43]],[[-99,0],[-116,0]]].map(([a,b])=>[landing(...a),landing(...b)]);
+export const bridges=regionBridges.map(b=>[{...b.start,r:1},{...b.end,r:1}]);
 export function bridgeHeight(x,z){for(const [a,b] of bridges){const length=Math.hypot(b.x-a.x,b.z-a.z),d=((x-a.x)*(b.x-a.x)+(z-a.z)*(b.z-a.z))/length;if(d>=0&&d<=length&&segmentDistance(x,z,a,b)<bridgeHalfWidth+.4)return .09+Math.sin(d/length*Math.PI)*Math.min(.7,length*.025);}return .09;}
 export function segmentDistance(x,z,a,b){const dx=b.x-a.x,dz=b.z-a.z,t=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-a.x-t*dx,z-a.z-t*dz);}
 // The west gardens and rides share ONE large island. Other districts have real air gaps.
-export const landforms=[
- {id:'conservatory',x:-145,z:0,rx:31,rz:27,depth:23,phase:3.2},
- {id:'park',x:-29,z:0,rx:75,rz:34,depth:24,phase:.2},
- {id:'philosophy',x:50,z:29,rx:26,rz:23,depth:16,phase:1.7},
- {id:'wish',x:treeLayout.x,z:treeLayout.z,rx:30,rz:29,depth:25,phase:4.3},
- {id:'spa',x:0,z:119+spaShift,rx:37,rz:32,depth:24,phase:5.7},
- {id:'rink',x:-58,z:94+spaShift,rx:36,rz:29,depth:19,phase:2.4},
- {id:'alpine',x:alpine.x,z:alpine.landZ,rx:alpine.rx,rz:alpine.rz,depth:45,phase:1.2}
-];
-export function landRadius(form,angle){return 1+.018*Math.sin(angle*5+form.phase)+.012*Math.sin(angle*9-form.phase);}
+export const landforms=Object.values(regions).map(r=>({id:terrainIds[r.id],...r.center,...r.size,depth:r.depth,phase:r.phase}));
+export function landRadius(form,angle){let radius=1;if(form.id==='alpine')radius+=.23*Math.max(0,-Math.sin(angle))-.15*Math.max(0,Math.sin(angle))**8;return radius*(1+.018*Math.sin(angle*5+form.phase)+.012*Math.sin(angle*9-form.phase));}
 export function landDistance(x,z,form){const dx=(x-form.x)/form.rx,dz=(z-form.z)/form.rz;return(Math.hypot(dx,dz)-landRadius(form,Math.atan2(dz,dx)))*Math.min(form.rx,form.rz);}
 export const snowfields=landforms.map(f=>({a:{x:f.x,z:f.z},b:{x:f.x,z:f.z},r:f.rz}));
 export function snowfieldDistance(x,z){return Math.min(...landforms.map(f=>landDistance(x,z,f)),...bridges.map(([a,b])=>segmentDistance(x,z,a,b)-bridgeHalfWidth));}
 export function terrainAt(x,z){return Number.isFinite(x+z)&&(!!interiorAt(x,z)||snowfieldDistance(x,z)<-.35);}
-export function islandAt(x,z){return islands.filter(i=>!i.hidden).sort((a,b)=>Math.hypot(x-a.x,z-a.z)-Math.hypot(x-b.x,z-b.z)).find(i=>Math.hypot(x-i.x,z-i.z)<i.r+15);}
+export function islandAt(x,z){const form=landforms.find(f=>landDistance(x,z,f)<0);return form?islands.find(i=>i.id===form.id):undefined;}
 
-// Learning functions remain independent of the seven visual island identities.
+// Learning data remains independent of the six visual island identities.
 export const rooms=[
 {id:'curiosity',name:'호기심 전시실',door:{x:-5,z:-46}},
 {id:'perspective',name:'관점의 방',door:{x:40,z:-24}},
@@ -65,4 +43,4 @@ export const exhibits=[
 {id:'harbour-memory',room:'memory',island:'history',name:'항구 · 기억 서재',x:-52,z:-23,color:'#aac9d0',review:true}
 ];
 
-export function surfaceHeight(x,z){const interior=interiorSurfaceHeight(x,z);if(interior!==null)return interior;let h=Math.max(bridgeHeight(x,z),resortGround(x,z));for(const [cx,cz,r]of [[47,-30,5.5],[-46,25,6]]){const d=Math.hypot(x-cx,z-cz),t=Math.max(0,Math.min(1,(r+.2-d)/.6));h=Math.max(h,.09+.13*t);}return h;}
+export function surfaceHeight(x,z){const interior=interiorSurfaceHeight(x,z);return interior!==null?interior:Math.max(bridgeHeight(x,z),resortGround(x,z));}

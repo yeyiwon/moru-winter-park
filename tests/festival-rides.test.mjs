@@ -3,6 +3,10 @@ import assert from 'node:assert/strict';
 import * as THREE from '../dist/vendor/three.module.js';
 import {buildFestivalRides,festivalLayout,festivalDestinations} from '../dist/festival-rides.js';
 
+// This suite checks geometry; the cart's raster label is inspected in Chrome.
+test.before(()=>{globalThis.document={createElement:()=>({getContext:()=>({fillText(){}})})};});
+test.after(()=>{delete globalThis.document;});
+
 test('photo garden replaces deleted rides and keeps entrances clear',()=>{
  const scene=new THREE.Scene(),rides=buildFestivalRides(scene);let meshes=0,vertices=0;
  scene.traverse(o=>{if(!o.isMesh)return;meshes++;vertices+=o.geometry.attributes.position.count;for(const a of Object.values(o.geometry.attributes))for(const v of a.array)assert.ok(Number.isFinite(v));});

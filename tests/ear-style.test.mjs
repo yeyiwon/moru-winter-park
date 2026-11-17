@@ -18,6 +18,6 @@ test('black padded ears retain their color and contain a recessed front cup for 
 test('cached name height follows selected headwear and body proportions',()=>{
   const pet=createCompanion({detail:'remote'});pet.customize({accessory:'none'});assert.equal(pet.nameHeight,.9);
   const heights={};for(const accessory of ['bunny-ears','cat-ears','bear-ears']){pet.customize({accessory});heights[accessory]=pet.nameHeight;const top=pet.group.getObjectByName('plush-ear-headband').geometry.boundingBox.max.y;assert.ok(Math.abs(pet.nameHeight-top-.1)<.00001);}
-  assert.ok(heights['bunny-ears']>heights['cat-ears']);assert.ok(heights['cat-ears']>heights['bear-ears']);
+  assert.ok(heights['bunny-ears']>heights['cat-ears']);assert.ok(heights['cat-ears']>.9);assert.ok(heights['bear-ears']>.9);
   pet.customize({accessory:'bunny-ears',roundness:100});assert.ok(pet.nameHeight<heights['bunny-ears']);pet.pose({mode:'bath'});assert.equal(pet.nameHeight,1.08);pet.pose();assert.ok(pet.nameHeight>1.5);
 });

@@ -12,6 +12,7 @@ export function spatialBatchKey(mesh,size=128){
 export function mergeMeshGeometry(items,{world=true,relativeTo=null}={}){
  let vertices=0,indices=0;for(const item of items){vertices+=item.geometry.attributes.position.count;indices+=item.geometry.index?.count||item.geometry.attributes.position.count;}
  const result=new T.BufferGeometry(),attributes={position:new Float32Array(vertices*3),normal:new Float32Array(vertices*3),uv:new Float32Array(vertices*2)},index=vertices>65535?new Uint32Array(indices):new Uint16Array(indices);
+ if(items.some(item=>item.geometry.attributes.color))attributes.color=new Float32Array(vertices*3).fill(1);
  let vertexOffset=0,indexOffset=0;
  for(const item of items){
   if(!world)item.updateMatrix();const matrix=relativeTo?new T.Matrix4().multiplyMatrices(relativeTo,item.matrixWorld):world?item.matrixWorld:item.matrix,geometry=item.geometry.clone().applyMatrix4(matrix),count=geometry.attributes.position.count;

@@ -1,3 +1,4 @@
+import {addLandmarkNightFill} from './landmark-lighting.js';
 import {mergePaintedGeometry} from './mesh-batch.js';
 import * as T from './vendor/three.module.js';
 import {sculptedHorseCoats} from './carousel-horse-geometry.js';
@@ -96,6 +97,7 @@ export function buildCarousel({sculpted=true}={}){
  const standard=(color,roughness=.6,metalness=.05)=>new T.MeshStandardMaterial({color,roughness,metalness});
  const palette={painted:new T.MeshStandardMaterial({color:'#ffffff',vertexColors:true,roughness:.5,metalness:.02}),ivory:standard('#eee6d4',.42),pearl:standard('#d5e0df',.42),silverCoat:standard('#a8b6bf',.44),gold:standard('#c6ab76',.28,.75),silver:standard('#b6c4cc',.25,.8),navy:standard('#1c3448',.44,.15),burgundy:standard('#612c38',.62),dark:standard('#111b25',.5),mane:standard('#a89b80',.57),hoof:standard('#35414b',.46,.1),leather:standard('#493c35',.62),wood:standard('#84705a',.85),light:new T.MeshBasicMaterial({color:'#ffe5ad',toneMapped:false}),iceLight:new T.MeshBasicMaterial({color:'#bcdcec',toneMapped:false})};
  palette.column=new T.MeshStandardMaterial({color:'#ffffff',vertexColors:true,roughness:.42,metalness:.3});
+ for(const key of ['painted','column','ivory','pearl','gold','silver'])addLandmarkNightFill(palette[key],key==='gold'?.07:.13);
  palette.light.color.multiplyScalar(1.85);palette.iceLight.color.multiplyScalar(1.55);
  const architecture=batch(root,'carousel-architecture',palette),floor=batch(rotor,'carousel-parquet',palette),bulbPositions=[];
  architecture.add(new T.CylinderGeometry(6.92,7,.25,96),'navy',[0,.16,0]);architecture.add(new T.CylinderGeometry(6.83,6.9,.13,96),'gold',[0,.35,0]);floor.add(new T.CylinderGeometry(6.72,6.72,.12,96),'wood',[0,.44,0]);

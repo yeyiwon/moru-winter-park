@@ -13,7 +13,7 @@ async function rectangles(p,selector){return p.locator(selector).evaluateAll(es=
 function noOverlap(boxes){for(let i=0;i<boxes.length;i++)for(let j=i+1;j<boxes.length;j++){const a=boxes[i],b=boxes[j];assert.ok(a.x+a.w<=b.x+.1||b.x+b.w<=a.x+.1||a.y+a.h<=b.y+.1||b.y+b.h<=a.y+.1,'overlapping choices');}}
 try{const page=await open();
  for(const [name,width,height]of [['desktop',1440,900],['laptop',1024,768],['tablet',768,1024],['phone',390,844],['small',320,640],['landscape',844,390]]){
-  await page.setViewportSize({width,height});await page.evaluate(()=>{window.travelToPlace('tree',false);window.dispatchEvent(new Event('lab:tree-open'));});await page.waitForTimeout(500);
+  await page.setViewportSize({width,height});await page.evaluate(()=>{window.travelToPlace('tree',false);window.dispatchEvent(new Event('lab:tree-open'));});await page.waitForTimeout(900);if(width<=650)await page.locator('#tree-tools [data-colors]').click();
   noOverlap(await rectangles(page,'#tree-tools .tree-palette button'));noOverlap(await rectangles(page,'#tree-tools .tree-swatches>*'));
   const before=await page.locator('#tree-tools').boundingBox();await page.locator('#tree-tools [data-color="#91dbc3"]').click();const after=await page.locator('#tree-tools').boundingBox();assert.deepEqual(after,before);
   await page.locator('#tree-tools input[type=color]').evaluate(e=>{e.value='#24cbb5';e.dispatchEvent(new Event('change',{bubbles:true}));});assert.equal(await page.locator('#tree-tools .tree-custom-color').evaluate(e=>e.classList.contains('selected')),true);assert.equal(await page.locator('#tree-tools .tree-swatches [aria-pressed=true]').count(),0);

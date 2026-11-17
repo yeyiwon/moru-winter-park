@@ -1,0 +1,106 @@
+{
+  "checks": [
+    {
+      "name": "desktop tree palette, fixed tray and map travel",
+      "result": {
+        "overflow": false,
+        "box": {
+          "x": 380,
+          "y": 710,
+          "width": 680,
+          "height": 172,
+          "top": 710,
+          "right": 1060,
+          "bottom": 882,
+          "left": 380
+        }
+      }
+    },
+    {
+      "name": "laptop tree palette, fixed tray and map travel",
+      "result": {
+        "overflow": false,
+        "box": {
+          "x": 172,
+          "y": 578,
+          "width": 680,
+          "height": 172,
+          "top": 578,
+          "right": 852,
+          "bottom": 750,
+          "left": 172
+        }
+      }
+    },
+    {
+      "name": "tablet tree palette, fixed tray and map travel",
+      "result": {
+        "overflow": false,
+        "box": {
+          "x": 44,
+          "y": 834,
+          "width": 680,
+          "height": 172,
+          "top": 834,
+          "right": 724,
+          "bottom": 1006,
+          "left": 44
+        }
+      }
+    },
+    {
+      "name": "phone tree palette, fixed tray and map travel",
+      "result": {
+        "overflow": false,
+        "box": {
+          "x": 12,
+          "y": 593,
+          "width": 366,
+          "height": 241,
+          "top": 593,
+          "right": 378,
+          "bottom": 834,
+          "left": 12
+        }
+      }
+    },
+    {
+      "name": "small tree palette, fixed tray and map travel",
+      "result": {
+        "overflow": false,
+        "box": {
+          "x": 12,
+          "y": 389,
+          "width": 296,
+          "height": 241,
+          "top": 389,
+          "right": 308,
+          "bottom": 630,
+          "left": 12
+        }
+      }
+    },
+    {
+      "name": "landscape tree palette, fixed tray and map travel",
+      "result": {
+        "overflow": false,
+        "box": {
+          "x": 92,
+          "y": 223,
+          "width": 660,
+          "height": 159,
+          "top": 223,
+          "right": 752,
+          "bottom": 382,
+          "left": 92
+        }
+      }
+    },
+    {
+      "name": "accessory previews use the live shared character models",
+      "result": true
+    }
+  ],
+  "errors": [],
+  "physicalMobile": false
+}

@@ -1,13 +1,16 @@
+import {landforms,landRadius} from './world-layout.js';
 import {canStandAt,canMoveBetween} from './movement.js';
 import {interiorAt} from './interior-layout.js';
 const STEP=.85,grids=new Map();
+const outline=landforms.flatMap(f=>Array.from({length:128},(_,i)=>{const angle=i/128*Math.PI*2,r=landRadius(f,angle);return {x:f.x+Math.cos(angle)*f.rx*r,z:f.z+Math.sin(angle)*f.rz*r};}));
+export const navigationBounds={minX:Math.min(...outline.map(p=>p.x))-2,maxX:Math.max(...outline.map(p=>p.x))+2,minZ:Math.min(...outline.map(p=>p.z))-2,maxZ:Math.max(...outline.map(p=>p.z))+2};
 export function clearSegment(a,b){
  const n=Math.ceil(Math.hypot(b.x-a.x,b.z-a.z)/.12);let previous=a;
  for(let i=0;i<=n;i++){const t=n?i/n:0,p={x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t};if(!canStandAt(p.x,p.z)||!canMoveBetween(previous,p))return false;previous=p;}return true;
 }
 function gridFor(room){
  const key=room?.id||'outdoors';if(grids.has(key))return grids.get(key);
- const minX=room?room.x-room.rx:-184.45,minZ=room?room.z-room.rz:-407.15,width=room?Math.ceil(room.rx*2/STEP)+1:390,height=room?Math.ceil(room.rz*2/STEP)+1:670;
+ const minX=room?room.x-room.rx:navigationBounds.minX,minZ=room?room.z-room.rz:navigationBounds.minZ,width=room?Math.ceil(room.rx*2/STEP)+1:Math.ceil((navigationBounds.maxX-minX)/STEP)+1,height=room?Math.ceil(room.rz*2/STEP)+1:Math.ceil((navigationBounds.maxZ-minZ)/STEP)+1;
  const point=i=>({x:minX+i%width*STEP,z:minZ+Math.floor(i/width)*STEP}),walkable=new Int8Array(width*height);
  // Unknown cells are evaluated on demand. Building the full 231k-cell world
  // grid synchronously made the first obstructed click freeze for several seconds.
@@ -31,7 +34,7 @@ class Queue{
 export function findPath(start,requested){
  if(!Number.isFinite(start.x+start.z+requested.x+requested.z))return [];
  const room=interiorAt(start.x,start.z),endRoom=interiorAt(requested.x,requested.z);if(room?.id!==endRoom?.id)return [];
- if(!room&&(Math.abs(requested.x)>146||requested.z< -407||requested.z>161))return [];
+ if(!room&&(requested.x<navigationBounds.minX||requested.x>navigationBounds.maxX||requested.z<navigationBounds.minZ||requested.z>navigationBounds.maxZ))return [];
  if(canStandAt(requested.x,requested.z)&&clearSegment(start,requested))return[{...requested}];
  const grid=gridFor(room),{width,height,point,walkable}=grid,end=closest(grid,requested,canStandAt(requested.x,requested.z));if(end.id<0||end.dist>4)return [];
  const goal=canStandAt(requested.x,requested.z)?requested:point(end.id),first=closest(grid,start,true);if(first.id<0)return [];

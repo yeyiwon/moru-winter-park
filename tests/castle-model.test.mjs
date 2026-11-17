@@ -36,7 +36,7 @@ test('mobile quality reduces light effects without removing the architectural si
  const countRibbons=()=>all.filter(o=>o.name.startsWith('palace-flowing-ribbon')&&o.visible).reduce((n,o)=>n+o.userData.strandCount,0);
  castle.setQuality('high');const high=castle.atmosphere.particleCount,highRibbons=countRibbons();
  castle.setQuality('medium');const medium=castle.atmosphere.particleCount,mediumRibbons=countRibbons();
- castle.setQuality('low');assert.ok(high>medium&&medium>castle.atmosphere.particleCount);assert.deepEqual([highRibbons,mediumRibbons,countRibbons()],[21,13,7]);
+ castle.setQuality('low');assert.ok(high>medium&&medium>castle.atmosphere.particleCount);assert.deepEqual([highRibbons,mediumRibbons,countRibbons()],[0,0,0]);
  assert.ok(solid.every(o=>o.visible));assert.ok(all.filter(o=>o.material.transparent).every(o=>o.userData.cameraIgnore&&o.material.depthWrite===false));
  const lights=[];castle.root.traverse(o=>{if(o.isPointLight)lights.push(o);});assert.ok(lights.every(o=>!o.visible));
 });

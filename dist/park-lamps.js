@@ -6,8 +6,9 @@ export function buildParkLamps(api,positions){
  const bronze=M('#66546f'),gold=M('#e8c587',.28,.62),ivory=M('#fff0df');
  const enamel=M('#799da2',.42,.18),snow=M('#e4e9ed',.97,0),pine=M('#426c63',.93,0);
  const crystal=M('#c3dbe4',.22,.38);
- const flame=new THREE.MeshStandardMaterial({color:'#ffe5b4',emissive:'#ffd299',emissiveIntensity:1.85,roughness:.35,toneMapped:false});
- const glass=new THREE.MeshPhysicalMaterial({color:'#ffe5c2',emissive:'#ffc788',emissiveIntensity:.26,transparent:true,opacity:.32,roughness:.16,metalness:.05,clearcoat:1,depthWrite:false,side:THREE.DoubleSide});
+ const flame=new THREE.MeshBasicMaterial({color:'#ffe5b4',toneMapped:false});
+ const glass=new THREE.MeshPhysicalMaterial({color:'#ffe5c2',emissive:'#ffc788',emissiveIntensity:.15,transparent:true,opacity:.32,roughness:.16,metalness:.05,clearcoat:1,depthWrite:false,side:THREE.DoubleSide});
+ flame.userData.lightingTheme=glass.userData.lightingTheme='personal';
  const rings=new Map(),leafGeo=new THREE.SphereGeometry(1,10,6);
  function ring(radius,tube,x,y,z,parent,material=gold){
   const key=radius+'/'+tube;
@@ -28,7 +29,7 @@ export function buildParkLamps(api,positions){
  }
  const smallStar=star(.12,.035),finialStar=star(.17,.045);
  const template=new THREE.Group();template.name='park-ornate-lamp';template.userData.footprintRadius=.28;
- template.userData.lampGlow=[{x:-.58,y:3.6,z:0,radius:3.1},{x:.58,y:3.6,z:0,radius:3.1}];
+ template.userData.lampGlow=[{x:-.58,y:3.6,z:0,radius:3.1,power:4,range:9},{x:.58,y:3.6,z:0,radius:3.1,power:4,range:9}];
  cylinder(.28,.28,.1,bronze,0,.06,0,template,12);
  cylinder(.22,.25,.13,ivory,0,.175,0,template,12);
  cylinder(.185,.22,.075,gold,0,.275,0,template,12);
@@ -83,7 +84,7 @@ export function buildParkLamps(api,positions){
   rod([x,3.12,0],[x,3.02,0],.01,gold,template);
   mesh(smallStar,gold,x,2.94,0,template);
   const gem=mesh(new THREE.OctahedronGeometry(.065),crystal,x,2.94,.035,template);gem.scale.set(.7,1.1,.5);
-  halo(x,3.6,0,'#ffd7a6',1.1,template).material.opacity=.18;
+  const glow=halo(x,3.6,0,'#ffd7a6',1.1,template);glow.material.opacity=.09;glow.material.userData.lightingTheme='personal';
  }
  glazing.computeBoundingSphere();template.add(glazing);
  return positions.map(({x,z})=>{

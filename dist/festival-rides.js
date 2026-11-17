@@ -1,6 +1,6 @@
 import * as THREE from './vendor/three.module.js';
 
-import {festivalLayout,festivalDestinations,festivalObstacles} from './festival-layout.js';
+import {festivalLayout,festivalDestinations,festivalObstacles,festivalBenches,candyStall} from './festival-layout.js';
 export {festivalLayout,festivalDestinations,festivalObstacles};
 
 const up=new THREE.Vector3(0,1,0),mat4=new THREE.Matrix4(),object=new THREE.Object3D();
@@ -34,36 +34,32 @@ export function buildFestivalRides(scene){
   new THREE.MeshStandardMaterial({color:'#34404a',roughness:.8}),
   new THREE.MeshStandardMaterial({color:'#b3bfc5',metalness:.78,roughness:.32}),
   new THREE.MeshBasicMaterial({color:'#ffdfa5',toneMapped:false}),
+  new THREE.MeshStandardMaterial({color:'#efc4d5',roughness:.94}),
  ];
- const decorative=builder(root,'festival-ground-details',palette);
- // Snowflake photo arch and a compact brass-wheeled confectionery cart.
- decorative.add(tube([[-77.2,.1,-8],[-77.2,2.5,-8],[-75,4.2,-8],[-72.8,2.5,-8],[-72.8,.1,-8]],.075,48,8),0);
- for(let i=0;i<21;i++){const a=i/20*Math.PI;decorative.add(new THREE.SphereGeometry(.06,10,7),7,[-75+Math.cos(a)*2.2,2.4+Math.sin(a)*1.8,-8]);}
- for(let i=0;i<6;i++){const a=i*Math.PI/3;decorative.add(rod([-75,3.05,-7.95],[-75+Math.sin(a)*.65,3.05+Math.cos(a)*.65,-7.95],.025),1);for(const sign of [-1,1]){const x=-75+Math.sin(a)*.43,y=3.05+Math.cos(a)*.43;decorative.add(rod([x,y,-7.95],[x+Math.sin(a+sign*.75)*.2,y+Math.cos(a+sign*.75)*.2,-7.95],.018),0);}}
+ const cart=new THREE.Group();cart.name='cotton-candy-cart';cart.position.set(candyStall.x+77,0,candyStall.z+15);root.add(cart);
+ const decorative=builder(cart,'festival-ground-details',palette);
+ // The confectionery counter opens directly onto the promenade.
  decorative.add(box(2.5,.94,1.35,.1),2,[-77,.77,-15]);decorative.add(box(2.7,.11,1.55,.04),0,[-77,1.3,-15]);
  for(const x of [-77.9,-76.1])for(const z of [-15.5,-14.5]){decorative.add(cylinder(.25,.25,.12,20),5,[x,.31,z],[Math.PI/2,0,0]);decorative.add(new THREE.TorusGeometry(.19,.024,6,20),0,[x,.31,z+.07]);}
  for(const x of [-78.1,-75.9])decorative.add(cylinder(.033,.033,1.35,10),0,[x,1.98,-15]);decorative.add(snowRoof(2.9,1.7),2,[-77,2.66,-15]);decorative.add(snowRoof(2.95,1.75),1,[-77,2.7,-15]);
- for(let i=0;i<5;i++){const x=-77.8+i*.4;decorative.add(cylinder(.012,.012,.55,8),4,[x,1.58,-14.72]);decorative.add(new THREE.SphereGeometry(1,18,14),i%2?1:2,[x,1.92,-14.72],[0,0,0],[.18,.26,.18]);}
+ for(let i=0;i<5;i++){const x=-77.8+i*.4;decorative.add(cylinder(.012,.012,.55,8),4,[x,1.58,-14.72]);decorative.add(new THREE.SphereGeometry(1,18,14),i%2?1:8,[x,1.92,-14.72],[0,0,0],[.18,.26,.18]);}
+ // Sugar spinner, a scalloped canopy and paper cones give the cart a usable counter.
+ const bowlProfile=[[.14,0],[.36,.07],[.46,.25],[.47,.3],[.43,.31],[.4,.26],[.28,.12],[.14,.1]].map(p=>new THREE.Vector2(...p));
+ decorative.add(new THREE.LatheGeometry(bowlProfile,32),6,[-77,1.38,-15.1]);decorative.add(cylinder(.09,.13,.22,16),0,[-77,1.57,-15.1]);
+ for(let i=0;i<11;i++){const x=-78.35+i*.27;decorative.add(box(.265,.11,.20),i%2?1:3,[x,2.68,-14.15]);decorative.add(new THREE.SphereGeometry(1,10,6,0,Math.PI*2,0,Math.PI/2),i%2?1:3,[x,2.61,-14.15],[0,0,Math.PI],[.133,.12,.08]);decorative.add(new THREE.SphereGeometry(.035,8,6),7,[x,2.48,-14.1]);}
+ for(const side of [-1,1]){const x=-77+side*1.12;decorative.add(rod([x,.82,-14.28],[x,1.24,-14.28],.024),0);decorative.add(new THREE.TorusGeometry(.09,.014,6,16),0,[x,1.02,-14.24]);}
+ for(let i=0;i<6;i++)decorative.add(cylinder(.055,.025,.28,12),1,[-76.1+(i%3)*.12,1.5,-15.35+Math.floor(i/3)*.12]);
+ const sign=document.createElement('canvas');sign.width=512;sign.height=160;const context=sign.getContext('2d');context.fillStyle='#fff3df';context.font='500 64px "Apple SD Gothic Neo",sans-serif';context.textAlign='center';context.textBaseline='middle';context.fillText('솜사탕',256,80);const texture=new THREE.CanvasTexture(sign);texture.colorSpace=THREE.SRGBColorSpace;const label=new THREE.Mesh(new THREE.PlaneGeometry(1.5,.46),new THREE.MeshBasicMaterial({map:texture,transparent:true,depthWrite:false}));label.position.set(-77,.88,-14.31);cart.add(label);
  // A walk-in garden, with an open view toward the wheel and castle, replaces both rides.
  const terrace=builder(root,'photo-garden-terrace',palette);
- for(const side of [-1,1]){
-  const x=-65+side*10;
-  for(let i=0;i<4;i++){
-   const z=-6+i*5;terrace.add(box(.42,.14,.42),0,[x,.16,z]);
-   terrace.add(cylinder(.045,.07,3.7,12),6,[x,1.9,z]);
-   terrace.add(new THREE.SphereGeometry(.16,14,10),7,[x,3.8,z]);
-  }
-  for(let j=0;j<3;j++){
-   const points=[];for(let k=0;k<=24;k++){const t=k/24;points.push([x,3.8-Math.sin(t*Math.PI)*.55,-6+j*5+t*5]);if(k%3===0)terrace.add(new THREE.SphereGeometry(.045,8,6),7,points.at(-1));}terrace.add(tube(points,.014),0);
-  }
- }
+ // The museum approach uses the shared festival lampposts only.
  // Low benches face east. The central 12 m promenade remains completely open.
- for(const z of [-8,16])for(const x of [-71,-61]){
+ for(const {x,z} of festivalBenches){
   terrace.add(box(4.4,.16,.85),4,[x,.56,z]);
   terrace.add(box(4.5,.7,.14),2,[x,.99,z+.4]);
   for(const dx of [-1.6,1.6])terrace.add(box(.14,.55,.7),6,[x+dx,.3,z]);
  }
- for(let j=0;j<6;j++){const a=j*Math.PI/3,pts=[];for(let k=0;k<=16;k++){const r=1.9+k*.12;pts.push([-65+Math.cos(a)*r,.115,8+Math.sin(a)*r]);}terrace.add(tube(pts,.018),0);}
+
  terrace.finish();decorative.finish();
  return{root,dynamic:[root],destinations:festivalDestinations,obstacles:festivalObstacles,update(){},seat(){return null;}};
 }

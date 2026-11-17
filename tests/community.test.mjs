@@ -8,6 +8,8 @@ const owner={'oai-authenticated-user-id':'site-owner','oai-authenticated-user-em
 async function req(route,body,headers={}){const request=new Request('https://winter.test/api/'+route,{method:body===undefined?'GET':'POST',headers:{Origin:'https://winter.test','content-type':'application/json',...headers},body:body===undefined?undefined:JSON.stringify(body)});return handleAPI(request,env);}
 
 test('accountless public guests reconnect to their session; wishes remain private and admin access is server verified',async t=>{
+ // Database fixtures use subprocesses; CPU contention must not advance the spam window.
+ const clock=Date.now();t.mock.method(Date,'now',()=>clock);
  t.after(()=>fs.rmSync(tmp,{recursive:true,force:true}));
  const a=await req('join',{name:'테스트 A'}),b=await req('join',{name:'테스트 B'});assert.equal(a.status,200);assert.equal(b.status,200);const ca=a.headers.get('set-cookie').split(';')[0],cb=b.headers.get('set-cookie').split(';')[0],aa=await a.json(),bb=await b.json();
  const again=await (await req('join',{name:'다른 이름'},{cookie:ca})).json();assert.equal(again.id,aa.id);assert.equal(query({sql:'SELECT COUNT(*) AS n FROM visitors',args:[]}).results[0].n,2);

@@ -1,13 +1,13 @@
 import {createSnowPaths} from './snow-path.js';
 import {createRetreatAtmosphere} from './retreat-atmosphere.js';
 import * as T from './vendor/three.module.js';
-import {spa as worldSpa,spaPavilion as worldPavilion,spaActivities as worldActivities,spaShift} from './resort-layout.js';
+import {spa as worldSpa,spaPavilion as worldPavilion,spaActivities as worldActivities,spaShift,spaX} from './resort-layout.js';
 
 // A bath garden laid out around water, with an open-front pavilion rather than a prop hut.
 export function buildSpaResort(api){
  // Keep authored joinery in its original local frame; translate the whole district once.
- const spa={...worldSpa,z:worldSpa.z-spaShift},spaPavilion={...worldPavilion,z:worldPavilion.z-spaShift,sideDoorZ:worldPavilion.sideDoorZ-spaShift};
- const spaActivities=Object.fromEntries(Object.entries(worldActivities).map(([id,p])=>[id,{...p,z:p.z-spaShift,...(p.pool?{pool:{...p.pool,z:p.pool.z-spaShift}}:{})}]));
+ const spa={...worldSpa,x:worldSpa.x-spaX,z:worldSpa.z-spaShift},spaPavilion={...worldPavilion,x:worldPavilion.x-spaX,z:worldPavilion.z-spaShift,sideDoorZ:worldPavilion.sideDoorZ-spaShift};
+ const spaActivities=Object.fromEntries(Object.entries(worldActivities).map(([id,p])=>[id,{...p,x:p.x-spaX,z:p.z-spaShift,...(p.pool?{pool:{...p.pool,x:p.pool.x-spaX,z:p.pool.z-spaShift}}:{})}]));
  const hitMaterial=new T.MeshBasicMaterial({visible:false,colorWrite:false,depthTest:false,transparent:true,opacity:0,depthWrite:false});
  const {scene,M}=api,root=new T.Group();root.name='spa-resort';scene.add(root);
  const interactive=[],moving=new Set();
@@ -30,17 +30,15 @@ export function buildSpaResort(api){
  function outline(cx,cz,rx,rz,n=64,irregular=.025){return Array.from({length:n},(_,i)=>{const a=i/n*Math.PI*2,f=1+Math.sin(a*3+.6)*irregular+Math.sin(a*5-.3)*irregular*.5;return new T.Vector2(cx+Math.cos(a)*rx*f,-cz-Math.sin(a)*rz*f);});}
  function shape(points){const s=new T.Shape();s.moveTo(points[0].x,points[0].y);for(const p of points.slice(1))s.lineTo(p.x,p.y);s.closePath();return s;}
  const pools=[{x:-10,z:124,rx:7.4,rz:6.4},{x:-19,z:132,rx:3.7,rz:3}];
- const ground=shape(outline(spa.x,spa.z,spa.r,spa.r,128,.012));
- for(const p of pools)ground.holes.push(new T.Path(outline(p.x,p.z,p.rx,p.rz,64).reverse()));
- const groundGeo=new T.ShapeGeometry(ground,1);groundGeo.rotateX(-Math.PI/2);mesh(groundGeo,snow,0,.09,0);
+ // The region terrain owns the snow surface and both bath openings.
  const paving=createSnowPaths({root,stone:[M('#b9b4a5',1,0),M('#b0aea1',1,0),M('#c2bdaf',1,0)],snow});
  // Compacted snow branches share one softly blended field through the junction.
- paving([[0,88],[0,96],[-.8,104],[0,110]],3.8);
+ paving([[0,96],[-.8,104],[0,110]],4.2);
  paving([[0,108],[-4,111],[-10,114],[-17.8,119],[-18,124]],3.2);
  paving([[-.4,108],[5,111.8],[10,114],[12,117]],3.4);
  paving([[-.8,110],[-1.15,116],[-1.25,121.5],[0,121.5]],2.8);
  function lantern(x,z,h=1.2){
-  (root.userData.lampGlow||=[]).push({x,z,y:h+.2,radius:1.7,floor:.17});
+  (root.userData.lampGlow||=[]).push({x,z,y:h+.2,radius:1.7,floor:.17,theme:'fixed'});
   mesh(new T.CylinderGeometry(.25,.32,.18,12),stoneDark,x,.18,z);box(.13,h,.13,cedarDark,x,h/2+.2,z);
   const shade=[new T.Vector2(.16,0),new T.Vector2(.24,.1),new T.Vector2(.245,.34),new T.Vector2(.17,.5)];mesh(new T.LatheGeometry(shade,16),lamp,x,h-.03,z);
   for(let j=0;j<8;j++){const a=j*Math.PI/4;rod([x+Math.cos(a)*.25,h-.04,z+Math.sin(a)*.25],[x+Math.cos(a)*.25,h+.47,z+Math.sin(a)*.25],.018,cedarDark);}
@@ -115,9 +113,9 @@ export function buildSpaResort(api){
  function pine(x,z,h){mesh(new T.CylinderGeometry(.07,.16,h*.8,8),cedarDark,x,h*.4,z);for(let tier=0;tier<7;tier++){const y=h*(.22+tier*.105),r=h*(.28-tier*.032);for(let j=0;j<7;j++){const a=j*Math.PI*2/7+tier*2.399,reach=r*(.9+.1*Math.sin(j*3+tier));const b=mesh(boughGeo,tier%2?green:greenLight,x,y,z);b.rotation.y=-a;b.scale.set(reach,reach,reach);rod([x,y-.025,z],[x+Math.cos(a)*reach*.85,y-.025-reach*.045,z+Math.sin(a)*reach*.85],.016,cedarDark);const cap=mesh(boughGeo,snow,x,y+.045,z);cap.rotation.y=-a;cap.scale.set(reach*.9,reach*.83,reach*.61);}}}
 
  for(const [x,z,h]of [[-24,113,5.5],[-26,119,6.3],[-26,126,5.2],[-24,137,6],[-15,141,7],[-7,143,6.5],[1,144,7.2],[9,142,6.6],[17,139,6],[26,132,7],[27,124,6.5],[25,114,6],[-11,100,4.6],[10,99,5.5],[-18,104,5.8],[19,106,5]])pine(x,z,h);
- for(const [x,z,rx,rz]of [[-8,105,2.8,1.9],[8,105,2.5,1.8],[-21,111,2.8,1.5],[23,112,2.2,1.5]]){for(let i=0;i<5;i++){const a=i*2.4,r=Math.sqrt(rand()),b=boulder(rockShade,x+Math.cos(a)*rx*r,.33,z+Math.sin(a)*rz*r,.6+rand()*.7,.45+rand()*.4,.5+rand()*.7);b.rotation.y=a;oval(snow,b.position.x,b.position.y+.4,b.position.z,b.scale.x*.85,.12,b.scale.z*.8);}}
+ for(const [x,z,rx,rz]of [[-16,101,2.8,1.9],[19,103,2.5,1.8],[-27,106,2.8,1.5],[23,112,2.2,1.5]]){for(let i=0;i<5;i++){const a=i*2.4,r=Math.sqrt(rand()),b=boulder(rockShade,x+Math.cos(a)*rx*r,.33,z+Math.sin(a)*rz*r,.6+rand()*.7,.45+rand()*.4,.5+rand()*.7);b.rotation.y=a;oval(snow,b.position.x,b.position.y+.4,b.position.z,b.scale.x*.85,.12,b.scale.z*.8);}}
 
- for(const [cx,cz]of [[-8,105],[8,105],[-21,111],[23,112]]){
+ for(const [cx,cz]of [[-16,101],[19,103],[-27,106],[23,112]]){
   for(let j=0;j<7;j++){const a=j*2.399,r=.42+rand()*.48,x=cx+Math.cos(a)*r,z=cz+Math.sin(a)*r,h=.24+rand()*.25;
    rod([x,.1,z],[x+Math.cos(a)*.17,h+.18,z+Math.sin(a)*.17],.015,cedarDark);
    for(let k=0;k<3;k++){const branch=mesh(boughGeo,k%2?green:greenLight,x,.16+k*.09,z);branch.rotation.set(.1,a+k*2.4,.08);branch.scale.set(.45-k*.08,.35,.35);}
@@ -208,6 +206,6 @@ export function buildSpaResort(api){
  });
  // Local warmth comes from the actual fixtures; emissive shades alone cannot light cedar.
  for(const [x,y,z,intensity,range]of [[11.5,3.2,122,24,15],[18,3.4,134,18,12],[-18,2.3,132,13,12]]){const light=new T.PointLight('#ffc88a',intensity,range,2);light.position.set(x,y,z);light.name='spa-local-lantern-warmth';root.add(light);}
- root.position.z=spaShift;
+ root.position.set(spaX,0,spaShift);
  return{root,interactive,atmosphere,setQuality:atmosphere.setQuality,update(time,still,quality){if(!still)fallUniforms.time.value=time;atmosphere.update(time,still,quality);}};
 }

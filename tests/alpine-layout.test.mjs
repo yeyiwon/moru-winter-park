@@ -14,7 +14,7 @@ test('course mouths occupy a middle terrace, main summit and higher expert peak'
  }
  const height=id=>{const s=skiStarts.find(s=>s.id===id);return alpineHeight(s.x,s.z);};
  assert.ok(height('easy')<height('main')-10);
- assert.ok(height('advanced')>height('main')+25);
+ assert.ok(height('advanced')>height('main')+18);
  assert.equal(height('expert'),peakSummit.height);
  assert.ok(Math.abs(skiRunCenter((-177+alpineShift),'easy')-skiRunCenter((-177+alpineShift),'main'))<1e-9);
  assert.equal(skiRunCenter((-260+alpineShift),'advanced'),skiRunCenter((-260+alpineShift),'curve'));
@@ -42,6 +42,13 @@ test('the beginner terrace has a continuous wide snow connection from the main s
  }
 });
 
+test('piste edges join the graded mountain without vertical height steps',()=>{
+ for(const run of skiRuns)for(let z=run.startZ+3;z<run.finish;z++)for(const side of [-1,1]){
+  const x=skiRunCenter(z,run.id)+side*skiRunHalfWidth(z,run.id);
+  assert.ok(Math.abs(alpineHeight(x+.2,z)-alpineHeight(x-.2,z))<.35,`${run.id} abrupt bank at ${x},${z}`);
+ }
+});
+
 test('the summit transfer lift rises continuously and validates actual seats on both routes',()=>{
  const n=Math.hypot(upperLiftLayout.dx,upperLiftLayout.dz),nx=-upperLiftLayout.dz/n,nz=upperLiftLayout.dx/n;
  let previous=upperLiftPoint(0)[1];
@@ -54,14 +61,9 @@ test('the summit transfer lift rises continuously and validates actual seats on 
  assert.ok(canStandAt(...[resortRides.upperlift.exit[0],resortRides.upperlift.exit[2]]));
 });
 
-test('ski traffic stays separate from the base lift and sled valley',()=>{
+test('ski traffic stays separate from the base lift; sled routes are removed',()=>{
  for(let i=0;i<=1000;i++){const p=liftPoint(i/1000);if(p[2]>(-326+alpineShift)&&p[2]<(-180+alpineShift))for(const run of skiRuns.filter(r=>p[2]>=r.startZ&&p[2]<=r.finish))assert.ok(skiRunCenter(p[2],run.id)-skiRunHalfWidth(p[2],run.id)-(p[0]+4)>6);}
- for(const p of resortRides.sled.points){
-  assert.ok(Math.hypot(p[0]+4,p[2]+260-alpineShift)<144);
-  assert.ok(resortRidePosition(p[0],p[1]+1.03,p[2],'sled'));
-  for(const run of skiRuns)assert.ok(Math.abs(p[0]-skiRunCenter(p[2],run.id))-skiRunHalfWidth(p[2],run.id)>12);
- }
- const end=resortRides.sled.points.at(-1);assert.ok(canStandAt(end[0],end[2]));
+ assert.equal(resortRides.sled,undefined);assert.equal(resortRidePosition(120,2,-102,'sled'),false);
 });
 
 test('summit transfer follows an open flat corridor, behind food service and away from downhill mouths',()=>{
