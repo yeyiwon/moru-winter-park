@@ -22,7 +22,7 @@ test('supporting feet remain grounded through walking, landing and customization
   assert.ok(Math.abs(min+.86)<.002,`${roundness}/${landing}/${phase}: ${min}`);
  }
 });
-fs.mkdirSync(path.resolve(root,'../qa'),{recursive:true});fs.writeFileSync(path.resolve(root,'../qa/scene-metrics.json'),JSON.stringify({environment:`Node ${process.version} ${os.platform()} ${os.arch()}`,measurement:'CPU scene geometry construction; no browser, WebGL or GPU rendering',sceneConstructionMs:+ms.toFixed(2),meshObjects:count,materials:materials.size,triangles,renderFPS:null,browserVisualVerification:'not available; separate CPU mesh renders are documented in qa-report.md'},null,2));
+fs.mkdirSync(path.resolve(root,'../qa'),{recursive:true});fs.writeFileSync(path.resolve(root,'../qa/scene-metrics.json'),JSON.stringify({environment:`Node ${process.version} ${os.platform()} ${os.arch()}`,measurement:'CPU scene geometry construction; no browser, WebGL or GPU rendering',sceneConstructionMs:+ms.toFixed(2),meshObjects:count,materials:materials.size,triangles,renderFPS:null,browserVisualVerification:'Separate browser checks are documented in docs/urgent-rendering-repair.md; these metrics are CPU-only'},null,2));
 
 test('fur responds to fluff and sunglasses are an optional wardrobe item',()=>{
  const fresh=c.namespace.createCompanion();assert.equal(fresh.group.getObjectByName('sunglasses').visible,false);
@@ -41,3 +41,18 @@ const footprintModule=await mod(path.join(root,'footprints.js'));await footprint
 test('snow footsteps alternate, expire and stay off bridges and interior floors',()=>{const snowScene=new T.Scene(),f=footprintModule.namespace.createFootprints(snowScene),marks=snowScene.getObjectByName('temporary-snow-footprints');f.walk(10,10,0,.8,1);f.walk(10,11,0,.8,2);f.update(2);assert.equal(marks.visible,true);const a=new T.Matrix4(),b=new T.Matrix4();marks.getMatrixAt(0,a);marks.getMatrixAt(1,b);assert.ok((a.elements[12]-10)*(b.elements[12]-10)<0);f.update(10);assert.equal(marks.visible,false);f.walk(12,124,0,.8,11);f.update(11);assert.equal(marks.visible,false);});
 
 test('every moving amusement seat stays inside authoritative server bounds',async()=>{const {amusementPositionValid}=await import('../dist/festival-layout.js');for(let t=0;t<110;t+=.9){world.update(t,false);for(const kind of ['carousel','ferris','teacups','bumper'])for(let i=0;i<(kind==='ferris'?12:kind==='carousel'?6:2);i++){const p=world.winter.parkRides.seat(kind,i);assert.ok(amusementPositionValid(p.x,p.y,p.z,kind),kind+JSON.stringify(p));}}});
+
+test('summit transfer has shoulder and head clearance through the rendered terminal geometry',()=>{
+ const layout=modules.get(path.join(root,'resort-layout.js')).namespace,points=layout.summitTransfer.map(p=>new T.Vector3(p.x,0,p.z)),curve=new T.CatmullRomCurve3(points),objects=[];
+ scene.traverseVisible(o=>{if(o.isMesh&&!o.material.transparent&&!o.material.isShaderMaterial)objects.push(o);});
+ for(let i=0;i<32;i++){
+  const p=curve.getPoint(i/32),q=curve.getPoint((i+1)/32),direction=q.clone().sub(p).normalize(),normal=new T.Vector3(-direction.z,0,direction.x);
+  for(const side of [-.65,0,.65])for(const h of [.7,1.5]){const origin=p.clone().addScaledVector(normal,side);origin.y=layout.alpineHeight(origin.x,origin.z)+h;const ray=new T.Raycaster(origin,direction,0,p.distanceTo(q));const hit=ray.intersectObjects(objects,false)[0];assert.equal(hit,undefined,`transfer blocked at ${origin.toArray()} by ${hit?.object.name} (${hit?.point.toArray()})`);}
+ }
+});
+
+test('upper dismount camera has an unobstructed line to the character above the terminal',()=>{
+ const layout=modules.get(path.join(root,'resort-layout.js')).namespace,[x,y,z]=layout.resortRides.upperlift.exit,aim=new T.Vector3(x,y+2.06,z-1.8),camera=aim.clone().add(new T.Vector3(0,Math.sin(.42)*26,-Math.cos(.42)*26)),body=new T.Vector3(x,y+1.01,z),dir=body.clone().sub(camera),objects=[];
+ scene.traverseVisible(o=>{if(o.isMesh&&!o.material.transparent&&!o.material.isShaderMaterial)objects.push(o);});
+ const ray=new T.Raycaster(camera,dir.clone().normalize(),0,dir.length()-.8);assert.equal(ray.intersectObjects(objects,false).length,0);
+});

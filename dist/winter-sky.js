@@ -11,13 +11,29 @@ export function createWinterSky(scene,hemi,sun,fill,world){
  const snow=new T.Points(geometry,new T.ShaderMaterial({uniforms:snowUniforms,transparent:true,depthWrite:false,toneMapped:false,
   vertexShader:`attribute float flakeSize;attribute float flakePhase;attribute float flakeSpin;uniform float time;uniform float pixelRatio;varying float angle;varying float opacity;void main(){vec4 p=modelViewMatrix*vec4(position,1.);float d=-p.z;angle=flakePhase+time*flakeSpin;opacity=smoothstep(.7,2.,d)*(1.-smoothstep(48.,105.,d))*(.5+flakeSize*.45);gl_PointSize=clamp(flakeSize*310./max(1.,d),1.5,19.)*pixelRatio;gl_Position=projectionMatrix*p;}`,
   fragmentShader:`uniform sampler2D flakeMap;varying float angle;varying float opacity;void main(){float c=cos(angle),s=sin(angle);vec2 uv=mat2(c,-s,s,c)*(gl_PointCoord-.5)+.5;if(any(lessThan(uv,vec2(0.)))||any(greaterThan(uv,vec2(1.))))discard;float alpha=texture2D(flakeMap,uv).a*opacity;if(alpha<.012)discard;gl_FragColor=vec4(.94,.98,1.,alpha);}`}));snow.name='winter-snow-crystals';snow.frustumCulled=false;scene.add(snow);
- // A restrained auroral curtain occupies the sky, with a dark horizon beneath it.
+ // Geometry carries the long folds; opacity never breaks the ribbon into isolated columns.
  const auroraUniforms={time:{value:0},night:{value:0}};
- const auroraMaterial=new T.ShaderMaterial({uniforms:auroraUniforms,transparent:true,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending,toneMapped:false,
-  vertexShader:`uniform float time;varying vec2 vUv;void main(){vUv=uv;vec3 p=position;p.y+=sin(uv.x*8.+time*.04)*12.+sin(uv.x*19.-time*.025)*4.;p.z+=sin(uv.x*11.+time*.035)*22.;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`,
-  fragmentShader:`uniform float time;uniform float night;varying vec2 vUv;void main(){float base=pow(max(0.,sin(vUv.y*3.14159)),1.6);float rays=.38+.36*sin(vUv.x*95.+sin(vUv.x*9.+time*.04)*3.);float edge=smoothstep(0.,.16,vUv.x)*smoothstep(1.,.81,vUv.x);vec3 color=mix(vec3(.18,.55,.43),vec3(.38,.25,.63),smoothstep(.25,.9,vUv.y));gl_FragColor=vec4(color,base*rays*edge*night*.36);}`} );
  const aurora=new T.Group();aurora.name='winter-auroral-curtains';scene.add(aurora);
- for(const [yaw,y,z]of [[-.35,145,-335],[.55,166,-370]]){const curtain=new T.Mesh(new T.PlaneGeometry(560,70,90,14),auroraMaterial);curtain.position.set(0,y,z);curtain.rotation.y=yaw;curtain.frustumCulled=false;aurora.add(curtain);}
+ for(const [layer,y,z,yaw]of [[0,161,-320,-.18],[1,190,-385,.23],[2,212,-455,-.34]]){
+  const material=new T.ShaderMaterial({uniforms:{...auroraUniforms,layer:{value:layer}},transparent:true,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending,toneMapped:false,
+   vertexShader:`uniform float time;uniform float layer;varying vec2 vUv;void main(){vUv=uv;float x=uv.x,t=time*.018+layer*2.31;vec3 p=position;
+    float fold=sin(x*6.8+t)*18.+sin(x*13.1-t*.63)*7.;
+    p.y+=fold+(uv.y-.5)*(sin(x*8.3+t*.8)*17.+sin(x*3.7-t)*12.);
+    p.z+=sin(x*7.2+t*.64)*47.+sin(x*15.3-t*.37)*14.;
+    p.x+=sin(x*5.1+t*.4)*uv.y*9.;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`,
+   fragmentShader:`uniform float time;uniform float night;uniform float layer;varying vec2 vUv;
+    float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
+    float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+vec2(1.,1.)),f.x),f.y);}
+    void main(){float t=time*.018;vec2 uv=vUv;float warp=noise(vec2(uv.x*7.+layer,t*.4))* .11;
+     float h=uv.y-warp;float edge=smoothstep(0.,.12,uv.x)*(1.-smoothstep(.84,1.,uv.x));
+     float curtain=smoothstep(.015,.13,h)*exp(-max(0.,h-.13)*4.2)*(1.-smoothstep(.62,.96,h));
+     float flow=noise(vec2(uv.x*56.+noise(vec2(uv.x*8.,t))*2.5,h*3.-t));
+     float threads=.78+.22*flow;float lower=exp(-pow((h-.13)*15.,2.));
+     vec3 mint=vec3(.16,.57,.43),blue=vec3(.17,.31,.57),violet=vec3(.31,.22,.46);
+     vec3 color=mix(mint,blue,smoothstep(.1,.68,h));color=mix(color,violet,smoothstep(.42,.87,h)*.48);
+     float breath=.9+.1*sin(t*.6+layer);gl_FragColor=vec4(color,(curtain*.48+lower*.08)*threads*edge*night*breath/(1.+layer*.3));}`});
+  const curtain=new T.Mesh(new T.PlaneGeometry(650,88-layer*9,160,24),material);curtain.position.set(0,y,z);curtain.rotation.y=yaw;curtain.frustumCulled=false;aurora.add(curtain);
+ }
  const a=new T.Color(),b=new T.Color();let skyState=skyAt(12),hour=12,snowEnabled=true;
  try{snowEnabled=localStorage.getItem('winter-snow')!=='off';}catch{}const toggle=document.querySelector('#snow-enabled');if(toggle)toggle.checked=snowEnabled;
  const updateTime=detail=>{hour=detail.hour;skyState=skyAt(hour);};if(window.labWorldTime)updateTime(window.labWorldTime);window.addEventListener('lab:time',e=>updateTime(e.detail));document.querySelector('#snow-enabled')?.addEventListener('change',e=>{snowEnabled=e.target.checked;try{localStorage.setItem('winter-snow',snowEnabled?'on':'off');}catch{}});

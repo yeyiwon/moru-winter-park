@@ -8,8 +8,8 @@ import {carouselLayout,parkLamps,parkBenches} from './park-layout.js';
 import {buildParkLamps} from './park-lamps.js';
 import {buildParkDetails} from './park-details.js';
 import * as THREE from './vendor/three.module.js';
-import {buildArchipelago} from './world-art.js?v=winter23';
-import {buildWinterWorld} from './winter-world.js?v=winter23';
+import {buildArchipelago} from './world-art.js?v=winter24';
+import {buildWinterWorld} from './winter-world.js?v=winter24';
 import {exhibits,islands,surfaceHeight} from './world-layout.js';
 export function buildWorld(scene){
 const materials=new Map();const M=(color,roughness=.7,metalness=.05)=>{const key=[color,roughness,metalness].join();if(!materials.has(key))materials.set(key,new THREE.MeshStandardMaterial({color,roughness,metalness}));return materials.get(key);};const stone=M('#e2e0d5'),gold=M('#d8bf8f',.28,.62),dark=M('#283b50'),roof=new THREE.MeshPhysicalMaterial({color:'#375871',roughness:.28,metalness:.28,iridescence:.8,clearcoat:.9}),cream=M('#f0eee4'),wood=M('#79664e'),blush=M('#c1ccd0'),roseRoof=new THREE.MeshPhysicalMaterial({color:'#25394d',roughness:.28,metalness:.28,iridescence:.8,clearcoat:.9});const glow=new THREE.MeshBasicMaterial({color:'#ffe0a1'}),pinkGlow=new THREE.MeshBasicMaterial({color:'#c6e9f1'}),blueGlow=new THREE.MeshBasicMaterial({color:'#b6dfff'});

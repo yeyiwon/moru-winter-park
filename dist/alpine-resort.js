@@ -2,7 +2,7 @@ import {buildResortScenery} from './resort-scenery.js';
 import {createSnowPaths} from './snow-path.js';
 import {buildParkLamps} from './park-lamps.js';
 import * as THREE from './vendor/three.module.js';
-import {alpine,alpineHeight,summit as summitLayout,peakSummit,resortRides,liftLayout,liftPoint,upperLiftLayout,upperLiftPoint,skiRuns,skiRunCenter,skiRunHalfWidth,summitFacilities,setSummitRestroomOpen,skiStarts,sledCenter,skiRunouts} from './resort-layout.js';
+import {alpine,alpineHeight,summit as summitLayout,peakSummit,resortRides,liftLayout,liftPoint,upperLiftLayout,upperLiftPoint,skiRuns,skiRunCenter,skiRunHalfWidth,summitFacilities,setSummitRestroomOpen,summitTransfer,skiStarts,sledCenter,skiRunouts} from './resort-layout.js';
 
 // Geometry and ride code sample the same height function: no decorative ramp above an unrelated floor.
 export function buildAlpineResort(api){
@@ -174,7 +174,7 @@ export function buildAlpineResort(api){
  }
  station(upperLiftPoint(0),'alpine-peak-base-terminal',false,upperAxis,false);station(upperLiftPoint(1),'alpine-peak-top-terminal',true,upperAxis,false);
  for(let i=0;i<4;i++){const g=chair(),offset=i/4,pose=upperLoopPose(offset);g.position.copy(pose.position);g.rotation.y=pose.yaw;upperChairs.push({g,offset});}
- const upperStop=summitFacilities.find(p=>p.id==='upperlift');plaque(['상부 리프트'],upperStop.x-2,alpineHeight(upperStop.x-2,upperStop.z)+2.5,upperStop.z,2.3,.6,root);
+ const upperStop=summitFacilities.find(p=>p.id==='upperlift');plaque(['상부 리프트'],upperStop.x-3.8,alpineHeight(upperStop.x-3.8,upperStop.z)+2.5,upperStop.z,2.3,.6,root);
  // The summit is an actual rest terrace; the front remains a broad, clear launch apron.
  const foodMat=M('#efd8b7',.8,0),truckRose=M('#bf747d',.65,.05),truckMint=M('#98c5b8',.65,.05),steamMat=new THREE.MeshBasicMaterial({color:'#fff4df',transparent:true,opacity:.11,depthWrite:false});
  function foodTruck(stop,paint,marshmallow=false){
@@ -225,9 +225,12 @@ export function buildAlpineResort(api){
  // Broad summit terrace belongs to the actual terrain, with an open downhill edge.
  for(let i=0;i<=22;i++){const a=Math.PI*.12+i/22*Math.PI*1.75,x=summitLayout.x+Math.cos(a)*(summitLayout.rx+2),z=summitLayout.z+Math.sin(a)*(summitLayout.rz+2);if(z>-334||x< -26&&z> -356)continue;const y=alpineHeight(x,z);rod([x,y,z],[x,y+1.1,z],.055,timber,root);if(i){const b=a-Math.PI*1.75/22,px=summitLayout.x+Math.cos(b)*(summitLayout.rx+2),pz=summitLayout.z+Math.sin(b)*(summitLayout.rz+2);rod([px,alpineHeight(px,pz)+1.05,pz],[x,y+1.05,z],.045,oak,root);}}
  // Low, snow-covered dismount apron follows ground directly beside the shared endpoint.
- const summit=liftPoints.at(-1),exit=resortRides.lift.exit;const apron=Array.from({length:15},(_,i)=>{const t=i/14,x=summit[0]+(exit[0]-summit[0])*t,z=summit[2]+(exit[2]-summit[2])*t;return[x,alpineHeight(x,z),z];});ribbon(apron,3.2,snow,.025);
+ const summit=liftPoints.at(-1),exit=resortRides.lift.exit;const apron=Array.from({length:15},(_,i)=>{const t=i/14,x=summit[0]+(exit[0]-summit[0])*t,z=summit[2]+(exit[2]-summit[2])*t;return[x,alpineHeight(x,z),z];});ribbon(apron,4.2,snow,.025);
+ // Lamps mark the outer edge; the entire 4.8 m transfer lane stays free of posts.
+ for(const p of summitTransfer.slice(0,2))lamp(root,p.x-3.4,p.z,alpineHeight(p.x-3.4,p.z));
 
  const basePaths=createSnowPaths({root,stone:[M('#a1aaac',.98,0)],snow,heightAt:alpineHeight});
+ basePaths(summitTransfer.map(p=>[p.x,p.z]),4.8);
  const trailToBase=Array.from({length:30},(_,i)=>{const t=i/29;return[8-44*t,-172-6*t+Math.sin(t*Math.PI)*3];});basePaths(trailToBase,4.8);
  basePaths([[-36,-170],[-36,-178],[-36,-184],[-36,-188]],5.6);
  // A wide, groomed queue approaches the chair directly; nothing crosses its mouth.

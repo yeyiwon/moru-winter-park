@@ -5,19 +5,19 @@ export function joystickVector(dx,dy,radius=42,deadZone=.08){
 }
 export function createTouchControls({canvas,joystick,jumpButton,brakeButton,onMove,onOrbit,onZoom,onTap,onJump,locked=()=>false,onCancel=()=>{}}){
  const stick=joystick.querySelector('.joystick-stick'),pointers=new Map();
- let joyId=null,mode='walk',pinch=0,moved=false,tapStart=null,braking=false;
+ let joyId=null,jumpId=null,mode='walk',pinch=0,moved=false,tapStart=null,braking=false;
  const blocked=()=>locked()||mode==='lift';
  const own=e=>{e.preventDefault();e.stopPropagation();};
  function releaseJoy(){joyId=null;onMove(0,0);stick.style.transform='translate(-50%,-50%)';joystick.classList.remove('active');}
  function releaseBrake(){braking=false;brakeButton.classList.remove('active');}
- function reset(){releaseJoy();releaseBrake();pointers.clear();pinch=0;tapStart=null;moved=false;onCancel();}
+ function reset(){releaseJoy();releaseBrake();jumpId=null;jumpButton.classList.remove('active');pointers.clear();pinch=0;tapStart=null;moved=false;onCancel();}
  function moveJoy(e){const r=joystick.getBoundingClientRect(),v=joystickVector(e.clientX-r.left-r.width/2,e.clientY-r.top-r.height/2,Math.min(r.width,r.height)*.32);onMove(v.x,v.y);stick.style.transform=`translate(calc(-50% + ${v.x*28}px),calc(-50% + ${v.y*28}px))`;}
  joystick.addEventListener('pointerdown',e=>{own(e);if(blocked()||joyId!==null)return;joyId=e.pointerId;joystick.setPointerCapture(joyId);joystick.classList.add('active');moveJoy(e);});
  joystick.addEventListener('pointermove',e=>{if(e.pointerId===joyId){own(e);moveJoy(e);}});
  for(const event of ['pointerup','pointercancel','lostpointercapture'])joystick.addEventListener(event,e=>{if(e.pointerId===joyId)releaseJoy();});
- jumpButton.addEventListener('pointerdown',e=>{own(e);if(!blocked()){jumpButton.setPointerCapture(e.pointerId);jumpButton.classList.add('active');onJump();}});
- for(const event of ['pointerup','pointercancel','lostpointercapture'])jumpButton.addEventListener(event,()=>jumpButton.classList.remove('active'));
- jumpButton.addEventListener('click',e=>{if(e.detail===0&&!blocked())onJump();});
+ jumpButton.addEventListener('pointerdown',e=>{own(e);if(!blocked()&&mode==='walk'&&jumpId===null){jumpId=e.pointerId;jumpButton.setPointerCapture(e.pointerId);jumpButton.classList.add('active');onJump();}});
+ for(const event of ['pointerup','pointercancel','lostpointercapture'])jumpButton.addEventListener(event,e=>{if(e.pointerId===jumpId){jumpId=null;jumpButton.classList.remove('active');}});
+ jumpButton.addEventListener('click',e=>{if(e.detail===0&&!e.pointerType&&jumpId===null&&!blocked()&&mode==='walk')onJump();});
  brakeButton.addEventListener('pointerdown',e=>{own(e);if(!['ski','skate','bumper'].includes(mode)||blocked())return;brakeButton.setPointerCapture(e.pointerId);braking=true;brakeButton.classList.add('active');});
  for(const event of ['pointerup','pointercancel','lostpointercapture'])brakeButton.addEventListener(event,releaseBrake);
  canvas.addEventListener('pointerdown',e=>{if(locked())return;e.preventDefault();document.activeElement?.blur();canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===1){tapStart={x:e.clientX,y:e.clientY};moved=false;}else{moved=true;pinch=distance();}});

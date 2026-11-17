@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {skiRuns,skiStarts,skiRunCenter,skiRunHalfWidth,skiRunAt,alpineHeight,resortRides,resortRidePosition,liftPoint,upperLiftPoint,upperLiftLayout,peakSummit,beginnerAccess} from '../dist/resort-layout.js';
+import {skiRuns,skiStarts,skiRunCenter,skiRunHalfWidth,skiRunAt,alpineHeight,resortRides,resortRidePosition,liftPoint,upperLiftPoint,upperLiftLayout,peakSummit,beginnerAccess,summitTransfer,summitPositionValid,summitFacilities} from '../dist/resort-layout.js';
 import {canStandAt} from '../dist/movement.js';
 
 test('course mouths occupy a middle terrace, main summit and higher expert peak',()=>{
@@ -62,3 +62,16 @@ test('ski traffic stays separate from the base lift and sled valley',()=>{
  }
  const end=resortRides.sled.points.at(-1);assert.ok(canStandAt(end[0],end[2]));
 });
+
+test('summit transfer follows an open flat corridor, behind food service and away from downhill mouths',()=>{
+ assert.deepEqual(summitTransfer[0],{x:resortRides.lift.exit[0],z:resortRides.lift.exit[2]});
+ const entry=summitFacilities.find(p=>p.id==='upperlift');assert.deepEqual(summitTransfer.at(-1),{x:entry.x,z:entry.z});
+ for(let segment=1;segment<summitTransfer.length;segment++){
+  const a=summitTransfer[segment-1],b=summitTransfer[segment],len=Math.hypot(b.x-a.x,b.z-a.z),nx=-(b.z-a.z)/len,nz=(b.x-a.x)/len;
+  for(let t=0;t<=1;t+=.02)for(const side of [-.8,0,.8]){const x=a.x+(b.x-a.x)*t+nx*side,z=a.z+(b.z-a.z)*t+nz*side;assert.ok(summitPositionValid(x,z),`blocked transfer ${x},${z}`);assert.ok(Math.abs(alpineHeight(x,z)-72.09)<.12,`uneven transfer ${x},${z}`);}
+ }
+ for(let i=0;i<=100;i++){const p=upperLiftPoint(i/100);for(const stop of summitFacilities.filter(p=>['odeng','marshmallow'].includes(p.id)))assert.ok(Math.abs(p[0]-stop.model.x)>6||Math.abs(p[2]-stop.model.z)>4,'chairs cross a food truck');}
+ const exit=resortRides.upperlift.exit;for(const start of skiStarts.filter(p=>['advanced','expert'].includes(p.id)))assert.ok(Math.hypot(start.x-exit[0],start.z-exit[2])>7,'upper exit needs a staging apron');
+});
+
+test('upper arrival faces the downhill staging area rather than hiding the player behind the terminal',async()=>{const {createRideController}=await import('../dist/winter-rides.js');const ride=createRideController(resortRides);ride.start('upperlift');const arrival=ride.update(28);assert.equal(arrival.mode,'summit');assert.equal(arrival.arrivalYaw,Math.PI);assert.equal(arrival.yaw,0);});

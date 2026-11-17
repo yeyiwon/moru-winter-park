@@ -35,5 +35,5 @@ export function createRideController(routes){
   last={x,y:alpineHeight(x,z)+.88/Math.cos(tilt),z,yaw,tilt,speed,lean:steer,raceTime:elapsed,recovery,heading,launched,brake:!!input.brake,runId};
   if(crossed&&(speed<.3||z>=finish+10)){mode='';return{...last,mode:'',finished:true};}return{...last,mode};
  }
- elapsed+=dt;const route=routes[activeRoute];last=sampleRide(route,elapsed/route.duration);if(elapsed>=route.duration){if(mode==='lift'){mode='summit';const [x,y,z]=route.exit;last={x,y:y+.86,z,yaw:activeRoute==='upperlift'?0:Math.atan2(skiCenter(-330)-x,-330-z)};}else{mode='';return{...last,mode:'',finished:true};}}return{...last,mode};}};
+ elapsed+=dt;const route=routes[activeRoute];last=sampleRide(route,elapsed/route.duration);if(elapsed>=route.duration){if(mode==='lift'){mode='summit';const [x,y,z]=route.exit;last={x,y:y+.86,z,yaw:activeRoute==='upperlift'?0:Math.atan2(skiCenter(-330)-x,-330-z),arrivalYaw:activeRoute==='upperlift'?Math.PI:-.65};}else{mode='';return{...last,mode:'',finished:true};}}return{...last,mode};}};
 }

@@ -35,3 +35,19 @@ test('expressions use rounded geometry and remain distinct while blinking and sk
   pet.customize({accessory:'eyes-sleepy,sunglasses'});pet.pose({mode:'ski',lean:1});assert.ok(pet.eyes.every(eye=>eye.geometry.type==='TubeGeometry'));assert.equal(pet.group.rotation.z,.2);assert.equal(pet.group.getObjectByName('sunglasses').visible,true);
   pet.customize({accessory:'none'});pet.pose({still:true});assert.equal(pet.eyes[0].geometry.type,'SphereGeometry');assert.equal(pet.eyes[0].scale.y,.094);assert.equal(pet.eyes[0].children[0].visible,true);
 });
+
+test('body and fur keep one local silhouette under motion, customization and night lighting',()=>{
+ for(const detail of ['full','remote']){
+  const pet=createCompanion({detail}),body=pet.group.getObjectByName('plush-body'),fur=pet.group.getObjectByName('plush-fur');
+  assert.equal(fur.parent,body.parent);assert.equal(fur.material.isMeshBasicMaterial,undefined);assert.equal(body.material.emissiveIntensity,fur.material.emissiveIntensity);
+  const original=Array.from(body.geometry.attributes.position.array),instances=Array.from(fur.instanceMatrix.array);
+  pet.customize({fur:'#cfbde7'});assert.equal(body.material.color.getHexString(),fur.material.color.getHexString());assert.equal(body.material.emissive.getHexString(),fur.material.emissive.getHexString());
+  for(const phase of [0,.8,2,4,8])for(const mode of ['','ski','lift']){
+   pet.group.position.set(28,.86+Math.max(0,Math.sin(phase)),-48);pet.group.rotation.y=phase;pet.pose({mode,walking:mode==='',phase,time:phase,speed:8,lean:.6});pet.group.updateMatrixWorld(true);
+   assert.deepEqual(body.matrixWorld.elements,fur.matrixWorld.elements);assert.ok(fur.matrixWorld.elements.every(Number.isFinite));
+  }
+  assert.deepEqual(Array.from(body.geometry.attributes.position.array),original);assert.deepEqual(Array.from(fur.instanceMatrix.array),instances);
+ }
+});
+
+test('landing squash never inverts the body even when an upstream clock delivers invalid values',()=>{const p=createCompanion({detail:'remote'}),shape=p.group.getObjectByName('plush-body').parent;for(const landing of [-20,12,NaN,Infinity]){p.pose({landing});assert.ok(shape.scale.y>.7&&shape.scale.y<1.2);assert.ok(shape.scale.toArray().every(Number.isFinite));}});

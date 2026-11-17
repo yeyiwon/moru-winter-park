@@ -10,6 +10,12 @@ function localHeight(x,z){
 }
 export const summit={x:-8,z:-347,height:72.09,rx:50,rz:27};
 export const peakSummit={x:45,z:-380,height:100.09,rx:20,rz:12};
+// The transfer entrance is on the terminal's open approach axis, not beside its railing.
+export const upperLiftLayout={x:-23,z:-367,dx:53,dz:-18,spacing:4,hanger:3.1,supports:[0,.25,.5,.75,1]};
+const upperLength=Math.hypot(upperLiftLayout.dx,upperLiftLayout.dz),upperDirection={x:upperLiftLayout.dx/upperLength,z:upperLiftLayout.dz/upperLength},upperNormal={x:-upperDirection.z,z:upperDirection.x};
+export const upperLiftEntry={x:upperLiftLayout.x+upperNormal.x*2-upperDirection.x*6.4,z:upperLiftLayout.z+upperNormal.z*2-upperDirection.z*6.4};
+export const summitTransfer=[{x:-22,z:-344},{x:-21,z:-352},upperLiftEntry];
+function terminalColumns(x,z,half,n={x:1,z:0}){return [-1,1].flatMap(side=>[-1.65,1.65].map(depth=>({x:x+2*n.x+side*half*n.x-depth*n.z,z:z+2*n.z+side*half*n.z+depth*n.x,r:.3})));}
 export const skiRuns=[
  {id:'main',name:'중급 슬로프',level:'중급',color:'#8fcbe8',startX:-12,startZ:-334,finish:-172,width:9.5},
  {id:'easy',name:'초급 슬로프',level:'초급',color:'#a7d8ba',startX:24,startZ:-294,finish:-172,width:12},
@@ -44,6 +50,7 @@ export const skiRunouts=[{x:8,z:-172,rx:24,rz:18},{x:56,z:-180,rx:24,rz:18}];
 export const skiCenter=z=>skiRunCenter(z),skiHalfWidth=z=>skiRunHalfWidth(z);
 export function sledCenter(z){return 124+8*Math.sin(clamp((-z-196)/76)*Math.PI)-4*(1-smooth((-z-192)/20));}
 export const summitObstacles=[
+ ...terminalColumns(-30,-348,3.4),...terminalColumns(upperLiftLayout.x,upperLiftLayout.z,5.2,upperNormal),...terminalColumns(30,-385,3.4,upperNormal),
  {x:-10,z:-363,w:4.15,d:1.85},{x:10,z:-363,w:4.15,d:1.85},{x:-3,z:-350,r:1.65},
  {x:-6.8,z:-350,w:.6,d:1.6},{x:.8,z:-350,w:.6,d:1.6},
  {x:11.1,z:-352,w:.2,d:2.4},{x:16.9,z:-352,w:.2,d:2.4},{x:14,z:-354.4,w:2.9,d:.2},{x:14,z:-349.6,w:2.9,d:.2,door:{x:14,w:1.1}}
@@ -56,7 +63,7 @@ export const summitFacilities=[
  {id:'marshmallow',name:'마시멜로 트럭',x:10,z:-358.5,model:{x:10,z:-363},view:{distance:9,yaw:.25,pitch:.3}},
  {id:'campfire',name:'모닥불',x:-3,z:-347.5,r:1.4,model:{x:-3,z:-350},view:{distance:11,yaw:.25,pitch:.3}},
  {id:'restroom',name:'정상 화장실',x:14,z:-348,model:{x:14,z:-352},view:{distance:9,yaw:.25,pitch:.3}},
- {id:'upperlift',name:'상부 리프트',x:-37,z:-358.6,r:2.8,model:{x:-37,z:-362},view:{distance:10,yaw:1.5,pitch:.22}}
+ {id:'upperlift',name:'상부 리프트',...upperLiftEntry,r:2.8,model:{x:upperLiftLayout.x,z:upperLiftLayout.z},view:{distance:10,yaw:1.5,pitch:.22}}
 ];
 function alpineTerrainHeight(x,z){
  const original=.09+(localHeight(x/4,(z+260)/4-114)-.09)*4,lanes=skiRuns.filter(run=>z>=run.startZ-10&&z<=run.finish+16).map(run=>({center:skiRunCenter(z,run.id),half:skiRunHalfWidth(z,run.id),height:skiRunHeight(z,run.id),weight:smooth((z-run.startZ+10)/8)*(1-smooth((z-run.finish)/16))})).sort((a,b)=>a.center-b.center);
@@ -101,7 +108,7 @@ export function liftPoint(progress){
  const u=(t-stops[i])/(stops[i+1]-stops[i]),a=liftBase+(liftTop-liftBase)*liftRise[i],b=liftBase+(liftTop-liftBase)*liftRise[i+1],sag=Math.min(.12,(b-a)*.18);
  return[liftLayout.x+liftLayout.dx*t,a+(b-a)*u-sag*4*u*(1-u),liftLayout.z+liftLayout.dz*t];
 }
-export const upperLiftLayout={x:-37,z:-362,dx:67,dz:-20,spacing:4,hanger:3.1,supports:[0,.25,.5,.75,1]};
+
 export function upperLiftPoint(progress){const t=clamp(progress);return[upperLiftLayout.x+upperLiftLayout.dx*t,summit.height+.6+(peakSummit.height-summit.height)*smooth(t/.95),upperLiftLayout.z+upperLiftLayout.dz*t];}
 export function alpineHeight(x,z){
  let terrain=alpineTerrainHeight(x,z);
@@ -142,7 +149,7 @@ const upperlift=Array.from({length:101},(_,i)=>upperLiftPoint(i/100));
 const sled=Array.from({length:51},(_,i)=>{const t=1-i/50,z=-98-t*19,x=17+Math.sin(t*Math.PI)*2;return[x,localHeight(x,z),z];});sled.push([17,localHeight(17,-97),-97]);
 
 for(let i=0;i<sled.length;i++){const p=scalePoint(sled[i]),x=sledCenter(p[2]);sled[i]=[x,alpineHeight(x,p[2]),p[2]];}
-export const resortRides={lift:{bodyOffset:.82,heightMode:'seat',points:lift,exit:[-24,alpineHeight(-24,-342),-342],duration:45},upperlift:{bodyOffset:.82,heightMode:'seat',points:upperlift,exit:[36,alpineHeight(36,-378),-378],duration:28},ski:{heightMode:'surface',points:ski,duration:38},sled:{bodyOffset:1.03,heightMode:'surface',points:sled,duration:22}};
+export const resortRides={lift:{bodyOffset:.82,heightMode:'seat',points:lift,exit:[-22,alpineHeight(-22,-344),-344],duration:45},upperlift:{bodyOffset:.82,heightMode:'seat',points:upperlift,exit:[37,alpineHeight(37,-383),-383],duration:28},ski:{heightMode:'surface',points:ski,duration:38},sled:{bodyOffset:1.03,heightMode:'surface',points:sled,duration:22}};
 export const resortObstacles=[
  {x:-55,z:-176,w:9.3,d:6},{x:-44,z:-185,w:1.5,d:1.4},
  ...summitObstacles,
