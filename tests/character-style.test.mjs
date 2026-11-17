@@ -51,3 +51,11 @@ test('body and fur keep one local silhouette under motion, customization and nig
 });
 
 test('landing squash never inverts the body even when an upstream clock delivers invalid values',()=>{const p=createCompanion({detail:'remote'}),shape=p.group.getObjectByName('plush-body').parent;for(const landing of [-20,12,NaN,Infinity]){p.pose({landing});assert.ok(shape.scale.y>.7&&shape.scale.y<1.2);assert.ok(shape.scale.toArray().every(Number.isFinite));}});
+
+test('departing characters release previously selected eye, ear and held-item GPU resources exactly once',()=>{
+ const pet=createCompanion({detail:'remote'}),resources=new Map();
+ const capture=()=>pet.group.traverse(o=>{for(const resource of [o.geometry,...(o.material?(Array.isArray(o.material)?o.material:[o.material]):[])]){if(!resource||resource.userData.shared||resources.has(resource))continue;resources.set(resource,0);resource.addEventListener('dispose',()=>resources.set(resource,resources.get(resource)+1));}});
+ for(const accessory of ['eyes-heart,bunny-ears','eyes-flat,cat-ears','eyes-star,bear-ears','eyes-happy','eyes-sleepy','none']){pet.customize({accessory});capture();}
+ for(const heldItem of ['odeng','marshmallow','balloon','icecream']){pet.pose({heldItem});capture();}
+ pet.customize({accessory:'none'});pet.pose({heldItem:''});pet.dispose();pet.dispose();assert.ok(resources.size>40);for(const count of resources.values())assert.equal(count,1);
+});

@@ -1,3 +1,4 @@
+import {mergePaintedGeometry} from './mesh-batch.js';
 import * as T from './vendor/three.module.js';
 
 import {ferrisDimensions,ferrisSeatAnchor} from './ferris-layout.js';
@@ -27,9 +28,7 @@ function batch(parent,name,materials,metadata={}){
  function finish(){
   const meshes=[];
   for(const [kind,items] of parts){
-   const count=items.reduce((sum,{geometry})=>sum+(geometry.index?.count||geometry.attributes.position.count),0),positions=new Float32Array(count*3),normals=new Float32Array(count*3),uv=new Float32Array(count*2),paint=new Float32Array(count*3);let offset=0;
-   for(const {geometry,color} of items){const plain=geometry.index?geometry.toNonIndexed():geometry,n=plain.attributes.position.count;positions.set(plain.attributes.position.array,offset*3);normals.set(plain.attributes.normal.array,offset*3);uv.set(plain.attributes.uv.array,offset*2);for(let i=0;i<n;i++)paint.set(color.toArray(),(offset+i)*3);offset+=n;if(plain!==geometry)plain.dispose();geometry.dispose();}
-   const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.BufferAttribute(positions,3));geometry.setAttribute('normal',new T.BufferAttribute(normals,3));geometry.setAttribute('uv',new T.BufferAttribute(uv,2));geometry.setAttribute('color',new T.BufferAttribute(paint,3));geometry.computeBoundingSphere();geometry.computeBoundingBox();
+   const geometry=mergePaintedGeometry(items);for(const item of items)item.geometry.dispose();
    const mesh=new T.Mesh(geometry,materials[kind]);mesh.name=name+'-'+kind;mesh.castShadow=kind!=='light';mesh.receiveShadow=kind!=='light';mesh.userData={...metadata};parent.add(mesh);meshes.push(mesh);
   }return meshes;
  }

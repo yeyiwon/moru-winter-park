@@ -3,7 +3,9 @@ import * as T from './vendor/three.module.js';
 // point-light calculations are pooled; a fixed count avoids shader recompiles.
 export function createLocalLights(scene,{limit=6}={}){
  const sources=[],slots=[],point=new T.Vector3(),sphere=new T.Sphere(),frustum=new T.Frustum(),projection=new T.Matrix4();
- scene.traverse(light=>{if(light.isPointLight&&light.layers.isEnabled(0)){sources.push({light,mask:light.layers.mask,position:new T.Vector3(),score:0});light.layers.disable(0);}});
+ function register(root){root.traverse(light=>{if(light.isPointLight&&light.layers.isEnabled(0)&&!slots.some(s=>s.light===light)&&!sources.some(s=>s.light===light)){sources.push({light,mask:light.layers.mask,position:new T.Vector3(),score:0});light.layers.disable(0);}});}
+ function unregister(root){for(let i=sources.length-1;i>=0;i--){const source=sources[i];let p=source.light;while(p&&p!==root)p=p.parent;if(!p)continue;source.light.layers.mask=source.mask;for(const slot of slots)if(slot.source===source){slot.source=null;slot.light.intensity=0;}sources.splice(i,1);}}
+ register(scene);
  for(let i=0;i<limit;i++){const light=new T.PointLight('#ffffff',0,1,2);light.name='pooled-local-light-'+i;scene.add(light);slots.push({light,source:null});}
  let elapsed=Infinity;
  function update(dt,camera,focus){
@@ -16,5 +18,5 @@ export function createLocalLights(scene,{limit=6}={}){
   }
   for(const slot of slots){const light=slot.light,source=slot.source?.light;if(!source){light.intensity=0;continue;}point.setFromMatrixPosition(source.matrixWorld);light.position.copy(point);light.color.copy(source.color);light.intensity=source.intensity;light.distance=source.distance;light.decay=source.decay;}
  }
- return{update,get sourceCount(){return sources.length;},get activeCount(){return slots.filter(slot=>slot.light.intensity>0).length;},dispose(){for(const source of sources)source.light.layers.mask=source.mask;for(const slot of slots)scene.remove(slot.light);}};
+ return{update,register,unregister,get sourceCount(){return sources.length;},get activeCount(){return slots.filter(slot=>slot.light.intensity>0).length;},dispose(){for(const source of sources)source.light.layers.mask=source.mask;for(const slot of slots)scene.remove(slot.light);sources.length=0;}};
 }

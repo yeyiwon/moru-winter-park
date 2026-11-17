@@ -1,0 +1,182 @@
+{
+  "at": "2026-11-17T16:03:13.236Z",
+  "browser": "157.0.8103.79",
+  "mobileEmulation": false,
+  "physicalMobile": false,
+  "gpuTimingProbe": true,
+  "seconds": 4,
+  "scenarios": [
+    {
+      "name": "plaza",
+      "frames": 136,
+      "fps": 33.860326154612224,
+      "p95": 50,
+      "p99": 50,
+      "gameCpuMs": 15.128676470615627,
+      "mainThreadMs": 2228.9019999999996,
+      "calls": 1121,
+      "triangles": 4394390.05882353,
+      "before": {
+        "memory": {
+          "geometries": 861,
+          "textures": 24
+        },
+        "programs": 63,
+        "geometryBytes": 182225864,
+        "textureBytesEstimate": 15089664,
+        "heap": 327544089,
+        "dpr": 1,
+        "quality": {
+          "quality": "medium",
+          "pixelRatio": 1,
+          "samples": 0,
+          "shadowSize": 1024,
+          "shadowInterval": 0.06666666666666667
+        },
+        "peers": 0,
+        "mode": "",
+        "state": {
+          "x": 0,
+          "y": 0.95,
+          "z": 24,
+          "yaw": 3.141592653589793,
+          "mode": "",
+          "speed": 0,
+          "gesture": "",
+          "heldItem": "",
+          "roast": 0
+        }
+      },
+      "after": {
+        "memory": {
+          "geometries": 861,
+          "textures": 24
+        },
+        "programs": 63,
+        "geometryBytes": 182225864,
+        "textureBytesEstimate": 15089664,
+        "heap": 318993179,
+        "dpr": 1,
+        "quality": {
+          "quality": "medium",
+          "pixelRatio": 1,
+          "samples": 0,
+          "shadowSize": 1024,
+          "shadowInterval": 0.06666666666666667
+        },
+        "peers": 0,
+        "mode": "",
+        "state": {
+          "x": 0,
+          "y": 0.95,
+          "z": 24,
+          "yaw": 3.141592653589793,
+          "mode": "",
+          "speed": 0,
+          "gesture": "",
+          "heldItem": "",
+          "roast": 0
+        }
+      },
+      "network": {
+        "bytes": 572,
+        "requests": 2
+      },
+      "gpuMs": 18.5142003030303,
+      "gpuSamples": 33
+    },
+    {
+      "name": "ski",
+      "frames": 136,
+      "fps": 34.001700085004224,
+      "p95": 49.900000000001455,
+      "p99": 50.099999999998545,
+      "gameCpuMs": 18.2911764705718,
+      "mainThreadMs": 2807.3939999999984,
+      "calls": 1002.6911764705883,
+      "triangles": 4441432.448529412,
+      "before": {
+        "memory": {
+          "geometries": 949,
+          "textures": 24
+        },
+        "programs": 79,
+        "geometryBytes": 182225864,
+        "textureBytesEstimate": 15089664,
+        "heap": 324003555,
+        "dpr": 1,
+        "quality": {
+          "quality": "medium",
+          "pixelRatio": 1,
+          "samples": 0,
+          "shadowSize": 1024,
+          "shadowInterval": 0.06666666666666667
+        },
+        "peers": 0,
+        "mode": "ski",
+        "state": {
+          "x": -7.007746062559141,
+          "y": 71.05888813035875,
+          "z": -228.14910812081038,
+          "yaw": 0.30511622929059473,
+          "mode": "ski",
+          "speed": 13.616839868951269,
+          "gesture": "",
+          "heldItem": "",
+          "roast": 0
+        }
+      },
+      "after": {
+        "memory": {
+          "geometries": 949,
+          "textures": 24
+        },
+        "programs": 79,
+        "geometryBytes": 182225864,
+        "textureBytesEstimate": 15089664,
+        "heap": 330589060,
+        "dpr": 1,
+        "quality": {
+          "quality": "medium",
+          "pixelRatio": 1,
+          "samples": 0,
+          "shadowSize": 1024,
+          "shadowInterval": 0.06666666666666667
+        },
+        "peers": 0,
+        "mode": "ski",
+        "state": {
+          "x": 7.546194272858777,
+          "y": 31.945824171298145,
+          "z": -155.17759467122298,
+          "yaw": 0.01794586004771544,
+          "mode": "ski",
+          "speed": 19.891662563765635,
+          "gesture": "",
+          "heldItem": "",
+          "roast": 0
+        }
+      },
+      "network": {
+        "bytes": 1113,
+        "requests": 5
+      },
+      "gpuMs": 17.02264987878788,
+      "gpuSamples": 33
+    }
+  ],
+  "errors": [],
+  "readyMs": 9300,
+  "environment": {
+    "viewport": [
+      1280,
+      800
+    ],
+    "dpr": 1,
+    "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+    "gpuTimerAvailable": true
+  },
+  "startupBytes": 5533291,
+  "totalBytes": 7292103,
+  "totalRequests": 148
+}

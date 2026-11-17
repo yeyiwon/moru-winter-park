@@ -6,7 +6,9 @@
     "build": "node scripts/bake-paths.mjs && node scripts/build-worker.mjs",
     "dev": "node scripts/dev-server.mjs",
     "db:generate": "drizzle-kit generate",
-    "build:vercel": "node scripts/bake-paths.mjs && node scripts/build-vercel.mjs"
+    "build:vercel": "node scripts/bake-paths.mjs && node scripts/build-vercel.mjs",
+    "test:budget": "node scripts/check-performance-budget.mjs",
+    "profile:browser": "node scripts/profile-browser.mjs"
   },
   "devDependencies": {
     "jsdom": "26.1.0",

@@ -1,3 +1,4 @@
+import {presenceDelay,createPresenceCache} from './presence-policy.js';
 import {createGuestName,isNumberedGuest} from './guest-names.js';
 import {encodeActivity} from './activity-state.js';
 import {closeDialog} from './ui-motion.js';
@@ -9,7 +10,7 @@ try{nameInput.value=localStorage.getItem('winter-visitor-name')||'';}catch{}
 if(isNumberedGuest(nameInput.value))nameInput.value=createGuestName();
 function setName(name){nameInput.value=name;$('#profile-name').value=name;$('#self-name').textContent=name;try{localStorage.setItem('winter-visitor-name',name);}catch{}}
 async function request(path,body){const r=await fetch('/api/'+path,{method:body===undefined?'GET':'POST',headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(8000)});const data=await r.json();if(!r.ok){const e=Error(data.error||'연결을 확인해 주세요.');e.status=r.status;throw e;}return data;}
-function showPeople(list){people.replaceChildren();list=list.filter(p=>!window.isVisitorBlocked?.(p.id));for(const person of list){const li=document.createElement('li');li.textContent=person.name+(person.gesture==='wave'?' · 인사':'');const block=document.createElement('button');block.textContent='차단';block.dataset.blockVisitor=person.id;block.setAttribute('aria-label',person.name+' 차단');li.append(block);people.append(li);}window.dispatchEvent(new CustomEvent('lab:visitors',{detail:list}));}
+let peopleSignature='';function showPeople(list){list=list.filter(p=>!window.isVisitorBlocked?.(p.id));window.dispatchEvent(new CustomEvent('lab:visitors',{detail:list}));const next=JSON.stringify(list.map(p=>[p.id,p.name,p.gesture==='wave']));if(next===peopleSignature)return;peopleSignature=next;people.replaceChildren();for(const person of list){const li=document.createElement('li');li.textContent=person.name+(person.gesture==='wave'?' · 인사':'');const block=document.createElement('button');block.textContent='차단';block.dataset.blockVisitor=person.id;block.setAttribute('aria-label',person.name+' 차단');li.append(block);people.append(li);}}
 function openInvite(){ $('#open-social').click(); }
 function endGate(){document.body.classList.remove('invite-gate');$('.studio-head>span').textContent='설정';}
 
@@ -20,15 +21,15 @@ function updateRoomLinks(){
  inviteURL=spaceURL(room);$('#invite-url').value=inviteURL;$('#room-share').hidden=false;
  $('#invite-form button[type=submit]').textContent=invited?'새 초대 공간 만들기':'초대 링크 만들기';
 }
-function entered(data){
+function entered(data){presenceCache.reset();nextSync=0;
  if(window.labGuestId&&window.labGuestId!==data.id){showPeople([]);recentChats.length=0;seenChats.clear();chatLog.replaceChildren();selfBubble.hidden=true;window.labRideSeats=[];if(window.labRideReservation)window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));window.labRideReservation=null;}
  room=data.room;invited=invitationRoom(room);roomInput.value=room;joined=true;window.labSocialJoined=true;window.labGuestId=data.id;failures=0;setName(data.name);passwordInput.value='';$('#leave-room').hidden=false;$('#wave').hidden=false;form.hidden=true;$('#profile-form').hidden=false;status.textContent='접속 중 · 1명';chatStatus.textContent='';updateRoomLinks();endGate();window.dispatchEvent(new CustomEvent('lab:room',{detail:room}));
 }
 let joining=null,joiningRoom='';function join(password,targetRoom=roomInput.value){if(joining)return joiningRoom===targetRoom?joining:joining.then(()=>join(password,targetRoom));joiningRoom=targetRoom;joining=(async()=>{try{await syncing;const data=await request('join',{name:nameInput.value,room:targetRoom,password});entered(data);}finally{joining=null;}})();return joining.then(()=>sync());}
 form.addEventListener('submit',async e=>{e.preventDefault();const button=form.querySelector('button');button.disabled=true;status.textContent='입장 중…';try{await join(passwordInput.value);closeDialog(studio);}catch(e){status.textContent=e.message;}finally{button.disabled=false;}});
-let syncing=null;
-function sync(force=false){if(syncing)return force?syncing.then(()=>sync(true)):syncing;if(!joined||joining||(!force&&document.hidden)||!window.labPlayerState)return Promise.resolve();syncing=performSync().finally(()=>{syncing=null;});return syncing;}
-async function performSync(){busy=true;try{const a=window.labAppearance||{},data=await request('presence',{...window.labPlayerState,color:a.fur,accessory:a.accessory,gesture:gesture||encodeActivity(window.labPlayerState)});gesture='';failures=0;window.labServerOffset=data.serverTime-Date.now();window.labRideSeats=data.rideSeats||[];if(window.labRideReservation&&!window.labRideSeats.some(s=>s.id===window.labGuestId))window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));showPeople(data.people);status.textContent='접속 중 · '+data.count+'명';}catch(e){failures++;if(e.status===401||e.status===403){joined=false;window.labSocialJoined=false;showPeople([]);form.hidden=false;if(e.status===401&&!invited){joining=null;void join().catch(()=>{});}}status.textContent=e.message;if(failures>2)showPeople([]);}finally{busy=false;}}
+let syncing=null,nextSync=0;const presenceCache=createPresenceCache();
+function sync(force=false){if(syncing)return force?syncing.then(()=>sync(true)):syncing;if(!joined||joining||!window.labPlayerState)return Promise.resolve();syncing=performSync().finally(()=>{syncing=null;});return syncing;}
+async function performSync(){busy=true;try{const a=window.labAppearance||{},data=await request('presence',{...window.labPlayerState,...presenceCache.request(),color:a.fur,accessory:a.accessory,gesture:gesture||encodeActivity(window.labPlayerState)});gesture='';failures=0;window.labServerOffset=data.serverTime-Date.now();window.labRideSeats=data.rideSeats||[];if(window.labRideReservation&&!window.labRideSeats.some(s=>s.id===window.labGuestId))window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));showPeople(presenceCache.merge(data.people,data.farBucket));status.textContent='접속 중 · '+data.count+'명';}catch(e){failures++;if(e.status===401||e.status===403){joined=false;window.labSocialJoined=false;showPeople([]);form.hidden=false;if(e.status===401&&!invited){joining=null;void join().catch(()=>{});}}status.textContent=e.message;if(failures>2)showPeople([]);}finally{busy=false;nextSync=Date.now()+presenceDelay({hidden:document.hidden,moving:(window.labPlayerState?.speed||0)>.1,chat:!chatForm.hidden,failures});}}
 $('#leave-room').onclick=async()=>{joined=false;window.labSocialJoined=false;showPeople([]);chatLog.replaceChildren();seenChats.clear();selfBubble.hidden=true;$('#room-share').hidden=true;try{await request('leave',{});}catch{}status.textContent='연결 종료';$('#leave-room').hidden=true;$('#wave').hidden=true;form.hidden=!invited;};
 $('#wave').onclick=()=>{if(!joined)return;gesture='wave';window.dispatchEvent(new Event('lab:wave'));sync();};
 $('#invite-form').addEventListener('submit',async e=>{
@@ -42,7 +43,7 @@ $('#invite-form').addEventListener('submit',async e=>{
  }catch(e){$('#invite-result').textContent=e.message+' 다시 누르면 연결을 재시도합니다.';}finally{button.disabled=false;}
 });
 $('#copy-room').onclick=async()=>{try{await navigator.clipboard.writeText(inviteURL);$('#invite-result').textContent='링크를 복사했습니다.';}catch{$('#invite-url').select();$('#invite-result').textContent='선택된 링크를 복사하세요.';}};
-setInterval(sync,1000);// Inactive presence expires after 20 seconds; retain the cookie identity across reloads.
+const presenceTimer=setInterval(()=>{if(Date.now()>=nextSync)void sync();},250);document.addEventListener('visibilitychange',()=>{nextSync=0;void sync();});// Inactive presence expires after 20 seconds; retain the cookie identity across reloads.
 const chatForm=$('#chat-form'),chatInput=$('#chat-input'),chatStatus=$('#chat-status'),chatToggle=$('#chat-toggle'),chatLog=$('#chat-log'),selfBubble=$('#self-bubble');
 const seenChats=new Set(),blocked=new Set(),recentChats=[];
 let chatMotion=null;
@@ -59,7 +60,7 @@ async function ensureChatSession(){if(joined)return;if(!invited||admin){await jo
 chatForm.addEventListener('submit',async e=>{e.preventDefault();if(e.isComposing)return;const message=chatInput.value.trim();if(!message)return;const send=chatForm.querySelector('[type=submit]');send.disabled=true;try{await ensureChatSession();const data=await request('chat',{message});chatInput.value='';chatStatus.textContent='';setName(data.name);record(data.name,data.message,'self:'+data.at);selfBubble.textContent=data.message;selfBubble.dataset.until=String(Date.now()+6500);selfBubble.hidden=false;closeChat();}catch(err){chatStatus.textContent=err.message;}finally{send.disabled=false;}});
 window.addEventListener('lab:visitors',e=>{for(const p of e.detail)if(p.chat&&Date.now()-p.chatAt<6500&&!blocked.has(p.id))record(p.name,p.chat,p.id+':'+p.chatAt,p.id);});
 window.isVisitorBlocked=id=>blocked.has(id);people.addEventListener('click',e=>{const b=e.target.closest('[data-block-visitor]');if(!b)return;blocked.add(b.dataset.blockVisitor);b.closest('li')?.remove();sync();});
-setInterval(()=>{if(!chatForm.hidden)return;for(const row of chatLog.children){const remaining=Number(row.dataset.expires)-Date.now();row.style.opacity=String(Math.max(0,Math.min(1,remaining/700)));if(remaining<=0)row.remove();}},150);
+const chatFadeTimer=setInterval(()=>{if(!chatForm.hidden)return;for(const row of chatLog.children){const remaining=Number(row.dataset.expires)-Date.now();row.style.opacity=String(Math.max(0,Math.min(1,remaining/700)));if(remaining<=0)row.remove();}},150);
 window.joinSharedActivity=ensureChatSession;window.sharedRoom=()=>room;
 async function initialize(){try{const access=await request('access');admin=access.admin;$('#admin-invite').hidden=!admin;$('#owner-signin').hidden=admin;form.hidden=admin||!invited;$('#invite-description').textContent=admin?'비밀번호를 정하고 링크를 공유하세요.':invited?'닉네임과 비밀번호를 입력하세요.':'계정 없이 입장할 수 있습니다.';if(access.session&&(!invited||access.session.room===invited)){if(isNumberedGuest(access.session.name)){try{const renamed=await request('name',{name:createGuestName()});access.session.name=renamed.name;}catch{}}entered(access.session);}else if(admin){if(!nameInput.value)nameInput.value='YIWON';await join();}else if(invited){openInvite();}else{if(!nameInput.value)nameInput.value=createGuestName();await join();}window.dispatchEvent(new CustomEvent('lab:access',{detail:{admin}}));window.labLoading?.complete('connection');}catch(e){status.textContent=e.message;window.labLoading?.error('서버에 연결하지 못했습니다. 다시 시도해 주세요.');if(invited)openInvite(true);}}
 initialize();
@@ -71,3 +72,5 @@ const visualViewport=window.visualViewport;function keyboardLayout(){const botto
 window.reserveRide=async kind=>{await ensureChatSession();await releasingRide;await sync(true);const data=await request('ride',{kind});window.labServerOffset=data.serverTime-Date.now();window.labRideReservation=data.reservation;return data.reservation;};
 let releasingRide=Promise.resolve();
 window.releaseRide=()=>{window.labRideReservation=null;releasingRide=fetch('/api/ride',{method:'DELETE',headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(8000)}).catch(()=>{});return releasingRide;};
+
+window.addEventListener('pagehide',event=>{if(!event.persisted){clearInterval(presenceTimer);clearInterval(chatFadeTimer);}});

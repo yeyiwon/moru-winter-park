@@ -1,4 +1,5 @@
 import {createYukata} from './winter-costumes.js';
+import {disposeOwnedScene} from './scene-resources.js';
 import {selectedItems,normalizeWardrobe} from './wardrobe.js';
 import {createStyleAccessories} from './character-accessories.js';
 import * as THREE from './vendor/three.module.js';
@@ -256,5 +257,14 @@ export function createCompanion({detail='full'}={}){
   const blink=mode==='lie'?.12:still?1:blinkGate*(mode==='ski'?.86:spa?.72+Math.sin(time*.6)*.035:1);
   eyes.forEach((e,i)=>{const profile=eyeProfiles[i];e.scale.y=profile.scale[1]*(profile.closed?1:blink);e.position.x=(i?1:-1)*.205+Math.max(-.025,Math.min(.025,look));});
  }
- customize({});return{group,eyes,feet,customize,pose,equip,setViewDetail,get displayHeight(){return heldSkewer.visible&&currentHeldItem==='balloon'?Math.max(nameHeight,1.65):nameHeight;},get nameHeight(){return relaxing?1.08:nameHeight;},get gear(){return wardrobeGear;},get winterReady(){return ['ski','board'].includes(equipped)&&boots.every(b=>b.visible);}};
+ let disposed=false;
+ function dispose(){
+  if(disposed)return;disposed=true;
+  // Earlier expressions/ear styles may still have GPU buffers although their
+  // geometry is no longer attached to a mesh. Release the complete owned cache.
+  const cached=new Set([roundEye,flatEye,closedEye,contentEye,starEye,heartEye,reactionGeometry,pursedGeometry,...Object.values(earShapes),...Object.values(skewerShapes)]),paint=new Set([eyeMat,eyeWhite,heartEyeMaterial]);
+  group.traverse(o=>{cached.delete(o.geometry);for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[])paint.delete(m);});
+  disposeOwnedScene(group);for(const geometry of cached)geometry.dispose();for(const material of paint)material.dispose();
+ }
+ customize({});return{group,eyes,feet,customize,pose,equip,setViewDetail,dispose,get displayHeight(){return heldSkewer.visible&&currentHeldItem==='balloon'?Math.max(nameHeight,1.65):nameHeight;},get nameHeight(){return relaxing?1.08:nameHeight;},get gear(){return wardrobeGear;},get winterReady(){return ['ski','board'].includes(equipped)&&boots.every(b=>b.visible);}};
 }

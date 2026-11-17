@@ -1,0 +1,55 @@
+{
+  "totals": {
+    "files": 134,
+    "allBytes": 16940835,
+    "codeBytes": 2772531,
+    "codeGzipBytes": 875882,
+    "audioBytes": 11478483
+  },
+  "limits": {
+    "allBytes": 25165824,
+    "codeGzipBytes": 1280000
+  },
+  "largest": [
+    {
+      "name": "audio/cinematic-christmas-piano-strings-bells.m4a",
+      "bytes": 3274060,
+      "gzip": 3176562
+    },
+    {
+      "name": "audio/moonlight.m4a",
+      "bytes": 2093421,
+      "gzip": 2036036
+    },
+    {
+      "name": "fonts/PretendardVariable.woff2",
+      "bytes": 2057688,
+      "gzip": 2045523
+    },
+    {
+      "name": "audio/first-snow.m4a",
+      "bytes": 1754877,
+      "gzip": 1716862
+    },
+    {
+      "name": "audio/christmas-cinematic-dream-piano.m4a",
+      "bytes": 1062268,
+      "gzip": 1030702
+    },
+    {
+      "name": "audio/warm-winter.m4a",
+      "bytes": 1027446,
+      "gzip": 998510
+    },
+    {
+      "name": "carousel-horse-geometry.js",
+      "bytes": 984279,
+      "gzip": 378285
+    },
+    {
+      "name": "vendor/three.module.js",
+      "bytes": 934285,
+      "gzip": 197998
+    }
+  ]
+}

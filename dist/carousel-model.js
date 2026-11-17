@@ -1,3 +1,4 @@
+import {mergePaintedGeometry} from './mesh-batch.js';
 import * as T from './vendor/three.module.js';
 import {sculptedHorseCoats} from './carousel-horse-geometry.js';
 
@@ -30,9 +31,7 @@ function batch(parent,name,palette,painted=false,forceMaterial=null){
  function add(g,material,position=[0,0,0],rotation=[0,0,0],scale=[1,1,1]){transform.position.set(...position);transform.rotation.set(...rotation);transform.scale.set(...scale);transform.updateMatrix();g.applyMatrix4(transform.matrix);parts.push({g,material,color:palette[material].color.clone(),finish:forceMaterial||(painted&&palette[material].metalness<.2?'painted':material)});}
  function finish(){
   const meshList=[];
-  for(const material of new Set(parts.map(p=>p.finish))){const selected=parts.filter(p=>p.finish===material),total=selected.reduce((n,{g})=>n+(g.index?g.index.count:g.attributes.position.count),0);const pos=new Float32Array(total*3),normal=new Float32Array(total*3),uv=new Float32Array(total*2),colors=(material==='painted'||material==='column')?new Float32Array(total*3):null;let at=0;
-   for(const {g,color} of selected){const plain=g.index?g.toNonIndexed():g;pos.set(plain.attributes.position.array,at*3);normal.set(plain.attributes.normal.array,at*3);uv.set(plain.attributes.uv.array,at*2);if(colors)for(let i=0;i<plain.attributes.position.count;i++)colors.set(color.toArray(),(at+i)*3);at+=plain.attributes.position.count;if(plain!==g)plain.dispose();g.dispose();}
-   const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.BufferAttribute(pos,3));geometry.setAttribute('normal',new T.BufferAttribute(normal,3));geometry.setAttribute('uv',new T.BufferAttribute(uv,2));if(colors)geometry.setAttribute('color',new T.BufferAttribute(colors,3));geometry.computeBoundingSphere();const mesh=new T.Mesh(geometry,palette[material]);mesh.name=name+'-'+material;mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);meshList.push(mesh);
+  for(const material of new Set(parts.map(p=>p.finish))){const selected=parts.filter(p=>p.finish===material),geometry=mergePaintedGeometry(selected.map(p=>({geometry:p.g,color:p.color})),{paint:material==='painted'||material==='column'});for(const part of selected)part.g.dispose();const mesh=new T.Mesh(geometry,palette[material]);mesh.name=name+'-'+material;mesh.castShadow=true;mesh.receiveShadow=true;parent.add(mesh);meshList.push(mesh);
   }return meshList;
  }
  return{add,finish};

@@ -1,3 +1,4 @@
+import {mergePaintedGeometry} from './mesh-batch.js';
 import * as T from './vendor/three.module.js';
 import {castleLayout,castleTowers} from './castle-layout.js';
 import {createCastleAtmosphere} from './castle-atmosphere.js';
@@ -174,9 +175,7 @@ export function buildCastle(){
  }
 
  for(const [kind,parts]of batches){
-  const count=parts.reduce((n,{g})=>n+(g.index?.count||g.attributes.position.count),0),position=new Float32Array(count*3),normal=new Float32Array(count*3),uv=new Float32Array(count*2),color=new Float32Array(count*3);let offset=0;
-  for(const {g,color:c}of parts){const p=g.index?g.toNonIndexed():g,n=p.attributes.position.count;position.set(p.attributes.position.array,offset*3);normal.set(p.attributes.normal.array,offset*3);uv.set(p.attributes.uv.array,offset*2);for(let i=0;i<n;i++)color.set(c.toArray(),(offset+i)*3);offset+=n;if(p!==g)p.dispose();g.dispose();}
-  const geometry=new T.BufferGeometry();for(const [name,values,size]of [['position',position,3],['normal',normal,3],['uv',uv,2],['color',color,3]])geometry.setAttribute(name,new T.BufferAttribute(values,size));geometry.computeBoundingSphere();geometry.computeBoundingBox();const object=new T.Mesh(geometry,materials[kind]);object.name='winter-palace-'+kind;object.castShadow=kind!=='light';object.receiveShadow=kind!=='light';root.add(object);
+  const geometry=mergePaintedGeometry(parts.map(p=>({geometry:p.g,color:p.color})));for(const part of parts)part.g.dispose();const object=new T.Mesh(geometry,materials[kind]);object.name='winter-palace-'+kind;object.castShadow=kind!=='light';object.receiveShadow=kind!=='light';root.add(object);
  }
  const atmosphere=createCastleAtmosphere(root,castleTowers);
  function update(t,still=false,{quality,player}={}){if(!still&&Number.isFinite(t))time.value=t;atmosphere.update(t,still,{quality,player});}

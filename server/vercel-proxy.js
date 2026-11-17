@@ -13,7 +13,9 @@ export async function proxyRequest(request,fetcher=fetch){
  const session=/(?:^|;\s*)winter_session=([a-f0-9]{64})(?:;|$)/.exec(request.headers.get('cookie')||'');
  if(session)headers.set('Cookie','winter_session='+session[1]);if(write)headers.set('Content-Type','application/json');
  try{
-  const upstream=await fetcher(backendOrigin+'/api/'+route,{method:request.method,headers,body,redirect:'manual',signal:AbortSignal.timeout(8000)});
+  const target=new URL(backendOrigin+'/api/'+route),revision=url.searchParams.get('revision');
+  if(route==='tree'&&/^[a-f0-9]{24}$/.test(revision||''))target.searchParams.set('revision',revision);
+  const upstream=await fetcher(target.href,{method:request.method,headers,body,redirect:'manual',signal:AbortSignal.timeout(8000)});
   if(upstream.status>=300&&upstream.status<400||!upstream.headers.get('content-type')?.includes('application/json'))return error('공간 연결을 확인해 주세요.',502);
   const responseHeaders=new Headers({'Content-Type':'application/json','Cache-Control':'no-store'});
   const cookies=upstream.headers.getSetCookie?.()||[upstream.headers.get('set-cookie')||''];

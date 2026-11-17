@@ -1,6 +1,8 @@
 import * as T from './vendor/three.module.js';
 import {createRetreatAtmosphere} from './retreat-atmosphere.js';
 import {interiorRooms,ryokanFixtures} from './interior-layout.js';
+import {mergeMeshGeometry} from './mesh-batch.js';
+import {disposeOwnedScene} from './scene-resources.js';
 
 const UP=new T.Vector3(0,1,0);
 function makeBuilder(root){
@@ -16,7 +18,7 @@ function makeBuilder(root){
 function mergeFinish(root){
  root.updateMatrixWorld(true);const inverse=new T.Matrix4().copy(root.matrixWorld).invert(),batches=new Map();
  root.traverse(o=>{for(let p=o.parent;p&&p!==root;p=p.parent)if(p.userData.keepGroup)return;if(!o.isMesh||o.material.transparent||o.material.isShaderMaterial||o.userData.keep||Array.isArray(o.material))return;if(!batches.has(o.material))batches.set(o.material,[]);batches.get(o.material).push(o);});
- for(const [material,items]of batches){if(items.length<2)continue;let total=0;const pieces=[];for(const o of items){const matrix=new T.Matrix4().multiplyMatrices(inverse,o.matrixWorld);let g=o.geometry.clone().applyMatrix4(matrix);if(g.index){const old=g;g=g.toNonIndexed();old.dispose();}if(!g.attributes.normal)g.computeVertexNormals();total+=g.attributes.position.count;pieces.push(g);o.removeFromParent();}const g=new T.BufferGeometry();for(const [key,width]of [['position',3],['normal',3],['uv',2]]){const buffer=new Float32Array(total*width);let offset=0;for(const p of pieces){const data=p.attributes[key]?.array||new Float32Array(p.attributes.position.count*width);buffer.set(data,offset);offset+=data.length;}g.setAttribute(key,new T.BufferAttribute(buffer,width));}g.computeBoundingSphere();pieces.forEach(g=>g.dispose());const m=new T.Mesh(g,material);m.castShadow=true;m.receiveShadow=true;m.name=root.name+'-finish';root.add(m);}
+ for(const [material,items]of batches){if(items.length<2)continue;const g=mergeMeshGeometry(items,{relativeTo:inverse});for(const o of items)o.removeFromParent();const m=new T.Mesh(g,material);m.castShadow=true;m.receiveShadow=true;m.name=root.name+'-finish';root.add(m);}
 }
 function materials(){
  const standard=(color,roughness=.8,metalness=0)=>new T.MeshStandardMaterial({color,roughness,metalness,side:['#275c48','#56886b','#3e7768'].includes(color)?T.DoubleSide:T.FrontSide});
@@ -95,15 +97,16 @@ function buildRyokan(root,m){
  mergeFinish(root);return{root,walls,ceiling:ceil,uniforms:[],atmosphere};
 }
 
-export function buildInteriors(scene){
- const root=new T.Group();root.name='independent-interiors';root.visible=false;scene.add(root);const m=materials(),rooms={};
- // Geometry is instantiated once; entering does not rebuild assets or reset guests.
- for(const [id,layout]of Object.entries(interiorRooms)){const roomRoot=new T.Group();roomRoot.name=id+'-interior';roomRoot.position.set(layout.x,0,layout.z);roomRoot.visible=false;root.add(roomRoot);const asset=buildRyokan(roomRoot,m);rooms[id]={...asset,layout};}
- let active=null;
- const occluders=[];root.traverse(o=>{if(o.isMesh&&!o.material.transparent&&!o.material.isShaderMaterial)occluders.push(o);});
- function setActive(id){active=rooms[id]?id:null;root.visible=!!active;for(const [key,room]of Object.entries(rooms))room.root.visible=key===active;}
+export function buildInteriors(scene,{lazy=false,onLoad=()=>{},onRelease=()=>{},retainMs=90000}={}){
+ const root=new T.Group();root.name='independent-interiors';root.visible=false;scene.add(root);const rooms={},occluders=[];
+ let active=null,quality='medium',lastUsed=0;
+ function ensure(id){if(rooms[id])return rooms[id];const layout=interiorRooms[id];if(!layout)return null;const roomRoot=new T.Group();roomRoot.name=id+'-interior';roomRoot.position.set(layout.x,0,layout.z);roomRoot.visible=false;root.add(roomRoot);const asset=buildRyokan(roomRoot,materials());asset.atmosphere.setQuality(quality);rooms[id]={...asset,layout};roomRoot.traverse(o=>{if(o.isMesh&&!o.material.transparent&&!o.material.isShaderMaterial)occluders.push(o);});onLoad(roomRoot);return rooms[id];}
+ if(!lazy)for(const id of Object.keys(interiorRooms))ensure(id);
+ function release(id){const room=rooms[id];if(!room||id===active)return false;onRelease(room.root);for(let i=occluders.length-1;i>=0;i--){let node=occluders[i];while(node&&node!==room.root)node=node.parent;if(node)occluders.splice(i,1);}room.atmosphere.dispose();disposeOwnedScene(room.root);delete rooms[id];return true;}
+ function maintain(now,nearEntrance=false){if(active||nearEntrance)lastUsed=now;if(lazy&&!active&&!nearEntrance&&now-lastUsed>retainMs)for(const id of Object.keys(rooms))release(id);}
+ function setActive(id){active=id&&ensure(id)?id:null;root.visible=!!active;for(const [key,room]of Object.entries(rooms))room.root.visible=key===active;}
  function setCamera(position){const room=rooms[active];if(!room||!position)return;const local={x:position.x-room.layout.x,z:position.z-room.layout.z};for(const wall of room.walls){const axis=wall.userData.cutawayAxis,sign=wall.userData.cutawaySign;wall.visible=local[axis]*sign<room.layout[axis==='x'?'rx':'rz']*.15;}if(room.ceiling)room.ceiling.visible=position.y<3&&Math.hypot(local.x,local.z)<5;}
  function update(time,still=false,quality){const room=rooms[active];if(!room)return;if(!still)for(const u of room.uniforms||[])u.time.value=time;room.atmosphere.update(time,still,quality);}
- function setQuality(value){for(const room of Object.values(rooms))room.atmosphere.setQuality(value);}
- return{root,rooms,occluders,setActive,setCamera,update,setQuality,get active(){return active;}};
+ function setQuality(value){quality=value;for(const room of Object.values(rooms))room.atmosphere.setQuality(value);}
+ return{root,rooms,occluders,ensure,release,maintain,setActive,setCamera,update,setQuality,dispose(){active=null;for(const id of Object.keys(rooms))release(id);root.removeFromParent();},get active(){return active;}};
 }

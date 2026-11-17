@@ -1,4 +1,4 @@
-import {mergeMeshGeometry} from './mesh-batch.js';
+import {mergeMeshGeometry,spatialBatchKey} from './mesh-batch.js';
 import {treeLayout,treeShift} from './tree-layout.js';
 import {createTreeAtmosphere} from './tree-atmosphere.js';
 import {createSnowPaths} from './snow-path.js';
@@ -98,7 +98,7 @@ export function buildWinterWorld(api){
  const quiet=place(50,34,'quiet-garden');cylinder(2.3,2.5,.1,M('#687971',.94,0),0,.13,0,quiet,48);for(let i=0;i<5;i++){const a=i*1.26;const pad=oval(M('#b3a2a1',.95,0),Math.cos(a)*1.5,.28,Math.sin(a)*1.5,.48,.13,.4,quiet);pad.rotation.y=-a;}cylinder(.35,.4,.4,stone,0,.4,0,quiet,32);ball(candle,0,.65,0,.1,quiet);halo(0,.65,0,'#ffddb2',1.6,quiet);target(quiet,'healing',0,.7,0,4.5,1.4,4.5);
 
  // Batch static geometry by material; retain moving chairs, steam and hit targets.
- root.updateMatrixWorld(true);const groups=new Map();root.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||o.userData.snowTrail||Array.isArray(o.material)||moving.has(o))return;let parent=o.parent;while(parent&&parent!==root){if(moving.has(parent))return;parent=parent.parent;}if(!o.geometry.attributes.normal||!o.geometry.attributes.uv)return;const key=o.material.uuid;if(!groups.has(key))groups.set(key,{material:o.material,items:[]});groups.get(key).items.push(o);});
+ root.updateMatrixWorld(true);const groups=new Map();root.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||o.userData.snowTrail||Array.isArray(o.material)||moving.has(o))return;let parent=o.parent;while(parent&&parent!==root){if(moving.has(parent))return;parent=parent.parent;}if(!o.geometry.attributes.normal||!o.geometry.attributes.uv)return;const key=o.material.uuid+':'+spatialBatchKey(o);if(!groups.has(key))groups.set(key,{material:o.material,items:[]});groups.get(key).items.push(o);});
  for(const {material,items} of groups.values()){if(items.length<2)continue;const geo=mergeMeshGeometry(items);for(const item of items)item.removeFromParent();mesh(geo,material,0,0,0,root);}
  const destinations=[{id:'tree',name:'겨울의 큰 트리',...treeLayout.arrival,kind:'tree',view:{distance:42,yaw:-1.25,pitch:.12,lookHeight:12}},...resortDestinations,{id:'healing',name:'고요한 쉼터',x:50,z:37,kind:'healing'}];
  const obstacles=[{x:treeLayout.x,z:treeLayout.z,r:treeLayout.radius},...resortObstacles];

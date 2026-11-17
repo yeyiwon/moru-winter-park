@@ -7,3 +7,16 @@ export function placePrompt({x,y,width,height,viewportWidth,viewportHeight,avoid
  const overlap=p=>Math.max(0,Math.min(p.x+half,avoid.right+14)-Math.max(p.x-half,avoid.left-14))*Math.max(0,Math.min(p.y,avoid.bottom+14)-Math.max(p.y-height,avoid.top-14));
  return [origin,{x:avoid.right+half+28,y},{x:avoid.left-half-28,y},{x,y:avoid.top-18},{x,y:avoid.bottom+height+18}].map(fit).sort((a,b)=>overlap(a)-overlap(b)||Math.hypot(a.x-origin.x,a.y-origin.y)-Math.hypot(b.x-origin.x,b.y-origin.y))[0];
 }
+
+// Cache label dimensions, not its projected position. Measuring after every
+// transform forced synchronous layout once per visitor on every frame.
+export function createLabelLayout(element){
+ const bubble=element.querySelector('.speech-bubble');let dirty=true,signature='',extent=null;
+ const Observer=element.ownerDocument.defaultView.ResizeObserver,observer=Observer?new Observer(()=>dirty=true):null;
+ observer?.observe(element);if(bubble)observer?.observe(bubble);
+ return{bounds(x,y){
+  const key=element.textContent+'|'+!!bubble?.hidden+'|'+element.ownerDocument.defaultView.innerWidth;
+  if(dirty||key!==signature||!extent){const r=element.getBoundingClientRect(),b=bubble&&!bubble.hidden?bubble.getBoundingClientRect():r;extent={left:Math.min(r.left,b.left)-r.left-r.width/2,right:Math.max(r.right,b.right)-r.left-r.width/2,top:Math.min(r.top,b.top)-r.bottom,bottom:Math.max(r.bottom,b.bottom)-r.bottom};dirty=false;signature=key;}
+  return{left:x+extent.left,right:x+extent.right,top:y+extent.top,bottom:y+extent.bottom};
+ },dispose(){observer?.disconnect();}};
+}

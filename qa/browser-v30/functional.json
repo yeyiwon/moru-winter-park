@@ -1,0 +1,269 @@
+{
+  "browser": "157.0.8103.79",
+  "checks": [
+    {
+      "name": "desktop walking",
+      "result": true
+    },
+    {
+      "name": "desktop jump and landing",
+      "result": true
+    },
+    {
+      "name": "obstructed click planning does not block rendering",
+      "result": {
+        "milliseconds": 487.9000000022352,
+        "frames": 20,
+        "waypoints": 5
+      }
+    },
+    {
+      "name": "lazy wardrobe opens with a complete preview",
+      "result": true
+    },
+    {
+      "name": "ten indoor visits retain bounded GPU resources",
+      "result": [
+        {
+          "heap": 327843296,
+          "geometry": 752,
+          "cpuGeometries": 862,
+          "added": [],
+          "textures": 25,
+          "rooms": 1
+        },
+        {
+          "heap": 327309993,
+          "geometry": 752,
+          "cpuGeometries": 862,
+          "added": [],
+          "textures": 25,
+          "rooms": 1
+        },
+        {
+          "heap": 328331893,
+          "geometry": 752,
+          "cpuGeometries": 862,
+          "added": [],
+          "textures": 25,
+          "rooms": 1
+        },
+        {
+          "heap": 328208144,
+          "geometry": 752,
+          "cpuGeometries": 862,
+          "added": [],
+          "textures": 25,
+          "rooms": 1
+        },
+        {
+          "heap": 328460677,
+          "geometry": 752,
+          "cpuGeometries": 862,
+          "added": [],
+          "textures": 25,
+          "rooms": 1
+        },
+        {
+          "heap": 328425857,
+          "geometry": 752,
+          "cpuGeometries": 862,
+          "added": [],
+          "textures": 25,
+          "rooms": 1
+        },
+        {
+          "heap": 328600365,
+          "geometry": 752,
+          "cpuGeometries": 862,
+          "added": [],
+          "textures": 25,
+          "rooms": 1
+        },
+        {
+          "heap": 328400617,
+          "geometry": 752,
+          "cpuGeometries": 862,
+          "added": [],
+          "textures": 25,
+          "rooms": 1
+        },
+        {
+          "heap": 328408240,
+          "geometry": 752,
+          "cpuGeometries": 862,
+          "added": [],
+          "textures": 25,
+          "rooms": 1
+        },
+        {
+          "heap": 328542541,
+          "geometry": 752,
+          "cpuGeometries": 862,
+          "added": [],
+          "textures": 25,
+          "rooms": 1
+        }
+      ]
+    },
+    {
+      "name": "ride state blocks ordinary jumping",
+      "result": true
+    },
+    {
+      "name": "two browser guests share a cabin and exit independently",
+      "result": {
+        "seats": [
+          0,
+          1
+        ]
+      }
+    },
+    {
+      "name": "outdoor exploration evicts the unused room",
+      "result": {
+        "seconds": 111.86,
+        "heap": 332318319,
+        "memory": {
+          "geometries": 759,
+          "textures": 25
+        }
+      }
+    },
+    {
+      "name": "mobile emulation: simultaneous joystick, orbit, jump and pointer cancellation",
+      "result": true
+    },
+    {
+      "name": "mobile control rectangles do not overlap",
+      "result": [
+        {
+          "selector": "#joystick",
+          "x": 20,
+          "y": 700,
+          "width": 120,
+          "height": 120
+        },
+        {
+          "selector": "#jump-button",
+          "x": 308,
+          "y": 758,
+          "width": 62,
+          "height": 62
+        },
+        {
+          "selector": "#run-button",
+          "x": 242,
+          "y": 690,
+          "width": 52,
+          "height": 52
+        },
+        {
+          "selector": "#emote-toggle",
+          "x": 244,
+          "y": 764,
+          "width": 48,
+          "height": 48
+        },
+        {
+          "selector": "#chat-toggle",
+          "x": 319,
+          "y": 698,
+          "width": 44,
+          "height": 44
+        },
+        {
+          "selector": "#park-menu summary",
+          "x": 328,
+          "y": 14,
+          "width": 44,
+          "height": 44
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "physicalMobile": false,
+  "indoorMemory": [
+    {
+      "heap": 327843296,
+      "geometry": 752,
+      "cpuGeometries": 862,
+      "added": [],
+      "textures": 25,
+      "rooms": 1
+    },
+    {
+      "heap": 327309993,
+      "geometry": 752,
+      "cpuGeometries": 862,
+      "added": [],
+      "textures": 25,
+      "rooms": 1
+    },
+    {
+      "heap": 328331893,
+      "geometry": 752,
+      "cpuGeometries": 862,
+      "added": [],
+      "textures": 25,
+      "rooms": 1
+    },
+    {
+      "heap": 328208144,
+      "geometry": 752,
+      "cpuGeometries": 862,
+      "added": [],
+      "textures": 25,
+      "rooms": 1
+    },
+    {
+      "heap": 328460677,
+      "geometry": 752,
+      "cpuGeometries": 862,
+      "added": [],
+      "textures": 25,
+      "rooms": 1
+    },
+    {
+      "heap": 328425857,
+      "geometry": 752,
+      "cpuGeometries": 862,
+      "added": [],
+      "textures": 25,
+      "rooms": 1
+    },
+    {
+      "heap": 328600365,
+      "geometry": 752,
+      "cpuGeometries": 862,
+      "added": [],
+      "textures": 25,
+      "rooms": 1
+    },
+    {
+      "heap": 328400617,
+      "geometry": 752,
+      "cpuGeometries": 862,
+      "added": [],
+      "textures": 25,
+      "rooms": 1
+    },
+    {
+      "heap": 328408240,
+      "geometry": 752,
+      "cpuGeometries": 862,
+      "added": [],
+      "textures": 25,
+      "rooms": 1
+    },
+    {
+      "heap": 328542541,
+      "geometry": 752,
+      "cpuGeometries": 862,
+      "added": [],
+      "textures": 25,
+      "rooms": 1
+    }
+  ]
+}

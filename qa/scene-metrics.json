@@ -1,17 +1,12 @@
 {
   "environment": "Node v22.4.1 darwin arm64",
   "measurement": "CPU scene geometry construction; no browser, WebGL or GPU rendering",
-  "sceneConstructionMs": 23057.14,
-  "meshObjects": 584,
+  "sceneConstructionMs": 63786.15,
+  "meshObjects": 771,
   "materials": 214,
   "triangles": 4200466.333333334,
   "renderFPS": null,
   "largestMeshes": [
-    {
-      "name": "",
-      "parent": "",
-      "triangles": 257280
-    },
     {
       "name": "",
       "parent": "winter-places",
@@ -28,19 +23,14 @@
       "triangles": 183664
     },
     {
-      "name": "",
-      "parent": "alpine-mountain",
-      "triangles": 163568
-    },
-    {
       "name": "alpine-heightfield",
       "parent": "alpine-mountain",
       "triangles": 143040
     },
     {
       "name": "",
-      "parent": "alpine-mountain",
-      "triangles": 127232
+      "parent": "",
+      "triangles": 126720
     },
     {
       "name": "winter-palace-metal",
@@ -53,19 +43,29 @@
       "triangles": 118400
     },
     {
-      "name": "",
-      "parent": "alpine-mountain",
-      "triangles": 103936
-    },
-    {
-      "name": "",
-      "parent": "alpine-mountain",
-      "triangles": 100436
-    },
-    {
       "name": "winter-palace-stone",
       "parent": "winter-palace",
       "triangles": 79952
+    },
+    {
+      "name": "",
+      "parent": "alpine-mountain",
+      "triangles": 74792
+    },
+    {
+      "name": "",
+      "parent": "",
+      "triangles": 71448
+    },
+    {
+      "name": "",
+      "parent": "",
+      "triangles": 70528
+    },
+    {
+      "name": "",
+      "parent": "spa-resort",
+      "triangles": 67260
     }
   ],
   "browserVisualVerification": "Separate browser checks are documented in docs/urgent-rendering-repair.md; these metrics are CPU-only"
