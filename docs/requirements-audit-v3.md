@@ -47,3 +47,5 @@ This report distinguishes code implementation, automated validation and browser 
 - Final art budget: 562 meshes, 207 materials, 3,847,855 triangles; within the existing 4.5M triangle ceiling.
 - Final VFX and settings checks: 8/8 passed. Baked path collision checks: passed for all 24 routes.
 - Browser screenshot: `outputs/winter-tree-final.jpg` (delivered outside repository).
+
+- Production visual follow-up found exposed terrain triangles near the rink approach. The continuous snow apron now extends beyond the walkable boundary, with gentler banks; collision limits are unchanged.
