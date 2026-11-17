@@ -20,5 +20,10 @@
   "assetBudget": "passed",
   "diffCheck": "passed",
   "physicalMobile": "UNKNOWN",
-  "nativeBrowsersExceptMacChrome": "UNKNOWN"
+  "nativeBrowsersExceptMacChrome": "UNKNOWN",
+  "diagnosticSuite": {
+    "passed": 8,
+    "failed": 0,
+    "log": "/tmp/winter-v30-diagnostic-final.log"
+  }
 }

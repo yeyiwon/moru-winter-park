@@ -39,3 +39,9 @@ test('audio media registration is idempotent and disposal stops active loops and
 test('inactive diagnostics never poll GPU status without a pending query',()=>{
  const gl={getExtension:()=>({}),getParameter:()=>assert.fail('unexpected GPU polling')},renderer={getContext:()=>gl,info:{memory:{}},getPixelRatio:()=>1},metrics=createFrameMetrics(renderer);for(let i=0;i<120;i++){metrics.begin();metrics.end(16.7,i*16.7);}metrics.dispose();
 });
+
+test('diagnostics collect ten seconds of game frames rather than time spent in paused menus',()=>{
+ const renderer={getContext:()=>({getExtension:()=>null}),info:{memory:{},render:{calls:10,triangles:100}},getPixelRatio:()=>1},metrics=createFrameMetrics(renderer);metrics.start();
+ for(let i=0;i<499;i++){metrics.begin();assert.equal(metrics.end(20,100000+i*1000),null);}
+ metrics.begin();const result=metrics.end(20,999999);assert.equal(result.frames,500);assert.equal(result.fps,50);metrics.dispose();
+});

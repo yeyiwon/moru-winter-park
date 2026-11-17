@@ -36,7 +36,7 @@
 | `mesh-batch.js`, `castle-model.js`, `ferris-model.js`, `carousel-model.js` | 색·노멀·UV·삼각형 순서를 보존하는 indexed batch |
 | `themepark-world.js`, `winter-world.js`, `alpine-resort.js` | 공간별 배치 경계; 기본 frustum/shadow culling 활용 |
 | `interior-world.js`, `scene-resources.js`, `local-lights.js` | 실내 lazy 생성·입구 근처 선행 준비·90초 부재 후 해제; 재진입 캐시; 충돌체/지역 광원 등록과 해제 |
-| `frame-metrics.js`, `render-budget.js`, `glow-pass.js` | opt-in 프레임/GPU 측정, bounded query, 느린 기기 자동 품질 반응, 그림자 크기/주기와 해상도, 낮음 모드에서 미사용 render target 해제 |
+| `frame-metrics.js`, `render-budget.js`, `glow-pass.js` | opt-in 프레임/GPU 측정, bounded query, 메뉴 일시정지를 제외한 10초 실제 프레임 수집, 느린 기기 자동 품질 반응, 그림자 크기/주기와 해상도, 낮음 모드에서 미사용 render target 해제 |
 | `presence-policy.js`, `social.js`, `server/api.js` | 이동 1초 / 정지 2초 / 숨김 8초 / 장애 backoff; 먼 위치 5초 갱신, 근처·좌석·채팅·감정 유지 |
 | `shared-tree.js`, `server/vercel-proxy.js` | 트리 revision 응답, 가까이 2초 / 멀리 8초, 요청 직렬화와 이전 방 응답 차단 |
 | `world-labels.js`, `visitors.js`, `companion.js`, `game-input.js` | 이름표 크기 캐시, 원격 포즈 15/30/60 Hz, 멀티터치 소유권 유지, 리스너와 원격 리소스 해제, 이전 눈/귀/소품 캐시까지 퇴장 시 해제 |
@@ -129,7 +129,7 @@ Chrome mobile emulation: 390×844, DPR 3, touch/coarse pointer, 실제 3개 동�
 
 ## 9. 기능·회귀 검증
 
-전체 자동 테스트 **278/278 통과** 후, 종료 시 Worker 오류 방어·CSS 오프라인 캐시·비활성 GPU 계측을 추가 확인한 관련 테스트 **10/10 통과**. 이후 분할 크기·포즈 계산·커마 자원 해제까지 반영한 관련 회귀 테스트 **52/52 통과**. 마지막 52개에는 새 자원 해제 검사가 포함된다. `npm run build`, `npm run build:vercel`, `npm run test:budget`, `git diff --check`도 통과했다. 실제 Chrome의 `functional.json`은 **10개 검사 통과, pageerror 0건**이다. 기능 검사는 걷기·점프·커스터마이징·탑승 중 점프 차단·2인 같은 곤돌라/개별 하차·실내 이동/재진입/해제·멀티터치·UI 겹침·Worker 경로 처리·브라우저 오류를 포함한다. 순수 함수/DOM/GPU stub 검사는 실제 Chrome 검증과 구분한다.
+전체 자동 테스트 **278/278 통과** 후, 종료 시 Worker 오류 방어·CSS 오프라인 캐시·비활성 GPU 계측을 추가 확인한 관련 테스트 **10/10 통과**. 이후 분할 크기·포즈 계산·커마 자원 해제까지 반영한 관련 회귀 테스트 **52/52 통과**. 마지막 52개에는 새 자원 해제 검사가 포함된다. 최종 진단 표시의 일시정지 시간 제외 검사를 추가한 delivery 테스트 8/8도 통과했다. `npm run build`, `npm run build:vercel`, `npm run test:budget`, `git diff --check`도 통과했다. 실제 Chrome의 `functional.json`은 **10개 검사 통과, pageerror 0건**이다. 기능 검사는 걷기·점프·커스터마이징·탑승 중 점프 차단·2인 같은 곤돌라/개별 하차·실내 이동/재진입/해제·멀티터치·UI 겹침·Worker 경로 처리·브라우저 오류를 포함한다. 순수 함수/DOM/GPU stub 검사는 실제 Chrome 검증과 구분한다.
 
 별도 TypeScript typecheck/lint 설정은 저장소에 없다. `node --check`, 실제 두 production build, 기존 테스트와 추가 회귀 검사로 검증한다.
 
