@@ -1,26 +1,13 @@
+import {spaShift} from '../dist/resort-layout.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {conservatoryLayout as c,conservatoryWalkPoint,conservatoryWalkAt,conservatoryCanStandAt,conservatoryCanMoveFrom,conservatorySurfaceAt} from '../dist/conservatory-layout.js';
-
-test('the canopy promenade rises continuously and agrees with its visible floor',()=>{
- let previous=conservatoryWalkPoint(0);
- for(let i=1;i<=800;i++){
-  const p=conservatoryWalkPoint(i/800),floor=conservatorySurfaceAt(p.x,p.z);
-  assert.ok(Math.abs(p.y-floor)<1e-8);
-  assert.ok(conservatoryCanStandAt(p.x,p.z));
-  assert.ok(conservatoryCanMoveFrom(previous,p));
-  assert.ok((p.y-previous.y)/Math.hypot(p.x-previous.x,p.z-previous.z)<.16);
-  previous=p;
- }
- assert.equal(previous.y,5.2);
-});
-
-test('glass doors stay open while the plant basin, walls and raised ramp edges block walking',()=>{
- for(const side of [-1,1])for(const x of [-1.5,0,1.5])assert.ok(conservatoryCanStandAt(x,c.z+side*c.radius));
- assert.equal(conservatoryCanStandAt(c.radius,c.z),false);
- assert.equal(conservatoryCanStandAt(-3.2,c.z+.8),false);
- assert.equal(conservatoryCanMoveFrom({x:8.9,z:c.z},{x:8.7,z:c.z}),false);
- assert.equal(conservatoryCanMoveFrom({x:0,z:c.z-9.1},{x:0,z:c.z-8.7}),true);
- assert.equal(conservatoryWalkAt(0,c.z),null);
- assert.equal(conservatorySurfaceAt(40,c.z),null);
+import {landforms,islands,bridges,surfaceHeight} from '../dist/world-layout.js';
+import {interiorRooms,interiorPositionValid} from '../dist/interior-layout.js';
+import {findPath,clearSegment} from '../dist/navigation.js';
+import {moveOnGround} from '../dist/movement.js';
+import {mapFacilities} from '../dist/world-map.js';
+test('greenhouse and interior are removed; park connects directly to spa',()=>{
+ assert.ok(!islands.some(i=>i.id==='nature'));assert.ok(!landforms.some(i=>i.id==='nature'));assert.equal(interiorRooms.conservatory,undefined);assert.equal(interiorPositionValid(500,.95,0),false);assert.ok(!mapFacilities.some(p=>p.id==='greenhouse'));
+ const a={x:0,z:24},b={x:0,z:96+spaShift};assert.equal(findPath(a,b).length,1);assert.ok(clearSegment(a,b));assert.ok(bridges.some(([a,b])=>a.z===30&&b.z===91+spaShift));
+ for(const x of [-2.7,0,2.7]){let p={x,z:24};for(let i=0;i<360;i++)p=moveOnGround(p,{x:0,z:6},1/60);assert.ok(p.z>55);assert.ok(surfaceHeight(x,44)<1);}
 });

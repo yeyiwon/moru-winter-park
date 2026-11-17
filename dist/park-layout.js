@@ -8,7 +8,7 @@ export const parkObstacles=[
  {x:carouselLayout.x,z:carouselLayout.z,r:carouselLayout.r},{x:ferrisDimensions.center.x,z:ferrisDimensions.center.z,r:6},
  ...parkStalls.map(p=>({x:p.x,z:p.z,r:2.6})),...parkBenches.map(p=>({x:p.x,z:p.z,r:1.5})),
  ...parkLamps.map(p=>({x:p.x,z:p.z,r:.43})),{x:-24,z:-14,r:2.4},{x:8,z:17,r:1.35},
- {x:23,z:16,rx:2.7,rz:1.35},{x:-8,z:18,rx:2.1,rz:1.1}
+ {x:-8,z:18,rx:2.1,rz:1.1}
 ];
 export const parkWalkways=[
  {width:5.5,points:[[0,30],[0,19],[0,6],[0,-10]]},
@@ -19,3 +19,9 @@ export const parkWalkways=[
  {width:3.4,points:[[0,18],[8,21],[18,21],[24,21]]},
  {width:3,points:[[-10,-5],[-16,-7],[-19,-11],[-19,-19],[-22,-20]]}
 ];
+
+// Aim between the rider and the horse, with a stable horizon rather than following saddle bob.
+export function carouselCameraView(seat,mobile=false){
+ const outward=Math.atan2(seat.x-carouselLayout.x,seat.z-carouselLayout.z);
+ return{distance:mobile?11.2:9.1,yaw:outward-.3,pitch:.22,fov:mobile?55:48,lookHeight:2.85-seat.y-1.2};
+}

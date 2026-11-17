@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {postOffice,rinkBounds,rinkEntry,skateRental,rinkLamps,rinkBenches} from './retreat-layout.js';
+import {postOffice,boothPoint,rinkBounds,rinkEntry,skateRental,rinkLamps,rinkBenches} from './retreat-layout.js';
 
 // Two authored destinations; their real interactions and terrain live in the controllers.
 export function buildWinterRetreat(scene){
@@ -16,6 +16,7 @@ export function buildWinterRetreat(scene){
  function ring(r,t,m,x,y,z,p=root){const o=mesh(new T.TorusGeometry(r,t,6,36),m,x,y,z,p);o.rotation.x=-Math.PI/2;return o;}
  function group(name,x,z){const g=new T.Group();g.name=name;g.position.set(x,0,z);root.add(g);return g;}
  function lantern(x,z,height=3.2,p=root){
+  (p.userData.lampGlow||=[]).push({x,z,y:height-.2,radius:2.4});
   cylinder(.27,.34,.16,dark,x,.15,z,p);cylinder(.07,.13,height-.5,dark,x,height/2-.1,z,p,12);
   for(const y of [.33,height-.55])cylinder(.135,.135,.09,brass,x,y,z,p,12);
   const profile=[[.14,0],[.24,.1],[.26,.39],[.18,.57]].map(([r,y])=>new T.Vector2(r,y));mesh(new T.LatheGeometry(profile,12),glass,x,height-.45,z,p);
@@ -63,8 +64,8 @@ export function buildWinterRetreat(scene){
   for(const x of [-.22,.2])rod([x,-.16,0],[x,-.28,0],.025,blade,p);curve([[-.38,-.28,0],[-.25,-.31,0],[.25,-.31,0],[.38,-.26,0]],.023,blade,p);
   for(let j=0;j<4;j++){const y=.08+j*.065;rod([-.09,y,.082],[.04,y+.03,.082],.009,brass,p);rod([.04,y,.082],[-.09,y+.03,.082],.009,brass,p);}
  }
- const office=group('winter-wish-post-office',postOffice.x,postOffice.z);booth(office,postOffice.w,postOffice.d,'post');
- const mailbox=group('wish-postbox',postOffice.x+postOffice.w/2+.8,postOffice.z+1.15);cylinder(.29,.34,.18,dark,0,.18,0,mailbox,20);cylinder(.24,.28,1.24,plum,0,.87,0,mailbox,24);mesh(new T.SphereGeometry(.29,24,12,0,Math.PI*2,0,Math.PI/2),plum,0,1.49,0,mailbox);ring(.28,.02,brass,0,.37,0,mailbox);ring(.29,.02,brass,0,1.49,0,mailbox);box(.33,.07,.035,dark,0,1.39,.28,mailbox);box(.36,.025,.065,brass,0,1.445,.29,mailbox);envelope(mailbox,0,.91,.282,.58);box(.27,.42,.018,plum,0,.59,.28,mailbox);oval(brass,.08,.61,.31,.022,.022,.01,mailbox);
+ const office=group('winter-wish-post-office',postOffice.x,postOffice.z);office.rotation.y=postOffice.yaw;booth(office,postOffice.w,postOffice.d,'post');
+ const mailboxPoint=boothPoint(postOffice,postOffice.w/2+.8,1.15),mailbox=group('wish-postbox',mailboxPoint.x,mailboxPoint.z);mailbox.rotation.y=postOffice.yaw;cylinder(.29,.34,.18,dark,0,.18,0,mailbox,20);cylinder(.24,.28,1.24,plum,0,.87,0,mailbox,24);mesh(new T.SphereGeometry(.29,24,12,0,Math.PI*2,0,Math.PI/2),plum,0,1.49,0,mailbox);ring(.28,.02,brass,0,.37,0,mailbox);ring(.29,.02,brass,0,1.49,0,mailbox);box(.33,.07,.035,dark,0,1.39,.28,mailbox);box(.36,.025,.065,brass,0,1.445,.29,mailbox);envelope(mailbox,0,.91,.282,.58);box(.27,.42,.018,plum,0,.59,.28,mailbox);oval(brass,.08,.61,.31,.022,.022,.01,mailbox);
  const rental=group('winter-skate-rental',skateRental.x,skateRental.z);booth(rental,skateRental.w,skateRental.d,'skate');
  const r=rinkBounds,rink=group('winter-outdoor-rink',r.x,r.z);
  const navy=M('#263d50',.55,.3),silver=M('#b9cbd1',.26,.72),marble=M('#d7dfe0',.63,.12),inlay=M('#748f9f',.46,.26),glow=new T.MeshBasicMaterial({color:'#ffe2ac',toneMapped:false});

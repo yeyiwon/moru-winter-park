@@ -50,7 +50,7 @@ export async function handleAPI(request,env){
    if(typeof body.password!=='string'||body.password.length>128||!constantEqual(await passwordHash(body.password,invitation.salt),invitation.password_hash))return json({error:'비밀번호를 확인해 주세요.'},403);
   }else if(room!=='winter-plaza'&&!invitation)return json({error:'초대 공간을 찾을 수 없습니다.'},404);
   if(room==='winter-plaza'&&!await rateLimit(env.DB,'join:'+await digest(request.headers.get('cf-connecting-ip')||'shared'),now,40))return json({error:'잠시 뒤 다시 입장해 주세요.'},429);
-  const name=String(body.name||'겨울 손님').normalize().replace(/[<>\u0000-\u001f]/g,'').trim().slice(0,16)||'겨울 손님';
+  const name=String(body.name||'크림토끼').normalize().replace(/[<>\u0000-\u001f]/g,'').trim().slice(0,16)||'크림토끼';
   await env.DB.prepare('DELETE FROM visitors WHERE seen < ?').bind(now-2592000000).run();
   const secret=Array.from(crypto.getRandomValues(new Uint8Array(32))).map(v=>v.toString(16).padStart(2,'0')).join(''),id=await digest(secret);
   // Conditional insert caps each room atomically, including concurrent joins.

@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as T from '../dist/vendor/three.module.js';
 import {buildResortScenery,panoramaBounds} from '../dist/resort-scenery.js';
-import {alpine,alpineHeight,summitFacilities} from '../dist/resort-layout.js';
+import {alpine,alpineHeight,summitFacilities} from '../dist/resort-blueprint.js';
 
 const scene=new T.Scene(),scenery=buildResortScenery(scene);
 test('summit hearth follows the shared facility placement and terrain height',()=>{

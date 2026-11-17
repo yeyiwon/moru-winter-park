@@ -3,6 +3,7 @@ import {postOffice,skateRental,rinkEntry} from './retreat-layout.js';
 import {festivalDestinations} from './festival-layout.js';
 import {buildConnectedTerrain} from './connected-terrain.js';
 import {parkWalkways} from './park-layout.js';
+import {createTreeAtmosphere} from './tree-atmosphere.js';
 import {createSnowPaths} from './snow-path.js';
 import {createAuroraLandmarks} from './aurora-landmarks.js';
 import * as THREE from './vendor/three.module.js';
@@ -60,15 +61,24 @@ export function buildArchipelago(api){
   for(let i=0;i<cp.count;i++){const x=cp.getX(i),y=cp.getY(i),z=cp.getZ(i),r=1+.065*Math.sin(x*4+y*3)*Math.cos(z*4)+.025*Math.sin(y*8+z*3);cp.setXYZ(i,x*r,y*r,z*r);}canopyGeo.computeVertexNormals();
   const winterCapGeo=new THREE.SphereGeometry(1,12,8);
   function boughGeometry(frost=false){const positions=[],uv=[],indices=[],steps=16;for(let i=0;i<=steps;i++){const t=i/steps,u=frost?.12+t*.83:t,w=Math.sin(u*Math.PI)*.24*(1-u*.45)*(i%2?.83:1),y=.08*Math.sin(u*Math.PI)-u*u*.1;for(let j=0;j<4;j++){const lateral=(j===0?-w:j===2?w:0)*(frost?.68:1);positions.push(u,y+(j===1?.05*(1-u):j===3?-.025:0)+(frost?.022:0),lateral);uv.push(t,j/3);}if(i<steps)for(let j=0;j<(frost?2:4);j++){const a=i*4+j,b=i*4+(j+1)%4;indices.push(a,b,a+4,b,b+4,a+4);}}const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(indices);geo.computeVertexNormals();return geo;}
-  const firBough=boughGeometry(),firFrost=boughGeometry(true);
+  const firBough=boughGeometry(),firFrost=boughGeometry(true),treeIllumination=createTreeAtmosphere(scene);
+  const firFoliage=M('#386c5d',.9,.02),firSnow=bridgeSnow,firGold=gold;
+  firFoliage.onBeforeCompile=shader=>{shader.vertexShader='varying vec3 vNeedlePosition;\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvNeedlePosition=position;');shader.fragmentShader='varying vec3 vNeedlePosition;\n'+shader.fragmentShader;shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb*=.86+.22*sin(vNeedlePosition.x*13.+vNeedlePosition.y*7.+vNeedlePosition.z*11.);');};firFoliage.customProgramCacheKey=()=> 'winter-fir-needle-shading-v27';
+  function lightTree(g,height){g.updateWorldMatrix(true,false);const p=g.getWorldPosition(new THREE.Vector3());treeIllumination.addTree({x:p.x,y:p.y,z:p.z,height});}
   function tree(parent,x,z,height,color){
     if(color!=='#77a28b'){
-      const g=new THREE.Group();g.position.set(x,0,z);parent.add(g);const green=M('#355953',.98,0),snow=M('#e2e9e6',1,0);cylinder(.07,.14,height*.85,bark,0,height*.425,0,g,10);
-      for(let tier=0;tier<8;tier++){const y=height*(.2+tier*.1),r=height*(.3-tier*.035);cylinder(.005,r*.38,height*.16,green,0,y+height*.03,0,g,10);
-        for(let branch=0;branch<7;branch++){const a=branch*Math.PI*2/7+tier*2.399,reach=r*(.92+.08*Math.sin(branch*3+tier));rod([0,y-.045,0],[Math.cos(a)*reach*.83,y-reach*.07,Math.sin(a)*reach*.83],.017,bark,g);for(const [geometry,mat]of [[firBough,green],[firFrost,snow]]){const leaf=mesh(geometry,mat,0,y,0,g);leaf.scale.setScalar(reach);leaf.rotation.y=-a;}
-         for(const side of [-1,1]){const leaf=mesh(firBough,green,Math.cos(a)*reach*.4,y+reach*.02,Math.sin(a)*reach*.4,g);leaf.scale.setScalar(reach*.42);leaf.rotation.y=-a+side*.65;}}
+      const g=new THREE.Group();g.name='illuminated-snow-fir';g.position.set(x,0,z);parent.add(g);cylinder(.055,.14,height*.94,bark,0,height*.47,0,g,12);
+      for(let tier=0;tier<11;tier++){
+       const t=tier/10,y=height*(.19+t*.73),r=height*.3*(1-t*.92);
+       for(let branch=0;branch<9;branch++){
+        const a=branch*Math.PI*2/9+tier*2.399,reach=r*(.87+.13*Math.sin(branch*3+tier)**2),mat=firFoliage;
+        rod([0,y-.045,0],[Math.cos(a)*reach*.83,y-reach*.07,Math.sin(a)*reach*.83],.012,bark,g);
+        for(const [geometry,finish]of [[firBough,mat],[firFrost,firSnow]]){const leaf=mesh(geometry,finish,0,y,0,g);leaf.scale.set(reach,reach,reach*.72);leaf.rotation.y=-a;}
+        for(const side of [-1,1])for(const row of [0,1]){const u=.28+row*.27,l=reach*(.5-row*.13),leaf=mesh(firBough,mat,Math.cos(a)*reach*u,y+reach*.02,Math.sin(a)*reach*u,g);leaf.scale.setScalar(l);leaf.rotation.y=-a+side*.68;}
+        if((tier*9+branch)%8===0&&tier<8){const px=Math.cos(a)*reach*.83,pz=Math.sin(a)*reach*.83;rod([px,y-reach*.07,pz],[px,y-reach*.07-.14,pz],.005,firGold,g);const jewel=mesh(new THREE.OctahedronGeometry(.065,0),firGold,px,y-reach*.07-.18,pz,g);jewel.scale.y=1.5;}
+       }
       }
-      return g;
+      lightTree(g,height);return g;
     }
 
     const g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=(x>0?-.6:.35)+(z>0?.25:-.2);parent.add(g);const trunk=[new THREE.Vector3(0,0,0),new THREE.Vector3(-.1,height*.36,.03),new THREE.Vector3(.12,height*.72,0)];mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(trunk),18,.13,9,false),bark,0,0,0,g);
@@ -76,8 +86,7 @@ export function buildArchipelago(api){
     for(let i=0;i<5;i++){const a=i*2.4+rand()*.5,lobe=mesh(canopyGeo,M(color,.96,0),dx+Math.cos(a)*height*.17*scale,height*dy+(rand()-.4)*height*.18,dz+Math.sin(a)*height*.16*scale,g);lobe.scale.set(height*.16*scale,height*.14*scale,height*.16*scale);}}
     return g;
   }
-  const quiz=groupAt(islands[3]);aurora.quiz(quiz);
-  const garden=groupAt(islands[4]);aurora.conservatory(garden);
+  const quiz=groupAt(islands.find(i=>i.id==='philosophy'));aurora.quiz(quiz);
   const strings=[];
   // The old clock, gear wheels and decorative boats are intentionally removed.
   // Designed promenades and planted borders replace random grass and pebble rings.
@@ -89,8 +98,7 @@ export function buildArchipelago(api){
   for(const [a,b]of bridges){const len=Math.hypot(b.x-a.x,b.z-a.z),ux=(b.x-a.x)/len,uz=(b.z-a.z)/len;promenade([[a.x+ux*(a.r-2),a.z+uz*(a.r-2)],[b.x-ux*(b.r-2),b.z-uz*(b.r-2)]],6.4);}
   promenade.flush();
   function planter(parent,x,z,rx,rz,color){const base=cylinder(1,1.03,.19,bedStone,x,.1,z,parent,40);base.scale.set(rx,1,rz);const inside=cylinder(.91,.91,.035,soil,x,.21,z,parent,40);inside.scale.set(rx,1,rz);const bloom=M(color,.92,0),foliage=M('#4b6d64',.98,0);for(const [dx,dz,scale] of [[-.38,.08,.48],[.16,-.24,.6],[.45,.26,.35]]){const bush=mesh(canopyGeo,foliage,x+dx*rx,.37,z+dz*rz,parent);bush.scale.set(rx*scale,.26,rz*scale);}for(const [dx,dz,h] of [[-.43,-.15,.65],[-.12,.34,.61],[.23,-.39,.71],[.54,.12,.62],[.02,-.01,.78]]){const fx=x+dx*rx,fz=z+dz*rz;rod([fx,.22,fz],[fx,h,fz],.014,foliage,parent);for(let j=0;j<5;j++){const a=j*Math.PI*2/5,petal=ball(bloom,fx+Math.cos(a)*.075,h,fz+Math.sin(a)*.075,.069,parent);petal.scale.set(1,.45,.9);}ball(ivory,fx,h+.025,fz,.038,parent);}}
-  for(const [x,z] of [[-3.7,-2.8],[3.7,-2.8],[-3.8,2.7],[3.8,2.7]])planter(garden,x,z,.85,1.05,'#d0b6d1');
-  for(const island of islands.slice(1,7).filter(island=>!island.hidden)){
+  for(const island of islands.filter(island=>island.id==='philosophy')){
     const g=groupAt(island);
     const positions={science:[[-10,-6,2,1.2]],law:[[-8,-5,1.4,2.2],[8,-5,1.7,1.3]],philosophy:[[-9,-4,1.5,2],[9,5,1.8,1.2]],nature:[],art:[],history:[[-10,-6,1.8,1.1],[10,4,1.4,2]]}[island.id];
     for(const [x,z,rx,rz] of positions)planter(g,x,z,rx,rz,island.color);
@@ -100,5 +108,5 @@ export function buildArchipelago(api){
   }
   // Soft environmental reflections on brass and glass; no external texture downloads.
   const envCanvas=document.createElement('canvas');envCanvas.width=512;envCanvas.height=256;const ctx=envCanvas.getContext('2d'),grad=ctx.createLinearGradient(0,0,0,256);grad.addColorStop(0,'#293754');grad.addColorStop(.45,'#a7b8cd');grad.addColorStop(.52,'#677e9b');grad.addColorStop(1,'#172b30');ctx.fillStyle=grad;ctx.fillRect(0,0,512,256);const env=new THREE.CanvasTexture(envCanvas);env.mapping=THREE.EquirectangularReflectionMapping;env.colorSpace=THREE.SRGBColorSpace;scene.environment=env;scene.environmentIntensity=.35;
-  return {grain,tree,planter,strings,gardenLighting:aurora.gardenLighting,dynamic:[...rotations.map(r=>r.g),...(aurora.dynamic||[])],update(t){for(const {g,s,balance} of rotations){if(balance)g.rotation.z=Math.sin(t*.4)*.06;else g.rotation.z=t*s;}aurora.update(t);}};
+  return {grain,tree,planter,strings,setQuality:treeIllumination.setQuality,dynamic:[treeIllumination.root,...rotations.map(r=>r.g),...(aurora.dynamic||[])],update(t){treeIllumination.update(t);for(const {g,s,balance} of rotations){if(balance)g.rotation.z=Math.sin(t*.4)*.06;else g.rotation.z=t*s;}aurora.update(t);}};
 }

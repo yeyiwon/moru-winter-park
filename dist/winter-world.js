@@ -1,3 +1,5 @@
+import {treeLayout,treeShift} from './tree-layout.js';
+import {createTreeAtmosphere} from './tree-atmosphere.js';
 import {createSnowPaths} from './snow-path.js';
 import {buildAlpineResort} from './alpine-resort.js';
 import {buildSpaResort} from './spa-resort.js';
@@ -28,7 +30,7 @@ export function buildWinterWorld(api){
    const positions=[],uv=[],indices=[],steps=18,ca=Math.cos(a),sa=Math.sin(a);
    for(let i=0;i<=steps;i++){
     const u=i/steps,v=frost?.16+u*.8:u;
-    const w=Math.pow(Math.sin(v*Math.PI),.7)*width*(1-v*.54)*(i%2?.89:1.06)*(frost?.68:1);
+    const w=Math.pow(Math.sin(v*Math.PI),.55)*width*(1-v*.54)*(i%2?.89:1.06)*(frost?.68:1);
     const ridge=droop*(.35*Math.sin(v*Math.PI)-v*v),rise=Math.max(.035,width*.17)*(1-v);
     for(let side=0;side<4;side++){
      const lateral=side===0?-w:side===2?w:0;
@@ -39,26 +41,30 @@ export function buildWinterWorld(api){
    }
    const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(indices);geo.computeVertexNormals();mesh(geo,mat,0,0,0,g);
   }
-  const layers=decorated?28:8;
+  const layers=decorated?30:8;
   for(let layer=0;layer<layers;layer++){
    const t=layer/(layers-1),y=3+t*h*.79,r=h*.286*(1-t*.94),branches=decorated?18:8;
-   cylinder(.06,r*.78,h*.09,pine[layer%3],x,y+h*.025,z,g,28);
+   // A narrow, hidden core supports the branch whorls without exposed cone tiers.
+   cylinder(.04,r*.32,h*.085,pine[layer%3],x,y+h*.025,z,g,16);
    for(let j=0;j<branches;j++){
-    const a=j/branches*Math.PI*2+layer*2.399,reach=r*(.94+rand()*.06),origin=new THREE.Vector3(x,y+(rand()-.5)*.28,z);
-    bough(origin,a,reach,reach*.24,reach*.14,pine[(j+layer)%3]);
-    bough(origin,a,reach,reach*.18,reach*.14,snow,true);
-    for(let row=0;row<2;row++)for(const side of [-1,1]){
-     const u=.3+row*.24,branch=origin.clone().add(new THREE.Vector3(Math.cos(a)*reach*u,reach*.075*(.35*Math.sin(u*Math.PI)-u*u),Math.sin(a)*reach*u));
-     const length=reach*(.42-row*.12),angle=a+side*(.58-row*.1);
-     bough(branch,angle,length,length*.25,length*.12,pine[(layer+j+row+1)%3]);
-     if((j+row)%2===0)bough(branch,angle,length,length*.25,length*.12,snow,true);
+    const a=j/branches*Math.PI*2+layer*2.399,reach=r*(.95+rand()*.05),origin=new THREE.Vector3(x,y+(rand()-.5)*.42,z);
+    bough(origin,a,reach,reach*.22,reach*.12,pine[(j+layer)%3]);
+    bough(origin,a,reach,reach*.12,reach*.12,snow,true);
+    for(let row=0;row<3;row++)for(const side of [-1,1]){
+     const u=.23+row*.22,branch=origin.clone().add(new THREE.Vector3(Math.cos(a)*reach*u,reach*.075*(.35*Math.sin(u*Math.PI)-u*u),Math.sin(a)*reach*u));
+     const length=reach*(.48-row*.12),angle=a+side*(.68-row*.1);
+     bough(branch,angle,length,length*.23,length*.10,pine[(layer+j+row+1)%3]);
+     if((j+row)%3===0)bough(branch,angle,length,length*.14,length*.10,snow,true);
     }
    }
   }
   if(!decorated)return;
-  const opal=new THREE.MeshPhysicalMaterial({color:'#d8e7eb',emissive:'#a7d5ef',emissiveIntensity:.28,roughness:.2,metalness:.42,clearcoat:1,iridescence:.4,iridescenceIOR:1.35,side:THREE.DoubleSide});
+  // The living leader reaches the crown; the topper no longer floats above a flat cut-off.
+  cylinder(.022,.12,h*.1,cedar,x,h*.9,z,g,10);
+  for(let tier=0;tier<5;tier++)for(let j=0;j<7;j++){const length=h*(.036-tier*.006),origin=new THREE.Vector3(x,h*(.855+tier*.018),z),a=j*Math.PI*2/7+tier*2.399;bough(origin,a,length,length*.17,length*.09,pine[(tier+j)%3]);if(j%2===0)bough(origin,a,length,length*.13,length*.09,snow,true);}
+  const opal=new THREE.MeshPhysicalMaterial({color:'#d8e7eb',emissive:'#a7d5ef',emissiveIntensity:.28,roughness:.26,metalness:.25,clearcoat:1,iridescence:.4,transparent:true,opacity:.72,depthWrite:false,iridescenceIOR:1.35,side:THREE.DoubleSide});
   const ribbonGold=brass.clone();ribbonGold.emissive.set('#ffd59a');ribbonGold.emissiveIntensity=.38;
-  for(const material of [opal,ribbonGold]){material.onBeforeCompile=shader=>{shader.uniforms.uRibbonTime=ribbonTime;shader.vertexShader='uniform float uRibbonTime;varying float vRibbonHeight;\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvRibbonHeight=position.y;float wave=sin(position.y*.65-uRibbonTime*.9);transformed.x+=wave*.13;transformed.z+=cos(position.y*.5-uRibbonTime*.75)*.13;transformed.y+=sin(position.y*.8+uRibbonTime)*.085;');shader.fragmentShader='uniform float uRibbonTime;varying float vRibbonHeight;\n'+shader.fragmentShader;shader.fragmentShader=shader.fragmentShader.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\nfloat pulse=pow(.5+.5*sin(vRibbonHeight*.75-uRibbonTime*1.4),10.);totalEmissiveRadiance+=vec3(.95,.67,.35)*pulse*.8;');};material.customProgramCacheKey=()=> 'animated-tree-ribbon-v3';}
+  for(const material of [opal,ribbonGold]){material.onBeforeCompile=shader=>{shader.uniforms.uRibbonTime=ribbonTime;shader.vertexShader='uniform float uRibbonTime;varying float vRibbonHeight;\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvRibbonHeight=position.y;float wave=sin(position.y*.65-uRibbonTime*.65+position.x*.3);transformed.x+=wave*.38;transformed.z+=cos(position.y*.5-uRibbonTime*.75)*.38;transformed.y+=sin(position.y*.8+uRibbonTime)*.22;');shader.fragmentShader='uniform float uRibbonTime;varying float vRibbonHeight;\n'+shader.fragmentShader;shader.fragmentShader=shader.fragmentShader.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\nfloat pulse=pow(.5+.5*sin(vRibbonHeight*.75-uRibbonTime*1.4),10.);totalEmissiveRadiance+=vec3(.95,.67,.35)*pulse*.8;');};material.customProgramCacheKey=()=> 'animated-tree-ribbon-v3';}
 
   const ribbonPositions=[],ribbonUvs=[],ribbonIndices=[],edges=[[],[]],pts=[];
   // An open spiral leaves room for the ornaments added by visitors.
@@ -78,10 +84,10 @@ export function buildWinterWorld(api){
   star(g,x,h*.96,z,1.1);star(g,x,h*.96,z,1.1).rotation.y=Math.PI/2;
   const crown=mesh(new THREE.OctahedronGeometry(.45),opal,x,h*.96,z,g);crown.scale.y=1.3;
  }
- const tree=place(108,35,'winter-tree');
+ const tree=place(treeLayout.x,treeLayout.z,'winter-tree'),treeAtmosphere=createTreeAtmosphere(tree,{capacity:900});treeAtmosphere.addTree({height:32,hero:true});moving.add(treeAtmosphere.root);
 
- const treePaths=createSnowPaths({root,stone:[M('#a1aaac',.98,0)],snow,heightAt:()=>.115});treePaths([[108,61],[108,54],[108,46]],3);cylinder(9.1,9.25,.16,darkStone,0,.08,0,tree,80);cylinder(9,9.1,.06,snow,0,.18,0,tree,80);fir(tree,0,0,32,true);
- treePaths(Array.from({length:33},(_,i)=>[108+Math.cos(i/32*Math.PI*2)*11.2,35+Math.sin(i/32*Math.PI*2)*11.2]),3.2);
+ const treePaths=createSnowPaths({root,stone:[M('#a1aaac',.98,0)],snow,heightAt:()=>.115});treePaths([[treeLayout.x,61],[treeLayout.x,54],[treeLayout.x,46]],3);cylinder(9.1,9.25,.16,darkStone,0,.08,0,tree,80);cylinder(9,9.1,.06,snow,0,.18,0,tree,80);fir(tree,0,0,32,true);
+ treePaths(Array.from({length:33},(_,i)=>[treeLayout.x+Math.cos(i/32*Math.PI*2)*11.2,treeLayout.z+Math.sin(i/32*Math.PI*2)*11.2]),3.2);
  for(let i=0;i<8;i++){const a=i*Math.PI/4+.2,x=Math.cos(a)*11.8,z=Math.sin(a)*11.8;const bench=new THREE.Group();bench.position.set(x,0,z);bench.rotation.y=-a+Math.PI/2;tree.add(bench);box(2.4,.15,.7,cedarLight,0,.55,0,bench);box(2.4,.65,.12,cedar,0,.95,-.3,bench);for(const side of [-1,1])box(.12,.55,.6,ink,side*.95,.27,0,bench);lantern(tree,Math.cos(a+.15)*12.2,.08,Math.sin(a+.15)*12.2);}
  for(let i=0;i<28;i++){const a=i*2.399,r=7.7+(i%3)*.45,w=.5+rand()*.6,h=.4+rand()*.65,x=Math.cos(a)*r,z=Math.sin(a)*r;const gift=new THREE.Group();gift.position.set(x,.2,z);gift.rotation.y=a;tree.add(gift);box(w,h,w*.85,[berry,cedarLight,pine[1],ivory][i%4],0,h/2,0,gift);box(w+.015,.035,w*.85+.015,ribbon,0,h*.78,0,gift);box(.07,h+.02,w*.85+.025,ribbon,0,h/2,0,gift);for(const side of [-1,1]){const loop=torus(.08,.015,brass,side*.07,h+.04,0,gift);loop.scale.y=.6;loop.rotation.x=.3;}}
  target(tree,'tree',0,14,0,18,28,18);
@@ -93,7 +99,7 @@ export function buildWinterWorld(api){
  // Batch static geometry by material; retain moving chairs, steam and hit targets.
  root.updateMatrixWorld(true);const groups=new Map();root.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||o.userData.snowTrail||Array.isArray(o.material)||moving.has(o))return;let parent=o.parent;while(parent&&parent!==root){if(moving.has(parent))return;parent=parent.parent;}if(!o.geometry.attributes.normal||!o.geometry.attributes.uv)return;const key=o.material.uuid;if(!groups.has(key))groups.set(key,{material:o.material,items:[]});groups.get(key).items.push(o);});
  for(const {material,items} of groups.values()){if(items.length<2)continue;const chunks={position:[],normal:[],uv:[]};let count=0;for(const item of items){let geo=item.geometry.clone().applyMatrix4(item.matrixWorld);if(geo.index)geo=geo.toNonIndexed();for(const key in chunks)chunks[key].push(geo.attributes[key].array);count+=geo.attributes.position.count;item.removeFromParent();geo.dispose();}const geo=new THREE.BufferGeometry();for(const key in chunks){const size=key==='uv'?2:3,out=new Float32Array(count*size);let offset=0;for(const a of chunks[key]){out.set(a,offset);offset+=a.length;}geo.setAttribute(key,new THREE.BufferAttribute(out,size));}geo.computeBoundingSphere();mesh(geo,material,0,0,0,root);}
- const destinations=[{id:'tree',name:'겨울의 큰 트리',x:108,z:53,kind:'tree',view:{distance:46,yaw:.12,pitch:.12,lookHeight:12}},...resortDestinations,{id:'healing',name:'고요한 쉼터',x:50,z:37,kind:'healing'}];
- const obstacles=[{x:108,z:35,r:9.4},...resortObstacles];
- return{setQuality:retreat.setQuality,root,interactive:[...interactive,...mountain.interactive,...retreat.interactive],destinations,obstacles,rides,rideChair,dynamic:[...moving],update(t,still){ribbonTime.value=still?0:t;mountain.update(t,still);retreat.update(t,still);if(still)return;for(const s of steam){const v=(t*.15+s.phase)%1;s.puff.position.set(s.x+Math.sin(t*.45+s.phase)*.25,.55+v*2.2,s.z);s.puff.scale.setScalar(1.1+v*1.3);s.puff.material.opacity=Math.sin(v*Math.PI)*.09;}for(const {g,offset,a,b}of chairs){const v=(t*.035+offset)%1;g.position.lerpVectors(a,b,v);g.rotation.z=Math.sin(t*.8+offset)*.025;}}};
+ const destinations=[{id:'tree',name:'겨울의 큰 트리',...treeLayout.arrival,kind:'tree',view:{distance:42,yaw:-1.25,pitch:.12,lookHeight:12}},...resortDestinations,{id:'healing',name:'고요한 쉼터',x:50,z:37,kind:'healing'}];
+ const obstacles=[{x:treeLayout.x,z:treeLayout.z,r:treeLayout.radius},...resortObstacles];
+ return{setQuality(value){retreat.setQuality(value);mountain.setQuality(value);treeAtmosphere.setQuality(value);},root,interactive:[...interactive,...mountain.interactive,...retreat.interactive],destinations,obstacles,rides,rideChair,dynamic:[...moving],update(t,still){treeAtmosphere.update(t,still);ribbonTime.value=still?0:t;mountain.update(t,still);retreat.update(t,still);if(still)return;for(const s of steam){const v=(t*.15+s.phase)%1;s.puff.position.set(s.x+Math.sin(t*.45+s.phase)*.25,.55+v*2.2,s.z);s.puff.scale.setScalar(1.1+v*1.3);s.puff.material.opacity=Math.sin(v*Math.PI)*.09;}for(const {g,offset,a,b}of chairs){const v=(t*.035+offset)%1;g.position.lerpVectors(a,b,v);g.rotation.z=Math.sin(t*.8+offset)*.025;}}};
 }

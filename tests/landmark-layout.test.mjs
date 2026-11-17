@@ -1,3 +1,4 @@
+import {spaShift} from '../dist/resort-layout.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as T from '../dist/vendor/three.module.js';
@@ -18,9 +19,16 @@ test('park arrival framing contains both the castle crown and the original chara
  const v=castleView,aim=new T.Vector3(0,12.1,22.2),camera=new T.PerspectiveCamera(v.fov,390/844,.1,1200);camera.position.set(Math.sin(v.yaw)*Math.cos(v.pitch)*v.distance,aim.y+Math.sin(v.pitch)*v.distance,aim.z+Math.cos(v.yaw)*Math.cos(v.pitch)*v.distance);camera.lookAt(aim);camera.updateMatrixWorld();
  for(const p of [[0,45,-19],[0,2,24],[0,.1,24]]){const screen=new T.Vector3(...p).project(camera);assert.ok(Math.abs(screen.y)<.9&&Math.abs(screen.x)<.9,JSON.stringify(screen));}
 });
-test('north bridge is shorter and straight through the arch; greenhouse bridge spans a real wider gap',()=>{
- const north=bridges.find(([a,b])=>b.z< -50),garden=bridges.find(([a,b])=>b.z===51);assert.equal(north[0].x,castleLayout.passage.x);assert.equal(north[1].x,castleLayout.passage.x);assert.ok(Math.abs(north[1].z-north[0].z)<40);assert.ok(garden[1].z-garden[0].z>=18);
+test('north bridge is shorter and straight through the arch; spa bridge directly spans the removed greenhouse island',()=>{
+ const north=bridges.find(([a,b])=>b.z< -30),garden=bridges.find(([a,b])=>b.z===91+spaShift);assert.equal(north[0].x,castleLayout.passage.x);assert.equal(north[1].x,castleLayout.passage.x);assert.ok(Math.abs(north[1].z-north[0].z)<40);assert.ok(garden[1].z-garden[0].z>=18);
  for(const [a,b]of [north,garden])for(let t=0;t<=1;t+=.01)for(const dx of [-2.8,0,2.8])assert.ok(canStandAt(a.x+(b.x-a.x)*t+dx,a.z+(b.z-a.z)*t));
  for(const p of [...north,...garden])assert.ok(landforms.some(f=>landDistance(p.x,p.z,f)<0),'bridge landing must meet snow');
- assert.equal(terrainAt(8,42),false,'air below the greenhouse crossing');
+ assert.equal(terrainAt(8,42),false,'air below the spa crossing');
+});
+
+test('compact park approaches reach the lift and baths without the old empty corridors',()=>{
+ const north=bridges.find(([a,b])=>b.z< -30),south=bridges.find(([a,b])=>a.z===30);
+ assert.ok(Math.hypot(north[1].x-north[0].x,north[1].z-north[0].z)<=18);
+ assert.ok(Math.hypot(south[1].x-south[0].x,south[1].z-south[0].z)<=22);
+ assert.ok(canStandAt(-36,-95));assert.ok(canStandAt(0,56));
 });

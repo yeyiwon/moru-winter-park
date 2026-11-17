@@ -20,7 +20,7 @@ export function createCameraClearance(){
      const o=hit.object,materials=Array.isArray(o.material)?o.material:[o.material];
      if(materials.every(m=>m.isShaderMaterial||m.opacity<.05))continue;
      // Only tagged cabin panels may dissolve. Shared scene materials remain untouched.
-     if((o.userData.ferrisCameraFade||o.userData.rideCameraFade)&&hit.distance<minDistance+1.2){obscuring.add(o);continue;}
+     if((o.userData.ferrisCameraFade||o.userData.rideCameraFade&&(!o.userData.cameraFadeMode||o.userData.cameraFadeMode===mode))&&hit.distance<minDistance+1.2){obscuring.add(o);continue;}
      limit=Math.min(limit,Math.max(.8,hit.distance-.42));break;
     }
    }

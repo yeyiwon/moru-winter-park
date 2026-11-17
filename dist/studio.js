@@ -2,6 +2,7 @@ import {createWorldMap} from './world-map.js';
 import {closeDialog} from './ui-motion.js';
 import {normalizeWardrobe,selectedItems,toggleItem} from './wardrobe.js';
 import {islands,bridges} from './world-layout.js';
+document.querySelectorAll('.accessories button').forEach(button=>{const text=[...button.childNodes].filter(n=>n.nodeType===3&&n.textContent.trim());if(!text.length)return;const label=document.createElement('span');label.className='accessory-label';label.textContent=text.map(n=>n.textContent.trim()).join(' ');text.forEach(n=>n.remove());button.append(label);});
 const defaults={light:'#bfd7ef',brightness:100,fur:'#f4eee5',fluff:100,roundness:50,accessory:'none'};
 let saved={};try{saved=JSON.parse(localStorage.getItem('lab-appearance-v2'))||{};}catch{}
 const validColor=v=>/^#[0-9a-f]{6}$/i.test(v);

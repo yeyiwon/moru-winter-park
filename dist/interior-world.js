@@ -1,6 +1,6 @@
 import * as T from './vendor/three.module.js';
 import {createRetreatAtmosphere} from './retreat-atmosphere.js';
-import {interiorRooms,ryokanFixtures,conservatoryFixtures,interiorPromenade,interiorPromenadePoint} from './interior-layout.js';
+import {interiorRooms,ryokanFixtures} from './interior-layout.js';
 
 const UP=new T.Vector3(0,1,0);
 function makeBuilder(root){
@@ -95,63 +95,10 @@ function buildRyokan(root,m){
  mergeFinish(root);return{root,walls,ceiling:ceil,uniforms:[],atmosphere};
 }
 
-function buildConservatory(root,m){
- const b=makeBuilder(root),c=interiorRooms.conservatory,p=interiorPromenade;
- const floorGeo=new T.CircleGeometry(1,96);floorGeo.rotateX(-Math.PI/2);const floor=b.mesh(floorGeo,m.stone,0,.09,0);floor.scale.set(25,1,22);floor.name='conservatory-ground';
- for(const radius of [10.5,20]){const ring=b.ring(radius,.065,m.silver,0,.115,0);ring.scale.set(1,.87,1);}
- // Geodesic ribs and separate glazing form a real high-volume envelope.
- const shell=new T.Group();shell.name='conservatory-glass-envelope';root.add(shell);shell.userData.keepGroup=true;const sb=makeBuilder(shell);
- for(let i=0;i<20;i++){const a=i/20*Math.PI*2,points=[];for(let j=0;j<=40;j++){const v=j/40*Math.PI/2;points.push([Math.cos(a)*25*Math.cos(v),.09+25*Math.sin(v),Math.sin(a)*22*Math.cos(v)]);}sb.tube(points,.075,m.silver,shell,40);}
- for(let j=0;j<8;j++){const a=j/8*Math.PI/2,points=[];for(let i=0;i<=96;i++){const u=i/96*Math.PI*2;points.push([Math.cos(u)*25*Math.cos(a),.09+25*Math.sin(a),Math.sin(u)*22*Math.cos(a)]);}sb.tube(points,.048,m.silver,shell,96);}
- const dome=b.mesh(new T.SphereGeometry(1,48,20,0,Math.PI*2,0,Math.PI/2),m.glass,0,.09,0);dome.scale.set(25,25,22);dome.name='conservatory-glass';dome.userData.keep=true;
- mergeFinish(shell);
- // Entrance transom repeats the outdoor conservatory's silver frame.
- for(const x of [-3.2,3.2])b.box(.24,5,.24,m.silver,x,2.59,20.3);b.box(6.7,.25,.25,m.silver,0,5.2,20.3);
- const arch=[];for(let i=0;i<=30;i++){const a=i/30*Math.PI;arch.push([Math.cos(a)*3.2,5.2+Math.sin(a)*1.7,20.3]);}b.tube(arch,.075,m.silver);for(const x of [-2.5,-1.25,0,1.25,2.5])b.oval(m.coolLamp,x,5.18,20.22,.05,.05,.05);
- // Continuous ramp deck: vertex heights are exactly the movement surface heights.
- const positions=[],indices=[],uv=[],steps=180;
- for(let i=0;i<=steps;i++){const t=i/steps;for(const side of [-1,1]){const v=interiorPromenadePoint(t,side);positions.push(v.x-c.x,v.y,v.z-c.z);uv.push((side+1)/2,t*25);}if(i<steps){const n=i*2;indices.push(n,n+2,n+1,n+1,n+2,n+3);}}
- const ramp=new T.BufferGeometry();ramp.setAttribute('position',new T.Float32BufferAttribute(positions,3));ramp.setAttribute('uv',new T.Float32BufferAttribute(uv,2));ramp.setIndex(indices);ramp.computeVertexNormals();const deck=b.mesh(ramp,m.cream);deck.name='conservatory-accessible-promenade';deck.userData.keep=true;
- for(const side of [-1,1]){const rail=[],lower=[];for(let i=0;i<=steps;i++){const v=interiorPromenadePoint(i/steps,side);rail.push([v.x-c.x,v.y+1.15,v.z-c.z]);lower.push([v.x-c.x,v.y-.18,v.z-c.z]);if(i%9===0){b.rod([v.x-c.x,v.y,v.z-c.z],[v.x-c.x,v.y+1.15,v.z-c.z],.04,m.silver);if(i%18===0)b.oval(m.coolLamp,v.x-c.x,v.y+1.2,v.z-c.z,.065,.065,.065);}}
-  b.tube(rail,.055,m.silver,root,180);b.tube(lower,.13,m.navy,root,180);
- }
- for(let i=16;i<steps;i+=24){const v=interiorPromenadePoint(i/steps);b.rod([v.x-c.x,.1,v.z-c.z],[v.x-c.x,v.y-.15,v.z-c.z],.13,m.silver);}
- // Upper viewing landing continues the ramp tangentially, without a drop at its end.
- const landingPos=[],landingIdx=[];for(let i=0;i<=24;i++){const a=p.start+p.arc+p.landingArc*i/24;for(const side of [-1,1])landingPos.push(Math.cos(a)*(p.rx+side*p.halfWidth),.09+p.rise,Math.sin(a)*(p.rz+side*p.halfWidth));if(i<24){const k=i*2;landingIdx.push(k,k+2,k+1,k+1,k+2,k+3);}}
- const lg=new T.BufferGeometry();lg.setAttribute('position',new T.Float32BufferAttribute(landingPos,3));lg.setIndex(landingIdx);lg.computeVertexNormals();b.mesh(lg,m.cream).name='upper-viewing-landing';
- for(const side of [-1,1]){const pts=[];for(let i=0;i<=24;i++){const a=p.start+p.arc+p.landingArc*i/24,x=Math.cos(a)*(p.rx+side*p.halfWidth),z=Math.sin(a)*(p.rz+side*p.halfWidth);pts.push([x,7.24,z]);if(i%6===0)b.rod([x,6.09,z],[x,7.24,z],.04,m.silver);}b.tube(pts,.055,m.silver);}
- const endAngle=p.start+p.arc+p.landingArc;for(const y of [6.55,7.24])b.rod([Math.cos(endAngle)*(p.rx-p.halfWidth),y,Math.sin(endAngle)*(p.rz-p.halfWidth)],[Math.cos(endAngle)*(p.rx+p.halfWidth),y,Math.sin(endAngle)*(p.rz+p.halfWidth)],.05,m.silver);
- // A shaped cloud-forest ridge uses continuous rock strata, instead of stacked balls.
- const verts=[],faces=[],normRings=20,sectors=48;for(let row=0;row<=normRings;row++){const t=row/normRings,y=t*15.5,r=4.1*Math.pow(1-t,.43)+.25;for(let j=0;j<=sectors;j++){const a=j/sectors*Math.PI*2,wobble=1+.13*Math.sin(a*5+t*13)+.06*Math.sin(a*11-t*6);verts.push(-4+Math.cos(a)*r*wobble,y+.09,-3+Math.sin(a)*r*wobble*1.04);if(row<normRings&&j<sectors){const n=row*(sectors+1)+j;faces.push(n,n+1,n+sectors+1,n+1,n+sectors+2,n+sectors+1);}}}
- const mountain=new T.BufferGeometry();mountain.setAttribute('position',new T.Float32BufferAttribute(verts,3));mountain.setIndex(faces);mountain.computeVertexNormals();b.mesh(mountain,m.darkStone).name='vertical-garden-rock-strata';
- let seed=4827;const random=()=>{seed=seed*16807%2147483647;return(seed-1)/2147483646;};
- // Leaves have a central fold and tapered profile; clustered ferns follow the ridge.
- const leafGeo=leafGeometry(.75,.18,.22);for(let i=0;i<800;i++){const t=.04+random()*.87,a=random()*Math.PI*2;if(a>.9&&a<1.55)continue;const r=(4.1*Math.pow(1-t,.43)+.25)*(1+.13*Math.sin(a*5+t*13)+.06*Math.sin(a*11-t*6))+.1;const l=b.mesh(leafGeo,i%3?m.green:m.sage,-4+Math.cos(a)*r,.15+t*15.5,-3+Math.sin(a)*r*1.04);l.rotation.set(.5+random()*.8,-a+Math.PI/2,random()*.6);l.scale.setScalar(.75+random()*.7);}
- for(const o of conservatoryFixtures.filter(o=>o.id.includes('bed')||o.id.includes('palms'))){const bed=b.mesh(new T.CylinderGeometry(1,1,.35,48),m.darkStone,o.x,.2,o.z);bed.scale.set(o.rx,1,o.rz);const soil=b.mesh(new T.CylinderGeometry(1,1,.03,48),m.soil,o.x,.39,o.z);soil.scale.set(o.rx*.94,1,o.rz*.94);
-  for(let j=0;j<10;j++){const a=j*2.399,r=Math.sqrt((j+.5)/10)*.8,x=o.x+Math.cos(a)*o.rx*r,z=o.z+Math.sin(a)*o.rz*r;for(let k=0;k<6;k++){const f=b.mesh(leafGeometry(1+(j%3)*.5,.2,.5),k%2?m.leaf:m.sage,x,.4,z);f.rotation.set(.55,k*Math.PI/3+j*.2,.1);}}
- }
- const basin=b.mesh(new T.CylinderGeometry(1,1,.15,64),m.darkStone,-4,.12,3);basin.scale.set(5.8,1,2.5);const water=b.mesh(new T.CircleGeometry(1,64),m.water,-4,.21,3);water.rotation.x=-Math.PI/2;water.scale.set(5.55,2.3,1);water.name='waterfall-basin';
- const uniforms={time:{value:0}},fallMaterial=new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,uniforms,vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying vec2 vUv;uniform float time;void main(){float s=.5+.5*sin(vUv.x*75.+sin(vUv.y*24.-time*3.)*1.6);float edge=smoothstep(0.,.13,vUv.x)*(1.-smoothstep(.87,1.,vUv.x));gl_FragColor=vec4(.69,.91,.88,(.14+.28*s)*edge);}'});
- const fallPos=[],fallUV=[],fallIdx=[];for(let i=0;i<=48;i++){const t=i/48;for(const side of [-1,1]){fallPos.push(-3.1+side*(.42+.45*t),13.9*(1-t)+.22,-1.1+4.1*t);fallUV.push((side+1)/2,t);}if(i<48){const n=i*2;fallIdx.push(n,n+2,n+1,n+1,n+2,n+3);}}const fg=new T.BufferGeometry();fg.setAttribute('position',new T.Float32BufferAttribute(fallPos,3));fg.setAttribute('uv',new T.Float32BufferAttribute(fallUV,2));fg.setIndex(fallIdx);fg.computeVertexNormals();b.mesh(fg,fallMaterial).name='conservatory-waterfall';
- const glow=new T.MeshBasicMaterial({color:'#b5e2cf',transparent:true,opacity:.18,depthWrite:false});for(let i=0;i<6;i++){const r=.7+i*.35,ring=b.mesh(new T.RingGeometry(r-.016,r+.016,48),glow,-3.1,.225,3);ring.rotation.x=-Math.PI/2;ring.scale.y=.42;ring.userData.ripplePhase=i/6;}
- for(const o of conservatoryFixtures.filter(o=>o.id.includes('bench'))){b.box(o.rx*2,.35,o.rz*2,m.navy,o.x,.32,o.z);for(let j=0;j<6;j++)b.box(o.rx*2,.08,.18,m.lightWood,o.x,.55,o.z-.5+j*.2);for(const side of [-1,1])b.rod([o.x+side*(o.rx-.2),.1,o.z],[o.x+side*(o.rx-.2),1.15,o.z+.5],.05,m.silver);b.box(o.rx*2,.35,.13,m.lightWood,o.x,1,o.z+.5);}
- for(const [x,z]of [[-10,15],[9,13],[-21,-7],[20,-5],[10,-17]])makeLantern(b,m,x,1.2,z,.65);
- const atmosphere=createRetreatAtmosphere(root,{name:'conservatory',
-  waters:[{x:-4,y:.232,z:3,rx:5.5,rz:2.28,warm:false,lights:[[-4,10,0],[-10,2,15],[9,2,13]]}],
-  vapour:[{x:-3.1,y:.24,z:3,rx:.85,rz:.4,rise:.95,size:.65,count:14,opacity:.075}],
-  fireflies:[{x:-4,y:2,z:-3,rx:5.2,rz:5.2,height:10,count:38,color:'#b9ead0'},...conservatoryFixtures.filter(o=>o.id.includes('bed')||o.id.includes('palms')).map(o=>({...o,y:1,height:1.4,count:12,color:'#ead592'}))],
-  ribbons:[{x:1,y:18,z:-6,width:31,height:4.8,color:'#79c9ac',yaw:-.12},{x:0,y:20.2,z:1,width:28,height:3.7,color:'#9bb9d8',yaw:.18},{x:-1,y:16.5,z:-11,width:22,height:3.1,color:'#a4cf9f',yaw:-.2}],
-  lamps:[[-10,15],[9,13],[-21,-7],[20,-5],[10,-17]].map(([x,z])=>({x,y:.12,z,rx:2.3,rz:2.1,color:'#e9c696'}))
- });
- const vista=new T.Group();vista.name='conservatory-window-snow';root.add(vista);snowVista(vista,m,64);
- const light=new T.PointLight('#a5d9c4',65,45,2);light.position.set(-4,10,0);root.add(light);root.add(new T.HemisphereLight('#bddfe0','#24443d',1.35));
- mergeFinish(root);return{root,walls:[],ceiling:null,uniforms:[uniforms],glass:dome,light,atmosphere};
-}
-
 export function buildInteriors(scene){
  const root=new T.Group();root.name='independent-interiors';root.visible=false;scene.add(root);const m=materials(),rooms={};
  // Geometry is instantiated once; entering does not rebuild assets or reset guests.
- for(const [id,layout]of Object.entries(interiorRooms)){const roomRoot=new T.Group();roomRoot.name=id+'-interior';roomRoot.position.set(layout.x,0,layout.z);roomRoot.visible=false;root.add(roomRoot);const asset=id==='ryokan'?buildRyokan(roomRoot,m):buildConservatory(roomRoot,m);rooms[id]={...asset,layout};}
+ for(const [id,layout]of Object.entries(interiorRooms)){const roomRoot=new T.Group();roomRoot.name=id+'-interior';roomRoot.position.set(layout.x,0,layout.z);roomRoot.visible=false;root.add(roomRoot);const asset=buildRyokan(roomRoot,m);rooms[id]={...asset,layout};}
  let active=null;
  const occluders=[];root.traverse(o=>{if(o.isMesh&&!o.material.transparent&&!o.material.isShaderMaterial)occluders.push(o);});
  function setActive(id){active=rooms[id]?id:null;root.visible=!!active;for(const [key,room]of Object.entries(rooms))room.root.visible=key===active;}

@@ -6,7 +6,7 @@ export function buildParkLamps(api,positions){
  const bronze=M('#66546f'),gold=M('#e8c587',.28,.62),ivory=M('#fff0df');
  const enamel=M('#799da2',.42,.18),snow=M('#e4e9ed',.97,0),pine=M('#426c63',.93,0);
  const crystal=M('#c3dbe4',.22,.38);
- const flame=new THREE.MeshStandardMaterial({color:'#ffe5b4',emissive:'#ffd299',emissiveIntensity:1.15,roughness:.35,toneMapped:false});
+ const flame=new THREE.MeshStandardMaterial({color:'#ffe5b4',emissive:'#ffd299',emissiveIntensity:1.85,roughness:.35,toneMapped:false});
  const glass=new THREE.MeshPhysicalMaterial({color:'#ffe5c2',emissive:'#ffc788',emissiveIntensity:.26,transparent:true,opacity:.32,roughness:.16,metalness:.05,clearcoat:1,depthWrite:false,side:THREE.DoubleSide});
  const rings=new Map(),leafGeo=new THREE.SphereGeometry(1,10,6);
  function ring(radius,tube,x,y,z,parent,material=gold){
@@ -28,6 +28,7 @@ export function buildParkLamps(api,positions){
  }
  const smallStar=star(.12,.035),finialStar=star(.17,.045);
  const template=new THREE.Group();template.name='park-ornate-lamp';template.userData.footprintRadius=.28;
+ template.userData.lampGlow=[{x:-.58,y:3.6,z:0,radius:3.1},{x:.58,y:3.6,z:0,radius:3.1}];
  cylinder(.28,.28,.1,bronze,0,.06,0,template,12);
  cylinder(.22,.25,.13,ivory,0,.175,0,template,12);
  cylinder(.185,.22,.075,gold,0,.275,0,template,12);

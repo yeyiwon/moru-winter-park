@@ -4,7 +4,10 @@ import * as T from './vendor/three.module.js';
 // The server kinds stay separate from the two shared finishes and their settings.
 export function createTreeOrnamentMeshes(root){
  const capacity=160,kinds=decorationKinds;
- const jewel=new T.MeshPhysicalMaterial({color:'#ffffff',roughness:.2,metalness:.18,clearcoat:1,iridescence:.9,iridescenceIOR:1.32,emissive:'#ffe8d7',emissiveIntensity:.22});
+ const jewel=new T.MeshPhysicalMaterial({color:'#ffffff',roughness:.27,metalness:.08,clearcoat:1,iridescence:.12,iridescenceIOR:1.32,emissive:'#ffffff',emissiveIntensity:.26});
+ // Color the night-time emission as well as the diffuse enamel per instance.
+ jewel.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <emissivemap_fragment>','#include <emissivemap_fragment>\n#ifdef USE_COLOR\n totalEmissiveRadiance *= vColor.rgb;\n#endif');};
+ jewel.customProgramCacheKey=()=> 'ornament-tinted-emission-v27';
  const gold=new T.MeshStandardMaterial({color:'#ffe7b2',roughness:.25,metalness:.64,emissive:'#c78643',emissiveIntensity:.045});
  function joined(parts){
   const arrays={position:[],normal:[],uv:[]};
@@ -61,7 +64,7 @@ export function createTreeOrnamentMeshes(root){
  const gift=new T.BoxGeometry(.74,.64,.58),giftFrame=joined([...hanger(.4),new T.BoxGeometry(.11,.69,.62),new T.BoxGeometry(.79,.1,.62),new T.TorusGeometry(.13,.035,7,24).scale(1,.65,1).translate(-.12,.4,0),new T.TorusGeometry(.13,.035,7,24).scale(1,.65,1).translate(.12,.4,0)]);
  const wreath=new T.TorusGeometry(.36,.12,10,40),wreathParts=[...hanger(.55)];for(let i=0;i<12;i++){const a=i*Math.PI/6;wreathParts.push(new T.OctahedronGeometry(.055).translate(Math.cos(a)*.37,Math.sin(a)*.37,.12));}const wreathFrame=joined(wreathParts),gem=faceted(new T.OctahedronGeometry(.5).scale(.75,1.22,.75)),gemFrame=joined(hanger(.65));
  const geometries={ball,star,bell,bow,moon,icicle,letter,snowflake,heart,gift,wreath,crystal:gem},settings={ball:ballFrame,star:starFrame,bell:bellFrame,bow:bowFrame,moon:moonFrame,icicle:icicleFrame,letter:letterFrame,snowflake:snowflakeFrame,heart:heartFrame,gift:giftFrame,wreath:wreathFrame,crystal:gemFrame},meshes={},frames={};
- for(const kind of kinds){meshes[kind]=new T.InstancedMesh(geometries[kind],jewel,capacity);frames[kind]=new T.InstancedMesh(settings[kind],gold,capacity);for(const [object,name]of [[meshes[kind],'ornament'],[frames[kind],'setting']]){object.name=`tree-${name}-${kind}`;object.count=0;object.frustumCulled=false;object.castShadow=true;object.receiveShadow=true;object.instanceMatrix.setUsage(T.DynamicDrawUsage);root.add(object);}}
+ for(const kind of kinds){meshes[kind]=new T.InstancedMesh(geometries[kind],jewel,capacity);frames[kind]=new T.InstancedMesh(settings[kind],gold,capacity);meshes[kind].instanceColor=new T.InstancedBufferAttribute(new Float32Array(capacity*3).fill(1),3);meshes[kind].instanceColor.setUsage(T.DynamicDrawUsage);for(const [object,name]of [[meshes[kind],'ornament'],[frames[kind],'setting']]){object.name=`tree-${name}-${kind}`;object.count=0;object.frustumCulled=false;object.castShadow=true;object.receiveShadow=true;object.instanceMatrix.setUsage(T.DynamicDrawUsage);root.add(object);}}
 
  // One small point cloud follows the supplied instance matrices; no extra render wiring.
  const positions=new Float32Array(capacity*3),colors=new Float32Array(capacity*3),alphas=new Float32Array(capacity),sparkGeometry=new T.BufferGeometry();

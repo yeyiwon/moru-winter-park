@@ -1,12 +1,37 @@
 {
   "environment": "Node v22.4.1 darwin arm64",
   "measurement": "CPU scene geometry construction; no browser, WebGL or GPU rendering",
-  "sceneConstructionMs": 52647.95,
-  "meshObjects": 594,
-  "materials": 215,
-  "triangles": 3134144.3333333335,
+  "sceneConstructionMs": 76281.39,
+  "meshObjects": 584,
+  "materials": 214,
+  "triangles": 4200466.333333334,
   "renderFPS": null,
   "largestMeshes": [
+    {
+      "name": "",
+      "parent": "",
+      "triangles": 257280
+    },
+    {
+      "name": "",
+      "parent": "winter-places",
+      "triangles": 187812
+    },
+    {
+      "name": "",
+      "parent": "winter-places",
+      "triangles": 183808
+    },
+    {
+      "name": "",
+      "parent": "winter-places",
+      "triangles": 183664
+    },
+    {
+      "name": "",
+      "parent": "alpine-mountain",
+      "triangles": 163568
+    },
     {
       "name": "alpine-heightfield",
       "parent": "alpine-mountain",
@@ -14,58 +39,33 @@
     },
     {
       "name": "",
-      "parent": "winter-places",
-      "triangles": 125972
-    },
-    {
-      "name": "",
-      "parent": "winter-places",
-      "triangles": 122080
-    },
-    {
-      "name": "",
-      "parent": "winter-places",
-      "triangles": 121968
-    },
-    {
-      "name": "",
-      "parent": "",
-      "triangles": 117504
-    },
-    {
-      "name": "",
-      "parent": "winter-places",
-      "triangles": 109184
-    },
-    {
-      "name": "",
-      "parent": "",
-      "triangles": 91856
-    },
-    {
-      "name": "",
-      "parent": "",
-      "triangles": 89880
+      "parent": "alpine-mountain",
+      "triangles": 127232
     },
     {
       "name": "winter-palace-metal",
       "parent": "winter-palace",
-      "triangles": 72024
+      "triangles": 118892
     },
     {
       "name": "",
-      "parent": "spa-resort",
-      "triangles": 66588
+      "parent": "winter-places",
+      "triangles": 118400
     },
     {
       "name": "",
-      "parent": "",
-      "triangles": 66496
+      "parent": "alpine-mountain",
+      "triangles": 103936
     },
     {
       "name": "",
-      "parent": "",
-      "triangles": 57932
+      "parent": "alpine-mountain",
+      "triangles": 100436
+    },
+    {
+      "name": "winter-palace-stone",
+      "parent": "winter-palace",
+      "triangles": 79952
     }
   ],
   "browserVisualVerification": "Separate browser checks are documented in docs/urgent-rendering-repair.md; these metrics are CPU-only"

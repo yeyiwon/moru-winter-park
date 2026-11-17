@@ -1,3 +1,4 @@
+import {alpineShift} from '../dist/resort-layout.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {skiRuns,skiStarts,skiRunCenter,skiRunHalfWidth,skiRunAt,alpineHeight,resortRides,resortRidePosition,liftPoint,upperLiftPoint,upperLiftLayout,peakSummit,beginnerAccess,summitTransfer,summitPositionValid,summitFacilities} from '../dist/resort-layout.js';
@@ -15,9 +16,9 @@ test('course mouths occupy a middle terrace, main summit and higher expert peak'
  assert.ok(height('easy')<height('main')-10);
  assert.ok(height('advanced')>height('main')+25);
  assert.equal(height('expert'),peakSummit.height);
- assert.ok(Math.abs(skiRunCenter(-177,'easy')-skiRunCenter(-177,'main'))<1e-9);
- assert.equal(skiRunCenter(-260,'advanced'),skiRunCenter(-260,'curve'));
- assert.equal(skiRunCenter(-275,'expert'),skiRunCenter(-275,'advanced'));
+ assert.ok(Math.abs(skiRunCenter((-177+alpineShift),'easy')-skiRunCenter((-177+alpineShift),'main'))<1e-9);
+ assert.equal(skiRunCenter((-260+alpineShift),'advanced'),skiRunCenter((-260+alpineShift),'curve'));
+ assert.equal(skiRunCenter((-275+alpineShift),'expert'),skiRunCenter((-275+alpineShift),'advanced'));
 });
 
 test('all courses descend continuously across their usable width and remain on the island',()=>{
@@ -26,7 +27,7 @@ test('all courses descend continuously across their usable width and remain on t
   assert.ok(next<=y+.001,`${run.id} climbs at ${z}`);
   for(const side of [-1,1]){
    const edge=x+side*(width-.5);
-   assert.ok(Math.hypot(edge,z+260)<142,`${run.id} leaves the island`);
+   assert.ok(Math.hypot(edge,z+260-alpineShift)<142,`${run.id} leaves the island`);
    assert.ok(Math.abs(alpineHeight(edge,z)-y)<.15,`${run.id} has a ridge inside its width at ${z}`);
   }
  }
@@ -54,9 +55,9 @@ test('the summit transfer lift rises continuously and validates actual seats on 
 });
 
 test('ski traffic stays separate from the base lift and sled valley',()=>{
- for(let i=0;i<=1000;i++){const p=liftPoint(i/1000);if(p[2]>-326&&p[2]<-180)for(const run of skiRuns.filter(r=>p[2]>=r.startZ&&p[2]<=r.finish))assert.ok(skiRunCenter(p[2],run.id)-skiRunHalfWidth(p[2],run.id)-(p[0]+4)>6);}
+ for(let i=0;i<=1000;i++){const p=liftPoint(i/1000);if(p[2]>(-326+alpineShift)&&p[2]<(-180+alpineShift))for(const run of skiRuns.filter(r=>p[2]>=r.startZ&&p[2]<=r.finish))assert.ok(skiRunCenter(p[2],run.id)-skiRunHalfWidth(p[2],run.id)-(p[0]+4)>6);}
  for(const p of resortRides.sled.points){
-  assert.ok(Math.hypot(p[0]+4,p[2]+260)<144);
+  assert.ok(Math.hypot(p[0]+4,p[2]+260-alpineShift)<144);
   assert.ok(resortRidePosition(p[0],p[1]+1.03,p[2],'sled'));
   for(const run of skiRuns)assert.ok(Math.abs(p[0]-skiRunCenter(p[2],run.id))-skiRunHalfWidth(p[2],run.id)>12);
  }
@@ -76,4 +77,4 @@ test('summit transfer follows an open flat corridor, behind food service and awa
 
 test('upper arrival faces the downhill staging area rather than hiding the player behind the terminal',async()=>{const {createRideController}=await import('../dist/winter-rides.js');const ride=createRideController(resortRides);ride.start('upperlift');const arrival=ride.update(28);assert.equal(arrival.mode,'summit');assert.ok(Math.sin(arrival.arrivalYaw)>.5&&Math.cos(arrival.arrivalYaw)>.5);assert.equal(arrival.yaw,0);});
 
-test('upper loading station keeps a separate wide approach away from food service',()=>{assert.ok(upperLiftLayout.z< -355);for(const food of summitFacilities.filter(p=>['odeng','marshmallow','campfire'].includes(p.id)))assert.ok(Math.hypot(upperLiftLayout.x-food.model.x,upperLiftLayout.z-food.model.z)>11);});
+test('upper loading station keeps a separate wide approach away from food service',()=>{assert.ok(upperLiftLayout.z< (-355+alpineShift));for(const food of summitFacilities.filter(p=>['odeng','marshmallow','campfire'].includes(p.id)))assert.ok(Math.hypot(upperLiftLayout.x-food.model.x,upperLiftLayout.z-food.model.z)>11);});

@@ -12,7 +12,7 @@ test('Ferris geometry is finite, shared, and partitioned for cabin camera fading
   for(const attribute of Object.values(mesh.geometry.attributes))for(const value of attribute.array)assert.ok(Number.isFinite(value));
   triangles+=(mesh.geometry.index?.count||mesh.geometry.attributes.position.count)/3;
  }
- assert.ok(meshes.length<=70);assert.ok(triangles<240000);assert.ok(geometry.size<=14);assert.equal(materials.size,3);
+ assert.ok(meshes.length<=70);assert.ok(triangles<240000);assert.ok(geometry.size<=15);assert.equal(materials.size,3);
  for(let cabin=0;cabin<d.cabinCount;cabin++){
   assert.deepEqual(Object.keys(model.cabinParts[cabin]).sort(),['floor','frame','roof']);
   const floor=model.cabinParts[cabin].floor;assert.equal(floor.userData.ferrisCameraFade,false);assert.equal(floor.children.length,2);

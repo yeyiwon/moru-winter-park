@@ -28,7 +28,7 @@ void main(){float age=time-aPulse.x;life=clamp(age/max(.01,aPulse.y),0.,1.);floa
 `;
 export const pulseFragment=`
 varying vec2 vUv;varying vec4 tint;varying float life;
-void main(){float r=length((vUv-.5)*2.);float ring=exp(-pow((r-.7)*28.,2.));float inner=exp(-r*r*6.)*.15;float fade=sin(life*3.14159265)*(1.-life);gl_FragColor=vec4(tint.rgb,(ring+inner)*fade*tint.a*.55);}
+void main(){float r=length((vUv-.5)*2.);float ring=exp(-pow((r-.7)*28.,2.));float inner=exp(-r*r*6.)*.15;float fade=sin(life*3.14159265)*(1.-life);gl_FragColor=vec4(tint.rgb,(ring+inner)*fade*tint.a*.85);}
 `;
 export const trailVertex=`
 attribute float aFade;attribute vec3 aColor;varying vec2 vUv;varying float fade;varying vec3 tint;
@@ -36,5 +36,5 @@ void main(){vUv=uv;fade=aFade;tint=aColor;gl_Position=projectionMatrix*modelView
 `;
 export const trailFragment=`
 uniform float time;varying vec2 vUv;varying float fade;varying vec3 tint;
-void main(){float edge=pow(max(0.,1.-abs(vUv.x*2.-1.)),2.);float flow=.76+.24*sin(vUv.y*17.-time*2.);gl_FragColor=vec4(tint,edge*fade*flow*.28);}
+void main(){float edge=pow(max(0.,1.-abs(vUv.x*2.-1.)),2.);float flow=.76+.24*sin(vUv.y*17.-time*2.);gl_FragColor=vec4(tint,edge*fade*flow*.46);}
 `;

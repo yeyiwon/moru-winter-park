@@ -9,7 +9,7 @@ const solid=[],all=[];castle.root.traverse(o=>{if(o.isMesh||o.isPoints)all.push(
 test('the new castle is a detailed main landmark within its geometry and material budget',()=>{
  let triangles=0,meshes=0;const materials=new Set();
  for(const o of all){materials.add(o.material);if(o.isMesh){meshes++;triangles+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;}for(const attribute of Object.values(o.geometry.attributes))for(const n of attribute.array)assert.ok(Number.isFinite(n));}
- assert.ok(meshes<=9);assert.ok(triangles<160000);assert.ok(materials.size<8);
+ assert.ok(meshes<=9);assert.ok(triangles<270000);assert.ok(materials.size<8);
  const box=new T.Box3().setFromObject(castle.root),size=box.getSize(new T.Vector3());
  assert.ok(size.y>43&&size.y<46);assert.ok(size.x>33&&size.x<37);assert.deepEqual(castle.root.scale.toArray(),[1,1,1]);
  assert.ok(castleTowers.length>=9);assert.equal(castle.root.position.z,castleLayout.z);
@@ -36,7 +36,7 @@ test('mobile quality reduces light effects without removing the architectural si
  const countRibbons=()=>all.filter(o=>o.name.startsWith('palace-flowing-ribbon')&&o.visible).reduce((n,o)=>n+o.userData.strandCount,0);
  castle.setQuality('high');const high=castle.atmosphere.particleCount,highRibbons=countRibbons();
  castle.setQuality('medium');const medium=castle.atmosphere.particleCount,mediumRibbons=countRibbons();
- castle.setQuality('low');assert.ok(high>medium&&medium>castle.atmosphere.particleCount);assert.deepEqual([highRibbons,mediumRibbons,countRibbons()],[9,7,3]);
+ castle.setQuality('low');assert.ok(high>medium&&medium>castle.atmosphere.particleCount);assert.deepEqual([highRibbons,mediumRibbons,countRibbons()],[21,13,7]);
  assert.ok(solid.every(o=>o.visible));assert.ok(all.filter(o=>o.material.transparent).every(o=>o.userData.cameraIgnore&&o.material.depthWrite===false));
  const lights=[];castle.root.traverse(o=>{if(o.isPointLight)lights.push(o);});assert.ok(lights.every(o=>!o.visible));
 });

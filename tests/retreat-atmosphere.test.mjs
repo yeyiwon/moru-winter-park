@@ -31,8 +31,8 @@ test('local effect geometry stays finite, transparent and disposable',()=>{
 
 test('interiors only animate the active room and share the quality setting',()=>{
  const interiors=buildInteriors(new T.Scene());interiors.setQuality('low');interiors.setActive('ryokan');interiors.update(7);
- assert.equal(interiors.rooms.ryokan.atmosphere.time,7);assert.equal(interiors.rooms.conservatory.atmosphere.time,0);
- interiors.setActive('conservatory');interiors.update(9);assert.equal(interiors.rooms.conservatory.atmosphere.time,9);assert.equal(interiors.rooms.ryokan.atmosphere.time,7);
+ assert.equal(interiors.rooms.ryokan.atmosphere.time,7);assert.equal(interiors.rooms.conservatory,undefined);
+ interiors.setActive(null);interiors.update(9);assert.equal(interiors.rooms.ryokan.atmosphere.time,7);
  for(const room of Object.values(interiors.rooms))assert.equal(room.atmosphere.quality,'low');
 });
 

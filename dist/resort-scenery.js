@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {alpine,summitFacilities,alpineHeight} from './resort-layout.js';
+import {alpine,summitFacilities,alpineHeight} from './resort-blueprint.js';
 
 const TAU=Math.PI*2,clamp=(v,a=0,b=1)=>Math.max(a,Math.min(b,v));
 const noise=n=>{const v=Math.sin(n*127.1+311.7)*43758.5453;return v-Math.floor(v);};
@@ -69,7 +69,7 @@ function buildFire(parent){
 }
 
 export const panoramaBounds=Object.freeze({nearestZ:-420,farthestZ:-1020,halfWidth:590});
-function ridgeHeight(x,z,layer){const starts=[-420,-535,-665],depths=[330,360,355],v=clamp((starts[layer]-z)/depths[layer]),u=x/(490+layer*50),envelope=Math.sin(Math.PI*v)**1.2*Math.max(0,1-Math.abs(u)**6);const peaks=[65,130,190][layer]+[30,60,85][layer]*Math.sin(x*.010+layer*1.5)**2+[16,32,45][layer]*Math.sin(x*.023-layer*.9)**2;const channels=(7+layer*4)*Math.abs(Math.sin(x*.031+z*.014))*Math.sin(v*Math.PI);return Math.max(0,envelope*(peaks-channels+5*Math.sin(x*.047+z*.029)*Math.sin(v*Math.PI)));}
+function ridgeHeight(x,z,layer){const starts=[-420,-535,-665],depths=[330,360,355],v=clamp((starts[layer]-z)/depths[layer]),u=x/(490+layer*50),envelope=Math.sin(Math.PI*v)**1.2*Math.max(0,1-Math.abs(u)**6);const peaks=[75,160,235][layer]+[38,72,105][layer]*Math.sin(x*.010+layer*1.5)**2+[16,32,45][layer]*Math.sin(x*.023-layer*.9)**2;const channels=(7+layer*4)*Math.abs(Math.sin(x*.031+z*.014))*Math.sin(v*Math.PI);return Math.max(0,envelope*(peaks-channels+5*Math.sin(x*.047+z*.029)*Math.sin(v*Math.PI)));}
 // Place roots on the rendered triangles, not on a smoother mathematical surface.
 function forestGround(x,z){const u=clamp((x/490+1)*.5)*72,v=clamp((-420-z)/330)*30,i=Math.min(71,Math.floor(u)),j=Math.min(29,Math.floor(v)),fx=u-i,fz=v-j,x0=(i/72*2-1)*490,x1=((i+1)/72*2-1)*490,z0=-420-j/30*330,z1=-420-(j+1)/30*330,a=ridgeHeight(x0,z0,0),b=ridgeHeight(x1,z0,0),c=ridgeHeight(x0,z1,0),d=ridgeHeight(x1,z1,0);return fx+fz<=1?a+(b-a)*fx+(c-a)*fz:d+(c-d)*(1-fx)+(b-d)*(1-fz);}
 function ridgeGeometry(layer){const columns=72,rows=30,position=[],indices=[],colors=[],width=490+layer*50,start=[-420,-535,-665][layer],depth=[330,360,355][layer],rock=new T.Color(['#8d9ca5','#92a5b4','#9bb0c2'][layer]),snow=new T.Color(['#dbe5e8','#c2d3de','#b1c7d8'][layer]);for(let j=0;j<=rows;j++)for(let i=0;i<=columns;i++){const x=(i/columns*2-1)*width,z=start-j/rows*depth,y=ridgeHeight(x,z,layer),slope=Math.hypot(ridgeHeight(x+1,z,layer)-ridgeHeight(x-1,z,layer),ridgeHeight(x,z+1,layer)-ridgeHeight(x,z-1,layer))/2,c=snow.clone().lerp(rock,clamp((slope-.50)*.68+Math.sin(x*.045+z*.025)*.06));position.push(x,y,z);colors.push(c.r,c.g,c.b);if(j<rows&&i<columns){const k=j*(columns+1)+i;indices.push(k,k+1,k+columns+1,k+1,k+columns+2,k+columns+1);}}const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(position,3));g.setAttribute('color',new T.Float32BufferAttribute(colors,3));g.setIndex(indices);g.computeVertexNormals();return g;}

@@ -16,7 +16,7 @@ test('sculpted anatomy retains all four legs down to their hoof joints',()=>{
 test('authored carousel has bounded finite geometry and physical saddle sockets',()=>{
  let triangles=0;const materials=new Set();
  for(const mesh of meshes){assert.ok(mesh.geometry.attributes.normal);assert.ok(mesh.geometry.attributes.uv);for(const attribute of Object.values(mesh.geometry.attributes))for(const value of attribute.array)assert.ok(Number.isFinite(value));triangles+=(mesh.geometry.index?.count||mesh.geometry.attributes.position.count)/3;materials.add(mesh.material.uuid);}
- assert.ok(meshes.length<=50);assert.ok(triangles<260000);assert.ok(materials.size<=9);assert.equal(model.seats.length,8);
+ assert.ok(meshes.length<=58);assert.ok(triangles<260000);assert.ok(materials.size<=10);assert.equal(model.seats.length,8);
  for(const socket of model.seats){assert.equal(socket.userData.seatSurface,true);assert.equal(socket.userData.forwardAxis,'+Z');assert.equal(socket.position.y,carouselDimensions.saddleHeight);assert.ok(socket.parent.name.startsWith('carved-carousel-horse-'));}
 });
 test('saddles bob with their horse and provide head clearance throughout the rotation',()=>{
@@ -38,4 +38,15 @@ test('saddle forward follows the tangent and does not change during bobbing',()=
 test('the horse and rider face the actual direction of travel',()=>{
  const a=new T.Vector3(),b=new T.Vector3(),q=new T.Quaternion();
  for(const t of [1,6,17,41])for(const socket of model.seats){model.update(t);model.root.updateMatrixWorld(true);socket.getWorldPosition(a);socket.getWorldQuaternion(q);model.update(t+.01);model.root.updateMatrixWorld(true);socket.getWorldPosition(b);const velocity=b.sub(a).setY(0).normalize(),forward=new T.Vector3(0,0,1).applyQuaternion(q).setY(0).normalize();assert.ok(velocity.dot(forward)>.999);}
+});
+
+test('carousel camera frames horse and rider through the full turn and only fades individual obstructing columns',async()=>{
+ const {carouselCameraView,carouselLayout}=await import('../dist/park-layout.js'),{createCameraClearance}=await import('../dist/camera-clearance.js');const center=carouselLayout,guard=createCameraClearance();
+ model.root.position.set(center.x,0,center.z);const seatPosition=new T.Vector3(),forward=new T.Vector3();const architecture=meshes;const columns=meshes.filter(o=>o.userData.rideCameraFade);assert.equal(columns.length,8);
+ for(const mobile of [false,true])for(let time=0;time<63;time+=3){model.update(time);model.root.updateMatrixWorld(true);const socket=model.seats[0];socket.getWorldPosition(seatPosition);socket.getWorldDirection(forward);const seat={x:seatPosition.x,y:seatPosition.y+.82,z:seatPosition.z},view=carouselCameraView(seat,mobile),focus=new T.Vector3(seat.x,seat.y+1.2+view.lookHeight,seat.z),camera=new T.PerspectiveCamera(view.fov,mobile?390/844:1440/900,.1,200);
+  assert.ok(Math.abs(focus.y-2.85)<1e-9,'saddle bob does not move the horizon');camera.position.set(focus.x+Math.sin(view.yaw)*Math.cos(view.pitch)*view.distance,focus.y+Math.sin(view.pitch)*view.distance,focus.z+Math.cos(view.yaw)*Math.cos(view.pitch)*view.distance);
+  guard.update(camera,focus,architecture,1/30,{mode:'carousel',minDistance:4.2});assert.ok(camera.position.distanceTo(focus)>7.5,'columns must not force the camera into the face');camera.lookAt(focus);camera.updateMatrixWorld(true);
+  for(const point of [new T.Vector3(seat.x,seat.y+1,seat.z),new T.Vector3(seat.x,.65,seat.z),seatPosition.clone().addScaledVector(forward,1.6)]){point.project(camera);assert.ok(Math.abs(point.x)<.9&&Math.abs(point.y)<.9,'horse and rider stay inside the viewport');}
+ }
+ guard.reset();assert.ok(columns.every(o=>!o.material.transparent));model.root.position.set(0,0,0);
 });

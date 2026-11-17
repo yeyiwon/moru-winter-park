@@ -1,3 +1,4 @@
+import {alpineShift} from '../dist/resort-layout.js';
 import {walkToStart,followCourse} from './ski-driver.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -12,12 +13,12 @@ test('the separate sled valley does not cross any ski run',()=>{
 
 test('summit counters are accessible while solid props  block movement',()=>{
  for(const stop of summitFacilities){assert.ok(canStandAt(stop.x,stop.z));assert.ok(summitPositionValid(stop.x,stop.z));assert.ok(Math.abs(alpineHeight(stop.x,stop.z)-72.09)<.2);}
- for(const [x,z] of [[-10,-363],[10,-363],[-3,-350],[-6.8,-350]])assert.equal(summitPositionValid(x,z),false);
- for(const z of [-348,-349.6,-350,-351])assert.equal(summitPositionValid(14,z),true,'the restroom doorway is traversable');
+ for(const [x,z] of [[-10,(-363+alpineShift)],[10,(-363+alpineShift)],[-3,(-350+alpineShift)],[-6.8,(-350+alpineShift)]])assert.equal(summitPositionValid(x,z),false);
+ for(const z of [(-348+alpineShift),(-349.6+alpineShift),(-350+alpineShift),(-351+alpineShift)])assert.equal(summitPositionValid(14,z),true,'the restroom doorway is traversable');
 });
 
 test('the removed restroom leaves a clear snow apron and service trucks rest above the graded ground',()=>{
- assert.ok(!summitFacilities.some(p=>p.id==='restroom'));for(let x=11;x<=17;x+=.5)for(let z=-354;z<=-348;z+=.5)assert.ok(summitPositionValid(x,z));
+ assert.ok(!summitFacilities.some(p=>p.id==='restroom'));for(let x=11;x<=17;x+=.5)for(let z=(-354+alpineShift);z<=(-348+alpineShift);z+=.5)assert.ok(summitPositionValid(x,z));
  for(const stop of summitFacilities.filter(p=>['odeng','marshmallow'].includes(p.id)))for(let x=-4.1;x<=4.1;x+=.3)for(let z=-2;z<=2;z+=.3)assert.ok(Math.abs(alpineHeight(stop.model.x+x,stop.model.z+z)-72.09)<.02);
 });
 

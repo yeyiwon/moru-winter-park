@@ -1,3 +1,4 @@
+import {spaShift} from './resort-layout.js';
 import * as T from './vendor/three.module.js';
 import {landforms,landRadius} from './world-layout.js';
 // Snow caps and stratified cliffs share the same outlines used by movement and the map.
@@ -10,7 +11,7 @@ export function buildConnectedTerrain(scene){
    const a=i/n*Math.PI*2,r=ring/rings,edge=landRadius(form,a);p.push(form.x+Math.cos(a)*form.rx*edge*r,.085-(r>.97?(r-.97)*1.8:0),form.z+Math.sin(a)*form.rz*edge*r);
    const color=white.clone().lerp(blue,.08+.12*r**6+.03*Math.sin(a*5));c.push(color.r,color.g,color.b);
   }
-  const pools=[{x:-10,z:124,rx:9,rz:8},{x:-19,z:132,rx:5.4,rz:4.8}];
+  const pools=[{x:-10,z:124+spaShift,rx:9,rz:8},{x:-19,z:132+spaShift,rx:5.4,rz:4.8}];
   if(form.id!=='alpine')for(let j=0;j<rings;j++)for(let i=0;i<n;i++){
    const a=j*(n+1)+i,b=a+1,d=a+n+1,e=d+1,x=(p[a*3]+p[e*3])/2,z=(p[a*3+2]+p[e*3+2])/2;
    if(pools.some(o=>((x-o.x)/o.rx)**2+((z-o.z)/o.rz)**2<1))continue;idx.push(a,b,d,b,e,d);

@@ -1,7 +1,7 @@
 import * as T from './vendor/three.module.js';
 import {castleLayout} from './castle-layout.js';
 
-const budgets={high:1,medium:.55,low:.23};
+const budgets={high:1,medium:.6,low:.25};
 const TAU=Math.PI*2;
 export function createCastleAtmosphere(parent,towers){
  const root=new T.Group();root.name='winter-palace-illumination';root.userData={dynamic:true,keepGroup:true};parent.add(root);
@@ -15,8 +15,8 @@ export function createCastleAtmosphere(parent,towers){
   uniform float time;uniform float motion;varying vec2 vUv;varying vec3 vColor;varying vec3 vEffect;varying vec3 vN;varying vec3 vEye;
   void main(){float sweep=pow(.5+.5*sin(vUv.x*9.-time*.35+vEffect.x),5.);float edge=pow(1.-abs(dot(normalize(vN),normalize(vEye))),2.);
    float alpha;if(vEffect.y>.5){float shimmer=.5+.5*sin(vEye.y*.16+time*.36+vEffect.x);alpha=.28+.35*edge+.1*shimmer*motion;}
-   else{float ends=smoothstep(0.,.07,vUv.x)*(1.-smoothstep(.9,1.,vUv.x));float band=pow(max(0.,sin(vUv.y*3.14159)),2.);alpha=ends*band*(.12+sweep*.34);}
-   gl_FragColor=vec4(vColor*(.82+.18*edge),alpha);
+   else{float ends=smoothstep(0.,.07,vUv.x)*(1.-smoothstep(.9,1.,vUv.x));float band=pow(max(0.,sin(vUv.y*3.14159)),2.);alpha=ends*band*(.23+sweep*.53);}
+   gl_FragColor=vec4(vColor*(1.15+.3*edge),alpha);
   }`});materials.push(sheen);
  function attach(geometry,material,name,points=false){geometries.push(geometry);const object=points?new T.Points(geometry,material):new T.Mesh(geometry,material);object.name=name;object.userData.cameraIgnore=true;object.castShadow=false;object.receiveShadow=false;root.add(object);return object;}
  function effects(g,phase,kind,amplitude,color){const n=g.attributes.position.count,a=[],colors=[],c=new T.Color(color);for(let i=0;i<n;i++){a.push(phase,kind,amplitude);colors.push(c.r,c.g,c.b);}g.setAttribute('aEffect',new T.Float32BufferAttribute(a,3));g.setAttribute('color',new T.Float32BufferAttribute(colors,3));return g;}
@@ -25,13 +25,13 @@ export function createCastleAtmosphere(parent,towers){
   for(let i=0;i<=steps;i++){const u=i/steps,p=curve.getPoint(u),tangent=curve.getTangent(u),side=new T.Vector3(0,1,0).cross(tangent).normalize();if(side.lengthSq()<.01)side.set(1,0,0);for(const s of [-1,1]){const q=p.clone().addScaledVector(side,s*width/2);positions.push(q.x,q.y,q.z);uv.push(u,(s+1)/2);}if(i<steps){const k=i*2;indices.push(k,k+1,k+2,k+1,k+3,k+2);}}
   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(positions,3));g.setAttribute('uv',new T.Float32BufferAttribute(uv,2));g.setIndex(indices);g.computeVertexNormals();effects(g,phase,0,.06,color);ribbonSources.push(g);
  }
- // The central spire gets a pair of restrained spirals; side spires receive one.
+ // Each major spire receives its own phase, so the illumination travels across the silhouette.
  const crystalGeometries=[];
  towers.forEach((t,i)=>{
   const tip=t.base+t.height+t.roof,crystal=new T.OctahedronGeometry(t.central?.64:.38,0).scale(.65,t.central?1.42:1.5,.65).translate(t.x,tip+.62,t.z);
   // OctahedronGeometry supplies UVs; each crystal receives a staggered shimmer phase.
   effects(crystal,i*1.83,1,0,i%2?'#d3e8eb':'#bddfed');crystalGeometries.push(crystal);
-  if(t.central||i<5){const points=Array.from({length:26},(_,j)=>{const u=j/25,a=u*TAU*1.15+i;return[t.x+Math.cos(a)*(t.central?1.9:1.1)*(1-u*.3),tip-3.8+u*4.1,t.z+Math.sin(a)*(t.central?1.9:1.1)*(1-u*.3)];});ribbon(points,t.central?.32:.18,i*1.7,'#b9deeb');}
+  if(t.central||i<5){const points=Array.from({length:26},(_,j)=>{const u=j/25,a=u*TAU*1.15+i;return[t.x+Math.cos(a)*(t.central?1.9:1.1)*(1-u*.3),tip-3.8+u*4.1,t.z+Math.sin(a)*(t.central?1.9:1.1)*(1-u*.3)];});ribbon(points,t.central?.58:.30,i*1.7,'#b9deeb');}
  });
  // Crystals share a draw call; their facets retain individual normals.
  const merged=new T.BufferGeometry();for(const name of ['position','normal','uv','color','aEffect']){const size=name==='uv'?2:3,arrays=crystalGeometries.map(g=>g.attributes[name].array),data=new Float32Array(arrays.reduce((sum,a)=>sum+a.length,0));let offset=0;for(const a of arrays){data.set(a,offset);offset+=a.length;}merged.setAttribute(name,new T.BufferAttribute(data,size));}crystalGeometries.forEach(g=>g.dispose());merged.computeBoundingSphere();attach(merged,sheen,'palace-shimmer-crystals');
@@ -39,8 +39,19 @@ export function createCastleAtmosphere(parent,towers){
  for(const side of [-1,1])ribbon([[side*4.7,13.02,1.48],[side*8,13.15,1.48],[side*11.6,13.02,1.48],[side*14,17,0],[side*15,20,-1]],.26,side+4,'#f1d5a2');
  for(const z of [.28,-9.28])ribbon([[-4.7,.5,z],[-4.7,7.4,z],[-3.7,10,z],[0,11.85,z],[3.7,10,z],[4.7,7.4,z],[4.7,.5,z]],.19,z+9,'#f5ddb3');
 
+ // Long ribbons follow the roof bays; their vertical waves stay above the public arcade.
+ for(const side of [-1,1])for(let layer=0;layer<2;layer++){
+  const points=Array.from({length:29},(_,j)=>{const u=j/28,x=side*(4.8+10*u);return[x,17.4+layer*1.3+Math.sin(u*Math.PI)*1.9,1.7+Math.sin(u*Math.PI*2+layer)*.48];});
+  ribbon(points,.38-layer*.08,side*3+layer+13,layer?'#b9ebff':'#ffe4b3');
+ }
+ const central=towers.find(t=>t.central),tip=central.base+central.height+central.roof;
+ for(let layer=0;layer<2;layer++)ribbon(Array.from({length:33},(_,j)=>{const u=j/32,a=u*TAU*1.3+Math.PI*layer;return[central.x+Math.cos(a)*(2.8-u*.9),tip-6+u*6.3,central.z+Math.sin(a)*(2.8-u*.9)];}),.4,19+layer*2,'#d9f3ff');
+ // A pair of thin orbits surrounds the rose-window crest rather than masking its stone relief.
+ for(let layer=0;layer<2;layer++)ribbon(Array.from({length:33},(_,j)=>{const a=-.4+j/32*Math.PI*1.8,r=1.24+layer*.23;return[Math.cos(a)*r,13+Math.sin(a)*r,.54+layer*.07];}),.11,23+layer,'#f8dfad');
+ // Low garden light curls sit beside the entrance, leaving the centre and faces unobscured.
+ for(const side of [-1,1])for(let layer=0;layer<2;layer++)ribbon(Array.from({length:29},(_,j)=>{const u=j/28;return[side*(6.5+u*8),.25+Math.sin(u*Math.PI)*(.35+layer*.12),4+layer*.6+Math.sin(u*TAU)*.6];}),.26,27+layer+side,'#bcecff');
  // Preserve each strand's UVs and animation phase while drawing one mesh per quality tier.
- for(const [tier,indices]of [[0,[0,7,8]],[1,[1,2,3,4]],[2,[5,6]]]){
+ for(const [tier,indices]of [[0,[0,7,8,9,11,13,17]],[1,[1,2,3,4,10,12]],[2,[5,6,14,15,16,18,19,20]]]){
   const sources=indices.map(i=>ribbonSources[i]),g=new T.BufferGeometry();
   for(const name of ['position','normal','uv','color','aEffect']){const size=name==='uv'?2:3,arrays=sources.map(source=>source.attributes[name].array),values=new Float32Array(arrays.reduce((n,a)=>n+a.length,0));let offset=0;for(const a of arrays){values.set(a,offset);offset+=a.length;}g.setAttribute(name,new T.BufferAttribute(values,size));}
   const elements=[];let vertexOffset=0;for(const source of sources){for(const index of source.index.array)elements.push(index+vertexOffset);vertexOffset+=source.attributes.position.count;}g.setIndex(elements);g.computeBoundingSphere();g.boundingSphere.radius+=.2;
@@ -49,7 +60,7 @@ export function createCastleAtmosphere(parent,towers){
  ribbonSources.forEach(g=>g.dispose());
 
  let seed=9182;const random=()=>{seed=seed*16807%2147483647;return(seed-1)/2147483646;};
- const capacity=280,positions=[],data=[],colors=[];
+ const capacity=760,positions=[],data=[],colors=[];
  for(let i=0;i<capacity;i++){
   const t=towers[i%towers.length],mist=i%11===0,nearSpire=!mist&&i%3!==0,side=i%2?-1:1,angle=random()*TAU;
   // Keep the path and a visitor's face clear: particles stay low beside it or high overhead.
@@ -60,8 +71,8 @@ export function createCastleAtmosphere(parent,towers){
  const particleMaterial=new T.ShaderMaterial({transparent:true,depthWrite:false,vertexColors:true,blending:T.AdditiveBlending,toneMapped:false,uniforms:{time,motion},vertexShader:`
   uniform float time;uniform float motion;attribute vec3 aData;varying vec3 vColor;varying float vAlpha;varying float vKind;
   void main(){float life=fract(aData.x+time*.026);vec3 p=position;vKind=aData.y;p.y+=life*(aData.y>.5&&aData.y<1.5?2.:.6);p.x+=sin(time*.2+aData.x*17.)*.3;p.z+=cos(time*.15+aData.x*23.)*.25;vColor=color;
-   vAlpha=(.22+.78*sin(life*3.14159))*(.3+.7*pow(.5+.5*sin(time*.65+aData.x*43.),5.));vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=clamp(aData.z*370./max(1.,-mv.z),1.2,aData.y>1.5?48.:6.);gl_Position=projectionMatrix*mv;
-  }`,fragmentShader:`varying vec3 vColor;varying float vAlpha;varying float vKind;void main(){vec2 p=(gl_PointCoord-.5)*2.;float d=dot(p,p),core=exp(-d*26.),rays=exp(-abs(p.x)*20.-abs(p.y)*3.)+exp(-abs(p.y)*20.-abs(p.x)*3.);float alpha=(core+rays*.22)*(1.-smoothstep(.7,1.,sqrt(d)));if(vKind>1.5)alpha=exp(-d*3.)*(1.-smoothstep(.6,1.,sqrt(d)))*.055;gl_FragColor=vec4(vColor,alpha*vAlpha*.65);}`});materials.push(particleMaterial);const particles=attach(particleGeometry,particleMaterial,'palace-star-dust',true);
+   vAlpha=(.22+.78*sin(life*3.14159))*(.3+.7*pow(.5+.5*sin(time*.65+aData.x*43.),5.));vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=clamp(aData.z*370./max(1.,-mv.z),1.2,aData.y>1.5?48.:8.);gl_Position=projectionMatrix*mv;
+  }`,fragmentShader:`varying vec3 vColor;varying float vAlpha;varying float vKind;void main(){vec2 p=(gl_PointCoord-.5)*2.;float d=dot(p,p),core=exp(-d*26.),rays=exp(-abs(p.x)*20.-abs(p.y)*3.)+exp(-abs(p.y)*20.-abs(p.x)*3.);float alpha=(core+rays*.22)*(1.-smoothstep(.7,1.,sqrt(d)));if(vKind>1.5)alpha=exp(-d*3.)*(1.-smoothstep(.6,1.,sqrt(d)))*.055;gl_FragColor=vec4(vColor,alpha*vAlpha*1.15);}`});materials.push(particleMaterial);const particles=attach(particleGeometry,particleMaterial,'palace-star-dust',true);
 
  // Warm pools stay on the snow at both ends of the arcade, never in the camera's eye line.
  const pools=new T.BufferGeometry(),poolPositions=[],poolUv=[],poolIndex=[];

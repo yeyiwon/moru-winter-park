@@ -1,0 +1,31 @@
+import * as T from './vendor/three.module.js';
+
+// Batched lights stay independent of tree geometry and never become movement obstacles.
+export function createTreeAtmosphere(parent,{capacity=6000}={}){
+ const root=new T.Group();root.name='winter-tree-illumination';root.userData={dynamic:true,keepGroup:true};parent.add(root);
+ const time={value:0},quality={value:1},position=new Float32Array(capacity*3),seed=new Float32Array(capacity*4),paint=new Float32Array(capacity*3);let count=0;
+ const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.BufferAttribute(position,3));geometry.setAttribute('aSeed',new T.BufferAttribute(seed,4));geometry.setAttribute('color',new T.BufferAttribute(paint,3));geometry.setDrawRange(0,0);
+ const material=new T.ShaderMaterial({transparent:true,depthWrite:false,blending:T.AdditiveBlending,toneMapped:false,vertexColors:true,uniforms:{time,quality},vertexShader:`uniform float time;uniform float quality;attribute vec4 aSeed;varying vec3 vColor;varying float vGlow;varying float vKind;void main(){vec3 p=position;vKind=aSeed.w;float drift=step(.5,aSeed.w);p.x+=sin(time*.22+aSeed.x)*aSeed.z*drift;p.z+=cos(time*.17+aSeed.x)*aSeed.z*drift;p.y+=sin(time*.28+aSeed.x*1.7)*aSeed.z*.7*drift;float shimmer=pow(.5+.5*sin(time*.8+aSeed.x),7.);vGlow=mix(.65+.35*shimmer,.18+.62*shimmer,drift);vGlow*=aSeed.y<quality?1.:0.;vColor=color;vec4 mv=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;gl_PointSize=clamp((drift>.5?95.:50.)/max(1.,-mv.z),2.,12.);}`,fragmentShader:`varying vec3 vColor;varying float vGlow;varying float vKind;void main(){vec2 p=gl_PointCoord-.5;float core=exp(-dot(p,p)*55.);float cross=exp(-abs(p.x)*38.)*exp(-abs(p.y)*5.)+exp(-abs(p.y)*38.)*exp(-abs(p.x)*5.);float alpha=(core+cross*(vKind>.5?.35:.12))*vGlow;if(alpha<.01)discard;gl_FragColor=vec4(vColor*1.65,alpha);}`});
+ const lights=new T.Points(geometry,material);lights.name='winter-tree-fairy-lights';lights.frustumCulled=false;root.add(lights);
+ const ribbonsGeometry=new T.BufferGeometry(),ribbonParts={position:[],uv:[],color:[],phase:[]};
+ const ribbonsMaterial=new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,toneMapped:false,uniforms:{time,quality},vertexShader:`uniform float time;attribute float phase;varying vec2 vUv;varying vec3 vColor;varying float vPhase;void main(){vUv=uv;vColor=color;vPhase=phase;vec3 p=position;p.y+=sin(uv.x*17.-time*.7+phase)*.09;p.x+=sin(uv.x*9.+time*.4+phase)*.06;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}`,fragmentShader:`uniform float time;uniform float quality;varying vec2 vUv;varying vec3 vColor;varying float vPhase;void main(){float edge=pow(max(0.,1.-abs(vUv.y-.5)*2.),.8);float sweep=pow(.5+.5*sin(vUv.x*19.-time*.65+vPhase),8.);float filament=exp(-abs(vUv.y-.5)*30.);float ends=smoothstep(0.,.06,vUv.x)*(1.-smoothstep(.94,1.,vUv.x));float alpha=edge*ends*(.16+sweep*.42+filament*.25)*quality;gl_FragColor=vec4(vColor*(1.1+sweep*.9),alpha);}`,vertexColors:true});
+ const ribbons=new T.Mesh(ribbonsGeometry,ribbonsMaterial);ribbons.name='winter-tree-flowing-light-ribbons';ribbons.frustumCulled=false;root.add(ribbons);
+ function point(x,y,z,phase,drift,color){if(count>=capacity)return;position.set([x,y,z],count*3);seed.set([phase,(count*.618034)%1,drift,drift?1:0],count*4);new T.Color(color).toArray(paint,count*3);count++;}
+ function addTree({x=0,y=0,z=0,height=4,hero=false}){
+  const style=hero?0:Math.abs(Math.round(x*.31+z*.17))%3,palette=[['#ffe5ac','#d7f2ff'],['#bfe8ff','#f0faff'],['#c8f0db','#ffdf9d']][style];
+  const n=hero?420:190,turns=hero?9:style===2?3:5;
+  for(let i=0;i<n;i++){const t=i/(n-1),a=(style===1?Math.floor(i/10)*2.399:t*Math.PI*2*turns+.7),r=height*.29*(1-t*.94)+(hero?.14:.025);point(x+Math.cos(a)*r,y+height*(hero?.09:.2)+t*height*(hero?.8:.69),z+Math.sin(a)*r,i*2.399,0,i%9?palette[0]:palette[1]);}
+  const dust=hero?280:32;
+  for(let i=0;i<dust;i++){const t=(i*.618034)%1,a=i*2.399,r=height*.3*(1-t*.78)+.15;point(x+Math.cos(a)*r,y+height*(.17+t*.76),z+Math.sin(a)*r,i*1.37,hero?.28:.08,i%3?palette[0]:palette[1]);}
+  // Open tapered arcs, rather than opaque bands, leave the foliage and guest ornaments visible.
+  const lanes=hero?5:style===2?2:1,steps=hero?144:48;
+  for(let lane=0;lane<lanes;lane++){
+   const vertices=[];for(let i=0;i<=steps;i++){const t=i/steps,a=t*Math.PI*(hero?4.4:4)+lane*Math.PI*2/lanes,r=height*.3*(1-t*.92)+.12,h=height*(.17+t*.72),width=(hero?.24:.065)*(1-t*.7),c=new T.Color(palette[lane%2]);for(const side of [-1,1])vertices.push({p:[x+Math.cos(a)*r,y+h+side*width,z+Math.sin(a)*r],uv:[t,(side+1)/2],c:c.toArray()});}
+   for(let i=0;i<steps;i++)for(const j of [i*2,i*2+1,i*2+2,i*2+1,i*2+3,i*2+2]){const v=vertices[j];ribbonParts.position.push(...v.p);ribbonParts.uv.push(...v.uv);ribbonParts.color.push(...v.c);ribbonParts.phase.push(lane*2.1+x*.1);}
+  }
+  for(const [key,size]of [['position',3],['uv',2],['color',3],['phase',1]])ribbonsGeometry.setAttribute(key,new T.Float32BufferAttribute(ribbonParts[key],size));ribbonsGeometry.computeBoundingSphere();geometry.setDrawRange(0,count);for(const a of Object.values(geometry.attributes))a.needsUpdate=true;geometry.computeBoundingSphere();
+ }
+ function setQuality(value){quality.value=value==='low'?.35:value==='medium'?.65:1;}
+ function update(t,still=false){if(!still&&Number.isFinite(t))time.value=t;}
+ return{root,addTree,update,setQuality,get count(){return count;},dispose(){geometry.dispose();ribbonsGeometry.dispose();material.dispose();ribbonsMaterial.dispose();root.removeFromParent();}};
+}

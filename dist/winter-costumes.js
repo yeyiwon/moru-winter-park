@@ -67,7 +67,7 @@ export function createYukata(){
 }
 
 export function createSnowfolk(){
- const root=new T.Group();root.name='snowfolk-vendor';const body=new T.Group(),head=new T.Group(),left=new T.Group(),right=new T.Group();root.add(body,head,left,right);head.position.y=1.91;left.position.set(-.55,1.23,0);right.position.set(.55,1.23,0);
+ const root=new T.Group();root.name='snowfolk-vendor';const body=new T.Group(),head=new T.Group(),left=new T.Group(),right=new T.Group();root.add(body,head,left,right);head.position.y=1.78;head.scale.setScalar(1.22);left.position.set(-.55,1.23,0);right.position.set(.55,1.23,0);
  const bp=[[orb(0,.72,0,.7,.72,.62),snow],[orb(0,1.28,0,.49,.48,.46),snow],[orb(-.28,.11,.32,.25,.12,.31),snow],[orb(.28,.11,.32,.25,.12,.31),snow]];
  for(const [y,z]of [[1.22,.455],[.95,.59],[.67,.626]]){bp.push([orb(0,y,z,.045,.048,.025),coal]);bp.push([orb(-.012,y+.014,z+.022,.009,.009,.004),ivory]);}
  // A broad fabric scarf with a curved fall, stitched borders and short fringe.
@@ -75,12 +75,12 @@ export function createSnowfolk(){
  for(const [x,len]of [[-.17,.43],[.02,.32]]){bp.push([surface(16,6,(v,u)=>[x+(u-.5)*.13,1.44-v*len,.49+.09*Math.sin(v*Math.PI*.7)+.01*Math.sin(u*Math.PI*3)]),fabric]);for(let j=0;j<5;j++)bp.push([tube([[x-.05+j*.025,1.44-len,.55],[x-.05+j*.025,1.4-len,.55]],.005,3,5),ivory]);}
  batch(body,bp);
  const hp=[[orb(0,0,0,.445,.43,.42),snow]];
- for(const side of [-1,1]){hp.push([orb(side*.14,.09,.399,.042,.055,.026),coal]);hp.push([orb(side*.14-.01,.108,.421,.012,.015,.008),ivory]);hp.push([orb(side*.245,-.045,.349,.063,.026,.01),new T.MeshStandardMaterial({color:'#d9a9a3',roughness:1})]);}
- const nose=new T.ConeGeometry(.058,.25,16,3);nose.rotateX(Math.PI/2);nose.translate(0,-.008,.512);hp.push([nose,carrot]);
+ for(const side of [-1,1]){hp.push([orb(side*.137,.06,.407,.046,.058,.026),coal]);hp.push([orb(side*.137-.01,.078,.429,.012,.015,.008),ivory]);hp.push([orb(side*.245,-.045,.349,.063,.026,.01),new T.MeshStandardMaterial({color:'#d9a9a3',roughness:1})]);}
+ const nose=new T.ConeGeometry(.061,.19,16,3);nose.rotateX(Math.PI/2);nose.translate(0,-.008,.487);hp.push([nose,carrot]);
  const smile=[];for(let i=0;i<=18;i++){const x=-.125+i/18*.25,y=-.155+.038*(x/.125)**2;smile.push([x,y,Math.sqrt(Math.max(0,.42*.42-x*x-y*y))+.008]);}hp.push([tube(smile,.009,18,6),coal]);
  // Low knit cap and a small pom give an original compact silhouette.
  const cap=new T.SphereGeometry(1,32,12,0,Math.PI*2,0,Math.PI/2);cap.scale(.365,.205,.35);cap.translate(0,.31,-.02);hp.push([cap,fabric]);const brim=[];for(let i=0;i<=64;i++){const a=i/64*Math.PI*2;brim.push([Math.cos(a)*.365,.31,Math.sin(a)*.35-.02]);}hp.push([tube(brim,.055,64,8),ivory]);hp.push([orb(.04,.555,-.02,.1,.105,.1),ivory]);for(let i=0;i<16;i++){const a=i/16*Math.PI*2,points=[];for(let j=0;j<=10;j++){const v=j/10*Math.PI/2;points.push([Math.cos(a)*.367*Math.cos(v),.31+.207*Math.sin(v),Math.sin(a)*.352*Math.cos(v)-.02]);}hp.push([tube(points,.003,10,4),stitch]);}
  batch(head,hp);
- for(const [side,arm]of [[-1,left],[1,right]]){const ap=[];ap.push([tube([[0,0,0],[side*.24,.1,.01],[side*.51,.23,.08],[side*.64,.26,.07]],.027,16,7),twig]);for(const [start,end]of [[[.4,.18,.05],[.46,.36,.06]],[[.51,.23,.08],[.66,.38,.09]],[[.55,.24,.07],[.7,.14,.13]]])ap.push([tube([[side*start[0],start[1],start[2]],[side*end[0],end[1],end[2]]],.016,5,6),twig]);batch(arm,ap);}
- const update=(time=0)=>{const t=Number.isFinite(time)?time:0;head.rotation.y=Math.sin(t*.55)*.055;head.rotation.z=Math.sin(t*.8)*.018;left.rotation.z=Math.sin(t*.9)*.028;right.rotation.z=-Math.sin(t*.9+.4)*.035;};root.update=update;root.userData.update=update;root.userData.role='vendor';root.userData.height=2.57;return root;
+ for(const [side,arm]of [[-1,left],[1,right]]){const ap=[];ap.push([tube([[0,0,0],[side*.24,.1,.01],[side*.51,.23,.08],[side*.64,.26,.07]],.027,16,7),twig]);ap.push([new T.SphereGeometry(1,16,10).scale(.10,.115,.082).translate(side*.64,.26,.07),ivory],[new T.SphereGeometry(1,12,8).scale(.044,.06,.048).translate(side*.57,.23,.12),ivory]);batch(arm,ap);}
+ const update=(time=0)=>{const t=Number.isFinite(time)?time:0,cycle=t%11,wave=cycle>2&&cycle<5?Math.sin((cycle-2)/3*Math.PI)**2:0,bob=Math.sin(t*1.7)*.022;body.position.y=bob;head.position.y=1.78+bob;left.position.y=right.position.y=1.23+bob;head.rotation.y=Math.sin(t*.55)*.09;head.rotation.z=Math.sin(t*.8)*.035;left.rotation.z=Math.sin(t*.9)*.04;right.rotation.z=-Math.sin(t*.9+.4)*.04+wave*(.7+Math.sin(t*7)*.18);};root.update=update;root.userData.update=update;root.userData.role='vendor';root.userData.height=2.57;return root;
 }
