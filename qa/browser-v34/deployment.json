@@ -1,0 +1,197 @@
+{
+  "verifiedAt": "2026-11-18T06:59:35.124Z",
+  "commit": "55d3188ba0a0ff262018a553a53fcf6fef1cec0f",
+  "sitesVersion": 35,
+  "sitesDeploymentId": "appgdep_6afd4c8471308191ba46b06621763404",
+  "vercelDeploymentId": "dpl_3gTmm5vgt7dyWoq8fh867g4QtDu6",
+  "sites": [
+    {
+      "origin": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "assets": [
+        {
+          "file": "onsen-layout.js",
+          "status": 200,
+          "match": true,
+          "sha256": "a540bef76f7ddfded354998ed9180273232c106eb7126d0c8a1d6857db589620"
+        },
+        {
+          "file": "onsen-water.js",
+          "status": 200,
+          "match": true,
+          "sha256": "c7922c9de7a01b7b799d6a7120886292e9ba58dcb7273881387e23126cafa5ad"
+        },
+        {
+          "file": "onsen-waterfall.js",
+          "status": 200,
+          "match": true,
+          "sha256": "f747f354e40099314a703ee5f2922539d87ed113cf7a6063ad5171db477f53b8"
+        },
+        {
+          "file": "onsen-response.js",
+          "status": 200,
+          "match": true,
+          "sha256": "833dea1a377342731bad6b2f3172e7598146d5d0f876c58e02bf1fa8c71582f4"
+        },
+        {
+          "file": "spa-resort.js",
+          "status": 200,
+          "match": true,
+          "sha256": "0f94ae927cbcdfa1811e72fe5096cc07a86080bfe8862a55046d263b71555d25"
+        },
+        {
+          "file": "spa-experience.js",
+          "status": 200,
+          "match": true,
+          "sha256": "8fb292e2ec14b4660e59f3806e3be9fe5128d4c787e5ac9dd3713cca6091d6c8"
+        },
+        {
+          "file": "winter-experience.js",
+          "status": 200,
+          "match": true,
+          "sha256": "25f3ae21a0d9e2be0775cb9277b22ba678456f3ae6e5d12231c5bda91bd5a42d"
+        },
+        {
+          "file": "resort-layout.js",
+          "status": 200,
+          "match": true,
+          "sha256": "0158865d3a3f74cadb0bc8ef23ee4aa2055cc7c446a63b6e7128fa930d1124df"
+        },
+        {
+          "file": "game-input.js",
+          "status": 200,
+          "match": true,
+          "sha256": "b9f98b53ac9d53a4f07b01a19942fe861e49f9f5d19b9b28e6e58a980fa5552d"
+        },
+        {
+          "file": "camera-clearance.js",
+          "status": 200,
+          "match": true,
+          "sha256": "3f0374e54de2160ab67edc8f2108eaa04cd59d7012748a2089763c34ba32e677"
+        },
+        {
+          "file": "park.js",
+          "status": 200,
+          "match": true,
+          "sha256": "bf3abc91746655a6894f9afe99e3711f534edd824727db2166bbca15ccc60c54"
+        },
+        {
+          "file": "metaverse.css",
+          "status": 200,
+          "match": true,
+          "sha256": "92a8141b7a71a50a735c2921f2f4b0be54d4ff6ec6a960a130a9005c5350cd3a"
+        },
+        {
+          "file": "sw.js",
+          "status": 200,
+          "match": true,
+          "sha256": "9ec26cd41138d15b16ebe7ed92c6de3735a12a1b906b2f7276af921e098c46c9"
+        }
+      ],
+      "health": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "multiplayer": true
+        }
+      },
+      "index": {
+        "status": 200,
+        "winter34": true
+      }
+    },
+    {
+      "origin": "https://moru-winter-park.vercel.app",
+      "assets": [
+        {
+          "file": "onsen-layout.js",
+          "status": 200,
+          "match": true,
+          "sha256": "a540bef76f7ddfded354998ed9180273232c106eb7126d0c8a1d6857db589620"
+        },
+        {
+          "file": "onsen-water.js",
+          "status": 200,
+          "match": true,
+          "sha256": "c7922c9de7a01b7b799d6a7120886292e9ba58dcb7273881387e23126cafa5ad"
+        },
+        {
+          "file": "onsen-waterfall.js",
+          "status": 200,
+          "match": true,
+          "sha256": "f747f354e40099314a703ee5f2922539d87ed113cf7a6063ad5171db477f53b8"
+        },
+        {
+          "file": "onsen-response.js",
+          "status": 200,
+          "match": true,
+          "sha256": "833dea1a377342731bad6b2f3172e7598146d5d0f876c58e02bf1fa8c71582f4"
+        },
+        {
+          "file": "spa-resort.js",
+          "status": 200,
+          "match": true,
+          "sha256": "0f94ae927cbcdfa1811e72fe5096cc07a86080bfe8862a55046d263b71555d25"
+        },
+        {
+          "file": "spa-experience.js",
+          "status": 200,
+          "match": true,
+          "sha256": "8fb292e2ec14b4660e59f3806e3be9fe5128d4c787e5ac9dd3713cca6091d6c8"
+        },
+        {
+          "file": "winter-experience.js",
+          "status": 200,
+          "match": true,
+          "sha256": "25f3ae21a0d9e2be0775cb9277b22ba678456f3ae6e5d12231c5bda91bd5a42d"
+        },
+        {
+          "file": "resort-layout.js",
+          "status": 200,
+          "match": true,
+          "sha256": "0158865d3a3f74cadb0bc8ef23ee4aa2055cc7c446a63b6e7128fa930d1124df"
+        },
+        {
+          "file": "game-input.js",
+          "status": 200,
+          "match": true,
+          "sha256": "b9f98b53ac9d53a4f07b01a19942fe861e49f9f5d19b9b28e6e58a980fa5552d"
+        },
+        {
+          "file": "camera-clearance.js",
+          "status": 200,
+          "match": true,
+          "sha256": "3f0374e54de2160ab67edc8f2108eaa04cd59d7012748a2089763c34ba32e677"
+        },
+        {
+          "file": "park.js",
+          "status": 200,
+          "match": true,
+          "sha256": "bf3abc91746655a6894f9afe99e3711f534edd824727db2166bbca15ccc60c54"
+        },
+        {
+          "file": "metaverse.css",
+          "status": 200,
+          "match": true,
+          "sha256": "92a8141b7a71a50a735c2921f2f4b0be54d4ff6ec6a960a130a9005c5350cd3a"
+        },
+        {
+          "file": "sw.js",
+          "status": 200,
+          "match": true,
+          "sha256": "9ec26cd41138d15b16ebe7ed92c6de3735a12a1b906b2f7276af921e098c46c9"
+        }
+      ],
+      "health": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "multiplayer": true
+        }
+      },
+      "index": {
+        "status": 200,
+        "winter34": true
+      }
+    }
+  ]
+}

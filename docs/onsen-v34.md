@@ -77,3 +77,12 @@ GPU 타이머·물리 GPU 메모리·실제 휴대폰 발열은 측정하지 않
 - `onsen-water.js`, `onsen-waterfall.js`, `onsen-response.js`: 수면·낙수·이벤트 효과.
 - `index.html`, `sw.js`: v34 캐시와 신규 모듈.
 - 회귀 검사, 브라우저·성능·빌드 기록 및 README/변경 이력.
+
+## 배포 기록
+
+- 코드 커밋: [`55d3188ba0a0ff262018a553a53fcf6fef1cec0f`](https://github.com/yeyiwon/moru-winter-park/commit/55d3188ba0a0ff262018a553a53fcf6fef1cec0f), GitHub main 반영.
+- Sites 버전 35, 배포 `appgdep_6afd4c8471308191ba46b06621763404`: `succeeded`.
+- Vercel 배포 `dpl_3gTmm5vgt7dyWoq8fh867g4QtDu6`: `READY`, 운영 별칭 반영.
+- [Sites 운영 주소](https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site)와 [Vercel 운영 주소](https://moru-winter-park.vercel.app)의 변경 파일 13개를 읽어 로컬 압축 배포 파일과 SHA-256 일치를 확인했다. 두 주소 모두 v34 페이지 및 `/api/health`의 `ok: true`, `multiplayer: true`, HTTP 200 확인.
+- 배포 후 확인은 읽기 전용이다. 운영 서버에 테스트 사용자·소원을 만들지 않았다. 실제 플레이 검증은 별도 로컬 QA 데이터베이스에서 수행했다.
+- 결과 원본: `qa/browser-v34/deployment.json`. 이 기록은 배포 코드 커밋 이후 문서 전용 커밋으로 저장한다.
