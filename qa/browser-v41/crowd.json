@@ -1,0 +1,306 @@
+{
+  "browser": "157.0.8103.79",
+  "physicalMobile": false,
+  "network": "localhost SQLite; four API-driven peers, one actual WebGL client",
+  "errors": [],
+  "scenarios": [
+    {
+      "name": "one-player",
+      "seconds": 12,
+      "before": {
+        "quality": {
+          "quality": "high",
+          "pixelRatio": 1.5,
+          "samples": 2,
+          "shadowSize": 1024,
+          "shadowInterval": 0.041666666666666664
+        },
+        "dpr": 1.5,
+        "memory": {
+          "geometries": 574,
+          "textures": 18
+        },
+        "programs": 197,
+        "heap": 316276565,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+        "peers": 0,
+        "moving": 0
+      },
+      "after": {
+        "quality": {
+          "quality": "high",
+          "pixelRatio": 1.5,
+          "samples": 2,
+          "shadowSize": 1024,
+          "shadowInterval": 0.041666666666666664
+        },
+        "dpr": 1.5,
+        "memory": {
+          "geometries": 574,
+          "textures": 18
+        },
+        "programs": 197,
+        "heap": 340992696,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+        "peers": 0,
+        "moving": 0
+      },
+      "fps": 60.002500104171006,
+      "p95": 16.799999999999272,
+      "p99": 16.80000000000291,
+      "cpu": 3.6269444443647645,
+      "calls": 465.6125,
+      "triangles": 2908730.566666667,
+      "longTasks": [],
+      "network": {
+        "requests": 7,
+        "bytes": 728,
+        "meanResponseMs": null,
+        "statuses": [
+          200
+        ],
+        "timingNote": "UNKNOWN: initial probe read responseEnd before request finished; fixed probe for subsequent runs."
+      }
+    },
+    {
+      "name": "two-players",
+      "seconds": 12,
+      "before": {
+        "quality": {
+          "quality": "high",
+          "pixelRatio": 1.5,
+          "samples": 2,
+          "shadowSize": 1024,
+          "shadowInterval": 0.041666666666666664
+        },
+        "dpr": 1.5,
+        "memory": {
+          "geometries": 579,
+          "textures": 18
+        },
+        "programs": 197,
+        "heap": 357103834,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+        "peers": 1,
+        "moving": 1
+      },
+      "after": {
+        "quality": {
+          "quality": "high",
+          "pixelRatio": 1.5,
+          "samples": 2,
+          "shadowSize": 1024,
+          "shadowInterval": 0.041666666666666664
+        },
+        "dpr": 1.5,
+        "memory": {
+          "geometries": 579,
+          "textures": 18
+        },
+        "programs": 197,
+        "heap": 336878174,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+        "peers": 1,
+        "moving": 1
+      },
+      "fps": 60.002500104171006,
+      "p95": 16.700000000004366,
+      "p99": 16.80000000000291,
+      "cpu": 3.701666666712198,
+      "calls": 472.6638888888889,
+      "triangles": 2932419.0083333333,
+      "longTasks": [],
+      "network": {
+        "requests": 16,
+        "bytes": 7580,
+        "meanResponseMs": null,
+        "statuses": [
+          200
+        ],
+        "timingNote": "UNKNOWN: initial probe read responseEnd before request finished; fixed probe for subsequent runs."
+      }
+    },
+    {
+      "name": "five-players-moving",
+      "seconds": 60,
+      "before": {
+        "quality": {
+          "quality": "high",
+          "pixelRatio": 1.5,
+          "samples": 2,
+          "shadowSize": 1024,
+          "shadowInterval": 0.041666666666666664
+        },
+        "dpr": 1.5,
+        "memory": {
+          "geometries": 591,
+          "textures": 18
+        },
+        "programs": 197,
+        "heap": 364766028,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+        "peers": 4,
+        "moving": 4
+      },
+      "after": {
+        "quality": {
+          "quality": "high",
+          "pixelRatio": 1.5,
+          "samples": 2,
+          "shadowSize": 1024,
+          "shadowInterval": 0.041666666666666664
+        },
+        "dpr": 1.5,
+        "memory": {
+          "geometries": 591,
+          "textures": 18
+        },
+        "programs": 197,
+        "heap": 341346093,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+        "peers": 4,
+        "moving": 4
+      },
+      "fps": 60.002500104171006,
+      "p95": 16.70000000001164,
+      "p99": 16.80000000000291,
+      "cpu": 3.755555555548312,
+      "calls": 489.9213888888889,
+      "triangles": 2992095.4566666665,
+      "longTasks": [],
+      "network": {
+        "requests": 80,
+        "bytes": 126692,
+        "meanResponseMs": null,
+        "statuses": [
+          200
+        ],
+        "timingNote": "UNKNOWN: initial probe read responseEnd before request finished; fixed probe for subsequent runs."
+      }
+    },
+    {
+      "name": "fireworks",
+      "seconds": 12,
+      "before": {
+        "quality": {
+          "quality": "high",
+          "pixelRatio": 1.5,
+          "samples": 2,
+          "shadowSize": 1024,
+          "shadowInterval": 0.041666666666666664
+        },
+        "dpr": 1.5,
+        "memory": {
+          "geometries": 576,
+          "textures": 18
+        },
+        "programs": 197,
+        "heap": 328935521,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+        "peers": 1,
+        "moving": 0
+      },
+      "after": {
+        "quality": {
+          "quality": "high",
+          "pixelRatio": 1.5,
+          "samples": 2,
+          "shadowSize": 1024,
+          "shadowInterval": 0.041666666666666664
+        },
+        "dpr": 1.5,
+        "memory": {
+          "geometries": 576,
+          "textures": 18
+        },
+        "programs": 197,
+        "heap": 328122796,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+        "peers": 0,
+        "moving": 0
+      },
+      "fps": 60.00233018758004,
+      "p95": 16.70000000001164,
+      "p99": 16.800000000017462,
+      "cpu": 3.784188626930841,
+      "calls": 465.62829403606105,
+      "triangles": 2904772.7850208045,
+      "longTasks": [],
+      "network": {
+        "requests": 7,
+        "bytes": 2399,
+        "meanResponseMs": null,
+        "statuses": [
+          200
+        ],
+        "timingNote": "UNKNOWN: initial probe read responseEnd before request finished; fixed probe for subsequent runs."
+      }
+    }
+  ],
+  "stopped": {
+    "first": [
+      {
+        "x": -2.416644521523137,
+        "z": 23.821167990057344,
+        "speed": 0
+      },
+      {
+        "x": 2.4997379423740744,
+        "z": 22.063565156658125,
+        "speed": 0
+      },
+      {
+        "x": 1.2550290899499155,
+        "z": 21.862608085408347,
+        "speed": 0
+      },
+      {
+        "x": -0.22415233164728943,
+        "z": 22.707363895082576,
+        "speed": 0
+      }
+    ],
+    "last": [
+      {
+        "x": -2.416644521523137,
+        "z": 23.821167990057344,
+        "speed": 0
+      },
+      {
+        "x": 2.4997379423740744,
+        "z": 22.063565156658125,
+        "speed": 0
+      },
+      {
+        "x": 1.2550290899499155,
+        "z": 21.862608085408347,
+        "speed": 0
+      },
+      {
+        "x": -0.22415233164728943,
+        "z": 22.707363895082576,
+        "speed": 0
+      }
+    ]
+  },
+  "afterLeave": {
+    "quality": {
+      "quality": "high",
+      "pixelRatio": 1.5,
+      "samples": 2,
+      "shadowSize": 1024,
+      "shadowInterval": 0.041666666666666664
+    },
+    "dpr": 1.5,
+    "memory": {
+      "geometries": 575,
+      "textures": 18
+    },
+    "programs": 197,
+    "heap": 339450956,
+    "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+    "peers": 0,
+    "moving": 0
+  },
+  "fireworkStart": 200
+}

@@ -1,3 +1,30 @@
+# v41 검증 — 2026-11-19
+
+최종 전체 자동 검사 **380/380 PASS**(36.04초). 불꽃 광원 한도와 신고·운영 폼 회귀도 포함한다. 별도 lint/typecheck 명령은 없는 JavaScript 프로젝트이며 Node/bundling으로 구문을 검사한다. `npm run build`, `npm run build:vercel`, `npm run test:budget` PASS.
+
+로컬 Chrome 독립 guest context 2개:
+
+- 유효 초대 자동 진입·동일 winter-plaza·저장/기본 외형, 게스트 초대/로그인 UI 없음.
+- 게스트 invite/admin/operations API 직접 접근 각각 403.
+- 실제 WASD 이동/정지 snapshot, 채팅 공유, 커마 취소/저장.
+- 모바일 지도 첫 터치 선택과 이동 확인, 패널 종료.
+- 관람차·회전목마·초급/정상 리프트 탑승 후 취소·일반 이동 복귀.
+- 별빛 만물관/료칸 입장과 퇴장, 실내 전용 상태 복귀.
+- 조이스틱 경계 밖 입력+다른 손가락 카메라, 터치 종료 정지.
+- 일시 오프라인 후 재접속. page 오류 0.
+
+[모바일 원시 결과](../qa/browser-v41/mobile.json), [PC 비교](../qa/browser-v41/pc-after.json), [인원별 렌더·정지·퇴장](../qa/browser-v41/crowd.json).
+
+로컬 재현: 격리된 같은 LOCAL_DB_PATH로 guest 4187 및 LOCAL_OWNER_EMAIL fixture 4188 서버 실행. `QA_FLOW=1 QA_MOBILE=1 node scripts/verify-multiplayer.mjs`, `node scripts/profile-multiplayer.mjs`. Playwright는 외부 QA 도구이며 production dependency가 아니다. PLAYWRIGHT_PATH/CHROME_PATH 및 QA_URL/QA_OWNER_URL/QA_OUT으로 환경을 지정한다. 운영 두 세션 검사는 QA_URL을 운영 주소로 지정하고 권한이 있는 테스트 초대를 숨김 stdin으로 전달한다. 토큰/쿠키/원시 요청 헤더는 기록하지 않는다.
+
+서버 자동 검사는 관리자 권한/소유자 spoof 차단, 백업+수량+revision 전체 삭제와 소원 보존, 후보 생성 일일 제한·동시성·유효성·비자동공개·예약 경로 차단을 포함한다. 운영 데이터 전체 삭제는 수행하지 않는다.
+
+추가 화면 검사: 실제 음악 11곡 목록, 현재 곡과 다음 곡 각각 currentTime 진행·활성 오디오 1개·오디오 오류 없음. 로딩 트리 폭 360px, 실제 흐린 배경, 844×390 가로 커마 페이지 가로 넘침 없음, low 직접 출력에서 world-ready 유지. 불꽃 GPU 버퍼 74,880 입자 draw 활성 및 셰이더 콘솔 오류 0. [화면/오디오 결과](../qa/browser-v41/visual-report.json).
+
+UNKNOWN: 실물 Windows·iPhone Safari·Android Chrome, Safari 실브라우저 오디오 중단, 실제 장시간 발열/배터리. 자동 검사·Mac의 모바일 에뮬레이션을 이 기기들의 검증으로 대체하지 않는다. 운영 재검증은 DEPLOYMENT 기록과 구분한다.
+
+---
+
 # v39 단일 월드 검증
 
 - 최종 `npm test`: **368/368 PASS**, 38.73초 (정원 보완 후 최종 재실행). 격리 SQLite 사용.

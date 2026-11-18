@@ -2,7 +2,7 @@ import * as T from './vendor/three.module.js';
 import {createFireworkScore,fireworkConfig,fireworkRandom,fireworkPatterns} from './firework-score.js';
 export const fireworkTrailSamples=12;
 const SPARKS=240,TAILS=fireworkTrailSamples,SHELLS=26;
-export function createWinterFireworks(parent){
+export function createWinterFireworks(parent,{light=null}={}){
  const capacity=SPARKS*TAILS*SHELLS,geometry=new T.BufferGeometry(),arrays={position:new Float32Array(capacity*3),velocity:new Float32Array(capacity*3),timing:new Float32Array(capacity*4),design:new Float32Array(capacity*4),color:new Float32Array(capacity*3),spark:new Float32Array(capacity)};
  for(const [name,array]of Object.entries(arrays))geometry.setAttribute(name,new T.BufferAttribute(array,name==='spark'?1:['timing','design'].includes(name)?4:3));
  const uniforms={clock:{value:0},reduced:{value:0},pixelRatio:{value:1}};
@@ -13,11 +13,15 @@ export function createWinterFireworks(parent){
  else if(age>=flight&&age<flight+design.z){float t=age-flight;float dragRate=kind>1.5&&kind<2.5?.19:.46;float drag=(1.-exp(-t*dragRate))/dragRate;float gravity=kind>1.5&&kind<2.5?1.15:1.8;p+=velocity*drag;p.y+=timing.w-gravity*t*t;p.x+=design.w*t+sin(t*.8+spark*.1)*t*.1;
  float fade=1.-smoothstep(design.z*.42,design.z,t);float twinkle=.68+.32*pow(.5+.5*sin(t*17.+spark*7.1-timing.y*12.),3.);if(kind>3.5)twinkle=.32+.68*pow(.5+.5*sin(t*19.+spark*11.7),4.);alpha=smoothstep(0.,.06,t)*fade*twinkle*exp(-timing.y*2.5);size=mix(1.,.48,clamp(timing.y/.85,0.,1.));tint=mix(color,vec3(1.,.82,.46),smoothstep(1.,design.z,t)*(kind>1.5&&kind<2.5?.75:.22));if(spark<.5&&t<.12){p=position+vec3(0.,timing.w,0.);size=5.;alpha*=1.-reduced;}}
  alpha*=mix(1.,.32,reduced);vec4 eye=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*eye;gl_PointSize=clamp(470.*pixelRatio*design.y/max(1.,-eye.z),1.2,5.*pixelRatio)*size;if(alpha<.001)gl_Position=vec4(2.,2.,2.,1.);}`,
- fragmentShader:`varying vec3 tint;varying float alpha;void main(){float r=length(gl_PointCoord-.5)*2.;float a=(exp(-r*r*15.)+exp(-r*r*4.)*.32)*(1.-smoothstep(.72,1.,r))*alpha;if(a<.008)discard;gl_FragColor=vec4(tint*2.1,a);}`});
+ fragmentShader:`varying vec3 tint;varying float alpha;void main(){float r=length(gl_PointCoord-.5)*2.;float a=(exp(-r*r*15.)+exp(-r*r*4.)*.32)*(1.-smoothstep(.72,1.,r))*alpha;if(a<.008)discard;gl_FragColor=vec4(tint*2.1,a);
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`});
  const points=new T.Points(geometry,material);points.name='winter-firework-shells';points.frustumCulled=false;points.visible=false;geometry.setDrawRange(0,0);parent.add(points);
+ const flashColor=new T.Color(),shellColors=[];
  let show=null,score=[],previousAge=null,quality='high',active=false;
  function prepare(seed){
-  score=createFireworkScore(seed);const random=fireworkRandom(seed),colors=score.map(s=>new T.Color(s.color));let n=0;
+  score=createFireworkScore(seed);shellColors.length=0;for(const shell of score)shellColors.push(new T.Color(shell.color));const random=fireworkRandom(seed),colors=score.map(s=>new T.Color(s.color));let n=0;
   for(let spark=0;spark<SPARKS;spark++)for(let j=0;j<score.length;j++){
    const shell=score[j],sample=(spark*73)%SPARKS,a=sample*2.399963,y=1-2*(sample+.5)/SPARKS,r=Math.sqrt(1-y*y),speed=(19+random()*5)*shell.size;
    let vx=Math.cos(a)*r,vy=y,vz=Math.sin(a)*r;
@@ -36,6 +40,7 @@ export function createWinterFireworks(parent){
   const age=show?(now-show.startsAt)/1000:-1;active=!!show&&['scheduled','playing'].includes(show.state)&&age>=0&&age<fireworkConfig.duration&&!interior;
   points.visible=active;if(!active){geometry.setDrawRange(0,0);previousAge=age;return;}
   const soften=still||reduceFlash;uniforms.clock.value=age;uniforms.reduced.value=soften?1:0;uniforms.pixelRatio.value=Math.min(2,pixelRatio);
+  if(light&&!soften&&listener){let weight=0;flashColor.setRGB(0,0,0);for(let i=0;i<score.length;i++){const shell=score[i],t=age-shell.at-shell.flight;if(t<0||t>1.5)continue;const distance=Math.hypot(listener.x-shell.x,listener.y-shell.y-shell.height,listener.z-shell.z),energy=Math.sin(Math.min(1,t/.16)*Math.PI/2)*Math.exp(-t*3.5)*.42/(1+(distance/230)**2);weight+=energy;flashColor.r+=shellColors[i].r*energy;flashColor.g+=shellColors[i].g*energy;flashColor.b+=shellColors[i].b*energy;}if(weight>0){flashColor.multiplyScalar(1/weight);light.color.lerp(flashColor,Math.min(.48,weight));light.intensity+=Math.min(.38,weight);}}
   const count=soften?48:quality==='low'?72:quality==='medium'?144:240;geometry.setDrawRange(0,count*SHELLS*TAILS);
   // Crossing events, not timers: seeking/late joining never replays a backlog of sounds.
   if(listener&&previousAge!==null&&age>=previousAge&&age-previousAge<.5&&!soften)for(const shell of score){

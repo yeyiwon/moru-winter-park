@@ -14,3 +14,13 @@ test('show uses fixed buffers, late-join clock, lower mobile density and clears 
 test('sparkler activity synchronizes as an item and the unchanged kiosk entrance is walkable',()=>{
  assert.ok(activityGestures.includes('sparkler-carry'));assert.equal(encodeActivity({heldItem:'sparkler'}),'sparkler-carry');assert.deepEqual(decodeActivity('sparkler-carry'),{heldItem:'sparkler',gesture:''});assert.ok(canStandAt(sparklerEntrance.x,sparklerEntrance.z));
 });
+test('firework lighting reuses the world light with bounded pulses and respects reduced flashing',()=>{
+ const scene=new T.Scene(),light=new T.DirectionalLight('#eef5ff',.8);scene.add(light);
+ const show=createWinterFireworks(scene,{light}),first=createFireworkScore(42)[0],now=1000+(first.at+first.flight+.16)*1000;
+ show.setShow({id:'light-test',startsAt:1000,seed:42,state:'playing'});
+ const listener=new T.Vector3(first.x,first.y+first.height,first.z);
+ show.update(now,{listener});assert.ok(light.intensity>.8&&light.intensity<=1.18);assert.equal(scene.children.filter(o=>o.isLight).length,1);
+ // The world resets its ambient lighting every frame before the show adds a pulse.
+ light.intensity=.8;light.color.set('#eef5ff');const color=light.color.clone();show.update(now+10,{listener,reduceFlash:true});
+ assert.equal(light.intensity,.8);assert.ok(light.color.equals(color));show.dispose();assert.equal(scene.children.length,1);
+});

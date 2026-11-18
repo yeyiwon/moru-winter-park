@@ -11,3 +11,12 @@ test('jump rises and settles in pitch; landing adds only soft snow and respects 
  assert.equal(e.effect('jump'),false);e.context.currentTime=1;assert.equal(e.effect('jump-land',{surface:'wood'}),true);assert.equal(m.oscillators.length,2);assert.equal(m.sources.length,1);
  e.settings({effectsEnabled:false});e.context.currentTime=2;assert.equal(e.effect('jump'),false);assert.equal(m.oscillators.length,2);e.dispose();
 });
+
+test('a delayed crossfade loads only one successor and survives an interrupted audio context',async t=>{
+ const dom=new JSDOM(fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8'),{url:'https://test.local'});t.after(()=>dom.window.close());const w=dom.window,m=mockAudio();w.AudioContext=m.Audio;Object.defineProperty(w.document,'hidden',{value:false,configurable:true});let plays=0,resolveNext;
+ w.HTMLMediaElement.prototype.play=function(){plays++;Object.defineProperty(this,'paused',{value:false,configurable:true});return plays===1?Promise.resolve():new Promise(resolve=>{resolveNext=resolve;});};w.HTMLMediaElement.prototype.pause=function(){Object.defineProperty(this,'paused',{value:true,configurable:true});};
+ const music=createWinterMusic(w.document,w);w.document.dispatchEvent(new w.Event('pointerdown'));await Promise.resolve();const initial=music.audio;Object.defineProperty(initial,'duration',{value:30});initial.currentTime=29;
+ initial.dispatchEvent(new w.Event('timeupdate'));for(let n=0;n<12;n++)initial.dispatchEvent(new w.Event('timeupdate'));initial.dispatchEvent(new w.Event('ended'));assert.equal(plays,2,'only one pending next-track play request');resolveNext();await Promise.resolve();assert.notEqual(music.audio,initial);
+ music.engine.context.state='interrupted';music.engine.unlock();assert.equal(music.engine.context.state,'running');
+ w.dispatchEvent(new w.PageTransitionEvent('pagehide',{persisted:true}));assert.ok([...w.document.querySelectorAll('audio')].every(a=>a.paused));w.dispatchEvent(new w.PageTransitionEvent('pageshow',{persisted:true}));assert.equal(plays,3);resolveNext();await Promise.resolve();assert.equal([...w.document.querySelectorAll('audio')].filter(a=>!a.paused).length,1);
+});

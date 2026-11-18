@@ -1,3 +1,13 @@
+# v41 배포 준비 — 2026-11-19
+
+기존 Sites/D1 → GitHub main → Vercel 흐름을 유지한다. 검증된 동일 소스를 Sites에 먼저 반영하고 Vercel 프록시/프런트를 갱신한다. 마이그레이션 0012~0014는 추가형이며 기존 데이터 삭제 없음. 기존 env는 유지하고 CRON_SECRET만 양쪽 runtime에 같은 secret으로 설정했다. 환경 변수 값·초대 토큰은 문서/로그/소스에 기록하지 않는다.
+
+Vercel의 `/api/quiz-refresh` 일일 cron은 Sites 서버와 Bearer 인증을 맞춰 호출한다. OPENAI_API_KEY/OPENAI_MODEL은 기존 설정을 재사용한다. 후보는 검토 전 공개되지 않는다. 생성 실패 시 기존 퀴즈를 유지하며 일일 재시도 폭주를 막는다.
+
+배포 상태와 실제 운영 초대/연결 결과는 배포 성공 후 아래에 기록한다. 이 준비 문구는 배포 완료를 뜻하지 않는다. 장애 시 Vercel 이전 READY와 Sites 40으로 복귀 가능하며 추가형 DB 테이블은 남겨 기존 데이터 손실을 방지한다.
+
+---
+
 # v39 단일 월드 배포
 
 기존 GitHub main, Vercel `moru-winter-park`, Sites `appgprj_6af6f606ab648191855ab9bd44c334fd` 및 D1 DB를 그대로 사용한다. 새 서버나 저장소를 생성하지 않는다.

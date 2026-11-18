@@ -37,7 +37,7 @@ test('network interest deltas preserve remote poses, propagate chat, refresh nea
  const far={id:'far',name:'A',x:200,z:0,y:1,yaw:0,chat:'hello',chatAt:12},near={...far,id:'near',x:10},cache=createPresenceCache();const first=interestSnapshot([far,near],{x:0,z:0},cache.request(),10000);assert.equal(first.people[0].distant,undefined);cache.merge(first.people,first.farBucket);
  const second=interestSnapshot([{...far,x:210,chat:'new'},near],{x:0,z:0},cache.request(),11000);assert.equal(second.people[0].x,undefined);const merged=cache.merge(second.people,second.farBucket);assert.equal(merged[0].x,200);assert.equal(merged[0].chat,'new');assert.equal(second.people[1].x,10);
  assert.equal(interestSnapshot([far],{x:200,z:0},cache.request(),11000).people[0].x,200);assert.equal(interestSnapshot([far],{x:0,z:0},cache.request(),11000,[{id:'far'}]).people[0].x,200);assert.equal(interestSnapshot([far],{x:0,z:0},cache.request(),16000).people[0].x,200);
- assert.equal(cache.merge([],3).length,0);cache.reset();assert.equal(cache.request().farBucket,null);assert.ok(presenceDelay({hidden:true})<20000);assert.equal(presenceDelay({moving:true}),1000);assert.equal(presenceDelay({failures:9}),8000);
+ assert.equal(cache.merge([],3).length,0);cache.reset();assert.equal(cache.request().farBucket,null);assert.ok(presenceDelay({hidden:true})<20000);assert.equal(presenceDelay({moving:true}),700);assert.equal(presenceDelay({failures:9}),8000);
 });
 test('frame metrics report measured percentiles and unavailable GPU as null',()=>{
  const m=summarizeFrames([10,20,40,80].map(ms=>({ms,cpu:4,calls:50,triangles:100})));assert.equal(m.p95Ms,80);assert.equal(m.p99Ms,80);assert.equal(m.fps,1000/37.5);assert.equal(m.gpuMeanMs,null);assert.equal(summarizeFrames([]).fps,null);

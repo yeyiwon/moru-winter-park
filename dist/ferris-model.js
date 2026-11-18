@@ -177,7 +177,10 @@ export function buildFerrisWheel(){
  const glowGeometry=new T.BufferGeometry();glowGeometry.setAttribute('position',new T.Float32BufferAttribute(glowPositions,3));glowGeometry.setAttribute('color',new T.Float32BufferAttribute(glowColors,3));
  const glowMaterial=new T.ShaderMaterial({uniforms:{time:illuminationTime},transparent:true,depthWrite:false,blending:T.AdditiveBlending,toneMapped:false,vertexColors:true,
   vertexShader:`uniform float time;varying vec3 vColor;varying float shine;void main(){vColor=color;shine=.64+.36*pow(.5+.5*sin(position.x*.7+position.y*.8-time*.35),6.);vec4 p=modelViewMatrix*vec4(position,1.);gl_PointSize=clamp(850./max(1.,-p.z),2.,18.);gl_Position=projectionMatrix*p;}`,
-  fragmentShader:`varying vec3 vColor;varying float shine;void main(){vec2 p=gl_PointCoord-.5;float core=exp(-dot(p,p)*80.);float halo=exp(-dot(p,p)*14.)*.22;float rays=exp(-abs(p.x)*75.)*exp(-abs(p.y)*7.)+exp(-abs(p.y)*75.)*exp(-abs(p.x)*7.);float a=(core+halo+rays*.25)*shine;if(a<.01)discard;gl_FragColor=vec4(vColor,a);}`});
+  fragmentShader:`varying vec3 vColor;varying float shine;void main(){vec2 p=gl_PointCoord-.5;float core=exp(-dot(p,p)*80.);float halo=exp(-dot(p,p)*14.)*.22;float rays=exp(-abs(p.x)*75.)*exp(-abs(p.y)*7.)+exp(-abs(p.y)*75.)*exp(-abs(p.x)*7.);float a=(core+halo+rays*.25)*shine;if(a<.01)discard;gl_FragColor=vec4(vColor,a);
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`});
  const glow=new T.Points(glowGeometry,glowMaterial);glow.name='ferris-rim-fairy-lights';wheel.add(glow);
  hub.add(new T.CylinderGeometry(.23,.23,1.5,24),'silver','metal',[0,0,-.35],[Math.PI/2,0,0]);
  for(const z of [-1.03,.43]){

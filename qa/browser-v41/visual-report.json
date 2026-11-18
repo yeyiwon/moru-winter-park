@@ -1,0 +1,46 @@
+{
+  "errors": [],
+  "physicalMobile": false,
+  "loading": {
+    "x": 460,
+    "y": 212,
+    "width": 360,
+    "height": 360
+  },
+  "audio": {
+    "tracks": 11,
+    "active": 1,
+    "time": 3.479454,
+    "error": null
+  },
+  "audioAfterNext": {
+    "active": 1,
+    "time": 3.81434,
+    "error": null
+  },
+  "fireworkStatus": 200,
+  "fireworks": {
+    "visible": true,
+    "particles": 74880,
+    "clock": 18.17939990234375,
+    "lights": 16
+  },
+  "landscape": {
+    "pageOverflow": false,
+    "dialog": {
+      "x": 22,
+      "y": 8,
+      "width": 800,
+      "height": 374,
+      "top": 8,
+      "right": 822,
+      "bottom": 382,
+      "left": 22
+    }
+  },
+  "direct": {
+    "quality": "low",
+    "background": "040b1a",
+    "ready": true
+  }
+}

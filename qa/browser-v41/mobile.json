@@ -1,0 +1,266 @@
+{
+  "production": false,
+  "mobileEmulation": true,
+  "physicalDevice": false,
+  "errors": [],
+  "scenarios": [
+    {
+      "name": "entry-0",
+      "ms": 3067
+    },
+    {
+      "name": "entry-1",
+      "ms": 3605
+    },
+    {
+      "name": "mobile-map-confirm",
+      "pass": true
+    },
+    {
+      "name": "map-closes-after-travel",
+      "pass": true
+    },
+    {
+      "name": "customization-cancel",
+      "pass": true
+    },
+    {
+      "name": "customization-save",
+      "pass": true
+    },
+    {
+      "name": "shared-chat",
+      "pass": true
+    },
+    {
+      "name": "ride-ferris",
+      "pass": true,
+      "detail": {
+        "mode": "ferris"
+      }
+    },
+    {
+      "name": "exit-ferris",
+      "pass": true
+    },
+    {
+      "name": "ride-carousel",
+      "pass": true,
+      "detail": {
+        "mode": "carousel"
+      }
+    },
+    {
+      "name": "exit-carousel",
+      "pass": true
+    },
+    {
+      "name": "ride-ski",
+      "pass": true,
+      "detail": {
+        "mode": "lift"
+      }
+    },
+    {
+      "name": "exit-ski",
+      "pass": true
+    },
+    {
+      "name": "ride-upperlift",
+      "pass": true,
+      "detail": {
+        "mode": "lift"
+      }
+    },
+    {
+      "name": "exit-upperlift",
+      "pass": true
+    },
+    {
+      "name": "interior-museum",
+      "pass": true
+    },
+    {
+      "name": "exit-interior-museum",
+      "pass": true
+    },
+    {
+      "name": "interior-ryokan",
+      "pass": true
+    },
+    {
+      "name": "exit-interior-ryokan",
+      "pass": true
+    },
+    {
+      "name": "joystick-outside-radius-with-camera",
+      "pass": true
+    },
+    {
+      "name": "touch-release-stops",
+      "pass": true
+    },
+    {
+      "name": "reconnected",
+      "pass": true
+    }
+  ],
+  "movement": {
+    "samples": [
+      {
+        "at": 3390.89999999851,
+        "state": {
+          "x": 0,
+          "y": 0.95,
+          "z": 24,
+          "mode": "",
+          "updatedAt": 1795017350275,
+          "speed": 0,
+          "chat": ""
+        }
+      },
+      {
+        "at": 5317.199999999255,
+        "state": {
+          "x": 0,
+          "y": 0.95,
+          "z": 24,
+          "mode": "",
+          "updatedAt": 1795017352025,
+          "speed": 0,
+          "chat": ""
+        }
+      },
+      {
+        "at": 7066.099999997765,
+        "state": {
+          "x": 0,
+          "y": 0.95,
+          "z": 24,
+          "mode": "",
+          "updatedAt": 1795017353775,
+          "speed": 0,
+          "chat": ""
+        }
+      },
+      {
+        "at": 8815,
+        "state": {
+          "x": 0,
+          "y": 0.95,
+          "z": 24,
+          "mode": "",
+          "updatedAt": 1795017355525,
+          "speed": 0,
+          "chat": ""
+        }
+      },
+      {
+        "at": 10565.800000000745,
+        "state": {
+          "x": 0,
+          "y": 0.95,
+          "z": 24,
+          "mode": "",
+          "updatedAt": 1795017357275,
+          "speed": 0,
+          "chat": ""
+        }
+      },
+      {
+        "at": 12315.199999999255,
+        "state": {
+          "x": -0.03725124689962253,
+          "y": 0.95,
+          "z": 23.89124513157762,
+          "mode": "",
+          "updatedAt": 1795017360050,
+          "speed": 2.492493346612584,
+          "chat": ""
+        }
+      },
+      {
+        "at": 13065.800000000745,
+        "state": {
+          "x": -1.2045023040947136,
+          "y": 0.95,
+          "z": 20.483460273175396,
+          "mode": "",
+          "updatedAt": 1795017360775,
+          "speed": 4.299976877821934,
+          "chat": ""
+        }
+      },
+      {
+        "at": 13814.5,
+        "state": {
+          "x": -2.2495405545311207,
+          "y": 0.95,
+          "z": 17.432475222156405,
+          "mode": "",
+          "updatedAt": 1795017361524,
+          "speed": 4.299999998652153,
+          "chat": ""
+        }
+      },
+      {
+        "at": 14565.599999997765,
+        "state": {
+          "x": -2.969456149251667,
+          "y": 0.95,
+          "z": 15.398484183658088,
+          "mode": "",
+          "updatedAt": 1795017362275,
+          "speed": 0,
+          "chat": ""
+        }
+      },
+      {
+        "at": 16315.699999999255,
+        "state": {
+          "x": -2.9883484426819424,
+          "y": 0.95,
+          "z": 15.398484183658088,
+          "mode": "",
+          "updatedAt": 1795017364024,
+          "speed": 0,
+          "chat": ""
+        }
+      },
+      {
+        "at": 18066.099999997765,
+        "state": {
+          "x": -2.9883484426824376,
+          "y": 0.95,
+          "z": 15.398484183658088,
+          "mode": "",
+          "updatedAt": 1795017365775,
+          "speed": 0,
+          "chat": ""
+        }
+      }
+    ]
+  },
+  "guestUI": {
+    "invite": false,
+    "ownerLogin": false,
+    "quality": "high",
+    "ready": true,
+    "world": "winter-plaza"
+  },
+  "performance": {
+    "fps": 60.001995908387826,
+    "p95": 16.700000000000728,
+    "p99": 16.80000000000291,
+    "cpuMean": 3.329729729779297,
+    "longTasks": []
+  },
+  "denied": {
+    "invite": 403,
+    "admin": 403,
+    "operations": 403
+  },
+  "access": {
+    "admin": false
+  }
+}

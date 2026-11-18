@@ -1,0 +1,15 @@
+{
+  "tests": {
+    "total": 380,
+    "pass": 380,
+    "fail": 0
+  },
+  "build": "PASS",
+  "buildVercel": "PASS",
+  "budget": "PASS",
+  "typecheck": "NOT_CONFIGURED",
+  "lint": "NOT_CONFIGURED",
+  "physicalWindows": "UNKNOWN",
+  "physicalIOS": "UNKNOWN",
+  "physicalAndroid": "UNKNOWN"
+}

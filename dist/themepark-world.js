@@ -58,7 +58,10 @@ for(const [cx,cz,rx,rz] of [[parkFountain.x,parkFountain.z,2.1,1.1]]){
 // Fireflies respond to the companion; particles are one draw call.
 const fireCount=28,fireData=new Float32Array(fireCount*3),fireSeeds=[];for(let i=0;i<fireCount;i++)fireSeeds.push({x:(random()-.5)*28,y:.6+random()*4,z:(random()-.5)*25,p:random()*6});const fireGeo=new THREE.BufferGeometry();fireGeo.setAttribute('position',new THREE.BufferAttribute(fireData,3));const fireflies=new THREE.Points(fireGeo,new THREE.PointsMaterial({color:'#f7d5a4',size:.14,map:glowMap,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));scene.add(fireflies);
 // Faint moving nebula in the actual sky dome, not a flat backdrop image.
-const skyUniforms={uTime:{value:0},uTint:{value:new THREE.Color('#b9b7ff')},uTop:{value:new THREE.Color('#080f20')},uBottom:{value:new THREE.Color('#18283d')}};const sky=mesh(new THREE.SphereGeometry(600,48,24),new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,uniforms:skyUniforms,vertexShader:`varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,fragmentShader:`precision mediump float;varying vec3 vP;uniform float uTime;uniform vec3 uTint;uniform vec3 uTop;uniform vec3 uBottom;void main(){vec3 p=normalize(vP);float h=smoothstep(-.1,.6,p.y);vec3 col=mix(uBottom,uTop,h);gl_FragColor=vec4(col,1.);}`}));sky.castShadow=false;sky.receiveShadow=false;
+const skyUniforms={uTime:{value:0},uTint:{value:new THREE.Color('#b9b7ff')},uTop:{value:new THREE.Color('#080f20')},uBottom:{value:new THREE.Color('#18283d')}};const sky=mesh(new THREE.SphereGeometry(600,48,24),new THREE.ShaderMaterial({side:THREE.BackSide,depthWrite:false,uniforms:skyUniforms,vertexShader:`varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,fragmentShader:`precision mediump float;varying vec3 vP;uniform float uTime;uniform vec3 uTint;uniform vec3 uTop;uniform vec3 uBottom;void main(){vec3 p=normalize(vP);float h=smoothstep(-.1,.6,p.y);vec3 col=mix(uBottom,uTop,h);gl_FragColor=vec4(col,1.);
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`}));sky.castShadow=false;sky.receiveShadow=false;
 // Six themed islands and their bridges surround the original park.
 const archipelago=buildArchipelago({scene,mesh,ball,cylinder,box,rod,torus,halo,M,glowMap});
 

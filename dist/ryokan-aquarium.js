@@ -57,7 +57,10 @@ export function buildRyokanAquarium(parent,m){
  const meshes=[bodies,tails,fins,pectoral,eyes];bodies.name='aquarium-instanced-fish';for(const o of meshes){o.frustumCulled=false;root.add(o);}const colors=['#c0bd8a','#90b8ac','#d3a07a','#91a8ad'];for(let i=0;i<32;i++)bodies.setColorAt(i,new T.Color(colors[i%4]));
  const aquariumLight=new T.PointLight('#a4d9d2',18,15,2);aquariumLight.position.set(0,1.6,-.8);root.add(aquariumLight);
  const caustic=new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,uniforms:{time},vertexShader:'varying vec3 vP;void main(){vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:`varying vec3 vP;uniform float time;
-  void main(){vec2 p=vP.xz*2.;p+=vec2(sin(p.y*1.3+time*.24),cos(p.x*.9-time*.19))*.45;float a=sin(p.x*2.1+sin(p.y*1.9)),b=cos(p.y*2.2+sin(p.x*1.7));float vein=pow(max(0.,1.-abs(a+b)*3.),10.);float boundary=1.-smoothstep(4.3,6.8,abs(vP.x));gl_FragColor=vec4(.54,.87,.77,vein*.15*boundary);}`});
+  void main(){vec2 p=vP.xz*2.;p+=vec2(sin(p.y*1.3+time*.24),cos(p.x*.9-time*.19))*.45;float a=sin(p.x*2.1+sin(p.y*1.9)),b=cos(p.y*2.2+sin(p.x*1.7));float vein=pow(max(0.,1.-abs(a+b)*3.),10.);float boundary=1.-smoothstep(4.3,6.8,abs(vP.x));gl_FragColor=vec4(.54,.87,.77,vein*.15*boundary);
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`});
  const causticFloor=b.mesh(new T.PlaneGeometry(13.8,3.4),caustic,0,-1.81,0);causticFloor.rotation.x=-Math.PI/2;
  // Use a world-oriented plane so the caustic field is not collapsed to a single UV axis.
  causticFloor.geometry.rotateX(-Math.PI/2);causticFloor.rotation.x=0;

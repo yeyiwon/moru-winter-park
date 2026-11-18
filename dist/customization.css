@@ -68,7 +68,7 @@
 #studio #pane-fluff:not([hidden]){height:100%;min-height:0;max-height:none}
 #studio:has(#pane-fluff:not([hidden])) .studio-saved{display:none}
 #studio:has(#pane-fluff:not([hidden])){grid-template-rows:auto minmax(0,1fr)}
-@media(max-width:650px) and (min-height:501px){#studio #pane-fluff:not([hidden]){grid-template-rows:minmax(170px,.85fr) minmax(100px,1fr)}}
+@media(max-width:650px) and (min-height:501px){#studio #pane-fluff:not([hidden]){grid-template-rows:minmax(160px,min(28dvh,220px)) minmax(0,1fr)}}
 #studio #pane-fluff .fluff-controls{display:flex;flex-direction:column;overflow:hidden}
 #studio .wardrobe-profile{flex:none;margin:0 0 8px;border:0;background:transparent}
 #studio .wardrobe-profile #profile-form{padding:4px 0;margin:0}

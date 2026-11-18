@@ -17,7 +17,10 @@ export function createCastleAtmosphere(parent,towers){
    float alpha;if(vEffect.y>.5){float shimmer=.5+.5*sin(vEye.y*.16+time*.36+vEffect.x);alpha=.28+.35*edge+.1*shimmer*motion;}
    else{float ends=smoothstep(0.,.07,vUv.x)*(1.-smoothstep(.9,1.,vUv.x));float band=pow(max(0.,sin(vUv.y*3.14159)),2.);float fold=.5+.5*sin(vUv.x*10.-time*.28+vEffect.x);float sheen=pow(fold,5.);alpha=ends*band*(.16+.29*sheen);}
    float glimmer=pow(.5+.5*sin(time*.55+vEffect.x*2.1),12.);vec3 enchanted=mix(vColor,vec3(.96,.86,.66),glimmer*.17);gl_FragColor=vec4(enchanted*(1.28+.46*edge+glimmer*.18),alpha);
-  }`});materials.push(sheen);
+
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`});materials.push(sheen);
  function attach(geometry,material,name,points=false){geometries.push(geometry);const object=points?new T.Points(geometry,material):new T.Mesh(geometry,material);object.name=name;object.userData.cameraIgnore=true;object.castShadow=false;object.receiveShadow=false;root.add(object);return object;}
  function effects(g,phase,kind,amplitude,color){const n=g.attributes.position.count,a=[],colors=[],c=new T.Color(color);for(let i=0;i<n;i++){a.push(phase,kind,amplitude);colors.push(c.r,c.g,c.b);}g.setAttribute('aEffect',new T.Float32BufferAttribute(a,3));g.setAttribute('color',new T.Float32BufferAttribute(colors,3));return g;}
  // Each major spire receives its own phase, so the illumination travels across the silhouette.
@@ -43,13 +46,19 @@ export function createCastleAtmosphere(parent,towers){
   uniform float time;uniform float motion;attribute vec3 aData;varying vec3 vColor;varying float vAlpha;varying float vKind;
   void main(){float life=fract(aData.x+time*.026);vec3 p=position;vKind=aData.y;p.y+=life*(aData.y>.5&&aData.y<1.5?2.:.6);p.x+=sin(time*.2+aData.x*17.)*.3;p.z+=cos(time*.15+aData.x*23.)*.25;vColor=color;
    vAlpha=(.22+.78*sin(life*3.14159))*(.3+.7*pow(.5+.5*sin(time*.65+aData.x*43.),5.));vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=clamp(aData.z*460./max(1.,-mv.z),1.2,aData.y>1.5?48.:10.);gl_Position=projectionMatrix*mv;
-  }`,fragmentShader:`varying vec3 vColor;varying float vAlpha;varying float vKind;void main(){vec2 p=(gl_PointCoord-.5)*2.;float d=dot(p,p),core=exp(-d*26.),rays=exp(-abs(p.x)*20.-abs(p.y)*3.)+exp(-abs(p.y)*20.-abs(p.x)*3.);float alpha=(core+rays*.32)*(1.-smoothstep(.7,1.,sqrt(d)));if(vKind>1.5)alpha=exp(-d*3.)*(1.-smoothstep(.6,1.,sqrt(d)))*.055;gl_FragColor=vec4(vColor,alpha*vAlpha*1.3);}`});materials.push(particleMaterial);const particles=attach(particleGeometry,particleMaterial,'palace-star-dust',true);
+  }`,fragmentShader:`varying vec3 vColor;varying float vAlpha;varying float vKind;void main(){vec2 p=(gl_PointCoord-.5)*2.;float d=dot(p,p),core=exp(-d*26.),rays=exp(-abs(p.x)*20.-abs(p.y)*3.)+exp(-abs(p.y)*20.-abs(p.x)*3.);float alpha=(core+rays*.32)*(1.-smoothstep(.7,1.,sqrt(d)));if(vKind>1.5)alpha=exp(-d*3.)*(1.-smoothstep(.6,1.,sqrt(d)))*.055;gl_FragColor=vec4(vColor,alpha*vAlpha*1.3);
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`});materials.push(particleMaterial);const particles=attach(particleGeometry,particleMaterial,'palace-star-dust',true);
 
  // Warm pools stay on the snow at both ends of the arcade, never in the camera's eye line.
  const pools=new T.BufferGeometry(),poolPositions=[],poolUv=[],poolIndex=[];
  for(const z of [1.8,-10.5]){const offset=poolPositions.length/3;for(const [x,dz]of [[-1,-1],[1,-1],[-1,1],[1,1]]){poolPositions.push(x*5.8,.108,z+dz*4.6);poolUv.push((x+1)/2,(dz+1)/2);}poolIndex.push(offset,offset+2,offset+1,offset+1,offset+2,offset+3);}
  pools.setAttribute('position',new T.Float32BufferAttribute(poolPositions,3));pools.setAttribute('uv',new T.Float32BufferAttribute(poolUv,2));pools.setIndex(poolIndex);
- const poolMaterial=new T.ShaderMaterial({transparent:true,depthWrite:false,blending:T.AdditiveBlending,toneMapped:false,uniforms:{time,approach},vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,fragmentShader:`uniform float time;uniform float approach;varying vec2 vUv;void main(){vec2 p=(vUv-.5)*2.;float falloff=exp(-dot(p,p)*2.8)*(1.-smoothstep(.6,1.,length(p)));float tracery=.8+.2*sin(p.x*17.+sin(p.y*9.)*.35);gl_FragColor=vec4(.96,.76,.44,falloff*tracery*(.11+approach*.08));}`});materials.push(poolMaterial);attach(pools,poolMaterial,'palace-arch-light-reflections');
+ const poolMaterial=new T.ShaderMaterial({transparent:true,depthWrite:false,blending:T.AdditiveBlending,toneMapped:false,uniforms:{time,approach},vertexShader:`varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,fragmentShader:`uniform float time;uniform float approach;varying vec2 vUv;void main(){vec2 p=(vUv-.5)*2.;float falloff=exp(-dot(p,p)*2.8)*(1.-smoothstep(.6,1.,length(p)));float tracery=.8+.2*sin(p.x*17.+sin(p.y*9.)*.35);gl_FragColor=vec4(.96,.76,.44,falloff*tracery*(.11+approach*.08));
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`});materials.push(poolMaterial);attach(pools,poolMaterial,'palace-arch-light-reflections');
  const lights=[1.5,-10].map(z=>{const light=new T.PointLight('#f5d3a0',12,15,2);light.position.set(0,5.6,z);root.add(light);return light;});
  function setQuality(value){quality=Object.hasOwn(budgets,value)?value:'medium';particles.geometry.setDrawRange(0,Math.floor(capacity*budgets[quality]));lights.forEach(l=>l.visible=quality!=='low');}
  function update(t,still=false,{quality:nextQuality,player}={}){if(disposed)return false;if(nextQuality&&nextQuality!==quality)setQuality(nextQuality);for(let p=root;p;p=p.parent)if(!p.visible)return false;if(!still&&Number.isFinite(t))time.value=t;motion.value=still?0:1;

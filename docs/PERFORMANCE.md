@@ -1,3 +1,41 @@
+# v41 측정 — 2026-11-19
+
+Apple M2 / Chrome 157 / 같은 localhost SQLite 테스트 월드. 실제 모바일 GPU 결과가 아니다.
+
+## 동일 조건 PC 전후
+
+1280×800 DPR 1, low 고정, 독립 Chrome context 두 개, 준비 완료 후 8초 워밍업 및 8초 실제 game animate 표본. 이전 전체 프런트 모듈 그래프는 `a35e42d`, 두 검사 모두 현재 로컬 backend를 사용했다.
+
+| 항목 | 이전 | 이후 |
+|---|---:|---:|
+| 평균 FPS | 60.00 | 60.00 |
+| p95/p99 frame ms | 16.8 / 16.8 | 16.8 / 16.8 |
+| animate CPU 평균 ms | 5.50 | 4.27 |
+| 측정 중 50ms 이상 Long Task | 0 | 0 |
+| 두 게스트 초기 준비 ms | 3155 / 3306 | 2967 / 3377 |
+
+프레임 CPU는 이 표본에서 약 22% 감소했다. FPS 향상·모든 기기 성능 개선·초기 로딩 시간 단축의 증거는 아니다. OS 부하·shader cache 영향이 있으며 1회 단기 비교다. [이전 원시값](../qa/browser-v41/pc-before.json), [이후](../qa/browser-v41/pc-after.json).
+
+## 모바일 화면과 1·2·5명
+
+390×844, 기기 DPR 3 에뮬레이션, 실제 renderer DPR 1.5/high. 한 WebGL 클라이언트와 최대 4개의 API 기반 움직이는 게스트. localhost 서버이므로 운영 서버 처리량/인터넷 지연을 뜻하지 않는다.
+
+| 인원 | 표본 | FPS | p95 ms | CPU ms | 평균 draw calls | 평균 triangles |
+|---|---:|---:|---:|---:|---:|---:|
+| 1 | 12초 | 60.00 | 16.8 | 3.63 | 466 | 2.91M |
+| 2 | 12초 | 60.00 | 16.7 | 3.70 | 473 | 2.93M |
+| 5 이동 | 60초 | 60.00 | 16.7 | 3.76 | 490 | 2.99M |
+
+50ms 이상 Long Task 0. 5명에서 원격 4명 이동 유지, 정지 후 3초간 좌표 동일·속도 0, 퇴장 후 원격 0명. 5명 측정 전후 Geometry 591→591, texture 18→18, program 197→197, JS heap 364.8→341.3MB. 퇴장 후 Geometry 575(처음 574), texture 18. 자원 무한 증가의 증거는 관측하지 않았지만 이 짧은 검사로 장시간 누수 없음은 단정하지 않는다.
+
+5명 표본의 관찰 클라이언트 presence 80회/60초, JSON body 총 126,692 bytes(약 2.1KB/s), status 모두 200. HTTP header/TLS 비용·다른 클라이언트 총량은 제외. 처음 probe에서 request 종료 전 시각을 읽어 RTT가 부정확했으므로 RTT는 UNKNOWN으로 보존하고 probe를 수정했다. GPU elapsed·GPU 총 메모리·운영 서버 CPU/RSS는 UNKNOWN. [원시 자료](../qa/browser-v41/crowd.json).
+
+독립된 실제 브라우저 2개를 사용한 모바일 기능 검사에서도 8초 표본 60.00fps/p95 16.7ms/CPU 3.33ms/Long Task 0. [기능·측정 자료](../qa/browser-v41/mobile.json). 물리 스마트폰, Windows GPU, 30분 발열·배터리, 실제 인터넷 5명 서버 부하는 UNKNOWN.
+
+초기 진단에서 화질 변경 중 수 초 shader stall이 관측되어 HDR와 직접 출력 variant 사전 준비를 추가했다. 수정 전후의 다른 화질/워밍업 표본을 동일 조건 성능 비교로 섞지 않는다.
+
+---
+
 # v39 성능 범위
 
 이번 변경은 접속 권한과 단일 월드 라우팅이다. 월드 Geometry·조명·VFX·LOD·렌더 DPR은 변경하지 않았다. 초대 해시 인덱스와 방문자/초대/차단 JOIN을 사용하고, 기존 presence 주기와 최대 12명 정책을 유지한다.

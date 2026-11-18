@@ -11,7 +11,10 @@ export function createWinterSky(scene,hemi,sun,fill,world){
  const snowUniforms={flakeMap:{value:texture},time:{value:0},pixelRatio:{value:Math.min(2,window.devicePixelRatio||1)}};
  const snow=new T.Points(geometry,new T.ShaderMaterial({uniforms:snowUniforms,transparent:true,depthWrite:false,toneMapped:false,
   vertexShader:`attribute float flakeSize;attribute float flakePhase;attribute float flakeSpin;uniform float time;uniform float pixelRatio;varying float angle;varying float opacity;void main(){vec4 p=modelViewMatrix*vec4(position,1.);float d=-p.z;angle=flakePhase+time*flakeSpin;opacity=smoothstep(.7,2.,d)*(1.-smoothstep(48.,105.,d))*(.5+flakeSize*.45);gl_PointSize=clamp(flakeSize*310./max(1.,d),1.5,19.)*pixelRatio;gl_Position=projectionMatrix*p;}`,
-  fragmentShader:`uniform sampler2D flakeMap;varying float angle;varying float opacity;void main(){float c=cos(angle),s=sin(angle);vec2 uv=mat2(c,-s,s,c)*(gl_PointCoord-.5)+.5;if(any(lessThan(uv,vec2(0.)))||any(greaterThan(uv,vec2(1.))))discard;float alpha=texture2D(flakeMap,uv).a*opacity;if(alpha<.012)discard;gl_FragColor=vec4(.94,.98,1.,alpha);}`}));snow.name='winter-snow-crystals';snow.frustumCulled=false;scene.add(snow);
+  fragmentShader:`uniform sampler2D flakeMap;varying float angle;varying float opacity;void main(){float c=cos(angle),s=sin(angle);vec2 uv=mat2(c,-s,s,c)*(gl_PointCoord-.5)+.5;if(any(lessThan(uv,vec2(0.)))||any(greaterThan(uv,vec2(1.))))discard;float alpha=texture2D(flakeMap,uv).a*opacity;if(alpha<.012)discard;gl_FragColor=vec4(.94,.98,1.,alpha);
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`}));snow.name='winter-snow-crystals';snow.frustumCulled=false;scene.add(snow);
  // Curved remote curtains use one shared clock. Their lower hem carries the light;
  // fine field-aligned rays dissolve upward without covering the whole sky.
  const auroraUniforms={time:{value:0},night:{value:0},detail:{value:1}};
@@ -38,7 +41,10 @@ export function createWinterSky(scene,hemi,sun,fill,world){
      color=mix(color,vec3(.49,.36,.65),smoothstep(.39,.75,h)*.45);
      float meshFade=smoothstep(0.,.12,uv.y)*(1.-smoothstep(.82,1.,uv.y));
      float alpha=envelope*meshFade*broad*fine*fold*edge*night*pow(.69,layer)*.94*smoothstep(180.,400.,vDepth);
-     if(alpha<.002)discard;gl_FragColor=vec4(color,alpha);}`});
+     if(alpha<.002)discard;gl_FragColor=vec4(color,alpha);
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`});
   const curtain=new T.Mesh(createAuroraCurtainGeometry(layer),material);curtain.name='winter-aurora-sheet-'+layer;curtain.position.set(x,y,z);curtain.rotation.y=yaw;curtain.frustumCulled=false;aurora.add(curtain);
  }
  const detailedMoon=createDetailedMoon();scene.add(detailedMoon);const legacyCelestial=scene.getObjectByName('quiet-sun-moon');
@@ -75,7 +81,10 @@ export function createDetailedMoon({loadTexture=typeof document!=='undefined',da
  const texture=createMoonSurfaceTexture(),material=new T.ShaderMaterial({uniforms:{surface:{value:texture},observed:{value:0},night:{value:1},lightDirection:{value:new T.Vector3()}},transparent:true,depthWrite:false,toneMapped:false,
   vertexShader:`varying vec2 vUv;varying vec3 vNormal;void main(){vUv=uv;vNormal=normalMatrix*normal;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);gl_Position.z=gl_Position.w*.99994;}`,
   fragmentShader:`uniform sampler2D surface;uniform float observed;uniform float night;uniform vec3 lightDirection;varying vec2 vUv;varying vec3 vNormal;
-   void main(){vec2 uv=vec2(fract(vUv.x-.25*observed),vUv.y);vec3 detail=texture2D(surface,uv).rgb;vec3 n=normalize(vNormal);float cosine=dot(n,normalize(lightDirection));float terminator=smoothstep(-.018,.025,cosine),lit=terminator*(.5+.5*sqrt(max(0.,cosine)));vec3 stone=mix(vec3(detail.r)*vec3(.88,.9,.93),detail,observed);vec3 color=stone*(.018+lit*.94);gl_FragColor=vec4(color,night);}`});
+   void main(){vec2 uv=vec2(fract(vUv.x-.25*observed),vUv.y);vec3 detail=texture2D(surface,uv).rgb;vec3 n=normalize(vNormal);float cosine=dot(n,normalize(lightDirection));float terminator=smoothstep(-.018,.025,cosine),lit=terminator*(.5+.5*sqrt(max(0.,cosine)));vec3 stone=mix(vec3(detail.r)*vec3(.88,.9,.93),detail,observed);vec3 color=stone*(.018+lit*.94);gl_FragColor=vec4(color,night);
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`});
  const moon=new T.Mesh(new T.SphereGeometry(6.8,64,40),material);moon.name='detailed-winter-moon';moon.position.set(-116,142,-326);moon.frustumCulled=false;
  let image=null,disposed=false;
  moon.userData.setDate=value=>{const state=lunarPhase(value),z=state.fraction*2-1,x=Math.sqrt(Math.max(0,1-z*z))*(state.phase<.5?1:-1);material.uniforms.lightDirection.value.set(x,0,z);moon.userData.lunarPhase=state;};

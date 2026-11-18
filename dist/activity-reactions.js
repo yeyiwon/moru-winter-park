@@ -5,7 +5,10 @@ export function createActivityReactions(scene){
   geometry.setAttribute('bubbleOpacity',opacity);geometry.setAttribute('bubblePhase',phase);
   const material=new T.ShaderMaterial({transparent:true,depthWrite:false,
     vertexShader:`attribute float bubbleOpacity;attribute float bubblePhase;varying float alpha;varying float phase;varying vec3 viewDirection;varying vec3 viewNormal;void main(){vec4 p=modelViewMatrix*instanceMatrix*vec4(position,1.);viewDirection=-p.xyz;viewNormal=normalize(normalMatrix*mat3(instanceMatrix)*normal);alpha=bubbleOpacity;phase=bubblePhase;gl_Position=projectionMatrix*p;}`,
-    fragmentShader:`varying float alpha;varying float phase;varying vec3 viewDirection;varying vec3 viewNormal;void main(){vec3 n=normalize(viewNormal),v=normalize(viewDirection);float rim=pow(1.-max(0.,dot(n,v)),2.2);float band=.5+.5*sin(n.y*7.+n.x*3.+phase);vec3 tint=mix(vec3(.7,.92,1.),vec3(1.,.73,.88),band);float glint=pow(max(0.,dot(n,normalize(vec3(-.4,.6,1.)))),35.);gl_FragColor=vec4(tint+glint*.4,alpha*(.025+rim*.48+glint*.32));}`});
+    fragmentShader:`varying float alpha;varying float phase;varying vec3 viewDirection;varying vec3 viewNormal;void main(){vec3 n=normalize(viewNormal),v=normalize(viewDirection);float rim=pow(1.-max(0.,dot(n,v)),2.2);float band=.5+.5*sin(n.y*7.+n.x*3.+phase);vec3 tint=mix(vec3(.7,.92,1.),vec3(1.,.73,.88),band);float glint=pow(max(0.,dot(n,normalize(vec3(-.4,.6,1.)))),35.);gl_FragColor=vec4(tint+glint*.4,alpha*(.025+rim*.48+glint*.32));
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`});
   const bubbles=new T.InstancedMesh(geometry,material,limit);bubbles.name='floating-activity-bubbles';bubbles.frustumCulled=false;bubbles.instanceMatrix.setUsage(T.DynamicDrawUsage);bubbles.visible=false;scene.add(bubbles);
   const heart=new T.Shape();heart.moveTo(0,-.45);heart.bezierCurveTo(-.9,.1,-.55,.8,0,.35);heart.bezierCurveTo(.55,.8,.9,.1,0,-.45);
   const heartGeometry=new T.ShapeGeometry(heart,10),heartMaterial=new T.MeshBasicMaterial({color:'#f4a4be',transparent:true,opacity:0,depthWrite:false,side:T.DoubleSide}),hearts=new T.InstancedMesh(heartGeometry,heartMaterial,3),heartPose=new T.Object3D();hearts.name='activity-hearts';hearts.frustumCulled=false;hearts.visible=false;scene.add(hearts);

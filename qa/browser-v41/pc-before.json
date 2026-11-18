@@ -1,0 +1,119 @@
+{
+  "production": false,
+  "mobileEmulation": false,
+  "physicalDevice": false,
+  "errors": [],
+  "scenarios": [
+    {
+      "name": "entry-0",
+      "ms": 3155
+    },
+    {
+      "name": "entry-1",
+      "ms": 3306
+    }
+  ],
+  "movement": {
+    "samples": [
+      {
+        "at": 3199.2000000029802,
+        "state": {
+          "x": 0,
+          "y": 0.95,
+          "z": 24,
+          "mode": "",
+          "updatedAt": 1795016744104,
+          "speed": 0
+        }
+      },
+      {
+        "at": 5514.20000000298,
+        "state": {
+          "x": 0,
+          "y": 0.95,
+          "z": 24,
+          "mode": "",
+          "updatedAt": 1795016746230,
+          "speed": 0
+        }
+      },
+      {
+        "at": 7763.60000000149,
+        "state": {
+          "x": 0,
+          "y": 0.95,
+          "z": 24,
+          "mode": "",
+          "updatedAt": 1795016748476,
+          "speed": 0
+        }
+      },
+      {
+        "at": 10014.5,
+        "state": {
+          "x": 0,
+          "y": 0.95,
+          "z": 24,
+          "mode": "",
+          "updatedAt": 1795016750727,
+          "speed": 0
+        }
+      },
+      {
+        "at": 12263.800000000745,
+        "state": {
+          "x": -0.9490534629668259,
+          "y": 0.95,
+          "z": 21.22924215748044,
+          "mode": "",
+          "updatedAt": 1795016752976,
+          "speed": 4.299749332945905
+        }
+      },
+      {
+        "at": 14514,
+        "state": {
+          "x": -2.690779144832534,
+          "y": 0.95,
+          "z": 16.144280897805,
+          "mode": "",
+          "updatedAt": 1795016754228,
+          "speed": 4.299999999977953
+        }
+      },
+      {
+        "at": 16763.60000000149,
+        "state": {
+          "x": -2.988348401255965,
+          "y": 0.95,
+          "z": 15.398484183658088,
+          "mode": "",
+          "updatedAt": 1795016755476,
+          "speed": 0
+        }
+      }
+    ]
+  },
+  "guestUI": {
+    "invite": true,
+    "ownerLogin": true,
+    "quality": "low",
+    "ready": true,
+    "world": "winter-plaza"
+  },
+  "performance": {
+    "fps": 60.002250084378154,
+    "p95": 16.799999999999272,
+    "p99": 16.80000000000291,
+    "cpuMean": 5.502916666686845,
+    "longTasks": []
+  },
+  "denied": {
+    "invite": 403,
+    "admin": 403,
+    "operations": 403
+  },
+  "access": {
+    "admin": false
+  }
+}

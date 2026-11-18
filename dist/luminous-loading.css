@@ -3,17 +3,17 @@
 #world-loading{z-index:130}#room-transition{z-index:110;visibility:hidden;opacity:0;pointer-events:none}
 #world-loading.has-world,#room-transition{background:linear-gradient(135deg,#0a142960,#25203b45);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
 #room-transition.active{visibility:visible;opacity:1;pointer-events:auto}#world-loading.loaded{opacity:0;visibility:hidden;pointer-events:none}#world-loading[hidden]{display:none}
-.luminous-loading{width:min(560px,76vw,78dvh);display:grid;justify-items:center;gap:8px;margin:0 0 2vh;pointer-events:none}
+.luminous-loading{width:min(360px,62vw,57dvh);display:grid;justify-items:center;gap:8px;margin:0 0 2vh;pointer-events:none}
 #world-loading svg.luminous-tree,#room-transition svg.luminous-tree{display:block;width:100%;height:auto;fill:none;stroke:none;filter:none;overflow:visible}
 .luminous-line{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
 .luminous-halo{stroke-width:5;opacity:.48}.luminous-soft{stroke-width:2.2;opacity:.8}.luminous-core{stroke-width:1.05;opacity:.96}
 .luminous-caption{display:flex;align-items:center;justify-content:center}
-#world-loading .luminous-caption p,#room-transition .luminous-caption p{margin:0;font:250 clamp(16px,2.3vw,27px)/1.4 'Winter Sans',system-ui,sans-serif;letter-spacing:.2em;padding-left:.2em;color:#fff0df;text-shadow:0 0 10px #f8d2b327}
+#world-loading .luminous-caption p,#room-transition .luminous-caption p{margin:0;font:250 clamp(14px,1.7vw,20px)/1.4 'Winter Sans',system-ui,sans-serif;letter-spacing:.2em;padding-left:.2em;color:#fff0df;text-shadow:0 0 10px #f8d2b327}
 #world-loading .loading-basic{position:absolute;bottom:max(20px,env(safe-area-inset-bottom));display:grid;justify-items:center;gap:8px;font-size:12px;letter-spacing:0}#world-loading .loading-basic:empty{display:none}
 #world-loading .loading-error{margin:0;max-width:85vw;text-align:center;color:#fff1df}
 #world-loading .sr-only{position:absolute;width:1px!important;height:1px!important;clip-path:inset(50%);overflow:hidden;animation:none;background:none;margin:0}
 .no-webgl #world-loading:not([hidden]){display:grid}
-@media(max-width:650px){.luminous-loading{width:min(88vw,68dvh)}#world-loading.has-world,#room-transition{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}}
+@media(max-width:650px){.luminous-loading{width:min(270px,68vw,46dvh)}#world-loading.has-world,#room-transition{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}}
 @media(prefers-reduced-motion:reduce){#world-loading,#room-transition{transition:none}}
 /* The first visit uses a small capture of this actual world. Later visits use
    the last rendered scene; a ready world is blurred live through the overlay. */

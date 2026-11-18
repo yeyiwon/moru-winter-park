@@ -17,7 +17,10 @@ export function buildCastle(){
   stone:new T.MeshStandardMaterial({color:'#ffffff',vertexColors:true,roughness:.72,metalness:.025}),
   metal:new T.MeshStandardMaterial({color:'#ffffff',vertexColors:true,roughness:.32,metalness:.68}),
   roof:new T.MeshStandardMaterial({color:'#ffffff',vertexColors:true,roughness:.34,metalness:.35}),
-  light:new T.ShaderMaterial({vertexColors:true,toneMapped:false,uniforms:{time},vertexShader:`varying vec3 vColor;varying vec3 vP;void main(){vColor=color;vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,fragmentShader:`uniform float time;varying vec3 vColor;varying vec3 vP;void main(){float glow=1.55+.28*pow(.5+.5*sin(vP.y*.25+vP.x*.14-time*.19),4.);gl_FragColor=vec4(vColor*glow,1.);}`}),
+  light:new T.ShaderMaterial({vertexColors:true,toneMapped:false,uniforms:{time},vertexShader:`varying vec3 vColor;varying vec3 vP;void main(){vColor=color;vP=position;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}`,fragmentShader:`uniform float time;varying vec3 vColor;varying vec3 vP;void main(){float glow=1.55+.28*pow(.5+.5*sin(vP.y*.25+vP.x*.14-time*.19),4.);gl_FragColor=vec4(vColor*glow,1.);
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`}),
  };
  function add(g,color='stone',finish='stone',position=[0,0,0],rotation=[0,0,0]){transform.position.set(...position);transform.rotation.set(...rotation);transform.updateMatrix();g.applyMatrix4(transform.matrix);if(!batches.has(finish))batches.set(finish,[]);batches.get(finish).push({g,color:new T.Color(C[color]||color)});}
  const box=(w,h,d,color,x,y,z,finish='stone')=>add(new T.BoxGeometry(w,h,d),color,finish,[x,y,z]);

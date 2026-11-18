@@ -85,7 +85,7 @@ function placePlayer(p,yawValue){endTreeFrame(false);cameraClearance.reset();cle
 async function transitionRoom(change,name='겨울 공원'){if(transitioning)return;transitioning=true;clear();experience.cancel();roomFade.setAttribute('aria-label',name+' 준비 중');roomLoader.start();roomFade.setAttribute('aria-hidden','false');roomFade.classList.add('active');try{
  // Give the overlay a paint before building an uncached room; no invented progress/delay.
  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));await change();
- await renderer.compileAsync?.(scene,camera);transitioning=false;await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+ if(glowPass)await glowPass.prepare(scene,camera);else await renderer.compileAsync?.(scene,camera);transitioning=false;await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
  }catch(e){status.textContent=e.message;window.labToast?.(e.message);}finally{roomLoader.stop();roomFade.classList.remove('active');roomFade.setAttribute('aria-hidden','true');transitioning=false;window.dispatchEvent(new Event('lab:close'));}}
 window.enterInterior=id=>{const room=interiorRooms[id],door=interiorDoors[id];if(!room||!door||activeInterior)return;if(window.worldContentEnabled?.(id)===false){status.textContent='지금은 점검 중입니다.';return;}if(Math.hypot(fluff.position.x-door.x,fluff.position.z-door.z)>6){window.labToast?.('입구에 가까이 와 주세요.');return;}return transitionRoom(async()=>{interiors.ensure(id);const approved=await window.changeWinterRegion(id);returnPosition={x:door.x,z:door.z};window.labInteriorExit=returnPosition;setInterior(id);placePlayer(approved.position,approved.yaw);},room.name);};
 // Exhibit feedback belongs to the object; opening a card never takes over the user's camera.
@@ -105,7 +105,7 @@ window.addEventListener('lab:preview-appearance',e=>portrait?.customize(e.detail
 window.addEventListener('lab:preview-front',()=>portraitOrbit?.reset());
 appearance(window.labAppearance||{});
 let prev=performance.now();const frameMetrics=createFrameMetrics(renderer);window.labPerformance=frameMetrics;document.querySelector('#measure-performance').onclick=()=>{frameMetrics.start();document.querySelector('#performance-stats').textContent='10초 동안 측정합니다. 설정을 닫고 이동해도 됩니다.';};
-const fireworks=createWinterFireworks(scene),fantasy=createFantasyVFX(scene),glowPass=renderer.getDrawingBufferSize?createGlowPass(renderer):null;
+const fireworks=createWinterFireworks(scene,{light:fill}),fantasy=createFantasyVFX(scene),glowPass=renderer.getDrawingBufferSize?createGlowPass(renderer):null;
 window.addEventListener('lab:vfx',e=>{if(document.body.classList.contains('reduce-flash')&&['correct','wrong'].includes(e.detail?.kind))return;const p=window.labPlayerState;if(p)fantasy.burst({...p,...e.detail});});
 const qualityControl=document.querySelector('#vfx-quality');let renderMode='auto';try{renderMode=localStorage.getItem('winter-render-mode')||(localStorage.getItem('winter-vfx-quality')==='low'?'low':'auto');}catch{}
 const renderBudget=createRenderBudget({pixelRatio:devicePixelRatio,mobile:compactRenderer(),mode:renderMode}),localLights=createLocalLights(scene,{limit:compactRenderer()?4:6});let shadowElapsed=Infinity,backgroundDirty=true;
@@ -198,6 +198,9 @@ let animationFrame;function animate(now){animationFrame=requestAnimationFrame(an
 
 }
 function resize(){const w=innerWidth,h=innerHeight;renderBudget.viewport(devicePixelRatio,compactRenderer());applyRenderBudget();camera.aspect=w/h;camera.fov=w<650?58:44;camera.updateProjectionMatrix();if(!frame)targetDistance=18;}
-resize();window.addEventListener('resize',resize);canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();window.labLoading?.error('3D 화면을 사용할 수 없습니다.');status.textContent='3D 화면 연결이 끊겼습니다. 학습은 계속할 수 있어요. 새로고침하면 화면을 다시 엽니다.';document.body.classList.add('no-webgl');});status.textContent='WASD 또는 터치로 이동합니다. M으로 지도를 열 수 있어요.';document.body.classList.add('world-ready');animationFrame=requestAnimationFrame(animate);
+resize();
+// Compile available programs while the lightweight loading animation is still visible.
+if(glowPass)await glowPass.prepare(scene,camera);else await renderer.compileAsync?.(scene,camera);
+window.addEventListener('resize',resize);canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();window.labLoading?.error('3D 화면을 사용할 수 없습니다.');status.textContent='3D 화면 연결이 끊겼습니다. 학습은 계속할 수 있어요. 새로고침하면 화면을 다시 엽니다.';document.body.classList.add('no-webgl');});status.textContent='WASD 또는 터치로 이동합니다. M으로 지도를 열 수 있어요.';document.body.classList.add('world-ready');animationFrame=requestAnimationFrame(animate);
 window.addEventListener('pagehide',event=>{if(event.persisted)return;cancelAnimationFrame(animationFrame);if(interiorPrefetch){if(window.cancelIdleCallback)window.cancelIdleCallback(interiorPrefetch);else clearTimeout(interiorPrefetch);}navigation.dispose();selfLayout.dispose();frameMetrics.dispose();touchControls.dispose?.();visitors.dispose?.();sharedTree.dispose?.();cameraClearance.reset();localLights.dispose();interiors.dispose();glowPass?.dispose();fireworks.dispose();roomLoader.dispose();companion.dispose();portrait?.dispose();disposeOwnedScene(scene);if(portraitScene)disposeOwnedScene(portraitScene);portraitRenderer?.dispose();renderer.dispose();},{once:false});
 }

@@ -19,12 +19,18 @@ export function createSkiTrails(scene){
     vertexShader:`attribute vec4 trackHeights;attribute float trackBirth;attribute float trackStrength;varying vec2 coord;varying float age;varying float strength;uniform float time;
       void main(){coord=uv;age=time-trackBirth;strength=trackStrength;vec4 p=instanceMatrix*vec4(position,1.);float edge=abs(uv.x-.5)*2.;float lip=exp(-pow((edge-.76)*12.,2.))*.024;p.y=mix(mix(trackHeights.x,trackHeights.y,uv.x),mix(trackHeights.z,trackHeights.w,uv.x),uv.y)+.016+lip;gl_Position=projectionMatrix*modelViewMatrix*p;}`,
     fragmentShader:`varying vec2 coord;varying float age;varying float strength;
-      void main(){if(age<0.||age>=12.)discard;float edge=abs(coord.x-.5)*2.;float inside=1.-smoothstep(.48,.8,edge);float lip=exp(-pow((edge-.77)*14.,2.));float cut=1.-smoothstep(.86,1.,edge);float end=smoothstep(0.,.022,coord.y)*(1.-smoothstep(.978,1.,coord.y));float fade=1.-smoothstep(3.,12.,age);float grain=.94+.06*sin(coord.y*39.+coord.x*63.);vec3 snow=mix(vec3(.78,.86,.91),vec3(.48,.61,.7),inside*.75);snow=mix(snow,vec3(.98,.99,1.),lip*.9);float alpha=(.12+inside*.15+lip*.24)*cut*end*fade*strength*grain;gl_FragColor=vec4(snow,alpha);}`});
+      void main(){if(age<0.||age>=12.)discard;float edge=abs(coord.x-.5)*2.;float inside=1.-smoothstep(.48,.8,edge);float lip=exp(-pow((edge-.77)*14.,2.));float cut=1.-smoothstep(.86,1.,edge);float end=smoothstep(0.,.022,coord.y)*(1.-smoothstep(.978,1.,coord.y));float fade=1.-smoothstep(3.,12.,age);float grain=.94+.06*sin(coord.y*39.+coord.x*63.);vec3 snow=mix(vec3(.78,.86,.91),vec3(.48,.61,.7),inside*.75);snow=mix(snow,vec3(.98,.99,1.),lip*.9);float alpha=(.12+inside*.15+lip*.24)*cut*end*fade*strength*grain;gl_FragColor=vec4(snow,alpha);
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`});
   const tracks=new T.InstancedMesh(geometry,material,TRACK_LIMIT);tracks.name='temporary-ski-tracks';tracks.frustumCulled=false;tracks.instanceMatrix.setUsage(T.DynamicDrawUsage);tracks.visible=false;scene.add(tracks);
   const powderGeometry=new T.PlaneGeometry(1,1),powderAlpha=new T.InstancedBufferAttribute(new Float32Array(POWDER_LIMIT),1);powderGeometry.setAttribute('powderAlpha',powderAlpha);
   const powderMaterial=new T.ShaderMaterial({transparent:true,depthWrite:false,
     vertexShader:`attribute float powderAlpha;varying vec2 coord;varying float opacity;void main(){coord=uv;opacity=powderAlpha;vec4 center=modelViewMatrix*instanceMatrix*vec4(0.,0.,0.,1.);float size=length(instanceMatrix[0].xyz);center.xy+=position.xy*size;gl_Position=projectionMatrix*center;}`,
-    fragmentShader:`varying vec2 coord;varying float opacity;void main(){vec2 p=(coord-.5)*2.;float r=dot(p,p);float soft=exp(-r*3.5)*(1.-smoothstep(.55,1.,r));float fleck=.83+.17*sin(p.x*19.+sin(p.y*12.)*2.);gl_FragColor=vec4(.9,.96,1.,soft*opacity*fleck);}`});
+    fragmentShader:`varying vec2 coord;varying float opacity;void main(){vec2 p=(coord-.5)*2.;float r=dot(p,p);float soft=exp(-r*3.5)*(1.-smoothstep(.55,1.,r));float fleck=.83+.17*sin(p.x*19.+sin(p.y*12.)*2.);gl_FragColor=vec4(.9,.96,1.,soft*opacity*fleck);
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`});
   const powder=new T.InstancedMesh(powderGeometry,powderMaterial,POWDER_LIMIT);powder.name='ski-turn-powder';powder.frustumCulled=false;powder.visible=false;powder.instanceMatrix.setUsage(T.DynamicDrawUsage);scene.add(powder);
   const particles=Array.from({length:POWDER_LIMIT},()=>({age:2,life:1,x:0,y:0,z:0,vx:0,vy:0,vz:0,radius:0}));
   const matrix=new T.Matrix4(),right=new T.Vector3(),forward=new T.Vector3(),up=new T.Vector3(0,1,0),scale=new T.Vector3();
