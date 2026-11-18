@@ -1,0 +1,60 @@
+{
+  "phase": "after",
+  "revision": null,
+  "checks": [
+    "desktop opt-in, explicit request, playback and preference reset",
+    "desktop sourced exhibit to quiz and close",
+    "laptop settings frame and overflow",
+    "tablet settings frame and overflow",
+    "mobile opt-in, explicit request, playback and preference reset",
+    "mobile sourced exhibit to quiz and close",
+    "small settings frame and overflow",
+    "landscape settings frame and overflow"
+  ],
+  "errors": [],
+  "performance": [
+    {
+      "name": "world",
+      "mobile": false,
+      "rafFps": 37.67642133801132,
+      "rafP95": 33.399999999999636,
+      "mainThreadMs": 1910.995,
+      "layouts": 143,
+      "styleRecalculations": 382,
+      "blur": "blur(10px)"
+    },
+    {
+      "name": "settings",
+      "mobile": false,
+      "rafFps": 60.00318953831431,
+      "rafP95": 16.799999999999272,
+      "mainThreadMs": 198.59199999999998,
+      "layouts": 0,
+      "styleRecalculations": 302,
+      "blur": "blur(10px)"
+    },
+    {
+      "name": "world",
+      "mobile": true,
+      "rafFps": 57.22119568456814,
+      "rafP95": 16.80000000000291,
+      "mainThreadMs": 3168.509,
+      "layouts": 176,
+      "styleRecalculations": 1820,
+      "blur": "blur(5px)"
+    },
+    {
+      "name": "settings",
+      "mobile": true,
+      "rafFps": 60.00318953831431,
+      "rafP95": 16.700000000000728,
+      "mainThreadMs": 195.006,
+      "layouts": 1,
+      "styleRecalculations": 307,
+      "blur": "blur(5px)"
+    }
+  ],
+  "physicalMobile": false,
+  "liveAI": false,
+  "liveMicrophone": false
+}
