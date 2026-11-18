@@ -1,3 +1,5 @@
+import {ryokanFacadeDetails} from './winter-architecture-details.js';
+import {materials as architectureMaterials} from './architecture-kit.js';
 import {onsenBasins} from './onsen-layout.js';
 import {createOnsenWaterfall} from './onsen-waterfall.js';
 import {createOnsenResponse} from './onsen-response.js';
@@ -89,11 +91,11 @@ export function buildSpaResort(api){
  for(let i=0;i<80;i++)box(.017,.012,21.9,cedarDark,.1+i*.3,.347,126);
  function threshold(a,b,width,side){const positions=side?[a[0],a[1],a[2]-width/2,a[0],a[1],a[2]+width/2,b[0],b[1],b[2]-width/2,b[0],b[1],b[2]+width/2]:[a[0]-width/2,a[1],a[2],a[0]+width/2,a[1],a[2],b[0]-width/2,b[1],b[2],b[0]+width/2,b[1],b[2]];const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));geometry.setAttribute('uv',new T.Float32BufferAttribute([0,0,1,0,0,1,1,1],2));geometry.setIndex(side?[0,1,2,1,3,2]:[0,2,1,1,2,3]);geometry.computeVertexNormals();mesh(geometry,cedarLight);}
  threshold([12,.09,114.2],[12,.34,115],4.4,false);threshold([-.8,.09,121.5],[0,.34,121.5],4.6,true);
- const facadePaper=new T.MeshStandardMaterial({color:'#d9cba9',emissive:'#e8b66f',emissiveIntensity:.13,roughness:.9});
+ const facadePaper=new T.MeshStandardMaterial({color:'#d9cba9',emissive:'#e8b66f',emissiveIntensity:.34,roughness:.9});
  // Front doors are open, with an uninterrupted 4.4 m entry passage.
  for(const [x,w]of [[4.9,9.8],[19.1,9.8]]){box(w,.62,.18,cedar,x,.65,115);box(w,3.2,.14,facadePaper,x,2.55,115.09);for(let i=0;i<Math.floor(w/.38);i++)box(.045,2.7,.08,cedarDark,x-w/2+.15+i*.38,2.3,114.93);}
  for(const [x,w]of [[4.9,9.8],[19.1,9.8]])for(const y of [1.05,2.35,3.7])box(w,.065,.1,cedarDark,x,y,114.92);
- const glass=new T.MeshStandardMaterial({color:'#cbbf9c',emissive:'#edbd76',emissiveIntensity:.18,roughness:.88,side:T.DoubleSide});
+ const glass=new T.MeshStandardMaterial({color:'#cbbf9c',emissive:'#edbd76',emissiveIntensity:.35,roughness:.88,side:T.DoubleSide});
  for(const [x,z,d]of [[0,117.1,4.2],[0,130.4,13.2],[24,126,22]]){box(.2,.8,d,cedar,x,.74,z);const gl=box(.025,2.9,d-.12,glass,x,2.6,z);moving.add(gl);for(let zz=z-d/2;zz<=z+d/2+.01;zz+=2)box(.22,4.3,.22,cedarDark,x,2.5,zz);box(.3,.24,d+.1,cedarDark,x,4.65,z);}
  box(.28,4.3,.28,cedarDark,0,2.5,119.2);box(.28,4.3,.28,cedarDark,0,2.5,123.8);box(.3,.24,4.6,cedarDark,0,4.65,121.5);
  box(24,4.25,.22,cedar,12,2.45,137);for(let x=.3;x<24;x+=.3)box(.035,4.1,.04,cedarLight,x,2.45,136.86);
@@ -239,6 +241,7 @@ export function buildSpaResort(api){
  for(const p of pools){target('onsen',p.access.x,.7,p.access.z,p.width+1,1.5,3);interactive.at(-1).userData.activity=p.id;}target('sauna',12,1.8,114,4.2,3.4,1.6);target('footbath',footbath.x,.95,footbath.z,4.3,1.5,3.5);target('lounge',lounge.x,1.1,lounge.z,1.8,1.5,4.8);
  const response=createOnsenResponse(root,bathWaters);moving.add(response.root);
  // Merge opaque static geometry by material while keeping water and vapour separate.
+ ryokanFacadeDetails(root,{...architectureMaterials(),cedar,lightWood:cedarLight,endgrain:cedarDark,brass,snow,linen:cloth,lamp});
  root.updateMatrixWorld(true);const groups=new Map();root.traverse(o=>{if(!o.isMesh||o.userData.snowTrail||moving.has(o)||Array.isArray(o.material))return;const key=o.material.uuid;if(!groups.has(key))groups.set(key,{material:o.material,items:[]});groups.get(key).items.push(o);});
  for(const {material,items}of groups.values()){if(items.length<2)continue;const chunks={position:[],normal:[],uv:[]};let count=0;for(const o of items){let g=o.geometry.clone().applyMatrix4(o.matrixWorld);if(g.index){const old=g;g=g.toNonIndexed();old.dispose();}if(!g.attributes.normal)g.computeVertexNormals();const size=g.attributes.position.count;chunks.position.push(g.attributes.position.array);chunks.normal.push(g.attributes.normal.array);chunks.uv.push(g.attributes.uv?.array||new Float32Array(size*2));count+=size;g.dispose();o.removeFromParent();}const g=new T.BufferGeometry();for(const key of Object.keys(chunks)){const size=key==='uv'?2:3,out=new Float32Array(count*size);let at=0;for(const chunk of chunks[key]){out.set(chunk,at);at+=chunk.length;}g.setAttribute(key,new T.BufferAttribute(out,size));}g.computeBoundingSphere();mesh(g,material);}
  // Keep the approach readable: vapour originates inside the rear half of each
@@ -246,7 +249,8 @@ export function buildSpaResort(api){
  const atmosphere=createRetreatAtmosphere(root,{name:'spa',
   waters:[{x:footbath.x,y:.665,z:footbath.z,rx:1.9,rz:1.5,lights:[[14.8,3.45,121.4],[20,3.3,136.7]]}],
   vapour:[{x:-19.5,y:.08,z:134.6,rx:.8,rz:.35,rise:.5,size:.45,count:12,opacity:.18},{x:-10,y:.04,z:125.8,rx:5.2,rz:3.3,rise:2.7,size:3.3,count:40,opacity:.2},{x:-19,y:.04,z:132.7,rx:2.55,rz:1.7,rise:2,size:2.4,count:22,opacity:.19},{x:footbath.x,y:.67,z:footbath.z+.25,rx:1.35,rz:.9,rise:1.1,size:.7,count:10,opacity:.1},{x:16.6,y:1.35,z:120.25,rx:.15,rz:.15,rise:.65,size:.28,count:6,opacity:.095},{x:12,y:1.5,z:130,rx:.65,rz:.65,rise:1.45,size:.5,count:7,opacity:.055}],
-  fireflies:[{x:-23.8,y:.7,z:131,rx:1.6,rz:2,height:1.1,count:9,color:'#e9c783'},{x:-7.5,y:.7,z:139,rx:2.1,rz:1.3,height:1.1,count:9,color:'#e9c783'}],
+  ribbons:[],
+  fireflies:[{x:12,y:5,z:113,rx:8,rz:2,height:2,count:28,color:'#e9d3a6'},{x:-23.8,y:.7,z:131,rx:1.6,rz:2,height:1.1,count:9,color:'#e9c783'},{x:-7.5,y:.7,z:139,rx:2.1,rz:1.3,height:1.1,count:9,color:'#e9c783'}],
   lamps:[...[[9.2,121.4],[14.8,121.4],[4,134.8],[9.3,134.8],[14.7,134.8],[20,134.8]].map(([x,z])=>({x,y:.365,z,rx:2.5,rz:2.1})),...[[-2.6,96],[2.6,104],[-8,111],[-19.6,120],[8.6,112],[15.4,115],[-21.8,136],[1,136]].map(([x,z])=>({x,y:.158,z,rx:1.7,rz:1.7}))]
  });
  // Local warmth comes from the actual fixtures; emissive shades alone cannot light cedar.

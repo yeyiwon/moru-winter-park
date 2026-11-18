@@ -1,0 +1,26 @@
+{
+  "at": "2026-11-18T11:44:25.714Z",
+  "mobileEmulation": true,
+  "physicalMobile": false,
+  "checks": [
+    "real room readiness, continuous drawing, exact tip, Loading only, immediate completion",
+    "both room transitions retain actual server entry/exit",
+    "existing kiosk pickup, walking with lit sparkler",
+    "carried sparkler synchronizes to another visitor",
+    "another item replaces sparkler and stops its particles",
+    "admin UI starts server show, guests rejected, clocks/seed shared and late join preserved",
+    "all five 3D patterns rendered; effect reduction lowers density and removes flash",
+    "server stop removes drawing, fixed GPU pool retained without growth"
+  ],
+  "errors": [],
+  "sceneMemory": {
+    "before": {
+      "geometries": 853,
+      "textures": 30
+    },
+    "after": {
+      "geometries": 853,
+      "textures": 30
+    }
+  }
+}

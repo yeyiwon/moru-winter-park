@@ -1,0 +1,630 @@
+{
+  "stage": "after",
+  "checks": [
+    {
+      "interaction": "all three expressions covered by goggles, visible again in bath"
+    },
+    {
+      "viewport": "desktop",
+      "id": "map",
+      "frame": {
+        "x": 320,
+        "y": 120,
+        "w": 800,
+        "h": 660,
+        "bottom": 780
+      },
+      "title": {
+        "x": 341,
+        "y": 146.40625,
+        "w": 702,
+        "h": 25.1875,
+        "bottom": 171.59375
+      },
+      "tabs": {
+        "x": 341,
+        "y": 185,
+        "w": 758,
+        "h": 44,
+        "bottom": 229
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "desktop",
+      "interaction": "eight visible markers; PC click/mobile two-tap reaches both lift bases and both dismounts at correct elevations"
+    },
+    {
+      "viewport": "desktop",
+      "id": "light",
+      "frame": {
+        "x": 320,
+        "y": 120,
+        "w": 800,
+        "h": 660,
+        "bottom": 780
+      },
+      "title": {
+        "x": 341,
+        "y": 146.40625,
+        "w": 702,
+        "h": 25.1875,
+        "bottom": 171.59375
+      },
+      "tabs": {
+        "x": 341,
+        "y": 185,
+        "w": 758,
+        "h": 44,
+        "bottom": 229
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "desktop",
+      "id": "fluff",
+      "frame": {
+        "x": 320,
+        "y": 120,
+        "w": 800,
+        "h": 660,
+        "bottom": 780
+      },
+      "title": {
+        "x": 341,
+        "y": 146.40625,
+        "w": 702,
+        "h": 25.1875,
+        "bottom": 171.59375
+      },
+      "tabs": {
+        "x": 341,
+        "y": 185,
+        "w": 758,
+        "h": 44,
+        "bottom": 229
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "desktop",
+      "id": "audio",
+      "frame": {
+        "x": 320,
+        "y": 120,
+        "w": 800,
+        "h": 660,
+        "bottom": 780
+      },
+      "title": {
+        "x": 341,
+        "y": 146.40625,
+        "w": 702,
+        "h": 25.1875,
+        "bottom": 171.59375
+      },
+      "tabs": {
+        "x": 341,
+        "y": 185,
+        "w": 758,
+        "h": 44,
+        "bottom": 229
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "desktop",
+      "interaction": "music picker bounds and keyboard dismissal"
+    },
+    {
+      "viewport": "desktop",
+      "id": "social",
+      "frame": {
+        "x": 320,
+        "y": 120,
+        "w": 800,
+        "h": 660,
+        "bottom": 780
+      },
+      "title": {
+        "x": 341,
+        "y": 146.40625,
+        "w": 702,
+        "h": 25.1875,
+        "bottom": 171.59375
+      },
+      "tabs": {
+        "x": 341,
+        "y": 185,
+        "w": 758,
+        "h": 44,
+        "bottom": 229
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "desktop",
+      "interaction": "wish composer shares glass theme; draft only, no submission"
+    },
+    {
+      "viewport": "desktop",
+      "interaction": "focused chat has no input outline; draft only, no send"
+    },
+    {
+      "viewport": "small-mobile",
+      "id": "map",
+      "frame": {
+        "x": 10,
+        "y": 12,
+        "w": 300,
+        "h": 616,
+        "bottom": 628
+      },
+      "title": {
+        "x": 23,
+        "y": 35.09375,
+        "w": 222,
+        "h": 23.796875,
+        "bottom": 58.890625
+      },
+      "tabs": {
+        "x": 23,
+        "y": 71,
+        "w": 274,
+        "h": 44,
+        "bottom": 115
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "small-mobile",
+      "interaction": "eight visible markers; PC click/mobile two-tap reaches both lift bases and both dismounts at correct elevations"
+    },
+    {
+      "viewport": "small-mobile",
+      "id": "light",
+      "frame": {
+        "x": 10,
+        "y": 12,
+        "w": 300,
+        "h": 616,
+        "bottom": 628
+      },
+      "title": {
+        "x": 23,
+        "y": 35.09375,
+        "w": 222,
+        "h": 23.796875,
+        "bottom": 58.890625
+      },
+      "tabs": {
+        "x": 23,
+        "y": 71,
+        "w": 274,
+        "h": 44,
+        "bottom": 115
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "small-mobile",
+      "id": "fluff",
+      "frame": {
+        "x": 10,
+        "y": 12,
+        "w": 300,
+        "h": 616,
+        "bottom": 628
+      },
+      "title": {
+        "x": 23,
+        "y": 35.09375,
+        "w": 222,
+        "h": 23.796875,
+        "bottom": 58.890625
+      },
+      "tabs": {
+        "x": 23,
+        "y": 71,
+        "w": 274,
+        "h": 44,
+        "bottom": 115
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "small-mobile",
+      "id": "audio",
+      "frame": {
+        "x": 10,
+        "y": 12,
+        "w": 300,
+        "h": 616,
+        "bottom": 628
+      },
+      "title": {
+        "x": 23,
+        "y": 35.09375,
+        "w": 222,
+        "h": 23.796875,
+        "bottom": 58.890625
+      },
+      "tabs": {
+        "x": 23,
+        "y": 71,
+        "w": 274,
+        "h": 44,
+        "bottom": 115
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "small-mobile",
+      "interaction": "music picker bounds and keyboard dismissal"
+    },
+    {
+      "viewport": "small-mobile",
+      "id": "social",
+      "frame": {
+        "x": 10,
+        "y": 12,
+        "w": 300,
+        "h": 616,
+        "bottom": 628
+      },
+      "title": {
+        "x": 23,
+        "y": 35.09375,
+        "w": 222,
+        "h": 23.796875,
+        "bottom": 58.890625
+      },
+      "tabs": {
+        "x": 23,
+        "y": 71,
+        "w": 274,
+        "h": 44,
+        "bottom": 115
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "mobile",
+      "id": "map",
+      "frame": {
+        "x": 10,
+        "y": 12,
+        "w": 370,
+        "h": 820,
+        "bottom": 832
+      },
+      "title": {
+        "x": 23,
+        "y": 35.09375,
+        "w": 292,
+        "h": 23.796875,
+        "bottom": 58.890625
+      },
+      "tabs": {
+        "x": 23,
+        "y": 71,
+        "w": 344,
+        "h": 44,
+        "bottom": 115
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "mobile",
+      "interaction": "eight visible markers; PC click/mobile two-tap reaches both lift bases and both dismounts at correct elevations"
+    },
+    {
+      "viewport": "mobile",
+      "id": "light",
+      "frame": {
+        "x": 10,
+        "y": 12,
+        "w": 370,
+        "h": 820,
+        "bottom": 832
+      },
+      "title": {
+        "x": 23,
+        "y": 35.09375,
+        "w": 292,
+        "h": 23.796875,
+        "bottom": 58.890625
+      },
+      "tabs": {
+        "x": 23,
+        "y": 71,
+        "w": 344,
+        "h": 44,
+        "bottom": 115
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "mobile",
+      "id": "fluff",
+      "frame": {
+        "x": 10,
+        "y": 12,
+        "w": 370,
+        "h": 820,
+        "bottom": 832
+      },
+      "title": {
+        "x": 23,
+        "y": 35.09375,
+        "w": 292,
+        "h": 23.796875,
+        "bottom": 58.890625
+      },
+      "tabs": {
+        "x": 23,
+        "y": 71,
+        "w": 344,
+        "h": 44,
+        "bottom": 115
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "mobile",
+      "id": "audio",
+      "frame": {
+        "x": 10,
+        "y": 12,
+        "w": 370,
+        "h": 820,
+        "bottom": 832
+      },
+      "title": {
+        "x": 23,
+        "y": 35.09375,
+        "w": 292,
+        "h": 23.796875,
+        "bottom": 58.890625
+      },
+      "tabs": {
+        "x": 23,
+        "y": 71,
+        "w": 344,
+        "h": 44,
+        "bottom": 115
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "mobile",
+      "interaction": "music picker bounds and keyboard dismissal"
+    },
+    {
+      "viewport": "mobile",
+      "id": "social",
+      "frame": {
+        "x": 10,
+        "y": 12,
+        "w": 370,
+        "h": 820,
+        "bottom": 832
+      },
+      "title": {
+        "x": 23,
+        "y": 35.09375,
+        "w": 292,
+        "h": 23.796875,
+        "bottom": 58.890625
+      },
+      "tabs": {
+        "x": 23,
+        "y": 71,
+        "w": 344,
+        "h": 44,
+        "bottom": 115
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "landscape",
+      "id": "map",
+      "frame": {
+        "x": 22,
+        "y": 8,
+        "w": 800,
+        "h": 374,
+        "bottom": 382
+      },
+      "title": {
+        "x": 37,
+        "y": 22.40625,
+        "w": 718,
+        "h": 25.1875,
+        "bottom": 47.59375
+      },
+      "tabs": {
+        "x": 37,
+        "y": 53,
+        "w": 770,
+        "h": 36,
+        "bottom": 89
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "landscape",
+      "interaction": "eight visible markers; PC click/mobile two-tap reaches both lift bases and both dismounts at correct elevations"
+    },
+    {
+      "viewport": "landscape",
+      "id": "light",
+      "frame": {
+        "x": 22,
+        "y": 8,
+        "w": 800,
+        "h": 374,
+        "bottom": 382
+      },
+      "title": {
+        "x": 37,
+        "y": 22.40625,
+        "w": 718,
+        "h": 25.1875,
+        "bottom": 47.59375
+      },
+      "tabs": {
+        "x": 37,
+        "y": 53,
+        "w": 770,
+        "h": 36,
+        "bottom": 89
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "landscape",
+      "id": "fluff",
+      "frame": {
+        "x": 22,
+        "y": 8,
+        "w": 800,
+        "h": 374,
+        "bottom": 382
+      },
+      "title": {
+        "x": 37,
+        "y": 22.40625,
+        "w": 718,
+        "h": 25.1875,
+        "bottom": 47.59375
+      },
+      "tabs": {
+        "x": 37,
+        "y": 53,
+        "w": 770,
+        "h": 36,
+        "bottom": 89
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "landscape",
+      "id": "audio",
+      "frame": {
+        "x": 22,
+        "y": 8,
+        "w": 800,
+        "h": 374,
+        "bottom": 382
+      },
+      "title": {
+        "x": 37,
+        "y": 22.40625,
+        "w": 718,
+        "h": 25.1875,
+        "bottom": 47.59375
+      },
+      "tabs": {
+        "x": 37,
+        "y": 53,
+        "w": 770,
+        "h": 36,
+        "bottom": 89
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    },
+    {
+      "viewport": "landscape",
+      "interaction": "music picker bounds and keyboard dismissal"
+    },
+    {
+      "viewport": "landscape",
+      "id": "social",
+      "frame": {
+        "x": 22,
+        "y": 8,
+        "w": 800,
+        "h": 374,
+        "bottom": 382
+      },
+      "title": {
+        "x": 37,
+        "y": 22.40625,
+        "w": 718,
+        "h": 25.1875,
+        "bottom": 47.59375
+      },
+      "tabs": {
+        "x": 37,
+        "y": 53,
+        "w": 770,
+        "h": 36,
+        "bottom": 89
+      },
+      "overflow": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(145deg, rgba(255, 247, 230, 0.24), rgba(232, 244, 251, 0.1) 58%, rgba(255, 250, 240, 0.17)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(248, 246, 240)",
+      "selected": "rgba(255, 248, 231, 0.17) none repeat scroll 0% 0% / auto padding-box border-box"
+    }
+  ],
+  "errors": [],
+  "physicalMobile": false
+}

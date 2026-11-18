@@ -42,3 +42,15 @@ test('appearance is bounded, persisted and sent to another guest',async t=>{
  const other=await(await call('presence',{x:0,y:.95,z:30,yaw:0},b.cookie)).json(),peer=other.people.find(p=>p.id===a.id);assert.equal(peer.color,'#17191e');assert.equal(peer.fluff,70);assert.equal(peer.roundness,36);
  const restored=await(await call('access',undefined,a.cookie)).json();assert.equal(restored.session.accessory,'eyes-goofy');assert.equal(restored.session.fluff,70);
 });
+
+
+test('only owner can start one synchronized firework score; late visitors receive its original clock',async t=>{
+ const {DB,call,join}=await fixture(t),a=await join('공연 모루'),b=await join('관객');
+ assert.equal((await call('fireworks',{action:'start'},a.cookie)).status,403);
+ const starts=await Promise.all([call('fireworks',{action:'start'},a.cookie,true),call('fireworks',{action:'start'},a.cookie,true)]);assert.deepEqual(starts.map(r=>r.status).sort(),[200,409]);
+ const first=await starts.find(r=>r.status===200).json();assert.equal(first.show.state,'scheduled');assert.ok(Number.isInteger(first.show.seed));
+ const second=await(await call('fireworks',undefined,b.cookie)).json();assert.equal(second.show.id,first.show.id);assert.equal(second.show.startsAt,first.show.startsAt);assert.equal(second.show.seed,first.show.seed);
+ const presence=await(await call('presence',{x:0,y:.95,z:30,yaw:0},b.cookie)).json();assert.equal(presence.fireworks.id,first.show.id);
+ assert.equal((await call('fireworks',{action:'stop'},b.cookie)).status,403);assert.equal((await call('fireworks',{action:'stop'},a.cookie,true)).status,200);assert.equal((await(await call('fireworks',undefined,b.cookie)).json()).show.state,'stopped');
+ assert.equal((await call('fireworks',{action:'start'},a.cookie,true)).status,409);
+});

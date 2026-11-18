@@ -1,10 +1,10 @@
 {
   "environment": "Node v22.4.1 darwin arm64",
   "measurement": "CPU scene geometry construction; no browser, WebGL or GPU rendering",
-  "sceneConstructionMs": 127390.57,
-  "meshObjects": 643,
-  "materials": 191,
-  "triangles": 4123400,
+  "sceneConstructionMs": 292267.93,
+  "meshObjects": 718,
+  "materials": 212,
+  "triangles": 4288974,
   "renderFPS": null,
   "largestMeshes": [
     {

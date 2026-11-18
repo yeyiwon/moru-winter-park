@@ -25,7 +25,7 @@ function update(persist=true){
   window.dispatchEvent(new CustomEvent('lab:appearance',{detail:{...appearance}}));
   try{if(persist)localStorage.setItem('lab-appearance-v2',JSON.stringify(appearance));}catch{document.querySelector('.studio-saved').textContent='설정을 저장할 수 없습니다. 이 화면에서는 계속 적용됩니다.';}
 }
-function selectTab(id){for(const b of tabs){const active=b.dataset.studio===id;b.setAttribute('aria-selected',active);b.tabIndex=active?0:-1;document.getElementById('pane-'+b.dataset.studio).hidden=!active;}window.labPreviewVisible=studio.open&&id==='fluff';window.dispatchEvent(new Event('lab:preview'));}
+function selectTab(id){const names={map:['MAP','지도'],light:['WEATHER & LIGHT','시간·날씨'],fluff:['CUSTOMIZE','커스터마이징'],audio:['SOUND','소리'],social:['INVITE','초대']};document.querySelector('#studio-section-en').textContent=names[id][0];document.querySelector('#studio-section-name').textContent=names[id][1];for(const b of tabs){const active=b.dataset.studio===id;b.setAttribute('aria-selected',active);b.tabIndex=active?0:-1;document.getElementById('pane-'+b.dataset.studio).hidden=!active;}window.labPreviewVisible=studio.open&&id==='fluff';window.dispatchEvent(new Event('lab:preview'));}
 function openStudio(tab){document.getElementById('park-menu').open=false;window.dismissParkDiscovery?.();if(!studio.open)studio.showModal();document.body.classList.add('studio-open');selectTab(tab);window.dispatchEvent(new Event('lab:pause'));window.labSound?.('open');}
 function closeStudio(){if(document.body.classList.contains('invite-gate'))return;closeDialog(studio);}
 window.openWinterSettings=openStudio;document.getElementById('open-map').onclick=()=>openStudio('map');document.getElementById('open-settings').onclick=()=>openStudio('light');document.getElementById('close-studio').onclick=closeStudio;
@@ -34,7 +34,7 @@ studio.addEventListener('click',e=>{if(e.target===studio){const r=studio.getBoun
 studio.querySelector('[role=tablist]').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const current=tabs.indexOf(document.activeElement),index=e.key==='Home'?0:e.key==='End'?tabs.length-1:(current+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;selectTab(tabs[index].dataset.studio);tabs[index].focus();});
 for(const [id,key] of [['light-color','light'],['light-level','brightness'],['fur-length','fluff'],['roundness','roundness']])document.getElementById(id).addEventListener('input',e=>{appearance[key]=key==='light'?e.target.value:Number(e.target.value);update();});
 
-createWorldMap(document.getElementById('island-map'),id=>{closeStudio();const region=mapFacilities.find(p=>p.id===id)?.region;window.travelToIsland?.({park:'park',ski:'alpine',spa:'spa',tree:'wish',museum:'philosophy'}[region]);});
+createWorldMap(document.getElementById('island-map'),id=>{closeStudio();const place=mapFacilities.find(p=>p.id===id);if(place?.travelId){window.travelToPlace?.(place.travelId,false);return;}const region=place?.region;window.travelToIsland?.({park:'park',ski:'alpine',spa:'spa',tree:'wish',museum:'philosophy'}[region]);});
 update();
 
 window.addEventListener('keydown',e=>{if(document.body.classList.contains('invite-gate')||e.code!=='KeyM'||e.repeat||e.metaKey||e.ctrlKey||e.altKey||e.target.closest?.('input,textarea,select,[contenteditable=true]')||document.querySelector('#learning').open)return;e.preventDefault();if(studio.open&&!document.querySelector('#pane-map').hidden)closeStudio();else openStudio('map');});

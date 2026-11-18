@@ -11,7 +11,7 @@ import {museumLayout} from '../dist/district-layout.js';
 test('final five islands preserve relative placement and never overlap',()=>{
  assert.deepEqual(Object.keys(regions),['park','ski','spa','tree','museum']);
  assert.equal(interiorRooms.conservatory,undefined);assert.equal(interiorPositionValid(800,.95,0),false);
- assert.equal(mapFacilities.length,5);assert.ok(!mapFacilities.some(p=>['conservatory','castle'].includes(p.id)));
+ assert.equal(mapFacilities.length,8);assert.ok(!mapFacilities.some(p=>['conservatory','castle'].includes(p.id)));
  assert.ok(regions.ski.center.z<regions.spa.center.z&&regions.spa.center.z<regions.tree.center.z);
  assert.ok(regions.tree.center.z>regions.park.center.z);assert.ok(regions.museum.center.x<regions.park.center.x-regions.park.size.rx);
  for(let x=-180;x<150;x+=2)for(let z=-360;z<120;z+=2)assert.ok(landforms.filter(f=>landDistance(x,z,f)<0).length<=1,`overlapping land at ${x},${z}`);
@@ -32,7 +32,7 @@ test('all requested routes walk through real collision with no teleport shortcut
 test('changing a region origin moves its bridge anchors, landmarks and safe arrival together',()=>{
  const definition={id:'test',center:{x:20,z:40},arrival:{x:2,z:3},anchors:{park:{x:-4,z:1}},landmarks:{door:{x:3,z:0}}},a=resolveRegion(definition),b=resolveRegion({...definition,center:{x:35,z:12}});
  for(const [p,q]of [[a.arrival,b.arrival],[a.anchors.park,b.anchors.park],[a.landmarks.door,b.landmarks.door]])assert.deepEqual({x:q.x-p.x,z:q.z-p.z},{x:15,z:-28});
- for(const marker of mapFacilities)assert.deepEqual({x:marker.x,z:marker.z},regions[marker.region].arrival);
+ for(const marker of mapFacilities.filter(p=>!p.travelId))assert.deepEqual({x:marker.x,z:marker.z},regions[marker.region].arrival);
 });
 
 test('bridge aprons keep the full walking width clear before paths turn',()=>{

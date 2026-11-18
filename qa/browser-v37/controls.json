@@ -1,0 +1,31 @@
+{
+  "checks": [
+    {
+      "course": "main",
+      "maxSpeed": 29.316432179740133,
+      "mode": "",
+      "gear": "none",
+      "phase": "Idle",
+      "hidden": true
+    },
+    {
+      "course": "curve",
+      "maxSpeed": 29.586821068700655,
+      "mode": "",
+      "gear": "none",
+      "phase": "Idle",
+      "hidden": true
+    },
+    {
+      "course": "easy",
+      "maxSpeed": 28.518096118153142,
+      "mode": "",
+      "gear": "none",
+      "phase": "Idle",
+      "hidden": true
+    },
+    "mobile native multitouch movement+jump, touch cancel, camera drag"
+  ],
+  "errors": [],
+  "physicalMobile": false
+}

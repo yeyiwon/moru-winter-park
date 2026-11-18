@@ -1,7 +1,8 @@
+import {skiMapDestinations} from './resort-layout.js';
 import {worldAtlas} from './map-atlas.js';
 import {regions} from './region-layout.js';
 import {mapIcon} from './map-icons.js';
-export const mapFacilities=Object.entries({park:'park',ski:'ski',spa:'onsen',tree:'tree',museum:'quiz'}).map(([region,id])=>({id,region,name:regions[region].name,...regions[region].arrival}));
+export const mapFacilities=[...Object.entries({park:'park',spa:'onsen',tree:'tree',museum:'quiz'}).map(([region,id])=>({id,region,name:regions[region].name,...regions[region].arrival})),...skiMapDestinations.map(p=>({...p,travelId:p.id}))];
 // Touch targets remain disjoint; short leader lines retain the true world anchor.
 export function mapLabelPositions(facilities,view,width,height){
  const placed=[];
@@ -16,7 +17,7 @@ const m=worldAtlas.projection,det=m[0]*m[9]-m[8]*m[1],warp=worldAtlas.warp||{sta
 const atlasZ=z=>z<warp.start?warp.start+(z-warp.start)*warp.scale:z;
 const worldZ=z=>z<warp.start?warp.start+(z-warp.start)/warp.scale:z;
 function inverseClip(x,y){const a=x-m[12],b=y-m[13];return{x:(a*m[9]-b*m[8])/det,z:worldZ((b*m[0]-a*m[1])/det)};}
-function atlasPoint(p){const z=atlasZ(p.z);return{x:(m[0]*p.x+m[8]*z+m[12]+1)*worldAtlas.width/2,y:(1-m[1]*p.x-m[9]*z-m[13])*worldAtlas.height/2};}
+function atlasPoint(p){const z=atlasZ(p.z),y=(p.y||0)*(p.z<warp.start?(warp.heightScale??.65):1);return{x:(m[0]*p.x+m[4]*y+m[8]*z+m[12]+1)*worldAtlas.width/2,y:(1-m[1]*p.x-m[5]*y-m[9]*z-m[13])*worldAtlas.height/2};}
 export const mapOverview={...inverseClip(0,0),zoom:1};
 export const mapDefaultView={...mapOverview,zoom:1.35};
 function mapScale(view,width,height){return Math.max(.01,Math.min((width-24)/worldAtlas.width,(height-24)/worldAtlas.height))*view.zoom;}
@@ -25,7 +26,7 @@ export function unprojectMap(p,view,width,height){const c=atlasPoint(view),scale
 export function createWorldMap(root,onTravel){
  root.replaceChildren();root.classList.add('coordinate-map');const canvas=document.createElement('canvas');canvas.setAttribute('aria-label','실제 월드 지도. 드래그로 이동, 휠 또는 두 손가락으로 확대합니다. 주요 구역을 누르면 이동합니다.');canvas.tabIndex=0;
  const controls=document.createElement('div');controls.className='map-controls';controls.innerHTML='<button data-zoom="1.35" aria-label="지도 확대">+</button><button data-zoom=".74" aria-label="지도 축소">−</button><button data-fit aria-label="지도 전체 보기">⌖</button>';
- const labelsLayer=document.createElement('div');labelsLayer.className='map-regions';const regionButtons=new Map();for(const p of mapFacilities){const button=document.createElement('button');button.className='map-region';button.dataset.region=p.id;button.setAttribute('aria-label',p.name+' 이동');button.innerHTML=mapIcon(p.id);button.setAttribute('aria-pressed','false');const name=document.createElement('span');name.textContent=p.name;button.append(name);let touch=false;button.onclick=e=>{e.stopPropagation();select(p.id,touch&&e.detail!==0);};button.onpointerdown=e=>{touch=e.pointerType==='touch';e.stopPropagation();};regionButtons.set(p.id,button);labelsLayer.append(button);}root.append(canvas,labelsLayer,controls);
+ const labelsLayer=document.createElement('div');labelsLayer.className='map-regions';const regionButtons=new Map();for(const p of mapFacilities){const button=document.createElement('button');button.className='map-region';button.dataset.region=p.id;button.setAttribute('aria-label',p.name+' 이동');button.innerHTML=mapIcon(p.icon||p.id);button.setAttribute('aria-pressed','false');const name=document.createElement('span');name.textContent=p.name;button.append(name);let touch=false;button.onclick=e=>{e.stopPropagation();select(p.id,touch&&e.detail!==0);};button.onpointerdown=e=>{touch=e.pointerType==='touch';e.stopPropagation();};regionButtons.set(p.id,button);labelsLayer.append(button);}root.append(canvas,labelsLayer,controls);
  const ctx=canvas.getContext('2d'),view={...mapDefaultView},pointers=new Map();let width=0,height=0,start=null,moved=false,frame=0,selected=null;const atlas=document.createElement('img');atlas.decoding='async';atlas.onload=()=>draw();atlas.src=worldAtlas.image;
  function select(id,touch){if(touch&&selected!==id){selected=id;for(const [key,b]of regionButtons){b.setAttribute('aria-pressed',String(key===id));b.querySelector('span').textContent=mapFacilities.find(f=>f.id===key).name+(key===id?' · 다시 눌러 이동':'');}return;}onTravel(id);}
  function zoom(factor,p={x:width/2,y:height/2}){const before=unprojectMap(p,view,width,height);view.zoom=Math.max(1,Math.min(8,view.zoom*factor));const after=unprojectMap(p,view,width,height);view.x+=before.x-after.x;view.z=worldZ(atlasZ(view.z)+atlasZ(before.z)-atlasZ(after.z));draw();}
@@ -37,7 +38,7 @@ export function createWorldMap(root,onTravel){
   for(let i=0;i<55;i++){ctx.fillStyle=i%4?'#a8c6dc22':'#e1d1ac65';ctx.beginPath();ctx.arc((i*137.3)%width,(i*71.7)%height,i%4?.7:1.2,0,Math.PI*2);ctx.fill();}
   if(atlas.complete&&atlas.naturalWidth){const c=atlasPoint(view);ctx.drawImage(atlas,width/2-c.x*scale,height/2-c.y*scale,worldAtlas.width*scale,worldAtlas.height*scale);}
   for(const button of regionButtons.values())button.hidden=true;
-  for(const p of mapLabelPositions(mapFacilities,view,width,height)){const button=regionButtons.get(p.id);button.hidden=false;button.style.left=p.x+'px';button.style.top=p.y+'px';button.dataset.labelAlign=p.x<width*.35?'left':p.x>width*.65?'right':'center';ctx.strokeStyle='#c3e7f267';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.anchor.x,p.anchor.y);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.fillStyle='#e5f7fc';ctx.beginPath();ctx.arc(p.anchor.x,p.anchor.y,3,0,Math.PI*2);ctx.fill();}
+  for(const p of mapLabelPositions(mapFacilities,view,width,height)){const button=regionButtons.get(p.id);button.hidden=false;button.style.left=p.x+'px';button.style.top=p.y+'px';button.dataset.labelAlign=p.x<width*.35?'left':p.x>width*.65?'right':'center';button.dataset.labelSide=p.y<80?'below':'above';button.style.setProperty('--map-label-width',Math.min(220,width-20)+'px');ctx.strokeStyle='#c3e7f267';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(p.anchor.x,p.anchor.y);ctx.lineTo(p.x,p.y);ctx.stroke();ctx.fillStyle='#e5f7fc';ctx.beginPath();ctx.arc(p.anchor.x,p.anchor.y,3,0,Math.PI*2);ctx.fill();}
   const player=window.labInterior?window.labInteriorExit:window.labPlayerState;if(player){const p=projectMap(player,view,width,height);ctx.fillStyle='#9bf2da';ctx.beginPath();ctx.arc(p.x,p.y,4.5,0,Math.PI*2);ctx.fill();ctx.strokeStyle='#e4fff5b0';ctx.lineWidth=2;ctx.beginPath();ctx.arc(p.x,p.y,9,0,Math.PI*2);ctx.stroke();}
   ctx.font='10px Winter Sans, sans-serif';ctx.textAlign='left';ctx.fillStyle='#d9eaf0a0';ctx.fillText('N ↑',15,24);
  }

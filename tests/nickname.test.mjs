@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {nicknameParts,validateNickname} from '../dist/nickname.js';
+test('nickname limit counts visible Korean and composed emoji, validates both boundaries',()=>{assert.equal(validateNickname('  가나다라마바'+'사아자차  '),'가나다라마바사아자차');assert.throws(()=>validateNickname('가'.repeat(11)),/10/);assert.throws(()=>validateNickname(' '),/1~10/);assert.equal(nicknameParts('👩🏽‍🚀'.repeat(10)).length,10);assert.equal(validateNickname('👩🏽‍🚀'.repeat(10)),'👩🏽‍🚀'.repeat(10));assert.throws(()=>validateNickname('👩🏽‍🚀'.repeat(11)));assert.equal(validateNickname('모루'),'모루');assert.equal(validateNickname('<모루>\u0000'),'모루');});

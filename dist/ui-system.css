@@ -10,11 +10,57 @@
  --ui-space-1:4px;--ui-space-2:8px;--ui-space-3:12px;--ui-space-4:16px;--ui-space-5:24px;
  --ui-fast:140ms;--ui-duration:180ms;--ui-ease:cubic-bezier(.2,.7,.3,1);
  --ui-layer-dock:26;--ui-layer-picker:100;
+ --panel-glass:linear-gradient(145deg,rgba(255,247,230,.24),rgba(232,244,251,.1) 58%,rgba(255,250,240,.17));
 }
 #studio,#studio:has(#pane-map:not([hidden])),.glass-panel,#wish-panel.is-composing,#wish-feed[open],#tree-tools,#quick-quiz,#museum-puzzle,.select-options,.menu-panel,.control-help>div,.chat-entry,#emote-panel{
+ /* Panel ink is local: floating world labels still need their light text. */
+ --ui-ink:#f8f6f0;--ui-muted:#e0e5e8;--ui-accent:#ead9b9;
+ --ui-glass:var(--panel-glass);--ui-edge:rgba(255,250,240,.3);
+ --ui-hover:rgba(255,252,243,.09);--ui-selected:rgba(255,248,231,.17);
+ --ui-field:rgba(255,255,255,.055);
+ --ui-shadow:inset 0 1px 0 #fff8e963,inset 0 -1px 0 #ffffff0f,0 12px 36px #0715231a;
  color:var(--ui-ink);background:var(--ui-glass);border:1px solid var(--ui-edge);box-shadow:var(--ui-shadow);
  backdrop-filter:blur(var(--ui-blur));-webkit-backdrop-filter:blur(var(--ui-blur));
 }
+/* One quiet pearl surface across settings, wishes and popovers. No nested blur. */
+#studio :is(button,summary,output,h2,h3,.studio-footnote,.section-intro p,.audio-status,.audio-credit,.music-credit,.social-count,.social-person,.custom-tabs button),
+.glass-panel :is(button,summary,h2,h3,.field-caption),#tree-tools :is(button,p),#quick-quiz :is(button,h2,p),#museum-puzzle button,
+.chat-entry :is(input,button),#emote-panel button{color:var(--ui-ink);text-shadow:none}
+#studio :is(.studio-footnote,.section-intro p,.audio-credit,.music-credit,.preview-hint),
+.glass-panel :is(.wish-compose-head p,.fine-print,.wish-message output,.wish-card small,.wish-card footer),#tree-tools p{color:var(--ui-muted)}
+#studio :is(p,small,a,.control-caption,.eyebrow){color:var(--ui-muted);text-shadow:none}
+#studio :is(.setting-row>span,#social-room,.control-caption){color:var(--ui-ink)}
+#studio input:not([type=range]):not([type=color]):not([type=checkbox]){color:var(--ui-ink)}
+#studio :is(.music-track,.privacy-note,.weather-settings p,.weather-settings small){opacity:1}
+#studio .accessories svg{color:var(--ui-ink)}
+#studio input[type=range]{accent-color:var(--ui-accent)}
+#studio input[type=range]::-webkit-slider-runnable-track{background:#e5dfd42e}
+#studio input[type=range]::-moz-range-track{background:#e5dfd42e}
+#studio input[type=range]::-webkit-slider-thumb{background:#e2d1af;border:3px solid #fffaf0b3;box-shadow:0 1px 4px #35434f24}
+#studio input[type=range]::-moz-range-thumb{background:#e2d1af;border:3px solid #fffaf0b3;box-shadow:0 1px 4px #35434f24}
+#studio :is(input,textarea)::placeholder,.glass-panel :is(input,textarea)::placeholder,.chat-entry input::placeholder{color:var(--ui-muted);opacity:.72}
+#studio .fluff-controls .accessories button,.glass-panel .wish-shapes button,#tree-tools .tree-palette [data-kind]{background:var(--ui-field);border-color:rgba(255,248,231,.13);color:var(--ui-ink)}
+#studio .music-modes [aria-pressed=true]{background:var(--ui-selected);border-color:var(--ui-edge)}
+#studio .swatches [aria-pressed=true],#studio .custom-color.selected{box-shadow:0 0 0 2px #46535b,0 0 0 4px var(--ui-accent);outline:none}
+#studio .custom-tabs{background:transparent}
+#studio .fluff-stage{border-radius:18px;background:radial-gradient(ellipse at 50% 42%,#ffffff0a,transparent 72%)}
+#studio .setting-row [aria-checked=true],.select-options [aria-selected=true],.select-options [aria-selected=true]::after{color:var(--ui-ink);background-color:var(--ui-selected)}
+.select-options [aria-selected=true]::after{background:transparent}
+.select-options{background:var(--ui-glass)}
+.glass-panel .wish-shapes [aria-pressed=true],#tree-tools .tree-palette [aria-pressed=true]{background:var(--ui-selected);border-color:var(--ui-accent)}
+#studio :is(.swatches,.wish-swatches) [aria-pressed=true]{outline-color:var(--ui-accent)}
+#pane-map .map-region>span{background:linear-gradient(145deg,rgba(30,43,61,.24),rgba(23,37,55,.1) 58%,rgba(34,46,64,.17));text-shadow:none}
+#pane-map .map-controls button{background:var(--ui-glass)!important;color:var(--ui-ink)}
+#studio :is([role=tabpanel],.fluff-controls),.glass-panel .panel-scroll,.select-options{scrollbar-color:#fff8e917 transparent}
+#studio :is([role=tabpanel],.fluff-controls):hover,.glass-panel .panel-scroll:hover,.select-options:hover{scrollbar-color:#fff8e92e transparent}
+.chat-entry:focus-within{border-color:#fff8e95c;box-shadow:var(--ui-shadow)}
+.chat-entry button{background:var(--ui-hover);border-color:var(--ui-edge)}
+.chat-entry input:focus,.chat-entry input:focus-visible{outline:none;box-shadow:none}
+.glass-panel textarea:focus,.glass-panel textarea:focus-visible{outline:none!important;border-color:var(--ui-edge)!important;box-shadow:none}
+#studio input:focus-visible,#studio select:focus-visible{outline-color:var(--ui-accent)}
+.studio details[open],.glass-panel details[open]{color:var(--ui-ink);background:transparent;box-shadow:none}
+#admin-panel details[open]{background:var(--ui-field);border-color:var(--ui-edge)}
+.glass-panel textarea:focus,.glass-panel input:focus{background:var(--ui-field);border-color:var(--ui-accent)}
 #studio,.glass-panel,#quick-quiz,#museum-puzzle{border-radius:var(--ui-radius)}
 #studio::backdrop,.glass-panel::backdrop,#quick-quiz::backdrop,#museum-puzzle::backdrop{background:#06152119;backdrop-filter:none;-webkit-backdrop-filter:none}
 #studio .studio-tabs button,.wish-tabs button,.custom-tabs button{min-height:var(--ui-control-height);border:0;box-shadow:none;border-radius:var(--ui-control-radius);background:transparent;transition:background var(--ui-fast) var(--ui-ease),color var(--ui-fast)}
@@ -73,9 +119,9 @@ body.still *,body.still *::before,body.still *::after{animation-duration:.001ms!
 @media(max-width:350px){.preference-grid{grid-template-columns:1fr}}
 @media(max-height:500px){#exhibit-panel{left:auto;right:10px;bottom:10px;max-height:calc(100dvh - 20px);width:min(380px,calc(100vw - 20px))}}
 :root[data-render-quality=low]{--ui-blur:0px}
-@media(prefers-reduced-transparency:reduce){:root{--ui-glass:#101c30;--ui-blur:0px}}
+@media(prefers-reduced-transparency:reduce){:root{--panel-glass:#35434f;--ui-blur:0px}.select-options{--panel-glass:#35434f}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
-@supports not (backdrop-filter:blur(1px)){:root{--ui-glass:#0b172cdb}}
+@supports not (backdrop-filter:blur(1px)){:root{--panel-glass:#35434ff2}}
 
 /* Title and category tabs have distinct rows. Frame dimensions stay stable
    across tabs; only the content pane owns scrolling. */
@@ -93,7 +139,7 @@ body.still *,body.still *::before,body.still *::after{animation-duration:.001ms!
 #studio .studio-saved{font-size:10px;line-height:1.4;padding:0;opacity:.65}
 #studio:has(#pane-map:not([hidden])) .studio-saved{visibility:hidden;height:0;overflow:hidden}
 #pane-map #island-map.coordinate-map{border-radius:12px;background:transparent}
-#studio .fluff-controls .accessories [aria-pressed=true]{background:var(--ui-selected);border-color:#d4e7ff80;box-shadow:inset 0 0 0 1px #d4e7ff19}
+#studio .fluff-controls .accessories [aria-pressed=true]{background:var(--ui-selected);border-color:#e5d7ba8c;box-shadow:inset 0 0 0 1px #e5d7ba19}
 #studio .studio-description:empty{display:none}
 @media(max-width:650px){
  #studio,#studio:has(#pane-map:not([hidden])){width:calc(100vw - 20px);height:calc(100dvh - 24px - var(--safe-top,0px) - var(--safe-bottom,0px));padding:12px;--ui-blur:5px}
@@ -110,3 +156,39 @@ body.still *,body.still *::before,body.still *::after{animation-duration:.001ms!
  #studio .studio-tabs button{min-height:36px;padding:6px 12px}
  #studio .studio-saved{display:none}
 }
+
+/* The field and save action are one surface, with a reserved feedback row. */
+#studio #profile-form{gap:8px;margin-bottom:22px}
+#profile-form>label{font-size:12px;line-height:1.5;color:var(--ui-muted)}
+#studio .profile-entry{display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;gap:4px;padding:3px 4px 3px 14px;min-height:50px;border:1px solid var(--ui-edge);border-radius:16px;background:var(--ui-field);box-shadow:inset 0 1px 0 #fff8e914;transition:border-color .18s,background .18s}
+#studio .profile-entry:focus-within{border-color:#fff6df80;background:#fff8ed0e}
+#studio .profile-entry input{height:44px;min-height:44px;width:100%;margin:0;padding:0;border:0!important;border-radius:0;background:transparent!important;box-shadow:none!important;outline:none!important;font-size:16px;line-height:1.5;letter-spacing:-.02em}
+#studio .profile-entry button{width:44px;height:44px;border:0;border-radius:12px;background:transparent;box-shadow:none;display:grid;place-items:center;color:var(--ui-accent)}
+#studio .profile-entry button:not(:disabled):hover{background:var(--ui-selected)}
+#studio .profile-entry button:disabled{opacity:.32;cursor:default}
+#studio .profile-entry button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.profile-feedback{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start;min-height:20px;padding:0 4px}
+#profile-status,#profile-count,.nickname-count{font-size:11px;line-height:20px;color:var(--ui-muted);font-variant-numeric:tabular-nums}
+#profile-form[data-state=error] #profile-status{color:#ffcbb8}
+#profile-form[data-state=saved] #profile-status{color:#efe2be}
+#studio .studio-tabs{justify-content:center}
+header .world-meta{left:50%;transform:translateX(-50%);justify-content:center;text-align:center}
+#studio .snow-setting{position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:48px;margin-top:8px;cursor:pointer}
+.snow-setting>span{display:flex;align-items:center;gap:9px}
+.snow-setting svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.1;stroke-linecap:round}
+#studio .snow-setting input{position:absolute;right:0;width:48px;height:44px;margin:0;opacity:0;cursor:pointer;z-index:1}
+.snow-setting i{width:38px;height:22px;flex:none;border:1px solid var(--ui-edge);border-radius:20px;background:#ffffff08;position:relative;transition:background .18s}
+.snow-setting i:after{content:'';position:absolute;left:3px;top:3px;width:14px;height:14px;border-radius:50%;background:#d5dfe6;transition:transform .18s,background .18s}
+.snow-setting input:checked+i{background:#ead9b92b;border-color:#f5e5c254}
+.snow-setting input:checked+i:after{transform:translateX(16px);background:#fff3d8}
+.snow-setting input:focus-visible+i{outline:2px solid var(--ui-accent);outline-offset:4px}
+@media(max-width:650px){#studio .studio-tabs{justify-content:space-evenly}.profile-entry{min-height:50px}header .world-meta{top:46px;max-width:calc(100vw - 28px);gap:10px;font-size:9px}}
+
+
+/* One shared section title keeps every settings tab's hierarchy identical. */
+.studio-header{grid-template-rows:44px auto auto}
+.studio-section-title{grid-column:1/-1;display:flex;align-items:baseline;gap:10px;padding:8px 8px 0;min-height:32px}
+#studio .studio-section-title h2{font-size:14px;line-height:1.5;margin:0;font-weight:500;order:-1}
+#studio .studio-section-title .eyebrow{font-size:9px;line-height:1.5;letter-spacing:.14em;opacity:.6}
+#studio #pane-social .section-intro{margin:0 0 18px;padding:0}
+@media(max-height:500px){.studio-header{grid-template-rows:36px auto auto}.studio-section-title{padding-top:2px;min-height:24px}}

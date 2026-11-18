@@ -1,6 +1,6 @@
 import {regions,regionBridges} from './region-layout.js';
 import {spaToWorld} from './spa-transform.js';
-import {alpineShift} from './resort-layout.js';
+import {alpineShift,liftLayout,upperLiftEntry,upperLiftLayout} from './resort-layout.js';
 import {postOffice} from './retreat-layout.js';
 import {museumLayout} from './district-layout.js';
 const spa=(x,z)=>p(spaToWorld({x,z}));
@@ -9,9 +9,11 @@ const p=point=>[point.x,point.z],anchor=(id,other)=>{const bridge=regionBridges.
 export const worldPathLinks=[
  ...regionBridges.flatMap(b=>[[p(b.approachStart),p(b.start),6],[p(b.start),p(b.end),6],[p(b.end),p(b.approachEnd),6]]),
  [[0,26],anchor('park','tree'),6],[[0,-7],anchor('park','ski'),5.5],
- [anchor('ski','park'),[-24,-160+alpineShift],6],[[-24,-160+alpineShift],[-36,-176+alpineShift],5],
- [[-36,-176+alpineShift],[-44,-181.8+alpineShift],4.2],[[-44,-181.8+alpineShift],[-38,-90],4.2],[[-38,-90],p(regions.ski.arrival),4.2],
- [anchor('ski','spa'),[56,-90],6],[[56,-90],[8,-82],6],[[8,-82],[-24,-70],6],
+ [anchor('ski','park'),[-24,-149+alpineShift],6],[[-24,-149+alpineShift],[-62,-150+alpineShift],5.5],
+ [[-62,-150+alpineShift],[liftLayout.x,-170+alpineShift],5.5],[[liftLayout.x,-170+alpineShift],[liftLayout.x,-185+alpineShift],5.5],
+ [[liftLayout.x,-170+alpineShift],p(regions.ski.arrival),5.5],
+ [[-24,-149+alpineShift],[52,-153+alpineShift],6],[[52,-153+alpineShift],[upperLiftLayout.x-8,-174+alpineShift],6],[[upperLiftLayout.x-8,-174+alpineShift],p(upperLiftEntry),6],
+ [anchor('ski','spa'),[52,-153+alpineShift],6],
  [[26,14],[34,12],6],[[34,12],anchor('park','spa'),6],
  [anchor('spa','park'),p(regions.spa.arrival),5.5],[anchor('spa','ski'),spa(16,108),4.4],[spa(16,108),spa(12,108),4.4],[spa(12,108),p(regions.spa.arrival),4.4],
  [spa(12,108),spa(12,113.6),5],

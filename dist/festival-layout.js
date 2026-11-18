@@ -9,7 +9,7 @@ export const festivalLamps=[[-54,1],[-35,-23]].map(([x,z])=>({x,z}));
 // Rest stops remain inside the compact park, clear of both boarding approaches.
 export const festivalBenches=[{x:-53,z:-5},{x:-46,z:21}];
 export const festivalObstacles=[...festivalLamps.map(p=>({...p,r:.43})),
- ...festivalBenches.map(p=>({...p,w:2.25,d:.55})),{...candyStall,rx:1.75,rz:1.1},
+ ...festivalBenches.map(p=>({...p,w:2.05,d:.7})),{...candyStall,rx:1.75,rz:1.1},
 ];
 export function amusementPositionValid(x,y,z,mode){
  if(!Number.isFinite(x+y+z))return false;

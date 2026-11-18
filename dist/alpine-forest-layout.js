@@ -13,9 +13,9 @@ function clear(x,z,h){
  if(skiRunouts.some(a=>Math.hypot((x-a.x)/(a.rx+6),(z-a.z)/(a.rz+6))<1))return false;
  if([summit,peakSummit].some(s=>Math.hypot((x-s.x)/(s.rx+7),(z-s.z)/(s.rz+7))<1))return false;
  if(skiRuns.some(run=>z>run.startZ-8&&z<run.finish+14&&Math.abs(x-skiRunCenter(z,run.id))<skiRunHalfWidth(z,run.id)+8))return false;
- if(z>=-344&&z<=-284&&Math.abs(x-24)<14)return false;
+
  if(liftLines.some(line=>distanceToLine(x,z,line)<9)||distanceToLine(x,z,summitTransfer)<9)return false;
- if(Math.abs(x+55)<16&&Math.abs(z+176)<15)return false;
+ if(Math.abs(x+97)<16&&Math.abs(z+176)<15)return false;
  if(Math.abs(x+36)<8&&z>-196&&z<-169)return false;
  if(summitFacilities.some(p=>Math.hypot(x-(p.model?.x??p.x),z-(p.model?.z??p.z))<h*.4+7))return false;
  const grade=Math.hypot(alpineHeight(x+1,z)-alpineHeight(x-1,z),alpineHeight(x,z+1)-alpineHeight(x,z-1))/2;

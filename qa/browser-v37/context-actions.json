@@ -1,0 +1,17 @@
+{
+  "checks": [
+    {
+      "mobileEmulation": false,
+      "bench": "one primary sit action, E/touch; F inactive; moving stands up; away from bench decoration resumes",
+      "museum": "stone paving retained and added uplights absent",
+      "sign": "actual walk from bridge to sign; no popup or adjacent lamp"
+    },
+    {
+      "mobileEmulation": true,
+      "bench": "one primary sit action, E/touch; F inactive; moving stands up; away from bench decoration resumes",
+      "museum": "stone paving retained and added uplights absent",
+      "sign": "actual walk from bridge to sign; no popup or adjacent lamp"
+    }
+  ],
+  "errors": []
+}

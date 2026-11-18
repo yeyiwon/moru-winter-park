@@ -1,8 +1,11 @@
+import {pickBalloonTone,pickBalloonStyle} from './balloon-design.js';
+import {serverNow} from './server-clock.js';
+import {benches,benchInteractions,benchAccess} from './bench-layout.js';
 import {onsenEntrances,canUseOnsen} from './onsen-layout.js';
 import {createInteractionExitControl} from './interaction-exit-control.js';
 import {activityCameraView} from './activity-camera.js';
 import {createInteractionLifecycle} from './interaction-lifecycle.js';
-import {carouselCameraView,stallEntrance,balloonCart} from './park-layout.js';
+import {carouselCameraView,stallEntrance,balloonCart,sparklerEntrance} from './park-layout.js';
 import {treeLayout} from './tree-layout.js';
 import {alpineShift} from './resort-layout.js';
 import {ferrisDimensions} from './ferris-layout.js';
@@ -23,13 +26,13 @@ export function createWinterExperience(winter,companion,travel){
  function syncBubbleControl(){bubbleControl.hidden=heldItem!=='bubble-wand'||!!parkRide||spa.active||!!rest||!!rides.mode&&rides.mode!=='summit';}
  bubbleControl.onpointerdown=e=>{e.preventDefault();e.stopPropagation();bubbleControl.setPointerCapture?.(e.pointerId);blow(true);};for(const event of ['pointerup','pointercancel','lostpointercapture'])bubbleControl.addEventListener(event,e=>{e.stopPropagation();blow(false);});
  for(const event of ['blur','lab:pause','pagehide'])window.addEventListener(event,()=>blow(false));document.addEventListener('visibilitychange',()=>blow(false));window.addEventListener('keyup',e=>{if(e.code==='KeyE')blow(false);});
- let reservation=null,boarding=false,boardingEpoch=0;let winterBorrowed=false;let parkRide='',parkSeat=0;let place=null,rest=null,lastMode='',anchor=null,actionKeys=[],gesture='',gestureTime=0,heldItem='',roast=0,position={x:0,z:0},finishEating=false;
- const parkActivities=[{id:'popcorn',name:'팝콘',...stallEntrance('popcorn'),r:3},{id:'snowman',name:'눈사람',x:-6.5,z:5.4,r:3},{id:'bubbles',name:'풍선 부스',x:balloonCart.x,z:balloonCart.z+2.6,r:3},{id:'icecream',name:'아이스크림',...stallEntrance('candy'),r:3},{id:'coffee',name:'카페',...stallEntrance('waffle'),r:3},];
+ let sparklerSoundTime=0;let reservation=null,boarding=false,boardingEpoch=0;let winterBorrowed=false;let parkRide='',parkSeat=0;let place=null,rest=null,lastMode='',anchor=null,actionKeys=[],gesture='',gestureTime=0,heldItem='',balloonTone=-1,balloonStyle='classic',roast=0,position={x:0,z:0},finishEating=false;
+ const parkActivities=[{id:'sparkler',name:'스파클러',...sparklerEntrance,r:3},{id:'popcorn',name:'팝콘',...stallEntrance('popcorn'),r:3},{id:'snowman',name:'눈사람',x:-6.5,z:5.4,r:3},{id:'bubbles',name:'풍선 부스',x:balloonCart.x,z:balloonCart.z+2.6,r:3},{id:'icecream',name:'아이스크림',...stallEntrance('candy'),r:3},{id:'coffee',name:'카페',...stallEntrance('waffle'),r:3},];
  function act(kind,duration=5){blow(false);lifecycle.enter(place||{id:kind,...position});lifecycle.activate();gesture=kind;gestureTime=duration;window.labSound?.(kind);card.hidden=true;}
  function gestureFacing(at=position){if(!['warm','roast'].includes(gesture))return null;const fire=summitFacilities.find(p=>p.id==='campfire').model;return Math.atan2(fire.x-at.x,fire.z-at.z);}
  function eat(){finishEating=true;act('eat',2.8);}
  function clearItem(){blow(false);heldItem='';syncBubbleControl();roast=0;finishEating=false;}
- function take(item){blow(false);clearGesture();heldItem=item;syncBubbleControl();roast=0;finishEating=false;window.labSound?.('select');lifecycle.dismiss(place);hideActions();}
+ function take(item){if(item==='balloon'){balloonTone=pickBalloonTone(balloonTone);balloonStyle=pickBalloonStyle();}blow(false);clearGesture();heldItem=item;syncBubbleControl();roast=0;finishEating=false;window.labSound?.('select');lifecycle.dismiss(place);hideActions();}
  window.addEventListener('lab:emote',e=>{if(['heart','joy','sad','surprise','dance'].includes(e.detail)&&!rides.mode&&!parkRide){act(e.detail,e.detail==='dance'?7:3.5);}});
  window.addEventListener('lab:wave',()=>{clearItem();act('wave',3);});
  function button(text,fn){
@@ -43,13 +46,13 @@ export function createWinterExperience(winter,companion,travel){
  function wake(){
   if(gesture){clearGesture();finishEating=false;return true;}
   if(!rest&&!['sauna','lie','tea','lounge','footbath'].includes(spa.kind))return false;
-  const standPosition=rest?.returnPosition;if(rest?.mode==='tea')window.labSound?.('cup-down');spa.stop();rest=null;companion.equip();document.body.classList.remove('spa-active');endUI();window.dispatchEvent(new CustomEvent('lab:stand',{detail:{position:standPosition}}));return true;
+  const standPosition=rest?.returnPosition;if(reservation?.kind==='bench'){window.releaseRide?.();reservation=null;}if(rest?.mode==='tea')window.labSound?.('cup-down');spa.stop();rest=null;companion.equip();document.body.classList.remove('spa-active');endUI();window.dispatchEvent(new CustomEvent('lab:stand',{detail:{position:standPosition}}));return true;
  }
  function returnEquipment(){if(!winterBorrowed)return;winterBorrowed=false;window.dispatchEvent(new Event('lab:return-winter'));companion.equip();}
  function cancel(){blow(false);if(onsenEntrances[spa.kind])window.dispatchEvent(new CustomEvent('lab:onsen-end',{detail:{restore:false}}));boardingEpoch++;if(reservation){window.releaseRide?.();reservation=null;}returnEquipment();parkRide='';
   spa.stop();clearGesture();document.body.classList.remove('spa-active');stopButton.textContent='내리기';rides.stop();rest=null;companion.equip();winter.rideChair.visible=false;endUI();
  }
- window.addEventListener('lab:ride-expired',e=>{if(!reservation)return;const destination=e.detail==='ferris'?'ferris':'ski';cancel();travel(destination,false);});
+ window.addEventListener('lab:ride-expired',e=>{if(!reservation)return;if(reservation.kind==='bench'){wake();return;}const destination=e.detail==='ferris'?'ferris':'ski';cancel();travel(destination,false);});
  function stop(){if(gesture){clearGesture();endUI();return;}if(parkRide){const destination=parkRide;cancel();travel(destination,false);return;}
   if(['ski','summit'].includes(rides.mode)){cancel();companion.equip();window.dispatchEvent(new Event('lab:stand'));return;}
   if(rest||['sauna','lie','tea','lounge','footbath'].includes(spa.kind)){wake();return;}
@@ -68,23 +71,24 @@ export function createWinterExperience(winter,companion,travel){
   companion.equip('none');card.hidden=true;hud.hidden=false;window.labSound?.(kind.includes('bath')?'bath':kind==='tea'?'tea':'rest');document.body.classList.add('spa-active');stopButton.textContent=kind==='footbath'?'일어나기':kind.includes('bath')?'탕에서 나오기':'일어나기';
  }
  function show(id,activity='bath'){
-  place=interiorInteractions.find(p=>p.id===id)||winter.destinations.find(p=>p.id===id)||summitFacilities.find(p=>p.id===id)||skiStarts.find(p=>'slope-'+p.id===id)||parkActivities.find(p=>p.id===id)||(id==='hand-item'?{id,name:{coffee:'커피',cocoa:'코코아',odeng:'어묵',marshmallow:'마시멜로',icecream:'아이스크림'}[heldItem]||'',...position}:null)||(id==='resume-ski'?{id,name:skiRunAt(position.x,position.z).name,...position}:null);
-  if(!place||place.kind==='photo')return;
+  place=benchInteractions.find(p=>p.id===id)||interiorInteractions.find(p=>p.id===id)||winter.destinations.find(p=>p.id===id)||summitFacilities.find(p=>p.id===id)||skiStarts.find(p=>'slope-'+p.id===id)||parkActivities.find(p=>p.id===id)||(id==='hand-item'?{id,name:{coffee:'커피',cocoa:'코코아',odeng:'어묵',marshmallow:'마시멜로',icecream:'아이스크림'}[heldItem]||'',...position}:null)||(id==='resume-ski'?{id,name:skiRunAt(position.x,position.z).name,...position}:null);
+  if(!place||place.kind==='photo'||place.interactive===false)return;
   if(id.startsWith('slope-'))place={...place,id};
   if(id==='onsen'&&onsenEntrances[activity])place={...place,...onsenEntrances[activity].access,r:2.9};
   if(id==='tree')place={...place,x:treeLayout.x,z:treeLayout.z,r:26};
   document.querySelector('#place-kind').textContent='';document.querySelector('#place-name').textContent=place.name;
   document.querySelector('#place-description').textContent='';actions.replaceChildren();actionKeys=[];card.dataset.activity=activity;
   if(['carousel','ferris'].includes(id))button('탑승',async()=>{if(boarding)return;cancel();const epoch=boardingEpoch;boarding=true;try{if(id==='ferris'&&window.reserveRide){const claim=await window.reserveRide('ferris');if(epoch!==boardingEpoch){window.releaseRide?.();return;}reservation=claim;}parkRide=id;lifecycle.enter(place);lifecycle.activate();parkSeat=parseInt((window.labGuestId||'00').slice(0,2),16)||0;companion.equip('none');hud.hidden=false;label.textContent=place.name;stopButton.textContent='내리기';card.hidden=true;window.labSound?.('ride');}catch(error){document.querySelector('#place-description').textContent=error.message;}finally{boarding=false;}});
+  else if(place.kind==='bench'){button('앉기',async()=>{if(boarding)return;const selected=place;cancel();const epoch=boardingEpoch;boarding=true;try{const claim=await window.reserveRide('bench',selected.id);if(epoch!==boardingEpoch){window.releaseRide?.();return;}reservation=claim;const bench=benches.find(b=>b.cabin===claim.cabin),seat=sharedSeatPose(claim,Date.now());rest={...seat,returnPosition:benchAccess(bench),view:{distance:8.6,pitch:.22,yaw:bench.yaw+.35,lookHeight:-.45}};lifecycle.enter(selected);lifecycle.activate();companion.equip('none');card.hidden=true;hud.hidden=false;window.labSound?.('rest');}catch(error){document.querySelector('#place-description').textContent=error.message;card.hidden=false;}finally{boarding=false;}});}
   else if(place.kind==='exit')button('나가기',()=>window.exitInterior?.());
   else if(place.kind==='gallery'){button('전시 보기',()=>window.openKnowledgeExhibit?.(place.gallery));button('퀴즈',()=>window.openQuickQuiz?.({gallery:place.gallery}));if(place.gallery==='logic')button('별자리 맞추기',()=>window.openMuseumPuzzle?.());}
-  else if(place.room)button(place.name,()=>{cancel();lifecycle.enter(place);lifecycle.activate();const mode=['aquarium','view'].includes(place.kind)?'view':place.kind==='dining'?'dining':place.kind==='tea'?'tea':place.kind==='footbath'?'bath':place.kind==='sauna'?'sauna':'lie';rest={...interiorActivityPoses[id],returnPosition:{x:place.x,z:place.z},mode,view:interiorActivityPoses[id].view||activityCameraView(place.kind==='footbath'?'rest':place.kind,{yaw:interiorActivityPoses[id].yaw,mobile:window.innerWidth<650})||{distance:8,pitch:.34,yaw:.25,lookHeight:-.5}};companion.equip('none');card.hidden=true;hud.hidden=false;stopButton.textContent='일어나기';label.textContent='';window.labSound?.(place.kind==='footbath'?'footbath':mode==='tea'?'tea-pour':mode==='dining'?'dining':'rest');});
+  else if(place.room)button(place.name,()=>{cancel();lifecycle.enter(place);lifecycle.activate();const mode=['aquarium','view'].includes(place.kind)?'view':place.kind==='dining'?'dining':place.kind==='tea'?'tea':place.kind==='footbath'?'bath':place.kind==='sauna'?'sauna':'rest';rest={...interiorActivityPoses[id],returnPosition:{x:place.x,z:place.z},mode,view:interiorActivityPoses[id].view||activityCameraView(place.kind==='footbath'?'rest':place.kind,{yaw:interiorActivityPoses[id].yaw,mobile:window.innerWidth<650})||{distance:8,pitch:.34,yaw:.25,lookHeight:-.5}};companion.equip('none');card.hidden=true;hud.hidden=false;stopButton.textContent='일어나기';label.textContent='';window.labSound?.(place.kind==='footbath'?'footbath':mode==='tea'?'tea-pour':mode==='dining'?'dining':'rest');});
   else if(id==='ski-gear'){button('스키',()=>{window.dispatchEvent(new Event('lab:equip-winter'));companion.equip('ski');card.hidden=true;});button('장비 해제',()=>{window.dispatchEvent(new Event('lab:unequip-winter'));companion.equip('none');card.hidden=true;});}
   else if(id==='snowman')button('인사',()=>{window.dispatchEvent(new Event('lab:snowman'));card.hidden=true;});
   else if(id==='post-office')button('소원 쓰기',()=>window.openWishComposer?.());
   else if(id==='hand-item')button(['coffee','cocoa'].includes(heldItem)?'마시기':'먹기',()=>['coffee','cocoa'].includes(heldItem)?act('drink',2.8):eat());
   else if(id==='quiz')button('입장',()=>window.enterInterior?.('museum'));
-  else if(id==='upperlift')button('상부 리프트',()=>start('upperlift'));
+  else if(id==='upperlift')button('정상 리프트',()=>start('upperlift'));
   else if(id==='ski')button('리프트 타기',()=>start('lift'));
   else if(id.startsWith('slope-')||id==='resume-ski')button('스키 타기',()=>start('ski'));
   else if(id==='footbath')button('족욕하기',()=>relax('footbath'));
@@ -97,12 +101,13 @@ export function createWinterExperience(winter,companion,travel){
   else if(id==='campfire'){
    if(heldItem==='marshmallow'){button(roast>=1?'마시멜로 먹기':'마시멜로 굽기',()=>{if(roast>=1)eat();else act('roast',60);});}
    else button('몸 녹이기',()=>act('warm',60));
-  }else if(id==='bubbles'){button('풍선',()=>take('balloon'));button('비눗방울',()=>take('bubble-wand'));}
+  }else if(id==='bubbles'){button('풍선 받기',()=>take('balloon'));button('비눗방울',()=>take('bubble-wand'));}
+  else if(id==='sparkler')button('스파클러',()=>take('sparkler'));
   else if(id==='popcorn')button('팝콘',()=>take('popcorn'));
   else if(id==='candyfloss')button('솜사탕',()=>take('candyfloss'));
   else if(id==='icecream')button('아이스크림',()=>take('icecream'));
   else if(id==='coffee'){button('커피',()=>take('coffee'));}
-  card.hidden=false;anchor={x:place.x,y:rides.mode==='summit'?alpineHeight(place.x,place.z)+2.5:2.7,z:place.z};
+  card.hidden=false;anchor={x:place.x,y:place.z< -65?alpineHeight(place.x,place.z)+2.5:2.7,z:place.z};
  }
  function useHeldItem(){if(parkRide||gesture||spa.active||rides.mode&&rides.mode!=='summit')return false;if(['coffee','cocoa'].includes(heldItem)){act('drink',2.8);return true;}if(['odeng','icecream','candyfloss','popcorn'].includes(heldItem)||heldItem==='marshmallow'&&roast>=1){eat();return true;}return false;}
  const touch={};
@@ -117,25 +122,26 @@ export function createWinterExperience(winter,companion,travel){
   const n=['KeyE','KeyF','KeyG','KeyH'].indexOf(e.code);if(n>=0&&!card.hidden&&actionKeys[n]){e.preventDefault();actionKeys[n]();}
  });
  document.querySelector('#close-place').onclick=()=>{lifecycle.dismiss(place);hideActions();};window.addEventListener('lab:room',()=>{cancel();lifecycle.reset();completedSki=false;});window.addEventListener('lab:wish-submitted',()=>{lifecycle.dismiss(place);hideActions();});
- return{rides,lifecycle,show,wake,cancel,useHeldItem,get anchor(){return anchor;},get active(){return !!parkRide||!!rides.mode||!!rest||spa.active;},get focusGesture(){return gesture;},get facing(){return gestureFacing();},get gesture(){return gesture||(heldItem==='bubble-wand'&&bubbleHeld?'bubble':'');},get heldItem(){return heldItem;},get roast(){return roast;},
+ return{rides,lifecycle,show,wake,cancel,useHeldItem,get anchor(){return anchor;},get active(){return !!parkRide||!!rides.mode||!!rest||spa.active;},get focusGesture(){return gesture;},get facing(){return gestureFacing();},get gesture(){return gesture||(heldItem==='bubble-wand'&&bubbleHeld?'bubble':'');},get heldItem(){return heldItem;},get balloonTone(){return balloonTone;},get balloonStyle(){return balloonStyle;},get roast(){return roast;},
   proximity(x,z){
    position={x,z};lifecycle.update(x,z);
    if(parkRide||gesture||spa.active||rides.mode&&rides.mode!=='summit'||rest||window.treeDecorationActive?.()){card.hidden=true;return;}
    const nearbyRun=skiRunAt(x,z);
-   const inside=interiorAt(x,z);const points=inside?interiorInteractions.filter(p=>p.room===inside.id).map(p=>({...p,r:2.8})):rides.mode==='summit'?[...summitFacilities.map(p=>({...p,r:p.r??4})),...skiStarts.map(p=>({...p,id:'slope-'+p.id}))]:[
+   const inside=interiorAt(x,z);const points=inside?[...interiorInteractions.filter(p=>!['interior-rest','interior-tea','interior-sauna'].includes(p.id)),...benchInteractions].filter(p=>p.room===inside.id).map(p=>({...p,r:2.8})):rides.mode==='summit'?[...summitFacilities.map(p=>({...p,r:p.r??4})),...skiStarts.map(p=>({...p,id:'slope-'+p.id}))]:[
     ...summitFacilities.map(p=>({...p,r:p.r??4})),...skiStarts.map(p=>({...p,id:'slope-'+p.id})),
-    ...(!completedSki&&z>=nearbyRun.startZ-7&&z<=nearbyRun.finish&&Math.abs(x-skiRunCenter(z,nearbyRun.id))<skiRunHalfWidth(z,nearbyRun.id)?[{id:'resume-ski',x,z,r:2}]:[]),...parkActivities,...winter.destinations.filter(p=>p.id!=='onsen'&&p.kind!=='photo').map(p=>p.id==='tree'?{...p,x:treeLayout.x,z:treeLayout.z,r:26}:{...p,r:p.id==='ski'?6.5:4.2}),
+    ...(!completedSki&&z>=nearbyRun.startZ-7&&z<=nearbyRun.finish&&Math.abs(x-skiRunCenter(z,nearbyRun.id))<skiRunHalfWidth(z,nearbyRun.id)?[{id:'resume-ski',x,z,r:2}]:[]),...parkActivities,...benchInteractions.filter(p=>!p.room),...winter.destinations.filter(p=>!p.mapOnly&&p.id!=='onsen'&&p.kind!=='photo').map(p=>p.id==='tree'?{...p,x:treeLayout.x,z:treeLayout.z,r:26}:{...p,r:p.id==='ski'?6.5:4.2}),
     ...Object.entries(onsenEntrances).map(([activity,b])=>({id:'onsen',activity,...b.access,r:2.9}))
    ];
-   const near=points.filter(p=>lifecycle.allow(p,x,z)).filter(p=>Math.hypot(x-p.x,z-p.z)<p.r).sort((a,b)=>Math.hypot(x-a.x,z-a.z)-Math.hypot(x-b.x,z-b.z))[0];
+   const near=points.filter(p=>p.interactive!==false&&lifecycle.allow(p,x,z)).filter(p=>Math.hypot(x-p.x,z-p.z)<p.r).sort((a,b)=>Math.hypot(x-a.x,z-a.z)-Math.hypot(x-b.x,z-b.z))[0];
    if(!near){card.hidden=true;return;}
    if(card.hidden||place?.id!==near.id||(near.activity&&card.dataset.activity!==near.activity))show(near.id,near.activity);
    const distance=Math.hypot(x-treeLayout.x,z-treeLayout.z),treeAnchor=near.id==='tree'&&distance>1?{x:x+(treeLayout.x-x)*2.7/distance,z:z+(treeLayout.z-z)*2.7/distance}:near;
    anchor={x:treeAnchor.x,y:(inside?interiorSurfaceHeight(near.x,near.z):near.z< -150?alpineHeight(near.x,near.z):0)+2.5,z:treeAnchor.z};
   },
   update(dt,input){
+   if(heldItem==='sparkler'&&!parkRide&&!spa.active&&!rides.mode){sparklerSoundTime+=dt;if(sparklerSoundTime>1.4){sparklerSoundTime=0;window.labAudio?.effect('sparkler');}}
    syncBubbleControl();if(bubbleControl.hidden)blow(false);if(bubbleHeld){bubbleSoundTime+=dt;if(bubbleSoundTime>1.7){bubbleSoundTime=0;window.labSound?.('bubble');}}
-   if(parkRide){exitControl.show(parkRide);const seat=reservation?sharedSeatPose(reservation,Date.now()+(window.labServerOffset||0)):winter.parkRides.seat(parkRide,parkSeat);card.hidden=true;document.querySelector('#ski-controls').hidden=true;const outer=parkRide==='carousel'?Math.atan2(seat.x-16,seat.z-3.8):ferrisDimensions.yaw+Math.PI/2;return{...seat,mode:parkRide,view:parkRide==='carousel'?carouselCameraView(seat,window.innerWidth<650):{distance:parkRide==='ferris'?(window.innerWidth<650?14:8.6):8,focus:parkRide==='ferris'?{x:seat.x+Math.sin(ferrisDimensions.yaw)*ferrisDimensions.seatDepth*ferrisDimensions.scale*(reservation?.seat===1?-1:1),z:seat.z+Math.cos(ferrisDimensions.yaw)*ferrisDimensions.seatDepth*ferrisDimensions.scale*(reservation?.seat===1?-1:1)}:null,fov:parkRide==='ferris'?50:undefined,pitch:parkRide==='ferris'?.12:.15,yaw:outer,lookHeight:-.55}};}
+   if(parkRide){exitControl.show(parkRide);const seat=reservation?sharedSeatPose(reservation,serverNow()):winter.parkRides.seat(parkRide,parkSeat);card.hidden=true;document.querySelector('#ski-controls').hidden=true;const outer=parkRide==='carousel'?Math.atan2(seat.x-16,seat.z-3.8):ferrisDimensions.yaw+Math.PI/2;return{...seat,mode:parkRide,view:parkRide==='carousel'?carouselCameraView(seat,window.innerWidth<650):{distance:parkRide==='ferris'?(window.innerWidth<650?14:8.6):8,focus:parkRide==='ferris'?{x:seat.x+Math.sin(ferrisDimensions.yaw)*ferrisDimensions.seatDepth*ferrisDimensions.scale*(reservation?.seat===1?-1:1),z:seat.z+Math.cos(ferrisDimensions.yaw)*ferrisDimensions.seatDepth*ferrisDimensions.scale*(reservation?.seat===1?-1:1)}:null,fov:parkRide==='ferris'?50:undefined,pitch:parkRide==='ferris'?.12:.15,yaw:outer,lookHeight:-.55}};}
    const moving=Math.hypot(input?.x||0,input?.z||0)>.15;
    if(moving){if(gesture){clearGesture();finishEating=false;}else if(wake())return null;}
    if(gesture){
@@ -146,13 +152,13 @@ export function createWinterExperience(winter,companion,travel){
     }
     if(gestureTime<=0){if(finishEating)clearItem();clearGesture();}
    }
-   if(reservation&&rides.mode==='lift')rides.syncElapsed(Math.max(0,(Date.now()+(window.labServerOffset||0)-reservation.startedAt)/1000));
+   if(reservation&&rides.mode==='lift')rides.syncElapsed(Math.max(0,(serverNow()-reservation.startedAt)/1000));
    const result=spa.active?spa.update(dt,input):rest?{...rest,mode:rest.mode||'rest'}:rides.update(reservation&&rides.mode==='lift'?0:dt,{...input,steer:(input?.steer||0)+(touch.right?1:0)-(touch.left?1:0),push:input?.push||touch.push,brake:input?.brake||touch.brake});
    if(result&&gesture){result.gesture=gesture;result.view=place?.view;const facing=gestureFacing(result);if(facing!==null)result.yaw=facing;}
    if(spa.active&&result){label.textContent='';if(spa.state==='Active'&&lifecycle.state==='Entering')lifecycle.activate();}
    if(result?.finished&&result.exitPosition){window.dispatchEvent(new CustomEvent('lab:onsen-end',{detail:{restore:true}}));cancel();return {...result,mode:'',view:undefined};}
    winter.rideChair.visible=rides.mode==='lift';
-   if(winter.rideChair.visible&&result){winter.rideChair.position.set(result.x,result.y-.82,result.z);winter.rideChair.rotation.set(0,result.yaw,0);if(reservation){const p=sharedSeatPose(reservation,Date.now()+(window.labServerOffset||0));result.x=p.x;result.z=p.z;}result.view={distance:window.innerWidth<650?28:24,pitch:.25,fov:50,lookHeight:-.35,focus:{x:winter.rideChair.position.x,z:winter.rideChair.position.z}};}
+   if(winter.rideChair.visible&&result){winter.rideChair.position.set(result.x,result.y-.82,result.z);winter.rideChair.rotation.set(0,result.yaw,0);if(reservation){const offset=(reservation.seat===1?1:-1)*.95;result.x+=Math.cos(result.yaw)*offset;result.z-=Math.sin(result.yaw)*offset;}result.view={distance:window.innerWidth<650?28:24,pitch:.25,fov:50,lookHeight:-.35,focus:{x:winter.rideChair.position.x,z:winter.rideChair.position.z}};}
    if(reservation&&rides.mode==='summit'){window.releaseRide?.();reservation=null;window.labSound?.('lift-exit');endUI();}
    if(rides.mode!==lastMode){
     lastMode=rides.mode;

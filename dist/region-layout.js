@@ -7,7 +7,7 @@ const spaCenter={x:94,z:26},spaGate={x:48,z:7};
 const spaYaw=Math.atan2(spaCenter.x-spaGate.x,spaCenter.z-spaGate.z);
 const definitions={
  park:{id:'park',name:'놀이공원',center:{x:0,z:0},size:{rx:62,rz:38},depth:24,phase:.2,arrival:{x:0,z:24},anchors:{ski:{x:0,z:-28},tree:{x:0,z:32},spa:spaGate,museum:museumGate},landmarks:{castle:{x:0,z:-14},carousel:{x:16,z:3.8}}},
- ski:{id:'ski',name:'스키장',center:{x:0,z:-170},size:{rx:144,rz:144},depth:45,phase:1.2,arrival:{x:-36,z:75},anchors:{park:{x:0,z:117},spa:{x:76,z:113}}},
+ ski:{id:'ski',name:'스키장',center:{x:0,z:-170},size:{rx:144,rz:144},depth:45,phase:1.2,arrival:{x:-70,z:75},anchors:{park:{x:0,z:117},spa:{x:76,z:113}}},
  spa:{id:'spa',name:'온천 · 료칸',center:spaCenter,size:{rx:37,rz:32},depth:24,phase:5.7,yaw:spaYaw,arrival:{x:0,z:-19},anchors:{park:{x:0,z:-27},ski:{x:24,z:-17}},landmarks:{ryokan:{x:12,z:7}}},
  tree:{id:'tree',name:'소원 트리 광장',center:{x:0,z:80},size:{rx:32,rz:29},depth:25,phase:4.3,arrival:{x:-12,z:-6},anchors:{park:{x:0,z:-24}},landmarks:{postOffice:{x:-17,z:-15}}},
  museum:{id:'museum',name:'별빛 만물관',center:museumCenter,size:{rx:34,rz:31},depth:26,phase:1.7,yaw:museumYaw,arrival:{x:0,z:21.5},anchors:{park:{x:0,z:28}},landmarks:{door:{x:0,z:17.4}}}

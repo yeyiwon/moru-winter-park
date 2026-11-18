@@ -1,8 +1,9 @@
 import {districtObstacles} from './district-layout.js';
+import {treeBenches} from './bench-layout.js';
 import {treeLayout,treeShift} from './tree-layout.js';
 import {createStaticColliderIndex,colliderContains} from './collision-grid.js';
 import {postOfficeHost} from './retreat-layout.js';
-import {alpineShift} from './resort-layout.js';
+import {alpineShift,liftLayout} from './resort-layout.js';
 import {alpineTrunkBlocks} from './alpine-forest-layout.js';
 import {castleObstacles} from './castle-layout.js';
 import {interiorAt,interiorCanStandAt,interiorCanMoveFrom} from './interior-layout.js';
@@ -14,8 +15,8 @@ import {resortObstacles,alpineHeight} from './resort-layout.js';
 import {terrainAt,bridges,bridgeHalfWidth,promenadeTrees} from './world-layout.js';
 // Pure ground movement shared by keyboard, touch and click navigation.
 export const obstacles = [
- ...districtObstacles,...promenadeTrees,postOfficeHost,{x:-47.3,z:-181.5+alpineShift,r:.75},...resortObstacles,...festivalObstacles,spaToWorld({x:12,z:126,w:12,d:11,yaw:0}),{x:treeLayout.x,z:treeLayout.z,r:9.4},
-  ...parkObstacles,{x:-6.5,z:3,r:1.02},
+ ...districtObstacles,...promenadeTrees,postOfficeHost,{x:liftLayout.x-11.3,z:-181.5+alpineShift,r:.75},...resortObstacles,...festivalObstacles,spaToWorld({x:12,z:126,w:12,d:11,yaw:0}),{x:treeLayout.x,z:treeLayout.z,r:9.4},
+  ...parkObstacles,...treeBenches.map(p=>({...p,r:2.1})),{x:-6.5,z:3,r:1.02},
   ...castleObstacles,
 
 ];

@@ -1,10 +1,10 @@
 @font-face{font-family:Winter Sans;src:url('./fonts/PretendardVariable.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
 :root{--ui-font:'Winter Sans','Apple SD Gothic Neo',sans-serif;--ui-glass:linear-gradient(135deg,#c6e9ff20,#c4bce412 48%,#d8f1e51a);--ui-edge:#e0f3ff3d;--ui-ink:#f3f8ff;--ui-muted:#d0e2eb;--ui-accent:#c4eee8;font-family:var(--ui-font)}
-*{scrollbar-width:thin;scrollbar-color:#d5eaf14d transparent}
-::-webkit-scrollbar{width:6px;height:6px}
+*{scrollbar-width:thin;scrollbar-color:#fff8e917 transparent}
+::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#d5eaf14d;border:1px solid transparent;border-radius:8px;background-clip:padding-box}
-::-webkit-scrollbar-thumb:hover{background:#d5eaf17a}
+::-webkit-scrollbar-thumb{background:#fff8e917;border:1px solid transparent;border-radius:8px;background-clip:padding-box;box-shadow:none}
+::-webkit-scrollbar-thumb:hover{background:#fff8e92e}
 ::-webkit-scrollbar-corner{background:transparent}
 #park-menu .menu-panel{top:calc(100% + 4px);width:190px;min-width:0;padding:6px;border-radius:17px}
 #park-menu .menu-panel button{min-height:44px;padding:10px 13px;font-size:12px}
@@ -253,3 +253,11 @@ button[aria-label$='닫기']:focus-visible,.studio-head>button:focus-visible{out
 .touch-actions #bubble-hold svg{width:27px;height:27px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round}
 .touch-actions #bubble-hold[aria-pressed=true]{background:#b7f4df38;border-color:#d4fff0a6;color:#e2fff5}
 body.tree-decorating #bubble-hold{visibility:hidden;pointer-events:none}
+
+/* Coloured landmarks float directly on the atlas; hover does not reverse their palette. */
+#pane-map .map-region,#pane-map .map-region:is(:hover,:focus-visible,[aria-pressed=true]){background:transparent;border:0;border-radius:0;box-shadow:none;outline:none;backdrop-filter:none;text-shadow:none}
+#pane-map .map-region svg{width:40px;height:40px;filter:drop-shadow(0 1px 1px #ffffffb0) drop-shadow(0 2px 3px #10233866)}
+#pane-map .map-region:is(:hover,:focus-visible,[aria-pressed=true]){z-index:6}
+#pane-map .map-region:is(:hover,:focus-visible,[aria-pressed=true]) svg{transform:scale(1.08);filter:drop-shadow(0 1px 1px #ffffff) drop-shadow(0 2px 4px #13294899)}
+#pane-map .map-region>span{background:var(--ui-glass);color:var(--ui-ink);border:0;white-space:normal;width:max-content;max-width:min(220px,var(--map-label-width,220px));padding:7px 10px;line-height:1.45;text-shadow:0 1px 3px #142c4a;pointer-events:none}
+#pane-map .map-region[data-label-side=below]>span{top:calc(100% + 4px);bottom:auto}

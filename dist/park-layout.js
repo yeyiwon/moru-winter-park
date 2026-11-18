@@ -5,11 +5,13 @@ export const parkStalls=[{x:-32,z:15,yaw:0,kind:'popcorn'},{x:-24,z:15,yaw:0,kin
 export const stallEntrance=kind=>{const stall=parkStalls.find(p=>p.kind===kind);return{x:stall.x+Math.sin(stall.yaw)*3.5,z:stall.z+Math.cos(stall.yaw)*3.5};};
 export const parkBenches=[{x:-5,z:14,yaw:0},{x:13,z:19,yaw:0},{x:30,z:-5,yaw:-Math.PI/2},{x:-25,z:-8,yaw:.5}];
 export const parkLamps=[...[-1,1].flatMap(side=>[28,9,2,-11.5].map(z=>({x:side*3.8,z}))),...[-1,1].map(side=>ferrisGroundPoint(side*5.4,11)),{x:-15,z:8},{x:30,z:18},{x:22,z:-12},{x:-27,z:29}];
+export const sparklerKiosk={x:-24,z:-14,yaw:.8};
+export const sparklerEntrance={x:sparklerKiosk.x+Math.sin(sparklerKiosk.yaw)*3.7,z:sparklerKiosk.z+Math.cos(sparklerKiosk.yaw)*3.7};
 export const balloonCart={x:8,z:20,yaw:-.35};
 export const parkFountain={x:-5,z:20};
 export const parkObstacles=[
  {x:carouselLayout.x,z:carouselLayout.z,r:carouselLayout.r},{x:ferrisDimensions.center.x,z:ferrisDimensions.center.z,r:6},
- ...parkStalls.map(p=>({x:p.x,z:p.z,r:2.6})),...parkBenches.map(p=>({x:p.x,z:p.z,r:1.5})),
+ ...parkStalls.map(p=>({x:p.x,z:p.z,r:2.6})),...parkBenches.map(p=>({x:p.x,z:p.z,r:2.1})),
  ...parkLamps.map(p=>({x:p.x,z:p.z,r:.43})),{x:-24,z:-14,r:2.4},{...balloonCart,r:1.35},
  {...parkFountain,rx:2.1,rz:1.1}
 ];

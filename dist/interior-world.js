@@ -1,3 +1,4 @@
+import {ryokanHallDetails} from './winter-architecture-details.js';
 import {ryokanFinish} from './ryokan-finish.js';
 import {ryokanWindow} from './ryokan-window.js';
 import {createOnsenWater} from './onsen-water.js';
@@ -86,10 +87,12 @@ function buildRyokan(root,m){
  for(const o of ryokanFixtures.filter(o=>['locker','tatami-cabinet'].includes(o.id))){b.box(o.rx*2,1.8,o.rz*2,m.cedar,o.x,1,o.z);for(let i=0;i<4;i++)for(let j=0;j<3;j++){const xx=o.x-o.rx+.5+i*(o.rx*2/4),y=.5+j*.55;b.box(o.rx*.43,.5,.04,m.lightWood,xx,y,o.z+o.rz+.035);b.oval(m.brass,xx+.12,y,o.z+o.rz+.065,.025,.025,.015);}}
  for(const p of ryokanFixtures.filter(o=>o.id.startsWith('planter')))makePlanter(b,m,p.x,p.z);
  for(const [x,z]of [[-12,7],[12,10],[-12,-8],[12,-8],[0,-6],[0,8]]){makeLantern(b,m,x,5.25,z,1.1);b.rod([x,6.8,z],[x,6.05,z],.015,m.endgrain);}
+ ryokanHallDetails(root,m);
  const aquarium=buildRyokanAquarium(root,m),chef=buildRyokanChef(root,m);
  const light=new T.PointLight('#ffc991',85,38,2);light.position.set(0,5,0);root.add(light);const fill=new T.HemisphereLight('#ffe4bf','#79674f',1.8);root.add(fill);
  const atmosphere=createRetreatAtmosphere(root,{name:'ryokan',
   waters:[],
+  fireflies:[{x:12,y:2.1,z:-9,rx:4,rz:3,height:2.3,size:.06,count:18,color:'#f0d8a5'},{x:-13,y:1.5,z:7,rx:3,rz:2,height:2,size:.05,count:12,color:'#e8d2b1'}],
   vapour:[{x:bath.x,y:.34,z:bath.z-.5,rx:2.15,rz:1.05,rise:1.25,size:.9,count:20,opacity:.11},{x:-13,y:1.25,z:7,rx:.18,rz:.18,rise:.65,size:.32,count:6,opacity:.1},{x:12,y:1.38,z:.1,rx:.2,rz:.2,rise:.6,size:.26,count:5,opacity:.08},{x:12,y:1.25,z:-9,rx:.18,rz:.18,rise:.65,size:.32,count:6,opacity:.1},{x:stove.x,y:1.5,z:stove.z,rx:.65,rz:.65,rise:1.6,size:.6,count:8,opacity:.065}],
   lamps:[[-12,7],[12,10],[-12,-8],[12,-8],[0,-6],[0,8]].map(([x,z])=>({x,y:.143,z,rx:3.3,rz:2.5}))
  });

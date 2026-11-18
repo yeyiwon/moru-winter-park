@@ -1,0 +1,134 @@
+{
+  "at": "2026-11-18T09:56:59.479Z",
+  "results": [
+    {
+      "device": "desktop",
+      "environment": {
+        "viewport": [
+          1280,
+          800
+        ],
+        "dpr": 1,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+        "gpuTimerAvailable": true
+      },
+      "physicalMobile": false,
+      "requestedQuality": "medium",
+      "secondsPerScenario": 5,
+      "baseline": "1b190ae",
+      "scenarios": [
+        {
+          "name": "plaza",
+          "beforeFps": 58.82121498268806,
+          "afterFps": 60.00318953831431,
+          "beforeP95": 16.799999999999272,
+          "afterP95": 16.700000000000728,
+          "beforeCalls": 765.4214046822742,
+          "afterCalls": 786.0498338870432,
+          "beforeTriangles": 3740590.2073578597,
+          "afterTriangles": 3804498.7375415284
+        },
+        {
+          "name": "spa-garden",
+          "beforeFps": 60.00120002400046,
+          "afterFps": 60.001993421708356,
+          "beforeP95": 16.799999999999272,
+          "afterP95": 16.700000000000728,
+          "beforeCalls": 106.28,
+          "afterCalls": 108.44518272425249,
+          "beforeTriangles": 1171453.44,
+          "afterTriangles": 1178542.2392026577
+        },
+        {
+          "name": "onsen",
+          "beforeFps": 60.001993421708356,
+          "afterFps": 60.00240009600385,
+          "beforeP95": 16.799999999995634,
+          "afterP95": 16.700000000004366,
+          "beforeCalls": 110.95348837209302,
+          "afterCalls": 112.32333333333334,
+          "beforeTriangles": 787886.5448504983,
+          "afterTriangles": 790191.1666666666
+        },
+        {
+          "name": "quiz",
+          "beforeFps": 60.00318953831431,
+          "afterFps": 60.00318953831431,
+          "beforeP95": 16.799999999995634,
+          "afterP95": 16.700000000004366,
+          "beforeCalls": 138.0797342192691,
+          "afterCalls": 111.17940199335548,
+          "beforeTriangles": 1861004.4019933555,
+          "afterTriangles": 781788.4451827243
+        }
+      ]
+    },
+    {
+      "device": "mobile",
+      "environment": {
+        "viewport": [
+          390,
+          844
+        ],
+        "dpr": 3,
+        "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+        "gpuTimerAvailable": true
+      },
+      "physicalMobile": false,
+      "requestedQuality": "medium",
+      "secondsPerScenario": 5,
+      "baseline": "1b190ae",
+      "scenarios": [
+        {
+          "name": "plaza",
+          "beforeFps": 60.00318953831436,
+          "afterFps": 59.80265125087212,
+          "beforeP95": 16.700000000000728,
+          "afterP95": 16.700000000000728,
+          "beforeCalls": 551.3820598006645,
+          "afterCalls": 560.1433333333333,
+          "beforeTriangles": 2917282.5714285714,
+          "afterTriangles": 2976659.96
+        },
+        {
+          "name": "spa-garden",
+          "beforeFps": 60.00199342170832,
+          "afterFps": 59.604497249023225,
+          "beforeP95": 16.700000000004366,
+          "afterP95": 16.799999999999272,
+          "beforeCalls": 105.22591362126246,
+          "afterCalls": 107.5551839464883,
+          "beforeTriangles": 1122384.7973421926,
+          "afterTriangles": 1132145.7525083611
+        },
+        {
+          "name": "onsen",
+          "beforeFps": 60.00318953831431,
+          "afterFps": 60.001993421708356,
+          "beforeP95": 16.700000000004366,
+          "afterP95": 16.799999999995634,
+          "beforeCalls": 85.95348837209302,
+          "afterCalls": 87.25581395348837,
+          "beforeTriangles": 541744.5448504983,
+          "afterTriangles": 543934.4717607973
+        },
+        {
+          "name": "quiz",
+          "beforeFps": 60.001993421708356,
+          "afterFps": 60.00318953831431,
+          "beforeP95": 16.700000000004366,
+          "afterP95": 16.700000000004366,
+          "beforeCalls": 130.54152823920265,
+          "afterCalls": 112.03654485049834,
+          "beforeTriangles": 1550957.2524916944,
+          "afterTriangles": 772167.1893687708
+        }
+      ]
+    }
+  ],
+  "notes": [
+    "Single short sample on the same desktop GPU; not a device guarantee.",
+    "Museum arrival camera was corrected, so visible objects differ at that destination.",
+    "No other automated browser or full test suite ran during measurement."
+  ]
+}

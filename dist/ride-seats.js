@@ -1,10 +1,12 @@
+import {benchSeatPose} from './bench-layout.js';
 import {ferrisDimensions as ferris,ferrisSeatAnchor} from './ferris-layout.js';
 import {resortRides} from './resort-layout.js';
 import {sampleRide} from './winter-rides.js';
-export const sharedRideKinds=['ferris','lift','upperlift'];
+export const sharedRideKinds=['ferris','lift','upperlift','bench'];
 export function ferrisCabinAtStation(now){const phase=(now/1000%ferris.rotationPeriod)/ferris.rotationPeriod*Math.PI*2,n=ferris.cabinCount;return ((Math.round((-Math.PI/2-phase)/(Math.PI*2)*n)%n)+n)%n;}
 export function sharedSeatPose(reservation,now){
  if(!reservation||!sharedRideKinds.includes(reservation.kind))return null;
+ if(reservation.kind==='bench')return benchSeatPose(reservation.cabin,reservation.seat);
  const side=reservation.seat===1?1:-1;
  if(reservation.kind==='ferris'){
   const {yaw,scale,center,radius,cabinCount,rotationPeriod,cabinDepthOffset,avatarOriginOffset}=ferris,anchor=ferrisSeatAnchor(reservation.seat),a=reservation.cabin*Math.PI*2/cabinCount+(now/1000%rotationPeriod)/rotationPeriod*Math.PI*2,x=Math.cos(a)*radius+anchor.x,z=cabinDepthOffset+anchor.z;

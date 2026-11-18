@@ -12,6 +12,7 @@ test('accountless public guests reconnect to their session; wishes remain privat
  const clock=Date.now();t.mock.method(Date,'now',()=>clock);
  t.after(()=>fs.rmSync(tmp,{recursive:true,force:true}));
  const a=await req('join',{name:'테스트 A'}),b=await req('join',{name:'테스트 B'});assert.equal(a.status,200);assert.equal(b.status,200);const ca=a.headers.get('set-cookie').split(';')[0],cb=b.headers.get('set-cookie').split(';')[0],aa=await a.json(),bb=await b.json();
+ assert.equal((await req('join',{name:'가나다라마바사아자차카'})).status,400);assert.equal((await req('name',{name:'가나다라마바사아자차카'},{cookie:ca})).status,400);assert.equal((await req('name',{name:'가나다라마바사아자차'},{cookie:ca})).status,200);
  const again=await (await req('join',{name:'다른 이름'},{cookie:ca})).json();assert.equal(again.id,aa.id);assert.equal(query({sql:'SELECT COUNT(*) AS n FROM visitors',args:[]}).results[0].n,2);
  assert.equal((await req('admin',undefined,{cookie:cb})).status,403);assert.equal((await req('admin',{action:'block',id:aa.id,admin:true},{cookie:cb})).status,403);
  const privateAdded=await req('tree',{kind:'letter',color:'#e5bb6b',height:12,angle:1,message:'나만 보는 소원',visibility:'private'},{cookie:ca});assert.equal(privateAdded.status,200);const privateId=(await privateAdded.json()).id;

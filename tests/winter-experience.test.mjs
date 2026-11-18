@@ -3,34 +3,35 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {JSDOM} from 'jsdom';
 import {createWinterExperience} from '../dist/winter-experience.js';
-import {resortRides,resortDestinations,skiStarts,skiRunCenter,alpineShift} from '../dist/resort-layout.js';
+import {resortRides,resortDestinations,skiStarts,skiRunCenter,alpineShift,liftLayout} from '../dist/resort-layout.js';
 import {walkToStart} from './ski-driver.mjs';
 import * as T from '../dist/vendor/three.module.js';
 import {ferrisDimensions} from '../dist/ferris-layout.js';
+import {benches,benchInteractions} from '../dist/bench-layout.js';
 import {treeLayout} from '../dist/tree-layout.js';
 function setup(t){const dom=new JSDOM(fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8'),{url:'https://winter.test'}),w=dom.window;t.after(()=>w.close());Object.assign(globalThis,{window:w,document:w.document,Event:w.Event,CustomEvent:w.CustomEvent,localStorage:w.localStorage});let trips=0;const winter={rides:resortRides,destinations:resortDestinations,rideChair:{visible:false,position:{set(){}},rotation:{set(){}}}},companion={gear:'ski',winterReady:true,equip(){}};return{e:createWinterExperience(winter,companion,()=>trips++),get trips(){return trips;},click(){document.querySelector('#place-actions button').click();}};}
 test('tree decoration is available around the entire plaza, with its prompt near the visitor',t=>{
  setup(t);let opened=0;window.addEventListener('lab:tree-open',()=>opened++);
  const winter={rides:resortRides,destinations:[{id:'tree',name:'소원 트리',...treeLayout.arrival}],rideChair:{visible:false}},e=createWinterExperience(winter,{equip(){}},()=>{});
- for(let i=0;i<12;i++){const angle=i*Math.PI/6,x=treeLayout.x+Math.cos(angle)*20,z=treeLayout.z+Math.sin(angle)*20;e.proximity(x,z);assert.equal(document.querySelector('#place-card').hidden,false);assert.equal(document.querySelector('#place-actions button').getAttribute('aria-label'),'트리 꾸미기');assert.ok(Math.hypot(e.anchor.x-x,e.anchor.z-z)<3);document.querySelector('#place-actions button').click();}
- assert.equal(opened,12);e.proximity(treeLayout.x+40,treeLayout.z);assert.equal(document.querySelector('#place-card').hidden,true);
+ for(let i=0;i<12;i++){const angle=i*Math.PI/6,x=treeLayout.x+Math.cos(angle)*20,z=treeLayout.z+Math.sin(angle)*20;e.proximity(x,z);assert.equal(document.querySelector('#place-card').hidden,false);const nearBench=benchInteractions.some(b=>!b.room&&Math.hypot(b.x-x,b.z-z)<b.r);assert.equal(document.querySelector('#place-actions button').getAttribute('aria-label'),nearBench?'앉기':'트리 꾸미기');assert.ok(Math.hypot(e.anchor.x-x,e.anchor.z-z)<3);if(!nearBench)document.querySelector('#place-actions button').click();}
+ assert.ok(opened>0&&opened<=12);e.proximity(treeLayout.x+40,treeLayout.z);assert.equal(document.querySelector('#place-card').hidden,true);
 });
 test('marshmallow stays in hand, toasts at the fire, survives walking and can be eaten',t=>{
- const {e,click}=setup(t);e.rides.start('lift');e.update(45);e.proximity(10,-358.5+alpineShift);click();assert.equal(e.heldItem,'marshmallow');e.update(.1,{x:1});assert.equal(e.heldItem,'marshmallow');assert.equal(e.roast,0);
- e.proximity(-3,-347.5+alpineShift);click();e.update(2,{});assert.equal(e.gesture,'roast');assert.ok(e.roast>.3);e.update(.1,{x:1});assert.equal(e.gesture,'');const saved=e.roast;assert.equal(e.heldItem,'marshmallow');
- e.proximity(-3,-340+alpineShift);e.proximity(-3,-347.5+alpineShift);click();e.update(4,{});assert.ok(e.roast>saved);assert.equal(e.roast,1);assert.equal(e.gesture,'');e.proximity(-3,-340+alpineShift);e.proximity(-3,-347.5+alpineShift);assert.match(document.querySelector('#place-actions button').textContent,/먹기/);click();assert.equal(e.gesture,'eat');e.update(3,{});assert.equal(e.heldItem,'');
- e.proximity(-10,-358.5+alpineShift);click();assert.equal(e.heldItem,'odeng');assert.equal(e.gesture,'');e.useHeldItem();assert.equal(e.gesture,'eat');e.update(3,{});assert.equal(e.heldItem,'');
+ const {e,click}=setup(t);e.rides.start('lift');e.update(45);e.proximity(-68,-160+alpineShift);click();assert.equal(e.heldItem,'marshmallow');e.update(.1,{x:1});assert.equal(e.heldItem,'marshmallow');assert.equal(e.roast,0);
+ e.proximity(-39,-151+alpineShift);click();e.update(2,{});assert.equal(e.gesture,'roast');assert.ok(e.roast>.3);e.update(.1,{x:1});assert.equal(e.gesture,'');const saved=e.roast;assert.equal(e.heldItem,'marshmallow');
+ e.proximity(-3,-340+alpineShift);e.proximity(-39,-151+alpineShift);click();e.update(4,{});assert.ok(e.roast>saved);assert.equal(e.roast,1);assert.equal(e.gesture,'');e.proximity(-3,-340+alpineShift);e.proximity(-39,-151+alpineShift);assert.match(document.querySelector('#place-actions button').textContent,/먹기/);click();assert.equal(e.gesture,'eat');e.update(3,{});assert.equal(e.heldItem,'');
+ e.proximity(-53,-163+alpineShift);click();assert.equal(e.heldItem,'odeng');assert.equal(e.gesture,'');e.useHeldItem();assert.equal(e.gesture,'eat');e.update(3,{});assert.equal(e.heldItem,'');
 });
 test('physical gates show one contextual action and stopping skis never teleports down',t=>{
  const app=setup(t),{e}=app;e.rides.start('lift');e.update(45);for(const gate of skiStarts){e.proximity(gate.x,gate.z);assert.equal(document.querySelector('#place-name').textContent,gate.name);assert.equal(document.querySelectorAll('#place-actions button').length,1);}
- const before=walkToStart(e.rides,'expert');e.proximity(before.x,before.z);app.click();const waiting=e.update(2,{});assert.equal(waiting.runId,'expert');assert.equal(waiting.x,before.x);assert.equal(waiting.z,before.z);assert.equal(waiting.speed,0);document.querySelector('#stop-ride').click();assert.equal(app.trips,0);assert.equal(e.rides.mode,'');
+ const before=walkToStart(e.rides,'advanced');e.proximity(before.x,before.z);app.click();const waiting=e.update(2,{});assert.equal(waiting.runId,'advanced');assert.equal(waiting.x,before.x);assert.equal(waiting.z,before.z);assert.equal(waiting.speed,0);document.querySelector('#stop-ride').click();assert.equal(app.trips,0);assert.equal(e.rides.mode,'');
 });
 test('resting has no countdown and movement stands up',t=>{
  const {e}=setup(t);e.show('interior-tea');document.querySelector('#place-actions button').click();e.update(30,{});assert.equal(document.querySelector('#ride-label').textContent,'');assert.equal(document.querySelector('#stop-ride').textContent,'일어나기');assert.equal(e.update(.05,{x:1}),null);assert.equal(e.active,false);
 });
 
 test('portable items replace each other, bubbles keep blowing while walking, and map travel retains them',t=>{
- const {e}=setup(t);const click=(name)=>[...document.querySelectorAll('#place-actions button')].find(b=>b.getAttribute('aria-label')===name).click();e.show('bubbles');click('비눗방울');assert.equal(e.heldItem,'bubble-wand');e.update(.1,{x:1});assert.equal(e.gesture,'');window.dispatchEvent(new window.KeyboardEvent('keydown',{code:'KeyE'}));e.update(.1,{x:1});assert.equal(e.gesture,'bubble');assert.equal(e.focusGesture,'');window.dispatchEvent(new window.KeyboardEvent('keyup',{code:'KeyE'}));assert.equal(e.gesture,'');e.cancel();assert.equal(e.heldItem,'bubble-wand');e.show('bubbles');click('풍선');assert.equal(e.heldItem,'balloon');assert.equal(e.gesture,'');e.show('coffee');click('커피');assert.equal(e.heldItem,'coffee');e.proximity(0,30);assert.equal(document.querySelector('#place-card').hidden,true);assert.equal(e.useHeldItem(),true);assert.equal(e.gesture,'drink');e.update(3,{});assert.equal(e.heldItem,'coffee');e.show('icecream');click('아이스크림');assert.equal(e.heldItem,'icecream');
+ const {e}=setup(t);const click=(name)=>[...document.querySelectorAll('#place-actions button')].find(b=>b.getAttribute('aria-label')===name).click();e.show('bubbles');click('비눗방울');assert.equal(e.heldItem,'bubble-wand');e.update(.1,{x:1});assert.equal(e.gesture,'');window.dispatchEvent(new window.KeyboardEvent('keydown',{code:'KeyE'}));e.update(.1,{x:1});assert.equal(e.gesture,'bubble');assert.equal(e.focusGesture,'');window.dispatchEvent(new window.KeyboardEvent('keyup',{code:'KeyE'}));assert.equal(e.gesture,'');e.cancel();assert.equal(e.heldItem,'bubble-wand');e.show('bubbles');click('풍선 받기');assert.equal(e.heldItem,'balloon');assert.equal(e.gesture,'');e.show('coffee');click('커피');assert.equal(e.heldItem,'coffee');e.proximity(0,30);assert.equal(document.querySelector('#place-card').hidden,true);assert.equal(e.useHeldItem(),true);assert.equal(e.gesture,'drink');e.update(3,{});assert.equal(e.heldItem,'coffee');e.show('icecream');click('아이스크림');assert.equal(e.heldItem,'icecream');
 });
 
 test('expired shared lift seats return the rider safely and release their reservation',async t=>{
@@ -76,13 +77,22 @@ test('ski completion zeros motion, returns gear and leaves no repeat-ride UI',t=
  assert.ok(p.finished);assert.equal(p.speed,0);assert.equal(p.mode,'');assert.equal(e.active,false);assert.equal(returns,1);assert.equal(e.lifecycle.state,'Idle');
  for(const selector of ['#place-card','#ride-hud','#ski-controls'])assert.equal(document.querySelector(selector).hidden,true);
  assert.equal(document.querySelector('#ride-label').textContent,'');e.proximity(p.x,p.z);assert.equal(document.querySelector('#place-card').hidden,true);
- e.proximity(-36,-185+alpineShift);assert.equal(document.querySelector('#place-card').hidden,false);click();assert.equal(e.rides.mode,'lift');
+ e.proximity(liftLayout.x,-185+alpineShift);assert.equal(document.querySelector('#place-card').hidden,false);click();assert.equal(e.rides.mode,'lift');
 });
-test('dismissed facility prompts stay hidden until leaving, including after seated actions',t=>{
- const {e,click}=setup(t);e.proximity(387,8.7);click();assert.equal(e.active,true);e.update(.1,{x:1});e.proximity(387,8.7);assert.equal(document.querySelector('#place-card').hidden,true);e.proximity(400,12);e.proximity(387,8.7);assert.equal(document.querySelector('#place-card').hidden,false);
- document.querySelector('#close-place').click();e.proximity(387,8.7);assert.equal(document.querySelector('#place-card').hidden,true);
+test('dismissed facility prompts stay hidden until leaving, including after seated actions',async t=>{
+ const {e,click}=setup(t);window.reserveRide=async(kind,id)=>({kind,cabin:benches.find(b=>b.id===id).cabin,seat:0,startedAt:Date.now()});e.proximity(392,9);click();await Promise.resolve();assert.equal(e.active,true);e.update(.1,{x:1});e.proximity(392,9);assert.equal(document.querySelector('#place-card').hidden,true);e.proximity(400,12);e.proximity(392,9);assert.equal(document.querySelector('#place-card').hidden,false);
+ document.querySelector('#close-place').click();e.proximity(392,9);assert.equal(document.querySelector('#place-card').hidden,true);
 });
 
 test('walking up to a fire faces it without creating a ride and movement releases facing',t=>{
- const {e,click}=setup(t);e.proximity(-3,-347.5+alpineShift);click();assert.equal(e.update(.1,{}),null);assert.equal(e.focusGesture,'warm');assert.equal(e.facing,Math.PI);assert.equal(e.rides.mode,'');e.update(.1,{x:1});assert.equal(e.facing,null);assert.equal(e.focusGesture,'');
+ const {e,click}=setup(t);e.proximity(-39,-151+alpineShift);click();assert.equal(e.update(.1,{}),null);assert.equal(e.focusGesture,'warm');assert.equal(e.facing,Math.PI);assert.equal(e.rides.mode,'');e.update(.1,{x:1});assert.equal(e.facing,null);assert.equal(e.focusGesture,'');
+});
+
+
+test('sparkler comes from the existing kiosk, stays carried while walking and is replaced by a drink',t=>{
+ const {e,click}=setup(t);e.show('sparkler');click();assert.equal(e.heldItem,'sparkler');e.update(.1,{x:1,z:1});assert.equal(e.heldItem,'sparkler');assert.equal(e.active,false);assert.equal(document.querySelector('#place-card').hidden,true);e.show('coffee');click();assert.equal(e.heldItem,'coffee');
+});
+
+test('tree benches show only the primary sit action, never decoration or the second F action',t=>{
+ const {e}=setup(t);for(const b of benchInteractions.filter(b=>b.id.startsWith('tree-bench-'))){e.proximity(b.x,b.z);const actions=[...document.querySelectorAll('#place-actions button')];assert.equal(actions.length,1);assert.equal(actions[0].getAttribute('aria-label'),'앉기');assert.ok(!actions[0].textContent.includes('F'));}
 });

@@ -4,7 +4,7 @@ import {alpineShift} from './resort-layout.js';
 import {spaToWorld} from './spa-transform.js';
 // Shared allowlist: generated guidance can only name places the live world actually has.
 export const guidePlaces=[
- {id:'ski',name:'스키장',x:-36,z:-185+alpineShift,aliases:['스키','리프트','설산']},
+ {id:'ski',name:'스키장',x:-70,z:-185+alpineShift,aliases:['스키','리프트','설산']},
  {id:'onsen',name:'온천',...spaToWorld({x:-10,z:116}),aliases:['온천','탕','쉬기']},
  {id:'sauna',name:'찜질방',...spaToWorld({x:12,z:113.6}),aliases:['찜질','실내','차']},
  {id:'tree',name:'소원 트리',...treeLayout.arrival,aliases:['트리','장식','나무']},

@@ -45,7 +45,7 @@ test('heart, star and dazed eyes have balanced anchors and readable symmetrical 
  for(const accessory of ['eyes-heart','eyes-star','eyes-goofy']){
   pet.customize({accessory});pet.pose({still:true});const [left,right]=pet.eyes;
   assert.equal(left.position.y,right.position.y);assert.equal(left.position.z,right.position.z);assert.ok(Math.abs(left.position.x+right.position.x)<1e-9);
-  assert.deepEqual(left.scale.toArray(),right.scale.toArray());if(accessory==='eyes-goofy'){assert.equal(left.children[0].position.x,-right.children[0].position.x);assert.equal(left.children[0].position.y,right.children[0].position.y);assert.equal(left.children[0].position.z,right.children[0].position.z);}else assert.deepEqual(left.children[0].position.toArray(),right.children[0].position.toArray());
-  if(accessory!=='eyes-goofy'){left.geometry.computeBoundingBox();const box=left.geometry.boundingBox;assert.ok(box.getCenter(new THREE.Vector3()).length()<1e-6);assert.ok(box.getSize(new THREE.Vector3()).x<.21);assert.ok(box.min.z+left.position.z>.69);}
+  assert.deepEqual(left.scale.toArray(),right.scale.toArray());if(accessory==='eyes-goofy'){assert.ok(Math.abs(left.children[0].position.x+right.children[0].position.x)<1e-9);assert.equal(left.children[0].position.y,right.children[0].position.y);assert.equal(left.children[0].position.z,right.children[0].position.z);}else assert.deepEqual(left.children[0].position.toArray(),right.children[0].position.toArray());
+  if(accessory!=='eyes-goofy'){left.geometry.computeBoundingBox();const box=left.geometry.boundingBox;assert.ok(box.getCenter(new THREE.Vector3()).length()<1e-6);assert.ok(box.getSize(new THREE.Vector3()).x>.25);assert.ok(box.getSize(new THREE.Vector3()).x<Math.abs(right.position.x-left.position.x)-.12);assert.ok(box.getSize(new THREE.Vector3()).z>.05);assert.ok(box.min.z+left.position.z>.69);}
  }
 });

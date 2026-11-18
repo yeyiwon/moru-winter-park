@@ -1,9 +1,13 @@
 import {alpineShift,alpineHeight,skiCenter,skiRunCenter,skiRunHalfWidth,skiRuns,skiRunAt,summit,peakSummit,beginnerAccess,skiRunouts,summitPositionValid} from './resort-layout.js';
-function onTerrace(x,z){return [summit,peakSummit].some(a=>Math.hypot((x-a.x)/a.rx,(z-a.z)/a.rz)<=1)||z>=beginnerAccess.start.z&&z<=beginnerAccess.end.z&&Math.abs(x-24)<=beginnerAccess.halfWidth;}
-// Routes describe the same surfaces and cable used by the visible models.
+function onTerrace(x,z){return [summit,peakSummit].some(a=>Math.hypot((x-a.x)/a.rx,(z-a.z)/a.rz)<=1.08);}
+// Arc length is cached once per shared route. Index interpolation caused cable
+// pitches to change speed at supports and amplified the camera's tracking jitter.
+const routeLengths=new WeakMap();
 export function sampleRide(route,progress){
- const p=Math.max(0,Math.min(1,progress))*(route.points.length-1),i=Math.min(route.points.length-2,Math.floor(p)),t=p-i,a=route.points[i],b=route.points[i+1];
- return {x:a[0]+(b[0]-a[0])*t,y:a[1]+(b[1]-a[1])*t+(route.bodyOffset??(route.heightMode==='seat'?.55:.86)),z:a[2]+(b[2]-a[2])*t,yaw:Math.atan2(b[0]-a[0],b[2]-a[2])};
+ let cache=routeLengths.get(route);if(!cache){const lengths=[0];for(let i=1;i<route.points.length;i++){const a=route.points[i-1],b=route.points[i];lengths.push(lengths.at(-1)+Math.hypot(b[0]-a[0],b[1]-a[1],b[2]-a[2]));}cache={lengths,total:lengths.at(-1)};routeLengths.set(route,cache);}
+ const distance=Math.max(0,Math.min(1,progress))*cache.total;let lo=0,hi=cache.lengths.length-1;while(lo+1<hi){const m=(lo+hi)>>1;if(cache.lengths[m]<=distance)lo=m;else hi=m;}
+ const i=Math.min(route.points.length-2,lo),t=(distance-cache.lengths[i])/(cache.lengths[i+1]-cache.lengths[i]||1),a=route.points[i],b=route.points[i+1];
+ return{x:a[0]+(b[0]-a[0])*t,y:a[1]+(b[1]-a[1])*t+(route.bodyOffset??(route.heightMode==='seat'?.55:.86)),z:a[2]+(b[2]-a[2])*t,yaw:Math.atan2(b[0]-a[0],b[2]-a[2])};
 }
 export function createRideController(routes){
  let mode='',elapsed=0,last=null,speed=0,z=0,x=0,heading=0,launched=false,steer=0,recovery=0,runId='main',activeRoute='',crossed=false;
@@ -36,5 +40,5 @@ export function createRideController(routes){
   last={x,y:alpineHeight(x,z)+.88/Math.cos(tilt),z,yaw,tilt,speed,lean:steer,raceTime:elapsed,recovery,heading,launched,brake:!!input.brake,runId};
   if(crossed&&(speed<.3||z>=finish+10)){mode='';return{...last,mode:'',finished:true};}return{...last,mode};
  }
- elapsed+=dt;const route=routes[activeRoute];last=sampleRide(route,elapsed/route.duration);if(elapsed>=route.duration){if(mode==='lift'){mode='summit';const [x,y,z]=route.exit;last={x,y:y+.86,z,yaw:activeRoute==='upperlift'?0:Math.atan2(skiCenter(-330+alpineShift)-x,-330+alpineShift-z),arrivalYaw:activeRoute==='upperlift'?.75:.7};}else{mode='';return{...last,mode:'',finished:true};}}return{...last,mode};}};
+ elapsed+=dt;const route=routes[activeRoute];last=sampleRide(route,elapsed/route.duration);if(elapsed>=route.duration){if(mode==='lift'){mode='summit';const [x,y,z]=route.exit;last={x,y:y+.86,z,yaw:0,arrivalYaw:route.arrivalYaw??.6};}else{mode='';return{...last,mode:'',finished:true};}}return{...last,mode};}};
 }

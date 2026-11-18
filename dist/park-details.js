@@ -1,9 +1,12 @@
+import {dressBalloonBooth} from './balloon-booth.js';
+import {createStonePaving,pavingColors} from './plaza-paving.js';
+import {buildWinterBench} from './winter-bench.js';
 import * as T from './vendor/three.module.js';
-import {parkStalls,parkBenches,balloonCart} from './park-layout.js';
+import {parkStalls,parkBenches,balloonCart,sparklerKiosk} from './park-layout.js';
 
 export function buildParkDetails(api){
  const {scene,mesh,ball,cylinder,box,rod,torus,halo,M}=api;
- const cream=M('#fff0df',.7),gold=M('#e8c587',.32,.62),rose=M('#d88daf',.68),mint=M('#9fcac2',.7),wood=M('#956b7a',.83),ink=M('#504d63',.55,.2),snow=M('#e3e9ed',.96,0),warm=new T.MeshStandardMaterial({color:'#ffe4bb',emissive:'#ffd5a5',emissiveIntensity:.65,roughness:.36});
+ const cream=M('#fff0df',.7),gold=M('#e8c587',.32,.62),rose=M('#d88daf',.68),mint=M('#9fcac2',.7),wood=M('#956b7a',.83),ink=M('#504d63',.55,.2),snow=M('#e3e9ed',.96,0),warm=new T.MeshStandardMaterial({color:'#ffe4bb',emissive:'#ffd5a5',emissiveIntensity:1.2,roughness:.36});
  const colors=[rose,mint,M('#c5b0e0',.65)],baked=M('#cd965f',.9),coffee=M('#593c35',.85);
  const glass=new T.MeshPhysicalMaterial({color:'#eff9ff',transparent:true,opacity:.24,roughness:.12,metalness:.02,clearcoat:1,depthWrite:false});
  // The four physical menu boards share one atlas and one material.
@@ -141,6 +144,8 @@ export function buildParkDetails(api){
  }
  function stall(spec,i){
   const g=group('park-'+spec.kind+'-stall',spec.x,spec.z,spec.yaw),accent=colors[i];
+  g.userData.lampGlow=[{x:-1.3,y:2.4,z:1.5,radius:3,power:10,range:9},{x:1.3,y:2.4,z:1.5,radius:3,power:10,range:9}];
+  for(let j=0;j<18;j++)ball(warm,-1.65+j*3.3/17,2.6,2.22,.045,g);
   // Separate walls leave a real service opening, so equipment is visible inside the booth.
   box(3.1,.86,2.5,cream,0,.43,0,g);box(3.1,1.75,.14,cream,0,1.735,-1.18,g);box(3.1,.34,2.5,cream,0,2.43,0,g);
   for(const side of [-1,1])box(.14,2.6,2.5,cream,side*1.48,1.3,0,g);
@@ -174,17 +179,17 @@ export function buildParkDetails(api){
   for(const x of [-1.55,1.55])halo(x,2.35,1.35,'#ffd5a6',1.2,g);
  }
  parkStalls.forEach(stall);
- for(const p of parkBenches){
-  const g=group('park-bench',p.x,p.z,p.yaw);
-  for(let j=0;j<5;j++){box(2.4,.085,.12,wood,0,.56,-.27+j*.13,g);box(2.4,.09,.1,wood,0,.82+j*.12,-.39,g);}
-  for(const side of [-1,1]){curve([[side,.08,-.35],[side,.72,-.35],[side,1.37,-.37]],.045,ink,g);curve([[side,.1,.3],[side,.73,.3],[side,.88,0],[side,.85,-.36]],.045,ink,g);const scroll=torus(.17,.028,gold,side,.9,.16,g);scroll.rotation.y=Math.PI/2;ball(gold,side,1.43,-.37,.07,g);}
-  box(2.35,.045,.18,snow,0,1.38,-.4,g);
- }
- const ticket=group('park-ticket-kiosk',-24,-14,.8);
+ for(const p of parkBenches)scene.add(buildWinterBench(p));
+ const ticket=group('sparkler-kiosk',sparklerKiosk.x,sparklerKiosk.z,sparklerKiosk.yaw);
  cylinder(1.45,1.55,.2,cream,0,.12,0,ticket,8);cylinder(1.15,1.25,2.7,mint,0,1.55,0,ticket,8);
  box(1.5,1.05,.07,ink,0,1.6,1.17,ticket);box(1.65,.12,.6,cream,0,1.03,1.31,ticket);
  for(const x of [-.8,.8])box(.065,1.2,.12,gold,x,1.62,1.21,ticket);
  cylinder(.12,1.75,1.45,rose,0,3.6,0,ticket,8);ring(1.65,2.96,gold,ticket);ball(warm,0,4.4,0,.12,ticket);marquee(ticket,1.6,2.42,1.2);
+ // Reuse the existing kiosk footprint; display bundles identify the handheld firework counter.
+ for(const x of [-.48,0,.48]){cylinder(.13,.11,.25,gold,x,1.2,1.32,ticket,16);for(let i=0;i<5;i++){const dx=(i-2)*.04;rod([x+dx,1.15,1.32],[x+dx*1.4,1.85+(i%2)*.06,1.32],.008,ink,ticket);}}
+ const sparkSign=document.createElement('canvas');sparkSign.width=512;sparkSign.height=128;const sign=sparkSign.getContext('2d');sign.fillStyle='#252c3a';sign.fillRect(0,0,512,128);sign.fillStyle='#f3dfb5';sign.textAlign='center';sign.textBaseline='middle';sign.font='500 48px sans-serif';sign.fillText('스파클러',256,64);const signTexture=new T.CanvasTexture(sparkSign);signTexture.colorSpace=T.SRGBColorSpace;mesh(new T.PlaneGeometry(1.42,.36),new T.MeshBasicMaterial({map:signTexture}),0,2.42,1.291,ticket);
+ for(const x of [-.7,.7])ball(warm,x,2.65,1.23,.055,ticket);
+
  for(let i=0;i<5;i++){const stub=box(.18,.26,.035,i%2?cream:rose,-.52+i*.26,1.19,1.53,ticket);stub.rotation.z=(i-2)*.12;}
  const cart=group('park-balloon-cart',balloonCart.x,balloonCart.z,balloonCart.yaw);box(1.7,.7,.95,rose,0,.84,0,cart);box(1.83,.12,1.07,cream,0,1.25,0,cart);
  for(const x of [-.67,.67])for(const z of [-.52,.52]){const wheel=cylinder(.25,.25,.07,ink,x,.34,z,cart,16);wheel.rotation.x=Math.PI/2;const hub=torus(.17,.025,gold,x,.34,z+.045,cart);ball(gold,x,.34,z+.06,.045,cart);}
@@ -206,17 +211,20 @@ export function buildParkDetails(api){
  curve([[-.55,1.4,.15],[-.74,1.35,.29],[-.66,1.32,.42]],.013,gold,cart);
  for(let j=0;j<3;j++){const x=-.4+j*.19;cylinder(.055,.055,.17,colors[j],x,1.4,.38,cart,12);cylinder(.06,.06,.035,cream,x,1.502,.38,cart,12);const wand=mesh(new T.TorusGeometry(.032,.007,4,12),gold,x,1.59,.38,cart);rod([x,1.51,.38],[x,1.56,.38],.006,gold,cart);}
  for(const x of [-.45,-.12]){const spool=cylinder(.08,.08,.15,cream,x,1.4,-.24,cart,14);spool.rotation.x=Math.PI/2;for(const z of [-.33,-.15]){const disc=cylinder(.1,.1,.018,gold,x,1.4,z,cart,14);disc.rotation.x=Math.PI/2;}}
- for(let i=0;i<7;i++){
-  const a=i*2.4,x=Math.cos(a)*(.3+i*.06),z=Math.sin(a)*.35,y=3.36+(i%3)*.42;
-  curve([[-.78,2.48,-.42],[-.86,2.9,-.43],[x,y-.36,z]],.008,gold,cart);
-  const balloon=ball(colors[i%3],x,y,z,.32,cart);balloon.scale.multiply(new T.Vector3(.88,1.2,.88));cylinder(0,.045,.1,colors[i%3],x,y-.42,z,cart,6);
-  const gleam=ball(warm,x-.1,y+.17,z+.23,.055,cart);gleam.scale.multiply(new T.Vector3(.5,1.4,.25));
- }
+ const balloons=dressBalloonBooth(cart);
  // Flush stone inlays make the former lake a walkable square, softened by snowy edges.
- const pavers=new T.InstancedMesh(new T.CylinderGeometry(.42,.46,.028,6),M('#d4c8d3',.98,0),260),dummy=new T.Object3D();let count=0;
- for(let row=-8;row<=8;row++)for(let col=-8;col<=8;col++){const x=-6+col*.8+(row%2)*.4,z=1+row*.7;if(Math.hypot(x+6,z-1)>6.2||Math.hypot(x+18,z+5)<6.7)continue;dummy.position.set(x,.09,z);dummy.rotation.set(0,(row+col)%3*.06,0);dummy.updateMatrix();pavers.setMatrixAt(count,dummy.matrix);pavers.setColorAt(count,new T.Color(count%3?'#d4cbd7':'#ead9df'));count++;}pavers.count=count;pavers.name='park-plaza-inlay';pavers.receiveShadow=true;scene.add(pavers);
+ const pavers=createStonePaving(600),dummy=new T.Object3D();let count=0;
+ // Small flush forecourts punctuate the snow promenade without changing its soft edges.
+ const courts=[{x:-6,z:1,rx:6.2,rz:6.2},{x:-27,z:24,rx:7,rz:1.8},{x:16,z:14,rx:3.5,rz:2},{x:-36,z:7,rx:3.5,rz:2.4}];
+ for(const court of courts)for(let row=-9;row<=9;row++)for(let col=-10;col<=10;col++){
+  const dx=col*.8+(row%2)*.4,dz=row*.7,x=court.x+dx,z=court.z+dz;
+  if((dx/court.rx)**2+(dz/court.rz)**2>1||Math.hypot(x+18,z+5)<6.7||count>=600)continue;
+  dummy.position.set(x,.09,z);dummy.rotation.set(0,(row+col)%3*.06,0);dummy.updateMatrix();pavers.setMatrixAt(count,dummy.matrix);pavers.setColorAt(count,new T.Color(pavingColors[count%3]));count++;
+ }
+ pavers.count=count;pavers.name='park-plaza-inlay';pavers.receiveShadow=true;scene.add(pavers);
  const star=new T.Shape();for(let i=0;i<10;i++){const a=i*Math.PI/5+Math.PI/2,r=i%2?.55:1.4;i?star.lineTo(Math.cos(a)*r,Math.sin(a)*r):star.moveTo(Math.cos(a)*r,Math.sin(a)*r);}star.closePath();const inset=mesh(new T.ShapeGeometry(star),gold,-6,.109,1);inset.rotation.x=-Math.PI/2;
  const border=torus(1.9,.028,cream,-6,.11,1);border.rotation.x=Math.PI/2;
  // Railings sit within the wheel's existing footprint and leave a two metre entrance.
  for(const side of [-1,1])for(let i=0;i<5;i++){const x=-18+side*(1.4+i*.65);rod([x,.1,1],[x,1.1,1],.035,gold);ball(warm,x,1.13,1,.06);if(i<4)rod([x,1.04,1],[x+side*.65,1.04,1],.025,gold);}
+ return balloons;
 }

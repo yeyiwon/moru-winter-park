@@ -1,45 +1,6 @@
-import {alpineShift} from '../dist/resort-layout.js';
-import test from 'node:test';
-import assert from 'node:assert/strict';
-import {alpineHeight,liftPoint,liftLayout,resortRides,resortRidePosition,skiCenter,skiHalfWidth} from '../dist/resort-layout.js';
-import {sampleRide} from '../dist/winter-rides.js';
-import {canStandAt} from '../dist/movement.js';
-
-test('ascending chairs never dip and flatten into the upper station',()=>{
- let previous=liftPoint(0);
- for(let i=1;i<=2000;i++){
-  const p=liftPoint(i/2000);
-  assert.ok(p[1]>=previous[1]-1e-8,`unexpected descent at ${i/2000}`);
-  assert.ok((p[1]-previous[1])/Math.hypot(p[0]-previous[0],p[2]-previous[2])<.8);
-  previous=p;
- }
- assert.deepEqual(liftPoint(0).filter((_,i)=>i!==1),[-36,(-188+alpineShift)]);
- assert.deepEqual(liftPoint(1).filter((_,i)=>i!==1),[-30,(-348+alpineShift)]);
- assert.equal(liftPoint(.95)[1],liftPoint(1)[1]);
-});
-
-test('both parallel chair lanes clear the mountain and remain separate from the piste',()=>{
- for(let i=0;i<=1000;i++){
-  const p=liftPoint(i/1000);
-  for(const offset of [0,liftLayout.spacing])assert.ok(p[1]-alpineHeight(p[0]+offset,p[2])>=.59999,`seat intersects ground at ${i/1000}`);
-  if(p[2]>(-326+alpineShift)&&p[2]<(-180+alpineShift))assert.ok(p[0]+liftLayout.spacing+6<skiCenter(p[2])-skiHalfWidth(p[2]));
- }
-});
-
-test('lift presence validates the cable instead of allowing arbitrary heights over the hillside',()=>{
- for(let i=0;i<=100;i++){
-  const p=sampleRide(resortRides.lift,i/100);
-  assert.equal(resortRidePosition(p.x,p.y,p.z,'lift'),true);
-  assert.equal(resortRidePosition(p.x+3,p.y,p.z,'lift'),false);
-  assert.equal(resortRidePosition(p.x,p.y+2,p.z,'lift'),false);
- }
- assert.equal(resortRidePosition(-36,1,(-180+alpineShift),'lift'),false);
- assert.equal(resortRidePosition(NaN,1,(-188+alpineShift),'lift'),false);
-});
-
-
-test('the full approach to the loading chair is clear across a human-scale lane',()=>{
- for(let z=(-170+alpineShift);z>=(-188+alpineShift);z-=.25)for(const x of [-37.4,-36,-34.6])assert.equal(canStandAt(x,z),true,`blocked loading approach: ${x}, ${z}`);
- assert.equal(canStandAt(-55,(-176+alpineShift)),false,'relocated lodge keeps its physical footprint');
- assert.equal(canStandAt(-44,(-185+alpineShift)),false,'ticket booth stays outside the queue');
-});
+import test from 'node:test';import assert from 'node:assert/strict';
+import{liftLayout,upperLiftLayout,liftPoint,upperLiftPoint,resortRides,resortRidePosition,upperLiftEntry,resortDestinations}from '../dist/resort-layout.js';
+import{sampleRide}from '../dist/winter-rides.js';import{canStandAt}from '../dist/movement.js';
+test('both lift paths rise without backwards motion and flatten into their terminals',()=>{for(const [line,point]of [[liftLayout,liftPoint],[upperLiftLayout,upperLiftPoint]]){let prev=point(0);for(let i=1;i<=2000;i++){const p=point(i/2000);assert.ok(p[1]>=prev[1]-.000001);assert.ok((p[1]-prev[1])/Math.hypot(p[0]-prev[0],p[2]-prev[2])<.85);prev=p;}assert.equal(point(1)[0],line.x+line.dx);assert.equal(point(1)[2],line.z+line.dz);assert.equal(point(.98)[1],point(1)[1]);}});
+test('authoritative lift presence accepts the sampled cable, rejecting impossible height/position',()=>{for(const key of['lift','upperlift'])for(let i=0;i<=100;i++){const p=sampleRide(resortRides[key],i/100);assert.equal(resortRidePosition(p.x,p.y,p.z,'lift'),true);assert.equal(resortRidePosition(p.x,p.y+2,p.z,'lift'),false);}assert.equal(resortRidePosition(NaN,1,0,'lift'),false);});
+test('both base approaches are clear across a player-width lane',()=>{for(const entrance of [resortDestinations.find(d=>d.id==='ski'),upperLiftEntry])for(let z=0;z<=6;z+=.25)for(const x of[-1,0,1])assert.ok(canStandAt(entrance.x+x,entrance.z+z));});

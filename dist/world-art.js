@@ -19,7 +19,7 @@ export function buildArchipelago(api){
   const grain=noiseTexture();
   buildConnectedTerrain(scene);
   // Bowed timber and warm stone share the exact walking profile used by navigation.
-  const deckMaterial=M('#c5a17c',.88,0),edgeMaterial=M('#8c694f',.88,0),bridgeSnow=M('#e2e9e6',1,0),bridgeStone=M('#cbbba7',.94,0),bridgeRose=M('#edb7c5',.84,0);
+  const deckMaterial=M('#927657',.88,0),edgeMaterial=M('#675340',.88,0),bridgeSnow=M('#e2e9e6',1,0),bridgeStone=M('#cbbba7',.94,0),bridgeRose=M('#edb7c5',.84,0);
   const lanternGlass=new THREE.MeshStandardMaterial({color:'#fff0cb',emissive:'#ffbd74',emissiveIntensity:.6,roughness:.35,metalness:.04});
   const plankShape=new THREE.Shape();plankShape.moveTo(-3.53,-.065);plankShape.lineTo(3.53,-.065);plankShape.quadraticCurveTo(3.6,-.065,3.6,-.015);plankShape.lineTo(3.6,.015);plankShape.quadraticCurveTo(3.6,.065,3.53,.065);plankShape.lineTo(-3.53,.065);plankShape.quadraticCurveTo(-3.6,.065,-3.6,.015);plankShape.lineTo(-3.6,-.015);plankShape.quadraticCurveTo(-3.6,-.065,-3.53,-.065);
   lanternGlass.userData.lightingTheme='personal';
@@ -62,7 +62,7 @@ export function buildArchipelago(api){
   for(let i=0;i<cp.count;i++){const x=cp.getX(i),y=cp.getY(i),z=cp.getZ(i),r=1+.065*Math.sin(x*4+y*3)*Math.cos(z*4)+.025*Math.sin(y*8+z*3);cp.setXYZ(i,x*r,y*r,z*r);}canopyGeo.computeVertexNormals();
   const winterCapGeo=new THREE.SphereGeometry(1,12,8);
   function boughGeometry(frost=false){const positions=[],uv=[],indices=[],steps=16;for(let i=0;i<=steps;i++){const t=i/steps,u=frost?.12+t*.83:t,w=Math.sin(u*Math.PI)*.24*(1-u*.45)*(i%2?.83:1),y=.08*Math.sin(u*Math.PI)-u*u*.1;for(let j=0;j<4;j++){const lateral=(j===0?-w:j===2?w:0)*(frost?.68:1);positions.push(u,y+(j===1?.05*(1-u):j===3?-.025:0)+(frost?.022:0),lateral);uv.push(t,j/3);}if(i<steps)for(let j=0;j<(frost?2:4);j++){const a=i*4+j,b=i*4+(j+1)%4;indices.push(a,b,a+4,b,b+4,a+4);}}const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));geo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));geo.setIndex(indices);geo.computeVertexNormals();return geo;}
-  const firBough=boughGeometry(),firFrost=boughGeometry(true),treeIllumination=createTreeAtmosphere(scene);
+  const firBough=boughGeometry(),firFrost=boughGeometry(true),treeIllumination=createTreeAtmosphere(scene,{brightness:1.4});
   const firFoliage=M('#386c5d',.9,.02),firSnow=bridgeSnow,firGold=gold;
   firFoliage.onBeforeCompile=shader=>{shader.vertexShader='varying vec3 vNeedlePosition;\n'+shader.vertexShader;shader.vertexShader=shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nvNeedlePosition=position;');shader.fragmentShader='varying vec3 vNeedlePosition;\n'+shader.fragmentShader;shader.fragmentShader=shader.fragmentShader.replace('#include <color_fragment>','#include <color_fragment>\ndiffuseColor.rgb*=.86+.22*sin(vNeedlePosition.x*13.+vNeedlePosition.y*7.+vNeedlePosition.z*11.);');};firFoliage.customProgramCacheKey=()=> 'winter-fir-needle-shading-v27';
   function lightTree(g,height){g.updateWorldMatrix(true,false);const p=g.getWorldPosition(new THREE.Vector3());treeIllumination.addTree({x:p.x,y:p.y,z:p.z,height});}

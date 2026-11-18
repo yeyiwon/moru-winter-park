@@ -1,0 +1,10 @@
+{
+  "mobileEmulation": false,
+  "checks": [
+    "48 bouquet balloons and ambient iridescent bubbles before pickup",
+    "single pickup action randomises design and tone; server/peer palette identity",
+    "native movement carries balloon with bounded curved-string motion",
+    "bubble wand replaces balloon; held E/touch releases cleanly"
+  ],
+  "errors": []
+}

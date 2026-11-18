@@ -1,0 +1,36 @@
+{
+  "stage": "before",
+  "checks": [
+    {
+      "viewport": "desktop",
+      "id": "fluff",
+      "frame": {
+        "x": 320,
+        "y": 120,
+        "w": 800,
+        "h": 660,
+        "bottom": 780
+      },
+      "title": {
+        "x": 341,
+        "y": 146.40625,
+        "w": 702,
+        "h": 25.1875,
+        "bottom": 171.59375
+      },
+      "tabs": {
+        "x": 341,
+        "y": 185,
+        "w": 758,
+        "h": 44,
+        "bottom": 229
+      },
+      "overflow": false,
+      "background": "rgba(9, 18, 37, 0.46) none repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(243, 247, 255)",
+      "selected": "rgba(219, 235, 255, 0.12) none repeat scroll 0% 0% / auto padding-box border-box"
+    }
+  ],
+  "errors": [],
+  "physicalMobile": false
+}

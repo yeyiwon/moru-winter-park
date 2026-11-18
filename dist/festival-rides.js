@@ -1,3 +1,4 @@
+import {buildWinterBench} from './winter-bench.js';
 import * as THREE from './vendor/three.module.js';
 
 import {festivalLayout,festivalDestinations,festivalObstacles,festivalBenches,candyStall} from './festival-layout.js';
@@ -54,11 +55,7 @@ export function buildFestivalRides(scene){
  const terrace=builder(root,'photo-garden-terrace',palette);
  // The museum approach uses the shared festival lampposts only.
  // Low benches face east. The central 12 m promenade remains completely open.
- for(const {x,z} of festivalBenches){
-  terrace.add(box(4.4,.16,.85),4,[x,.56,z]);
-  terrace.add(box(4.5,.7,.14),2,[x,.99,z+.4]);
-  for(const dx of [-1.6,1.6])terrace.add(box(.14,.55,.7),6,[x+dx,.3,z]);
- }
+ for(const p of festivalBenches)root.add(buildWinterBench({...p,yaw:Math.PI}));
 
  terrace.finish();decorative.finish();
  return{root,dynamic:[root],destinations:festivalDestinations,obstacles:festivalObstacles,update(){},seat(){return null;}};

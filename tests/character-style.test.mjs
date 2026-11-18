@@ -33,7 +33,7 @@ test('expressions use rounded geometry and remain distinct while blinking and sk
   pet.customize({accessory:'eyes-goofy'});pet.pose({still:true});assert.equal(pet.eyes[0].material.color.getHexString(),'fff8ed');assert.equal(pet.eyes[0].children[0].position.y,pet.eyes[1].children[0].position.y);
   pet.customize({accessory:'eyes-wink'});assert.equal(normalizeWardrobe('eyes-wink'),'none');assert.ok(pet.eyes.every(eye=>eye.geometry.type==='SphereGeometry'));
   pet.customize({accessory:'eyes-sleepy,sunglasses'});pet.pose({mode:'ski',lean:1});assert.ok(pet.eyes.every(eye=>eye.geometry.type==='TubeGeometry'));assert.equal(pet.group.rotation.z,.2);assert.equal(pet.group.getObjectByName('sunglasses').visible,true);
-  pet.customize({accessory:'none'});pet.pose({still:true});assert.equal(pet.eyes[0].geometry.type,'SphereGeometry');assert.equal(pet.eyes[0].scale.y,.094);assert.equal(pet.eyes[0].children[0].visible,true);
+  pet.customize({accessory:'none'});pet.pose({still:true});assert.equal(pet.eyes[0].geometry.type,'SphereGeometry');assert.equal(pet.eyes[0].scale.y,.111);assert.equal(pet.eyes[0].children[0].visible,true);
 });
 
 test('body and fur keep one local silhouette under motion, customization and night lighting',()=>{
@@ -52,10 +52,26 @@ test('body and fur keep one local silhouette under motion, customization and nig
 
 test('landing squash never inverts the body even when an upstream clock delivers invalid values',()=>{const p=createCompanion({detail:'remote'}),shape=p.group.getObjectByName('plush-body').parent;for(const landing of [-20,12,NaN,Infinity]){p.pose({landing});assert.ok(shape.scale.y>.7&&shape.scale.y<1.2);assert.ok(shape.scale.toArray().every(Number.isFinite));}});
 
+test('opaque eyewear covers clay eyes and restores the chosen expression after removal',()=>{
+ const pet=createCompanion({detail:'remote'});
+ for(const expression of ['eyes-heart','eyes-star','eyes-goofy']){
+  pet.customize({accessory:expression});const geometry=pet.eyes[0].geometry;
+  for(const eyewear of ['goggles','sunglasses','oval-sunglasses','cat-eye-sunglasses']){
+   pet.customize({accessory:expression+','+eyewear});assert.ok(pet.eyes.every(e=>!e.visible));
+   for(const mode of ['','ski','lift']){pet.pose({mode,time:2,walking:true});assert.ok(pet.eyes.every(e=>!e.visible));}
+   pet.pose({mode:'bath',still:true});assert.ok(pet.eyes.every(e=>e.visible));
+   pet.pose({mode:'ski'});assert.ok(pet.eyes.every(e=>!e.visible));
+   pet.customize({accessory:expression});pet.pose({still:true});assert.ok(pet.eyes.every(e=>e.visible));assert.equal(pet.eyes[0].geometry,geometry);
+  }
+  pet.customize({accessory:expression+',silver-glasses'});pet.pose({still:true});assert.ok(pet.eyes.every(e=>e.visible),'clear glasses preserve the eyes');
+ }
+ pet.dispose();
+});
+
 test('departing characters release previously selected eye, ear and held-item GPU resources exactly once',()=>{
  const pet=createCompanion({detail:'remote'}),resources=new Map();
  const capture=()=>pet.group.traverse(o=>{for(const resource of [o.geometry,...(o.material?(Array.isArray(o.material)?o.material:[o.material]):[])]){if(!resource||resource.userData.shared||resources.has(resource))continue;resources.set(resource,0);resource.addEventListener('dispose',()=>resources.set(resource,resources.get(resource)+1));}});
- for(const accessory of ['eyes-heart,bunny-ears','eyes-flat,cat-ears','eyes-star,bear-ears','eyes-happy','eyes-sleepy','none']){pet.customize({accessory});capture();}
+ for(const accessory of ['eyes-heart,bunny-ears','eyes-flat,cat-ears','eyes-star,bear-ears','eyes-happy','eyes-sleepy','eyes-goofy','none']){pet.customize({accessory});capture();}
  for(const heldItem of ['odeng','marshmallow','balloon','icecream']){pet.pose({heldItem});capture();}
  pet.customize({accessory:'none'});pet.pose({heldItem:''});pet.dispose();pet.dispose();assert.ok(resources.size>40);for(const count of resources.values())assert.equal(count,1);
 });

@@ -13,12 +13,20 @@ export const alpine={...point(blueprint.alpine),landZ:blueprint.alpine.z+alpineS
 export const summit=point(blueprint.summit),peakSummit=point(blueprint.peakSummit);
 export const upperLiftLayout=point(blueprint.upperLiftLayout),liftLayout=point(blueprint.liftLayout),upperLiftEntry=point(blueprint.upperLiftEntry);
 export const summitTransfer=blueprint.summitTransfer.map(point),skiStarts=blueprint.skiStarts.map(point),skiRunouts=blueprint.skiRunouts.map(point);
+export const skiNetwork=blueprint.skiNetwork.map(r=>({...r,startZ:r.startZ+alpineShift,finish:r.finish+alpineShift,start:point(r.start),end:point(r.end),points:r.points.map(point),merges:r.merges.map(m=>({...m,z:m.z+alpineShift}))}));
 export const skiRuns=blueprint.skiRuns.map(p=>({...p,startZ:p.startZ+alpineShift,finish:p.finish+alpineShift}));
 export const beginnerAccess={...blueprint.beginnerAccess,start:point(blueprint.beginnerAccess.start),end:point(blueprint.beginnerAccess.end)};
 export const summitObstacles=blueprint.summitObstacles.map(point);
 export const summitFacilities=blueprint.summitFacilities.map(p=>({...point(p),...(p.model?{model:point(p.model)}:{})}));
 export const resortDestinations=blueprint.resortDestinations.map(p=>p.id==='ski'?point(p):spaPoint(p));
 export const resortRides=Object.fromEntries(Object.entries(blueprint.resortRides).map(([id,p])=>[id,{...p,points:p.points.map(vector),...(p.exit?{exit:vector(p.exit)}:{})}]));
+// These are dismount/queue positions, never the moving chair or an automatic ride trigger.
+export const skiMapDestinations=[
+ {...resortDestinations.find(p=>p.id==='ski'),name:'초급 리프트 · 왼쪽',icon:'lift',mapOnly:false},
+ {id:'ski-right-base',name:'정상 리프트 · 오른쪽',...upperLiftEntry,icon:'lift',view:{distance:27,yaw:.65,pitch:.32}},
+ {id:'ski-middle',name:'중턱 · 초급 출발',x:resortRides.lift.exit[0],z:resortRides.lift.exit[2],icon:'ski',view:{distance:30,yaw:Math.PI,pitch:.34}},
+ {id:'ski-peak',name:'정상 · 코스 출발',x:resortRides.upperlift.exit[0],z:resortRides.upperlift.exit[2],icon:'summit',view:{distance:34,yaw:Math.PI,pitch:.32}}
+].map(p=>({mapOnly:true,...p,region:'ski',y:blueprint.alpineHeight(p.x,p.z-alpineShift)}));
 export const resortObstacles=blueprint.resortObstacles.map(p=>p.z<0?point(p):spaPoint(p));
 export const skiRunCenter=(z,id)=>blueprint.skiRunCenter(z-alpineShift,id);
 export const skiRunHalfWidth=(z,id)=>blueprint.skiRunHalfWidth(z-alpineShift,id);
