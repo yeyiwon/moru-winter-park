@@ -59,7 +59,6 @@ Chrome / Apple M2. PC 1280×800, 모바일 에뮬레이션 390×844 DPR 3. 장�
 
 | 조건 | 장면 | 이전 FPS | 이후 FPS | 이후 p95 (ms) | 이전 게임 CPU (ms) | 이후 게임 CPU (ms) |
 |---|---|---:|---:|---:|---:|---:|
-
 | desktop | spa-garden | 60.0 | 60.0 | 16.7 | 4.47 | 3.77 |
 | desktop | onsen | 60.0 | 60.0 | 16.7 | 2.87 | 2.54 |
 | mobile | spa-garden | 60.0 | 58.3 | 16.8 | 3.92 | 3.88 |
@@ -85,3 +84,12 @@ PC/모바일 브라우저 체험 검사 **11개 통과**, 브라우저 오류 0�
 
 - 최종 전체 자동 검사 **309/309 통과**, 실패 0. `qa/browser-v33/unit-tests.json`. 별도 lint/typecheck 명령은 프로젝트에 없다.
 - 압축된 `web-dist` 파일을 실제 브라우저에 제공한 입장·퇴장 검사 통과, 런타임/셰이더 오류 0. `qa/browser-v33/production-smoke.json`.
+
+### 운영 반영
+
+- 코드 릴리스: `fb5f0827c5ec00f3775c2cfedb24ee4c12071158`, GitHub `main` 반영 완료.
+- Sites 버전 **34**, 배포 `appgdep_6afd422c7b9c8191af5382db5312e3d7`: 성공.
+- Vercel 운영 배포 `dpl_CSLX1jkGr3nQjc2Ci9GHSRGrDxu5`: `READY`, [기존 주소](https://moru-winter-park.vercel.app)에 연결 완료.
+- 2026-11-18 15:17 KST에 두 운영 주소에서 변경된 8개 파일의 SHA-256이 로컬 배포 산출물과 모두 일치했다. `winter33` 진입 파일과 API health의 `ok` / `multiplayer` 모두 정상. `qa/browser-v33/deployment.json`.
+- 운영 서버에 검증용 소원이나 게스트를 생성하지 않았다. 체험·다중 세션 검사는 분리된 로컬 QA 서버에서 수행했다.
+- 이 배포 결과 문서는 릴리스 이후 별도 문서 커밋으로 기록한다.

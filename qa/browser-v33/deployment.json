@@ -1,0 +1,137 @@
+{
+  "verifiedAt": "2026-11-18T06:17:47.491Z",
+  "commit": "fb5f0827c5ec00f3775c2cfedb24ee4c12071158",
+  "sitesVersion": 34,
+  "sitesDeploymentId": "appgdep_6afd422c7b9c8191af5382db5312e3d7",
+  "vercelDeploymentId": "dpl_CSLX1jkGr3nQjc2Ci9GHSRGrDxu5",
+  "sites": [
+    {
+      "origin": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "assets": [
+        {
+          "file": "spa-resort.js",
+          "status": 200,
+          "match": true,
+          "sha256": "95c7732bbb0af3edc1b99543c73c563ecc0c3ea88f1027cb5f463effc583a01d"
+        },
+        {
+          "file": "ryokan-aquarium.js",
+          "status": 200,
+          "match": true,
+          "sha256": "1075009e1b5228076cba73345d6f2c7cc15e5bf5733bc774fc44b6ab5cd24ae2"
+        },
+        {
+          "file": "interior-world.js",
+          "status": 200,
+          "match": true,
+          "sha256": "a9c932a74451d195c5f01b24870de5ebb8daccf5ac9e149d19c47b93009f4979"
+        },
+        {
+          "file": "onsen-water.js",
+          "status": 200,
+          "match": true,
+          "sha256": "56dc155b36594badb3a059c582aaee62f0a39506061d006d1257c98bbddcf34f"
+        },
+        {
+          "file": "ryokan-garden.js",
+          "status": 200,
+          "match": true,
+          "sha256": "f4c2fb0a04bd778154e093bbb218f60132ad01f60abe7ca763ddec9782206eb5"
+        },
+        {
+          "file": "park.js",
+          "status": 200,
+          "match": true,
+          "sha256": "ba76ba3a64f42e0a733bd69a413d47c37880dd0f90b2e0c1dadd3002507ec380"
+        },
+        {
+          "file": "sw.js",
+          "status": 200,
+          "match": true,
+          "sha256": "afb7e155fd3ad6b8c682abe7147cbda15d2064090888cf5a7998f4aa402545d3"
+        },
+        {
+          "file": "textures/winter-world-map.webp",
+          "status": 200,
+          "match": true,
+          "sha256": "2273a5cd129cc4cc659453b076afba8e1094fd66cfe8e78d781a6deae6773d7e"
+        }
+      ],
+      "health": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "multiplayer": true
+        }
+      },
+      "index": {
+        "status": 200,
+        "winter33": true
+      }
+    },
+    {
+      "origin": "https://moru-winter-park.vercel.app",
+      "assets": [
+        {
+          "file": "spa-resort.js",
+          "status": 200,
+          "match": true,
+          "sha256": "95c7732bbb0af3edc1b99543c73c563ecc0c3ea88f1027cb5f463effc583a01d"
+        },
+        {
+          "file": "ryokan-aquarium.js",
+          "status": 200,
+          "match": true,
+          "sha256": "1075009e1b5228076cba73345d6f2c7cc15e5bf5733bc774fc44b6ab5cd24ae2"
+        },
+        {
+          "file": "interior-world.js",
+          "status": 200,
+          "match": true,
+          "sha256": "a9c932a74451d195c5f01b24870de5ebb8daccf5ac9e149d19c47b93009f4979"
+        },
+        {
+          "file": "onsen-water.js",
+          "status": 200,
+          "match": true,
+          "sha256": "56dc155b36594badb3a059c582aaee62f0a39506061d006d1257c98bbddcf34f"
+        },
+        {
+          "file": "ryokan-garden.js",
+          "status": 200,
+          "match": true,
+          "sha256": "f4c2fb0a04bd778154e093bbb218f60132ad01f60abe7ca763ddec9782206eb5"
+        },
+        {
+          "file": "park.js",
+          "status": 200,
+          "match": true,
+          "sha256": "ba76ba3a64f42e0a733bd69a413d47c37880dd0f90b2e0c1dadd3002507ec380"
+        },
+        {
+          "file": "sw.js",
+          "status": 200,
+          "match": true,
+          "sha256": "afb7e155fd3ad6b8c682abe7147cbda15d2064090888cf5a7998f4aa402545d3"
+        },
+        {
+          "file": "textures/winter-world-map.webp",
+          "status": 200,
+          "match": true,
+          "sha256": "2273a5cd129cc4cc659453b076afba8e1094fd66cfe8e78d781a6deae6773d7e"
+        }
+      ],
+      "health": {
+        "status": 200,
+        "body": {
+          "ok": true,
+          "multiplayer": true
+        }
+      },
+      "index": {
+        "status": 200,
+        "winter33": true
+      }
+    }
+  ]
+}
