@@ -2,6 +2,13 @@ import test from 'node:test';import assert from 'node:assert/strict';
 import * as T from '../dist/vendor/three.module.js';import {createFantasyVFX} from '../dist/fantasy-vfx.js';
 const actor=(x=0,extra={})=>({id:'self',x,y:.86,z:0,yaw:Math.PI/2,speed:5,mode:'walk',accessory:'crown,star,ribbon',jump:0,...extra});
 
+test('reduced flashing hides pulse flashes while preserving movement trails',()=>{
+ const v=createFantasyVFX(new T.Scene());for(let i=0;i<40;i++)v.update({time:i/60,dt:1/60,reduceFlash:true,player:actor(i/12)});
+ v.burst({kind:'jump'});assert.equal(v.root.getObjectByName('jump-and-landing-light-rings').visible,false);assert.ok(v.stats.trailVertices>0);
+ const opacity=v.root.getObjectByName('pooled-fantasy-sparkles').geometry.attributes.aTiming.array;for(let i=3;i<opacity.length;i+=4)assert.ok(opacity[i]<=.55);
+ v.update({time:1,reduceFlash:false});assert.equal(v.root.getObjectByName('jump-and-landing-light-rings').visible,true);v.dispose();
+});
+
 test('movement leaves a short tapered filament and stardust, jump and landing remain bounded, and reduced motion clears them',()=>{
  const v=createFantasyVFX(new T.Scene());for(let i=0;i<90;i++)v.update({time:i/60,dt:1/60,player:actor(i/12)});assert.ok(v.stats.activeParticles>0);assert.ok(v.stats.trailVertices>0);
  v.update({time:1.51,dt:.01,player:actor(7.5,{jump:.4,y:1.26})});v.update({time:1.7,dt:.03,player:actor(7.5,{jump:0})});assert.ok(v.stats.activeParticles<=960);

@@ -1,0 +1,38 @@
+{
+  "recordedAt": "2026-11-18T07:27:39.520Z",
+  "base": "18a79b43c1e43a0d77fc40495cef286100ac3a5a",
+  "tests": {
+    "total": 330,
+    "pass": 330,
+    "fail": 0,
+    "durationMs": 43925.050542
+  },
+  "build": {
+    "sites": true,
+    "vercel": true,
+    "budget": true
+  },
+  "browser": {
+    "executed": false,
+    "reason": "Automatic approval review usage limit; browser command was not executed.",
+    "screenshots": false,
+    "performanceMeasured": false,
+    "physicalMobile": false
+  },
+  "ai": {
+    "liveRequestExecuted": false,
+    "providerTests": "mocked",
+    "actualTokens": null,
+    "actualCost": null
+  },
+  "voice": {
+    "liveMicrophone": false,
+    "lifecycleTests": "mocked"
+  },
+  "deployment": {
+    "sites": false,
+    "vercel": false,
+    "githubPush": false,
+    "productionRemains": "v34"
+  }
+}

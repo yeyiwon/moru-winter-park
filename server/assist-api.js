@@ -8,6 +8,7 @@ const cache=new Map();
 export async function assistAPI(request,env,self,fetcher=fetch){
  if(new URL(request.url).pathname!=='/api/assist')return null;if(request.method!=='POST')return json({error:'지원하지 않는 요청입니다.'},405);
  let body,text,question;try{const raw=await request.text();if(raw.length>1024)throw Error();body=JSON.parse(raw);if(!['wish','quiz'].includes(body.kind))throw Error();text=messageText(body.text||'안내',240);question=body.kind==='quiz'?questions.find(q=>q.id===body.questionId):null;if(body.kind==='quiz'&&(typeof body.questionId!=='string'||body.questionId.length>80))throw Error();}catch{return json({error:'요청 내용을 확인해 주세요.'},400);}
+ if(body.consent!==true)return json({error:'AI 사용 동의가 필요합니다.'},403);
  if(body.kind==='quiz'){const edited=await env.DB.prepare('SELECT payload FROM quiz_overrides WHERE id=?').bind(body.questionId).first();if(edited?.payload){try{const q={...JSON.parse(edited.payload),id:body.questionId};if(validTrivia(q))question=q;}catch{}}if(!question)return json({error:'문제를 찾을 수 없습니다.'},400);if(question.disabled)return json({error:'출제가 중지된 문제입니다.'},404);}
  const fallback=fallbackAssist(body.kind,text,question),base={...fallback,mode:'fallback',reason:'unconfigured'},now=Date.now();
  if(!await rateLimit(env.DB,'assist:'+self.id,now,4))return json({...base,reason:'rate-limit'});

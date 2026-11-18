@@ -1,0 +1,78 @@
+/* One optical surface; nested controls never add another backdrop filter. */
+:root{
+ --ui-font:'Winter Sans','Apple SD Gothic Neo',sans-serif;
+ --ui-display:'AppleMyungjo','Nanum Myeongjo','Noto Serif CJK KR',serif;
+ --ui-ink:#f4faf8;--ui-muted:#d5e4e5;--ui-accent:#c3eee3;
+ --ui-glass:linear-gradient(135deg,rgba(25,58,65,.72),rgba(17,36,50,.76));
+ --ui-edge:rgba(225,250,248,.25);--ui-hover:rgba(215,249,242,.08);--ui-selected:rgba(193,235,226,.15);
+ --ui-field:rgba(9,28,38,.24);--ui-blur:14px;--ui-shadow:inset 0 1px 0 #ffffff24,0 16px 48px #05121c38;
+ --ui-radius:22px;--ui-control-radius:12px;--ui-control-height:44px;
+ --ui-space-1:4px;--ui-space-2:8px;--ui-space-3:12px;--ui-space-4:16px;--ui-space-5:24px;
+ --ui-fast:140ms;--ui-duration:180ms;--ui-ease:cubic-bezier(.2,.7,.3,1);
+ --ui-layer-dock:26;--ui-layer-picker:100;
+}
+#studio,#studio:has(#pane-map:not([hidden])),.glass-panel,#wish-panel.is-composing,#wish-feed[open],#tree-tools,#quick-quiz,#museum-puzzle,.select-options,.menu-panel,.control-help>div,.chat-entry,#emote-panel{
+ color:var(--ui-ink);background:var(--ui-glass);border:1px solid var(--ui-edge);box-shadow:var(--ui-shadow);
+ backdrop-filter:blur(var(--ui-blur));-webkit-backdrop-filter:blur(var(--ui-blur));
+}
+#studio,.glass-panel,#quick-quiz,#museum-puzzle{border-radius:var(--ui-radius)}
+#studio::backdrop,.glass-panel::backdrop,#quick-quiz::backdrop,#museum-puzzle::backdrop{background:#06152119;backdrop-filter:none;-webkit-backdrop-filter:none}
+#studio .studio-tabs button,.wish-tabs button,.custom-tabs button{min-height:var(--ui-control-height);border:0;box-shadow:none;border-radius:var(--ui-control-radius);background:transparent;transition:background var(--ui-fast) var(--ui-ease),color var(--ui-fast)}
+#studio .studio-tabs [aria-selected=true],.wish-tabs [aria-pressed=true],.custom-tabs [aria-pressed=true]{background:var(--ui-selected);color:var(--ui-ink);transform:none}
+#studio .studio-tabs button:hover,.wish-tabs button:hover,.custom-tabs button:hover{background:var(--ui-hover)}
+.brand-word{font-family:var(--ui-display);font-size:15px;font-weight:500;letter-spacing:.015em}
+.wish-card>p{font-family:var(--ui-display);font-size:15px;line-height:1.9}
+.panel-heading h2,#exhibit-panel h2{letter-spacing:-.02em;line-height:1.5}
+.studio-description,.preference-note,.ai-notice{color:var(--ui-muted);line-height:1.7}
+.select-trigger,.glass-panel textarea,.glass-panel input:not([type=checkbox]):not([type=color]):not([type=radio]),.studio input:not([type=range]):not([type=checkbox]):not([type=color]){background:var(--ui-field)!important;border-color:var(--ui-edge)!important;box-shadow:none;border-radius:var(--ui-control-radius);color:var(--ui-ink)}
+.select-options{border-radius:var(--ui-control-radius);z-index:var(--ui-layer-picker)}
+.select-options [aria-selected=true],.select-options .active{background:var(--ui-selected)}
+.select-trigger svg{transition:transform var(--ui-duration) var(--ui-ease)}
+.select-trigger,.setting-row button,.panel-primary,.quiet-action{min-height:var(--ui-control-height)}
+.glass-panel textarea:focus,.glass-panel input:focus,.select-trigger:focus-visible{outline:2px solid var(--ui-accent);outline-offset:2px;box-shadow:none}
+button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible{outline:2px solid var(--ui-accent);outline-offset:3px}
+button[aria-label$='닫기']:focus-visible,.studio-head>button:focus-visible{outline:2px solid var(--ui-accent);outline-offset:0}
+.glass-panel :is(.wish-preview,.wish-card,.wish-shapes button,.wish-swatches button),#studio :is(.accessories button,.swatches button,.setting-row button),.chat-entry button,.select-trigger{backdrop-filter:none;-webkit-backdrop-filter:none}
+.glass-panel .panel-heading,#quick-quiz .quiz-header{gap:var(--ui-space-4);margin-bottom:var(--ui-space-3)}
+.glass-panel .panel-scroll{overscroll-behavior:contain}
+.glass-panel button,.studio button{transition:background var(--ui-fast),border-color var(--ui-fast),opacity var(--ui-fast)}
+.glass-panel button:active,.studio button:active{filter:brightness(1.08)}
+.panel-primary,.primary{background:var(--ui-selected);border-color:var(--ui-edge);box-shadow:none}
+#tree-tools{z-index:var(--ui-layer-dock)}
+.chat-entry{--ui-blur:6px}.chat-entry input{background:transparent!important}
+.preference-settings{margin-top:var(--ui-space-4);border-top:1px solid var(--ui-edge)}
+.preference-settings .preference-body{display:grid;gap:var(--ui-space-3);padding:var(--ui-space-2) 0 var(--ui-space-4);min-width:0}
+.preference-body p{margin:0;font-size:12px;line-height:1.7}
+.preference-body p:empty{display:none}
+.setting-check{display:flex!important;align-items:center;justify-content:space-between;gap:var(--ui-space-4);min-height:var(--ui-control-height);cursor:pointer}
+.setting-check input{width:20px;height:20px;flex:none;accent-color:var(--ui-accent);margin:0}
+.preference-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--ui-space-3)}
+.preference-grid label{display:grid;gap:var(--ui-space-2);min-width:0}
+.quiet-action,.experience-card button,.exhibit-actions button{border:1px solid var(--ui-edge);border-radius:var(--ui-control-radius);min-height:44px;padding:10px 14px;background:var(--ui-hover);font:500 12px/1.5 var(--ui-font);color:var(--ui-ink);box-shadow:none}
+.quiet-action:disabled,.exhibit-actions button:disabled{opacity:.46;cursor:default}
+.experience-cards{display:grid;gap:var(--ui-space-3);min-width:0}
+.experience-card{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;padding:var(--ui-space-4);border:1px solid var(--ui-edge);border-radius:16px;background:rgba(222,246,237,.045);min-width:0}
+.experience-card h3{grid-column:1/-1;font-size:14px;line-height:1.55;margin:0;font-weight:550;overflow-wrap:anywhere}
+.experience-card p,.experience-card small,.experience-card a{grid-column:1/-1;font-size:12px;line-height:1.8;margin:0;overflow-wrap:anywhere;color:var(--ui-muted)}
+.experience-card button{grid-column:2;justify-self:end;min-width:64px;margin-top:4px}
+#exhibit-panel{position:fixed;inset:auto 24px 24px auto;margin:0;width:min(420px,calc(100vw - 32px));max-height:72dvh;padding:20px}
+#exhibit-panel .experience-card h3{font-family:var(--ui-display);font-size:16px;line-height:1.7}
+.exhibit-actions{display:flex;gap:8px;flex-wrap:wrap}.exhibit-actions button{flex:1}
+#exhibit-panel [role=status]{font-size:11px;line-height:1.6;margin:12px 0;color:var(--ui-muted)}
+.glass-panel[open],#quick-quiz[open]{animation:calm-panel-in var(--ui-duration) var(--ui-ease)}
+@keyframes calm-panel-in{from{opacity:0}to{opacity:1}}
+body.reduce-flash .quiz-burst,body.reduce-flash .quiz-burst i{display:none}
+body.reduce-flash .quiz-correct,body.reduce-flash .quiz-wrong{animation:none}
+body.still *,body.still *::before,body.still *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
+@media(max-width:650px),(pointer:coarse){
+ :root{--ui-blur:6px;--ui-radius:20px}
+ #studio{padding:16px}#exhibit-panel{inset:auto 10px max(10px,env(safe-area-inset-bottom)) 10px;width:auto;max-height:55dvh;padding:16px}
+ .preference-grid{gap:8px}.experience-card{padding:12px}.brand-word{font-size:13px}
+ #wish-feed[open],.chat-entry{backdrop-filter:none;-webkit-backdrop-filter:none}
+}
+@media(max-width:350px){.preference-grid{grid-template-columns:1fr}}
+@media(max-height:500px){#exhibit-panel{left:auto;right:10px;bottom:10px;max-height:calc(100dvh - 20px);width:min(380px,calc(100vw - 20px))}}
+:root[data-render-quality=low]{--ui-blur:0px}
+@media(prefers-reduced-transparency:reduce){:root{--ui-glass:linear-gradient(135deg,#193a41,#112432);--ui-blur:0px}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
+@supports not (backdrop-filter:blur(1px)){:root{--ui-glass:linear-gradient(135deg,#193a41ed,#112432f0)}}

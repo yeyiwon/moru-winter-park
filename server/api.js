@@ -5,6 +5,7 @@ import {rideAPI,listRideSeats} from './ride-api.js';
 import {decorationKinds,validDecorationColor} from '../dist/decorations.js';
 import {interiorPositionValid,interiorAt} from '../dist/interior-layout.js';
 import {assistAPI} from './assist-api.js';
+import {experienceAPI} from './experience-api.js';
 import {amusementPositionValid} from '../dist/festival-layout.js';
 import {communityAPI,messageText,rateLimit} from './community-api.js';
 import {activityGestures} from '../dist/activity-state.js';
@@ -69,6 +70,7 @@ export async function handleAPI(request,env){
  const regionResponse=await regionAPI(request,env.DB,self,now);if(regionResponse)return regionResponse;
  const rideResponse=await rideAPI(request,env.DB,self,now);if(rideResponse)return rideResponse;
  const assisted=await assistAPI(request,env,self);if(assisted)return assisted;
+ const personalized=await experienceAPI(request,env,self);if(personalized)return personalized;
  const community=await communityAPI(request,env,self,path==='/api/admin'?await isOwner(request,env):false);if(community)return community;
  if(path==='/api/tree'&&request.method==='GET'){const rows=await env.DB.prepare('SELECT id,kind,color,angle,height,origin_x AS originX,origin_y AS originY,origin_z AS originZ,created_at AS createdAt,CASE WHEN author=? THEN 1 ELSE 0 END AS mine FROM tree_decorations WHERE room=? ORDER BY created_at LIMIT 160').bind(self.id,self.room).all();const decorations=rows.results||[],revision=(await digest(JSON.stringify(decorations))).slice(0,24);return json(url.searchParams.get('revision')===revision?{unchanged:true,revision}:{decorations,revision});}
  if(path==='/api/name'&&request.method==='POST'){const raw=await request.text();if(raw.length>256)return json({error:'닉네임은 16자까지 입력하세요.'},413);const name=String(JSON.parse(raw).name||'').normalize().replace(/[<>\u0000-\u001f]/g,'').trim();if(!name||name.length>16)return json({error:'닉네임은 1~16자로 입력하세요.'},400);await env.DB.prepare('UPDATE visitors SET name=? WHERE id=?').bind(name,id).run();return json({name});}
