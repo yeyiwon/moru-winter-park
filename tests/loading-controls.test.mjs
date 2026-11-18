@@ -1,4 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {JSDOM} from 'jsdom';
+import {BRAND} from '../dist/brand-config.js';
+import {loadingTreePath} from '../dist/luminous-loading.js';
 const html=fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8');
 test('loading reports real stages including connection, fails visibly and completes without a timed gate',()=>{
  const dom=new JSDOM(html,{runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window,d=w.document;w.matchMedia=()=>({matches:false});w.eval(fs.readFileSync(new URL('../dist/luminous-loading.js',import.meta.url),'utf8').replaceAll('export ',''));w.eval(fs.readFileSync(new URL('../dist/loading-backdrop.js',import.meta.url),'utf8').replaceAll('export ',''));w.eval(fs.readFileSync(new URL('../dist/loading-state.js',import.meta.url),'utf8').replace(/^import .*;\n/gm,''));
@@ -7,8 +9,8 @@ test('loading reports real stages including connection, fails visibly and comple
  w.labLoading.complete('world');assert.equal(bar.value,4);w.labLoading.complete('connection');assert.equal(bar.value,5);assert.equal(loader.classList.contains('loaded'),true);
  loader.dispatchEvent(new w.Event('transitionend'));assert.equal(loader.hidden,true);w.labLoading.error('연결 오류');assert.equal(loader.hidden,false);assert.equal(loader.querySelector('button').hidden,false);dom.window.close();
 });
-test('branding stays unchanged and loader HTML has no spinner, title or invented backdrop',()=>{
- const dom=new JSDOM(html),d=dom.window.document;assert.equal(d.querySelector('.brand-word').textContent,'내가 사랑하는 겨울');assert.equal(d.querySelectorAll('#winter-crystal .crystal-branches use').length,6);assert.equal(d.querySelector('.brand-mark use').getAttribute('href'),'#winter-crystal');assert.equal(d.querySelector('#world-loading h1'),null);assert.equal(d.querySelector('#world-loading svg'),null);assert.equal(d.querySelector('.loading-spinner'),null);assert.ok(d.querySelector('#world-loading .loading-error'));assert.ok(!d.querySelector('#jump-button').innerHTML.includes('M12 19V5'));dom.window.close();
+test('static branding reuses the complete loading tree while the loader stays dedicated to real progress',()=>{
+ const dom=new JSDOM(html),d=dom.window.document;assert.equal(d.querySelector('.brand-word').textContent,BRAND.name);assert.equal(d.querySelector('.brand-mark img').getAttribute('src'),BRAND.assets.logoCompact);const logo=fs.readFileSync(new URL('../dist'+BRAND.assets.logoCompact,import.meta.url),'utf8');assert.ok(logo.includes(loadingTreePath()));assert.ok(!/<(?:animate|animateTransform|script)\b/.test(logo));assert.equal(d.querySelectorAll('#winter-crystal').length,0);assert.equal(d.querySelector('#world-loading h1'),null);assert.equal(d.querySelector('#world-loading svg'),null);assert.equal(d.querySelector('.loading-spinner'),null);assert.ok(d.querySelector('#world-loading .loading-error'));assert.ok(!d.querySelector('#jump-button').innerHTML.includes('M12 19V5'));dom.window.close();
 });
 test('emote menu cancels prior input and closes on selection, outside touch or Escape',()=>{
  const dom=new JSDOM('<body><canvas></canvas></body>',{runScripts:'outside-only'}),w=dom.window,d=w.document;let resets=0,emotion='';w.addEventListener('lab:pause',()=>resets++);w.addEventListener('lab:emote',e=>emotion=e.detail);w.eval(fs.readFileSync(new URL('../dist/emotes.js',import.meta.url),'utf8'));
