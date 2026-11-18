@@ -1,8 +1,8 @@
-import {landforms,landRadius} from './world-layout.js';
+import {landforms,landPoint} from './world-layout.js';
 import {canStandAt,canMoveBetween} from './movement.js';
 import {interiorAt} from './interior-layout.js';
 const STEP=.85,grids=new Map();
-const outline=landforms.flatMap(f=>Array.from({length:128},(_,i)=>{const angle=i/128*Math.PI*2,r=landRadius(f,angle);return {x:f.x+Math.cos(angle)*f.rx*r,z:f.z+Math.sin(angle)*f.rz*r};}));
+const outline=landforms.flatMap(f=>Array.from({length:128},(_,i)=>landPoint(f,i/128*Math.PI*2)));
 export const navigationBounds={minX:Math.min(...outline.map(p=>p.x))-2,maxX:Math.max(...outline.map(p=>p.x))+2,minZ:Math.min(...outline.map(p=>p.z))-2,maxZ:Math.max(...outline.map(p=>p.z))+2};
 export function clearSegment(a,b){
  const n=Math.ceil(Math.hypot(b.x-a.x,b.z-a.z)/.12);let previous=a;

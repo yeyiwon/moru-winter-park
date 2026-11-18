@@ -6,12 +6,13 @@ import {interiorRooms,interiorPositionValid} from '../dist/interior-layout.js';
 import {findPath,clearSegment} from '../dist/navigation.js';
 import {moveOnGround,canStandAt} from '../dist/movement.js';
 import {mapFacilities} from '../dist/world-map.js';
+import {museumLayout} from '../dist/district-layout.js';
 
 test('final five islands preserve relative placement and never overlap',()=>{
  assert.deepEqual(Object.keys(regions),['park','ski','spa','tree','museum']);
  assert.equal(interiorRooms.conservatory,undefined);assert.equal(interiorPositionValid(800,.95,0),false);
  assert.equal(mapFacilities.length,5);assert.ok(!mapFacilities.some(p=>['conservatory','castle'].includes(p.id)));
- assert.ok(regions.ski.center.z<regions.spa.center.z&&regions.spa.center.z<regions.park.arrival.z);
+ assert.ok(regions.ski.center.z<regions.spa.center.z&&regions.spa.center.z<regions.tree.center.z);
  assert.ok(regions.tree.center.z>regions.park.center.z);assert.ok(regions.museum.center.x<regions.park.center.x-regions.park.size.rx);
  for(let x=-180;x<150;x+=2)for(let z=-360;z<120;z+=2)assert.ok(landforms.filter(f=>landDistance(x,z,f)<0).length<=1,`overlapping land at ${x},${z}`);
 });
@@ -43,6 +44,8 @@ test('bridge aprons keep the full walking width clear before paths turn',()=>{
   }
  }
  const museum=regionBridges.find(b=>b.id==='park-museum');
- assert.equal(museum.start.z,regions.museum.center.z,'the bridge faces the observatory entrance');
- assert.equal(regions.museum.center.x,-regions.spa.center.x);assert.equal(regions.museum.center.z,regions.spa.center.z);assert.equal(regions.tree.center.x,regions.park.center.x);assert.equal(regions.rink,undefined);assert.ok(!regionBridges.some(b=>b.id.includes('rink')));
+ const dx=museum.start.x-museum.end.x,dz=museum.start.z-museum.end.z;
+ assert.ok(Math.abs(dx*Math.cos(museumLayout.yaw)-dz*Math.sin(museumLayout.yaw))<1e-8,'bridge and entrance share the same axis');
+ assert.ok(museum.start.z>regions.park.center.z&&regions.museum.center.z>regions.park.center.z,'museum connects from the front promenade');
+ assert.ok(Math.hypot(dx,dz)<27);assert.equal(regions.tree.center.x,regions.park.center.x);assert.equal(regions.rink,undefined);assert.ok(!regionBridges.some(b=>b.id.includes('rink')));
 });

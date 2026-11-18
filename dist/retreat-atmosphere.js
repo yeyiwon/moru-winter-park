@@ -16,15 +16,15 @@ export function createRetreatAtmosphere(parent,{name='retreat',waters=[],vapour=
  for(const water of waters){
   const {x,y,z,rx,rz,rect=false,warm=true}=water;
   const lamps=(water.lights||[]).slice(0,4).map(p=>new T.Vector3(...p));while(lamps.length<4)lamps.push(new T.Vector3(10000,10000,10000));
-  const mat=material({uniforms:{time,sourceOrigin:{value:new T.Vector3(x,y,z)},rect:{value:rect?1:0},warm:{value:warm?1:0},lightPoints:{value:lamps},lightCount:{value:Math.min(water.lights?.length||0,4)}},vertexShader:vertex,fragmentShader:`
-   varying vec2 vUv;varying vec3 vWorld;varying vec3 vOrigin;uniform float time;uniform float rect;uniform float warm;uniform vec3 lightPoints[4];uniform int lightCount;
+  const mat=material({uniforms:{time,sourceFrame:{value:parent.matrixWorld},sourceOrigin:{value:new T.Vector3(x,y,z)},rect:{value:rect?1:0},warm:{value:warm?1:0},lightPoints:{value:lamps},lightCount:{value:Math.min(water.lights?.length||0,4)}},vertexShader:vertex,fragmentShader:`
+   varying vec2 vUv;varying vec3 vWorld;varying vec3 vOrigin;uniform float time;uniform float rect;uniform float warm;uniform vec3 lightPoints[4];uniform int lightCount;uniform mat4 sourceFrame;
    void main(){
     vec2 p=(vUv-.5)*2.;float edge=mix(length(p),max(abs(p.x),abs(p.y)),rect);
     float mask=1.-smoothstep(.88,1.,edge);if(mask<.001)discard;
     float wave=sin(vWorld.x*3.1+vWorld.z*1.7-time*.7)+sin(vWorld.z*5.2-vWorld.x*.9+time*.53);
     vec3 n=normalize(vec3(sin(vWorld.x*3.1+time*.7)*.038,1.,cos(vWorld.z*4.8-time*.53)*.045));
     vec3 eye=normalize(cameraPosition-vWorld),reflected=reflect(-eye,n);float highlight=0.;
-    for(int i=0;i<4;i++){if(i>=lightCount)break;vec3 l=lightPoints[i]+vOrigin;highlight+=pow(max(0.,dot(reflected,normalize(l-vWorld))),65.);}
+    for(int i=0;i<4;i++){if(i>=lightCount)break;vec3 l=(sourceFrame*vec4(lightPoints[i],1.)).xyz;highlight+=pow(max(0.,dot(reflected,normalize(l-vWorld))),65.);}
     float ripples=pow(max(0.,sin(length(p*vec2(1.,1.1)-vec2(.25,-.1))*43.-time*.8+wave*.2)),24.);
     float caustic=pow(max(0.,sin(vWorld.x*2.5+wave*.8)*sin(vWorld.z*2.8-wave*.4)),9.);
     float shimmer=(.5+.5*sin(vWorld.z*16.+wave*1.7))*highlight;

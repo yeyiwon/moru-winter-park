@@ -30,7 +30,7 @@ test('resting has no countdown and movement stands up',t=>{
 });
 
 test('portable items replace each other, bubbles keep blowing while walking, and map travel retains them',t=>{
- const {e}=setup(t);const click=(name)=>[...document.querySelectorAll('#place-actions button')].find(b=>b.getAttribute('aria-label')===name).click();e.show('bubbles');click('비눗방울');assert.equal(e.heldItem,'bubble-wand');e.update(.1,{x:1});assert.equal(e.gesture,'bubble');assert.equal(e.focusGesture,'');e.cancel();assert.equal(e.heldItem,'bubble-wand');e.show('bubbles');click('풍선');assert.equal(e.heldItem,'balloon');assert.equal(e.gesture,'');e.show('coffee');click('커피');assert.equal(e.heldItem,'coffee');e.proximity(0,30);assert.equal(document.querySelector('#place-card').hidden,true);assert.equal(e.useHeldItem(),true);assert.equal(e.gesture,'drink');e.update(3,{});assert.equal(e.heldItem,'coffee');e.show('icecream');click('아이스크림');assert.equal(e.heldItem,'icecream');
+ const {e}=setup(t);const click=(name)=>[...document.querySelectorAll('#place-actions button')].find(b=>b.getAttribute('aria-label')===name).click();e.show('bubbles');click('비눗방울');assert.equal(e.heldItem,'bubble-wand');e.update(.1,{x:1});assert.equal(e.gesture,'');window.dispatchEvent(new window.KeyboardEvent('keydown',{code:'KeyE'}));e.update(.1,{x:1});assert.equal(e.gesture,'bubble');assert.equal(e.focusGesture,'');window.dispatchEvent(new window.KeyboardEvent('keyup',{code:'KeyE'}));assert.equal(e.gesture,'');e.cancel();assert.equal(e.heldItem,'bubble-wand');e.show('bubbles');click('풍선');assert.equal(e.heldItem,'balloon');assert.equal(e.gesture,'');e.show('coffee');click('커피');assert.equal(e.heldItem,'coffee');e.proximity(0,30);assert.equal(document.querySelector('#place-card').hidden,true);assert.equal(e.useHeldItem(),true);assert.equal(e.gesture,'drink');e.update(3,{});assert.equal(e.heldItem,'coffee');e.show('icecream');click('아이스크림');assert.equal(e.heldItem,'icecream');
 });
 
 test('expired shared lift seats return the rider safely and release their reservation',async t=>{
@@ -38,6 +38,20 @@ test('expired shared lift seats return the rider safely and release their reserv
  app.e.show('ski');app.click();await new Promise(r=>setTimeout(r,0));assert.equal(app.e.rides.mode,'lift');
  window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:'lift'}));assert.equal(app.e.active,false);assert.equal(app.trips,1);assert.equal(releases,1);
  window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:'lift'}));assert.equal(app.trips,1);
+});
+
+test('popcorn is picked up at its existing counter, carried while moving and replaced by another item',t=>{
+ const {e,click}=setup(t);e.proximity(-32,18.5);assert.equal(document.querySelector('#place-actions button').getAttribute('aria-label'),'팝콘');click();assert.equal(e.heldItem,'popcorn');e.update(.1,{x:1});assert.equal(e.heldItem,'popcorn');e.cancel();assert.equal(e.heldItem,'popcorn');assert.equal(e.useHeldItem(),true);assert.equal(e.gesture,'eat');e.update(.1,{x:1});assert.equal(e.heldItem,'popcorn');assert.equal(e.gesture,'');e.show('coffee');click();assert.equal(e.heldItem,'coffee');
+ e.show('popcorn');click();e.useHeldItem();e.update(3,{});assert.equal(e.heldItem,'');assert.equal(e.gesture,'');assert.equal(document.querySelector('#ride-hud').hidden,true);
+});
+
+test('bubble hold survives walking and releases on E up, touch cancel, blur, panels and item replacement',t=>{
+ const {e}=setup(t);e.show('bubbles');[...document.querySelectorAll('#place-actions button')].find(b=>b.getAttribute('aria-label')==='비눗방울').click();assert.equal(e.gesture,'');
+ const down=()=>window.dispatchEvent(new window.KeyboardEvent('keydown',{code:'KeyE'}));down();e.update(9,{x:1,z:1});assert.equal(e.gesture,'bubble');assert.equal(e.active,false);assert.equal(e.focusGesture,'');
+ window.dispatchEvent(new window.KeyboardEvent('keyup',{code:'KeyE'}));assert.equal(e.gesture,'');
+ const control=document.querySelector('#bubble-hold');control.onpointerdown({preventDefault(){},stopPropagation(){},pointerId:3});assert.equal(e.gesture,'bubble');control.dispatchEvent(new Event('pointercancel'));assert.equal(e.gesture,'');
+ for(const event of ['blur','lab:pause']){down();assert.equal(e.gesture,'bubble');window.dispatchEvent(new Event(event));assert.equal(e.gesture,'');}
+ down();e.show('coffee');document.querySelector('#place-actions button').click();assert.equal(e.gesture,'');assert.equal(e.heldItem,'coffee');assert.equal(control.hidden,true);
 });
 
 test('leaving during an outstanding boarding request never reboards the player',async t=>{

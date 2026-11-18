@@ -3,7 +3,9 @@ import {worldPathLinks} from '../dist/world-paths.js';
 import {festivalDestinations} from '../dist/festival-layout.js';
 import {findPath} from '../dist/navigation.js';
 import {canStandAt} from '../dist/movement.js';
-const links=[...worldPathLinks,...festivalDestinations.flatMap(p=>{const points=[[-37,4],...(p.approach||[]),[p.x,p.z]];return points.slice(1).map((b,i)=>[points[i],b,p.approach?2.7:4.8]);})],routes=[];
+import {parkWalkways} from '../dist/park-layout.js';
+import {ferrisDimensions} from '../dist/ferris-layout.js';
+const links=[...worldPathLinks,...parkWalkways.flatMap(route=>route.points.slice(1).map((b,i)=>[route.points[i],b,route.width])),...festivalDestinations.flatMap(p=>{const points=[[ferrisDimensions.entrance.x,ferrisDimensions.entrance.z],...(p.approach||[]),[p.x,p.z]];return points.slice(1).map((b,i)=>[points[i],b,p.approach?2.7:4.8]);})],routes=[];
 for(const [a,b,width] of links){const start={x:a[0],z:a[1]},path=findPath(start,{x:b[0],z:b[1]});if(!path.length)throw Error(`Unreachable promenade: ${a} → ${b}`);routes.push({width,points:[a,...path.map(p=>[p.x,p.z])]});}
 // Join authored links before rounding: drawing each link independently left a
 // sharp elbow at every waypoint, even though each individual path was smooth.

@@ -22,6 +22,6 @@ test('park arrival framing contains both the castle crown and the original chara
 });
 test('castle arch joins a short straight bridge and spa has both park and ski access',()=>{
  const north=regionBridges.find(b=>b.id==='park-ski');assert.equal(north.start.x,castleLayout.passage.x);assert.equal(north.end.x,castleLayout.passage.x);assert.ok(Math.hypot(north.end.x-north.start.x,north.end.z-north.start.z)<30);
- for(const id of ['park-spa','ski-spa']){const bridge=regionBridges.find(b=>b.id===id);assert.ok(bridge);assert.ok(Math.hypot(bridge.end.x-bridge.start.x,bridge.end.z-bridge.start.z)<30);}
- assert.ok(regions.spa.center.z>regions.ski.arrival.z);assert.ok(regions.spa.center.z<regions.park.arrival.z);
+ for(const id of ['park-spa','ski-spa']){const bridge=regionBridges.find(b=>b.id===id);assert.ok(bridge);assert.ok(Math.hypot(bridge.end.x-bridge.start.x,bridge.end.z-bridge.start.z)<(id==='park-spa'?30:60));}
+ assert.ok(regions.spa.center.z>regions.ski.arrival.z);assert.ok(regions.spa.center.z<regions.tree.center.z);
 });

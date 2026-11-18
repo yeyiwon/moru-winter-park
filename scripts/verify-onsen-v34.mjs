@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import {chromium} from '/tmp/winter-browser-qa/node_modules/playwright-core/index.mjs';
-const origin=process.env.QA_URL||'http://127.0.0.1:4185',out='qa/browser-v34/after';
+const origin=process.env.QA_URL||'http://127.0.0.1:4185',out=process.env.QA_OUTPUT||'qa/browser-v34/after';
 if(!['127.0.0.1','localhost'].includes(new URL(origin).hostname))throw Error('Use isolated QA server');
 await fs.mkdir(out,{recursive:true});const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true}),report={checks:[],errors:[],physicalMobile:false},contexts=[];
 async function open(mobile){const context=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1440,height:900},isMobile:mobile,hasTouch:mobile,serviceWorkers:'block'});contexts.push(context);const page=await context.newPage();
@@ -32,8 +32,8 @@ try{
    const response=await page.context().request.post(origin+'/api/presence',{headers:{Origin:origin},data:{...moved,color:'#faf1e8',accessory:'none'}});assert.equal(response.status(),200,'server accepts bath pose');
    check(device+' '+id+' approach, enter, move, settle, exit',{entry,initial,moved,exited,ripples});
   }
-  if(!mobile){await page.evaluate(()=>window.travelToPlace('onsen',false));await page.waitForTimeout(800);for(const [name,position]of [['front',[82.5,3,-10]],['side',[78,3.2,-1]],['top',[83,9,-4]]]){const view={position,target:[82.6,1.2,-2]};await shot(page,'waterfall-'+name+'-a',view);await page.waitForTimeout(550);await shot(page,'waterfall-'+name+'-b',view);}
-   await shot(page,'bath-overview',{position:[77,10,-28],target:[90,.4,-8]});
+  if(!mobile){await page.evaluate(()=>window.travelToPlace('onsen',false));await page.waitForTimeout(800);for(const [name,local]of [['front',[-18.7,3,127]],['side',[-24,3.2,136]],['top',[-18.5,9,133]]]){const view=await page.evaluate(async local=>{const {spaToWorld}=await import('/spa-transform.js');const p=spaToWorld({x:local[0],z:local[2]}),q=spaToWorld({x:-18.7,z:135.1});return{position:[p.x,local[1],p.z],target:[q.x,1.2,q.z]};},local);await shot(page,'waterfall-'+name+'-a',view);await page.waitForTimeout(550);await shot(page,'waterfall-'+name+'-b',view);}
+   await shot(page,'bath-overview',await page.evaluate(async()=>{const {spaToWorld}=await import('/spa-transform.js'),p=spaToWorld({x:-24,z:105}),q=spaToWorld({x:-10,z:124});return{position:[p.x,10,p.z],target:[q.x,.4,q.z]};}));
    await page.evaluate(()=>window.travelToPlace('sauna',false));await page.getByRole('button',{name:'입장',exact:true}).click();await page.waitForFunction(()=>window.labInterior==='ryokan');await shot(page,'ryokan-regression');await page.evaluate(()=>window.exitInterior());await page.waitForFunction(()=>!window.labInterior);check('existing ryokan entry and exit preserved',{});
   }
   await page.context().request.post(origin+'/api/leave',{data:{}});await page.context().close();contexts.splice(contexts.indexOf(page.context()),1);

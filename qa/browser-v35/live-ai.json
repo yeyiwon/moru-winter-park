@@ -1,0 +1,15 @@
+{
+  "status": 200,
+  "mode": "ai",
+  "reason": "",
+  "cards": [
+    {
+      "component": "RecommendationCard",
+      "id": "ethereal-winter-ballet-02"
+    }
+  ],
+  "usage": {
+    "inputTokens": 538,
+    "outputTokens": 19
+  }
+}

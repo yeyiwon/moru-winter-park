@@ -169,7 +169,7 @@ export const resortObstacles=[
  {x:12,z:130,r:1.5},{x:16.5,z:120,w:1.7,d:.75},{x:5.2,z:118.5,w:1.4,d:.3},
  {x:20.6,z:132.5,rx:2.15,rz:1.75},{x:1.8,z:127.5,w:.9,d:2.4},
  {x:2.1,z:118.8,r:.32},{x:22,z:118.8,r:.32},
- {x:-16,z:101,rx:3.4,rz:2.5},{x:19,z:103,rx:3.1,rz:2.4},{x:-27,z:106,rx:3.4,rz:2.1},{x:23,z:112,rx:2.8,rz:2.1}
+ {x:-16,z:101,rx:3.4,rz:2.5},{x:-22,z:98,rx:3.1,rz:2.4},{x:-27,z:106,rx:3.4,rz:2.1},{x:23,z:112,rx:2.8,rz:2.1}
  ].map(p=>({...p,z:p.z+spaShift}))
 ];
 export function resortGround(x,z){if(Math.hypot(x,z+260)<144)return alpineHeight(x,z);const localZ=z-spaShift;if(x>0&&x<24&&localZ>115&&localZ<137)return .34;if(Math.abs(x-12)<2.2&&localZ>=114.2&&localZ<=115)return .09+.25*(localZ-114.2)/.8;if(x>=-.8&&x<=0&&Math.abs(z-spaPavilion.sideDoorZ)<2.3)return .09+.25*(x+.8)/.8;return .09;}

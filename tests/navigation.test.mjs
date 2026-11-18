@@ -1,4 +1,4 @@
-import {spaX,spaShift} from '../dist/resort-layout.js';
+import {spaToWorld} from '../dist/spa-transform.js';
 import assert from 'node:assert/strict';
 import test from 'node:test';
 import {layout,movement,navigation} from './load-world.mjs';
@@ -11,7 +11,7 @@ test('void, non-finite clicks and wall shortcuts are rejected',()=>{assert.deepE
 test('every island arrival and exhibit is reachable, and the direct park-to-spa bridge remains open',()=>{
  for(const island of layout.islands.filter(i=>!i.hidden))checkRoute(home,island.spawn);
  for(const exhibit of layout.exhibits.filter(e=>!layout.islands.find(i=>i.id===e.island).hidden&&canStandAt(e.x,e.z)))checkRoute(home,exhibit);
- checkRoute(home,{x:0,z:51.8});checkRoute(home,{x:spaX+12,z:113.6+spaShift});
+ checkRoute(home,{x:0,z:51.8});checkRoute(home,spaToWorld({x:12,z:113.6}));
  assert.equal(canStandAt(0,64),true);
  assert.equal(layout.surfaceHeight(2.6,8),.09);
 });

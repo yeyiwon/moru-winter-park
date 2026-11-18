@@ -8,18 +8,18 @@ const {chromium}=await import(pathToFileURL(process.env.PLAYWRIGHT_PATH||'/tmp/w
 const origin=process.env.PROFILE_URL||'http://127.0.0.1:4185',phase=process.env.QA_PHASE||'after',revision=process.env.QA_SOURCE_REV;
 if(!['127.0.0.1','localhost'].includes(new URL(origin).hostname))throw Error('Use an isolated local QA database.');
 if(!['before','after'].includes(phase))throw Error('Invalid QA phase');
-const out='qa/browser-v35/'+phase;await fs.mkdir(out,{recursive:true});
+const out=process.env.QA_OUTPUT||'qa/browser-v35/'+phase;await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
 const report={phase,revision:revision||null,checks:[],errors:[],performance:[],physicalMobile:false,liveAI:false,liveMicrophone:false};
 const contexts=[];const check=name=>{report.checks.push(name);console.log(name);};
 async function open(mobile){
  const context=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1440,height:900},isMobile:mobile,hasTouch:mobile,deviceScaleFactor:mobile?3:1,serviceWorkers:'block'});contexts.push(context);const page=await context.newPage();
  page.on('pageerror',e=>report.errors.push(e.message));page.on('console',m=>{if(m.type()==='error'&&/THREE|Shader|WebGL/.test(m.text()))report.errors.push(m.text());});
- if(revision){const cache=new Map();await page.route(origin+'/**',async route=>{const url=new URL(route.request().url),name=url.pathname==='/'?'index.html':decodeURIComponent(url.pathname.slice(1));if(!/\.(js|css|html)$/.test(name)||name.includes('..'))return route.continue();try{if(!cache.has(name))cache.set(name,execFileSync('git',['show',revision+':dist/'+name],{encoding:'utf8',stdio:['ignore','pipe','ignore']}));return route.fulfill({status:200,contentType:name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':'text/html',body:cache.get(name)});}catch{return route.continue();}});}
+ if(revision){const cache=new Map();await page.route(origin+'/**',async route=>{const url=new URL(route.request().url()),name=url.pathname==='/'?'index.html':decodeURIComponent(url.pathname.slice(1));if(!/\.(js|css|html)$/.test(name)||name.includes('..'))return route.continue();try{if(!cache.has(name))cache.set(name,execFileSync('git',['show',revision+':dist/'+name],{encoding:'utf8',stdio:['ignore','pipe','ignore']}));return route.fulfill({status:200,contentType:name.endsWith('.js')?'text/javascript':name.endsWith('.css')?'text/css':'text/html',body:cache.get(name)});}catch{return route.continue();}});}
  await page.goto(origin,{waitUntil:'domcontentloaded',timeout:90000});await page.waitForFunction(()=>window.labSocialJoined&&window.travelToPlace,null,{timeout:90000});await page.evaluate(()=>window.travelToPlace('tree',false));await page.waitForTimeout(2000);return page;
 }
 async function close(page){await page.evaluate(()=>document.querySelectorAll('dialog[open]').forEach(d=>d.close()));await page.waitForTimeout(220);}
-async function pane(page,id){await close(page);await page.evaluate(id=>window.openWinterSettings(id),id);await page.waitForTimeout(400);}
+async function pane(page,id){await close(page);await page.evaluate(id=>window.openWinterSettings(id),id);await page.waitForTimeout(400);if(!revision){const header=await page.locator('.studio-header').boundingBox(),panel=await page.locator('#pane-'+id).boundingBox();assert.ok(header&&panel&&panel.y>=header.y+header.height-1,'header must not overlap content');if(id==='map'){const map=await page.locator('#island-map').boundingBox();assert.ok(map.height>Math.min(180,(await page.viewportSize()).height*.4),'map owns a visible content row');assert.equal(await page.locator('.map-region:visible').count(),5);}}}
 async function frameSample(page,name,mobile){
  const cdp=await page.context().newCDPSession(page);await cdp.send('Performance.enable');const before=await cdp.send('Performance.getMetrics');
  const values=await page.evaluate(()=>new Promise(resolve=>{const intervals=[];let start,last;function frame(t){if(last)intervals.push(t-last);last=t;start??=t;if(t-start<5000)requestAnimationFrame(frame);else resolve(intervals);}requestAnimationFrame(frame);}));

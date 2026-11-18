@@ -5,7 +5,7 @@ const origin=process.env.PROFILE_URL||'http://127.0.0.1:4184',out=process.env.MA
 const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true}),page=await browser.newPage({viewport:{width:1600,height:1400},deviceScaleFactor:1,serviceWorkers:'block'});
 const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'&&/THREE|Shader|WebGL/.test(m.text()))errors.push(m.text());});
 await page.route('**/map-render.html',r=>r.fulfill({contentType:'text/html',body:`<!doctype html><style>html,body{margin:0;background:transparent}canvas{display:block}</style><script type="module">
-import * as T from '/vendor/three.module.js';import {buildWorld} from '/themepark-world.js';import {landforms,landRadius} from '/world-layout.js';import {alpineHeight} from '/resort-layout.js';
+import * as T from '/vendor/three.module.js';import {buildWorld} from '/themepark-world.js';import {landforms,landPoint} from '/world-layout.js';import {alpineHeight} from '/resort-layout.js';
 const renderer=new T.WebGLRenderer({alpha:true,antialias:true,preserveDrawingBuffer:true});renderer.setSize(1600,1400);renderer.setPixelRatio(1);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=.95;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;document.body.append(renderer.domElement);
 const scene=new T.Scene(),world=buildWorld(scene);world.setQuality('high');world.update(18,true);scene.fog=null;scene.background=null;
 scene.traverse(o=>{if(o.material?.uniforms?.uTop||o.name==='quiet-sun-moon'||o.userData.sceneryOnly)o.visible=false;if(o.isSprite)o.visible=false;});
@@ -13,7 +13,7 @@ scene.add(new T.HemisphereLight('#bdefff','#347bab',1.4));const sun=new T.Direct
 const fill=new T.DirectionalLight('#7fdcf4',1.4);fill.position.set(180,100,-120);scene.add(fill);
 const camera=new T.OrthographicCamera(-230,230,201.25,-201.25,1,1500);camera.position.set(25,390,410);camera.lookAt(-15,0,-20);camera.updateMatrixWorld();
 // Fit the authored terrain and landmark envelope, keeping north upward and bridges intact.
-const samples=[];for(const form of landforms)for(let i=0;i<128;i++){const a=i/128*Math.PI*2,r=landRadius(form,a),x=form.x+Math.cos(a)*form.rx*r,z=form.z+Math.sin(a)*form.rz*r;for(const y of [form.id==='alpine'?alpineHeight(x,z):0,-form.depth])samples.push(new T.Vector3(x,y,z));}for(const [x,y,z]of [[0,46,-14],[0,34,80],[0,78,-300],[-42,34,-6]])samples.push(new T.Vector3(x,y,z));
+const samples=[];for(const form of landforms)for(let i=0;i<128;i++){const {x,z}=landPoint(form,i/128*Math.PI*2);for(const y of [form.id==='alpine'?alpineHeight(x,z):0,-form.depth])samples.push(new T.Vector3(x,y,z));}for(const [x,y,z]of [[0,46,-14],[0,34,80],[0,78,-300],[-42,34,-6]])samples.push(new T.Vector3(x,y,z));
 // The mountain is cartographically shortened, while all islands and bridge anchors
 // retain their actual relative arrangement. Runtime projection uses this same warp.
 const warp=p=>{if(p.z<-80){p.y*=.65;p.z=-80+(p.z+80)*.36;}return p;};

@@ -9,14 +9,20 @@ const origin=process.env.PROFILE_URL||'http://127.0.0.1:4180',output=process.env
 if(!['localhost','127.0.0.1'].includes(new URL(origin).hostname))throw Error('Use an isolated local server for automated travel and guest sessions.');
 const mobile=process.env.PROFILE_MOBILE==='1',seconds=Number(process.env.PROFILE_SECONDS)||8;
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true,args:['--disable-background-timer-throttling','--disable-renderer-backgrounding']});
-const baseline=new Map(),revision=process.env.PROFILE_SOURCE_REV;if(revision){if(!/^[a-f0-9]{7,40}$/.test(revision))throw Error('Use a verified commit SHA');for(const file of ['park.js','spa-resort.js','interior-world.js','ryokan-aquarium.js','resort-blueprint.js','onsen-water.js','spa-experience.js','winter-experience.js','resort-layout.js','game-input.js','camera-clearance.js'])baseline.set(file,execFileSync('git',['show',revision+':dist/'+file],{encoding:'utf8'}));}
-const errors=[],report={at:new Date().toISOString(),browser:browser.version(),mobileEmulation:mobile,physicalMobile:false,gpuTimingProbe:process.env.PROFILE_GPU==='1',seconds,scenarios:[],errors};
+const baseline=new Map(),revision=process.env.PROFILE_SOURCE_REV;if(revision){
+ if(!/^[a-f0-9]{7,40}$/.test(revision))throw Error('Use a verified commit SHA');
+ // Keep the whole module graph and UI from one revision; mixing only selected
+ // files with current coordinate helpers produces an invalid comparison.
+ const files=execFileSync('git',['ls-tree','-r','--name-only',revision,'dist'],{encoding:'utf8'}).trim().split('\n');
+ for(const file of files.filter(file=>/\.(js|css|html|json)$/.test(file)&&!file.startsWith('dist/server/')))baseline.set(file.slice(5),execFileSync('git',['show',revision+':'+file],{encoding:'utf8',maxBuffer:16*1024*1024}));
+}
+const errors=[],report={at:new Date().toISOString(),browser:browser.version(),mobileEmulation:mobile,physicalMobile:false,sourceRevision:revision||'working-tree',requestedQuality:process.env.PROFILE_QUALITY||'auto',gpuTimingProbe:process.env.PROFILE_GPU==='1',seconds,scenarios:[],errors};
 let crowdTimer=null,crowdSending=null,ownerContext=null;
 try{
  const context=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1280,height:800},deviceScaleFactor:mobile?3:1,isMobile:mobile,hasTouch:mobile,serviceWorkers:'block'});ownerContext=context;const page=await context.newPage();
  if(process.env.PROFILE_QUALITY)await page.addInitScript(mode=>localStorage.setItem('winter-render-mode',mode),process.env.PROFILE_QUALITY);
  page.on('pageerror',e=>{errors.push(e.message);console.log('PAGEERROR',e.message);});
- if(baseline.size)await page.route('**/*.js*',r=>{const file=new URL(r.request().url()).pathname.split('/').pop();return baseline.has(file)?r.fulfill({contentType:'text/javascript',body:baseline.get(file)}):r.continue();});
+ if(baseline.size)await page.route('**/*',r=>{const file=new URL(r.request().url()).pathname.slice(1)||'index.html';return baseline.has(file)?r.fulfill({contentType:file.endsWith('.html')?'text/html':file.endsWith('.css')?'text/css':file.endsWith('.json')?'application/json':'text/javascript',body:baseline.get(file)}):r.continue();});
  await page.route('**/park.js*',async route=>{const response=await route.fetch(),source=baseline.get('park.js')||await response.text();await route.fulfill({response,body:source.replace(/}\s*$/, ';window.__winterQA={renderer,scene,camera,experience,world,interiors,companion,renderBudget};\n}')} );});
  await page.addInitScript(gpuEnabled=>{
   // Same instrumentation for both revisions. Records the actual game callback,

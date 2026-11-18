@@ -1,13 +1,13 @@
-import {ferrisDimensions as wheel} from './ferris-layout.js';
+import {ferrisDimensions as wheel,ferrisGroundPoint} from './ferris-layout.js';
 export const festivalLayout={x:-45,z:4,r:15};
 export const candyStall={x:-50,z:11};
 export const festivalDestinations=[
  {id:'festival-photo',name:'겨울 포토존',x:-49,z:3,kind:'photo',view:{distance:13,pitch:.18,yaw:-1.4,lookHeight:-.3}},
- {id:'candyfloss',name:'솜사탕',x:candyStall.x,z:candyStall.z+3,kind:'snack',approach:[[-44,8],[-46,14]]},
+ {id:'candyfloss',name:'솜사탕',x:candyStall.x,z:candyStall.z+3,kind:'snack',approach:[[ferrisGroundPoint(0,15).x,ferrisGroundPoint(0,15).z],[-43,11],[-46,14]]},
 ];
-export const festivalLamps=[[-54,1],[-35,-23],[-22,5]].map(([x,z])=>({x,z}));
+export const festivalLamps=[[-54,1],[-35,-23]].map(([x,z])=>({x,z}));
 // Rest stops remain inside the compact park, clear of both boarding approaches.
-export const festivalBenches=[{x:-53,z:-5},{x:-43,z:22}];
+export const festivalBenches=[{x:-53,z:-5},{x:-46,z:21}];
 export const festivalObstacles=[...festivalLamps.map(p=>({...p,r:.43})),
  ...festivalBenches.map(p=>({...p,w:2.25,d:.55})),{...candyStall,rx:1.75,rz:1.1},
 ];

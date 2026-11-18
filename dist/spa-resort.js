@@ -8,13 +8,14 @@ import {snowPine} from './ryokan-garden.js';
 import {createSnowPaths} from './snow-path.js';
 import {createRetreatAtmosphere} from './retreat-atmosphere.js';
 import * as T from './vendor/three.module.js';
-import {spa as worldSpa,spaPavilion as worldPavilion,spaActivities as worldActivities,spaShift,spaX} from './resort-layout.js';
+import {spa,spaPavilion as pavilion,spaActivities as activities,spaShift} from './resort-blueprint.js';
+import {spaToWorld,spaToLocal,spaYaw} from './spa-transform.js';
 
 // One enclosed snow lodge and its sheltered natural-stone bath garden.
 export function buildSpaResort(api){
- // Keep authored joinery in its original local frame; translate the whole district once.
- const spa={...worldSpa,x:worldSpa.x-spaX,z:worldSpa.z-spaShift},spaPavilion={...worldPavilion,x:worldPavilion.x-spaX,z:worldPavilion.z-spaShift,sideDoorZ:worldPavilion.sideDoorZ-spaShift};
- const spaActivities=Object.fromEntries(Object.entries(worldActivities).map(([id,p])=>[id,{...p,x:p.x-spaX,z:p.z-spaShift,...(p.pool?{pool:{...p.pool,x:p.pool.x-spaX,z:p.pool.z-spaShift}}:{})}]));
+ // Build and batch in local space; rotate the complete resort only after merging.
+ const spaPavilion={...pavilion,z:pavilion.z-spaShift,sideDoorZ:pavilion.sideDoorZ-spaShift};
+ const spaActivities=Object.fromEntries(Object.entries(activities).map(([id,p])=>[id,{...p,z:p.z-spaShift,...(p.pool?{pool:{...p.pool,z:p.pool.z-spaShift}}:{})}]));
  const hitMaterial=new T.MeshBasicMaterial({visible:false,colorWrite:false,depthTest:false,transparent:true,opacity:0,depthWrite:false});
  const {scene,M}=api,root=new T.Group();root.name='spa-resort';scene.add(root);
  const interactive=[],moving=new Set();
@@ -156,9 +157,9 @@ export function buildSpaResort(api){
  const gardenBuilder={mesh,rod,tube:(points,r,mat)=>curve(points,r,mat)};
  for(const [i,[x,z,h]]of ryokanGardenTrees.entries())snowPine(gardenBuilder,{wood:cedarDark,green,sage:greenLight,snow},x,z,h,i*.73);
 
- for(const [x,z,rx,rz]of [[-16,101,2.8,1.9],[19,103,2.5,1.8],[-27,106,2.8,1.5],[23,112,2.2,1.5]]){for(let i=0;i<5;i++){const a=i*2.4,r=Math.sqrt(rand()),b=boulder(rockShade,x+Math.cos(a)*rx*r,.33,z+Math.sin(a)*rz*r,.6+rand()*.7,.45+rand()*.4,.5+rand()*.7);b.rotation.y=a;oval(snow,b.position.x,b.position.y+.4,b.position.z,b.scale.x*.85,.12,b.scale.z*.8);}}
+ for(const [x,z,rx,rz]of [[-16,101,2.8,1.9],[-22,98,2.5,1.8],[-27,106,2.8,1.5],[23,112,2.2,1.5]]){for(let i=0;i<5;i++){const a=i*2.4,r=Math.sqrt(rand()),b=boulder(rockShade,x+Math.cos(a)*rx*r,.33,z+Math.sin(a)*rz*r,.6+rand()*.7,.45+rand()*.4,.5+rand()*.7);b.rotation.y=a;oval(snow,b.position.x,b.position.y+.4,b.position.z,b.scale.x*.85,.12,b.scale.z*.8);}}
 
- for(const [cx,cz]of [[-16,101],[19,103],[-27,106],[23,112]]){
+ for(const [cx,cz]of [[-16,101],[-22,98],[-27,106],[23,112]]){
   for(let j=0;j<7;j++){const a=j*2.399,r=.42+rand()*.48,x=cx+Math.cos(a)*r,z=cz+Math.sin(a)*r,h=.24+rand()*.25;
    rod([x,.1,z],[x+Math.cos(a)*.17,h+.18,z+Math.sin(a)*.17],.015,cedarDark);
    for(let k=0;k<3;k++){const branch=mesh(boughGeo,k%2?green:greenLight,x,.16+k*.09,z);branch.rotation.set(.1,a+k*2.4,.08);branch.scale.set(.45-k*.08,.35,.35);}
@@ -250,6 +251,6 @@ export function buildSpaResort(api){
  });
  // Local warmth comes from the actual fixtures; emissive shades alone cannot light cedar.
  for(const [x,y,z,intensity,range]of [[11.5,3.2,122,24,15],[18,3.4,134,18,12],[-18,2.3,132,13,12]]){const light=new T.PointLight('#ffc88a',intensity,range,2);light.position.set(x,y,z);light.name='spa-local-lantern-warmth';root.add(light);}
- root.position.set(spaX,0,spaShift);
- return{root,interactive,atmosphere,setQuality(q){atmosphere.setQuality(q);waterfall.setQuality(q);response.setQuality(q);bathWaters.forEach(w=>w.water.setQuality(q));},update(time,still,quality){if(!root.visible)return;waterfall.update(time,still);bathWaters.forEach(w=>w.water.update(time,still));const p=globalThis.window?.labPlayerState;response.update(time,still,p?{...p,x:p.x-spaX,z:p.z-spaShift}:null);atmosphere.update(time,still,quality);}};
+ const origin=spaToWorld({x:0,z:0});root.position.set(origin.x,0,origin.z);root.rotation.y=spaYaw;root.updateMatrixWorld(true);
+ return{root,interactive,atmosphere,setQuality(q){atmosphere.setQuality(q);waterfall.setQuality(q);response.setQuality(q);bathWaters.forEach(w=>w.water.setQuality(q));},update(time,still,quality){if(!root.visible)return;waterfall.update(time,still);bathWaters.forEach(w=>w.water.update(time,still));const p=globalThis.window?.labPlayerState;response.update(time,still,p?spaToLocal(p):null);atmosphere.update(time,still,quality);}};
 }

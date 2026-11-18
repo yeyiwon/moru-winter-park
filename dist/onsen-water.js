@@ -6,8 +6,8 @@ export function createOnsenWater({lights=[],color='#477a76',basin=[0,0,100,100],
  const time={value:0},points=lights.map(p=>new T.Vector3(...p)).slice(0,4);while(points.length<4)points.push(new T.Vector3(0,-1000,0));
  const ripples=Array.from({length:CAPACITY},()=>new T.Vector4(0,0,-100,0)),directions=Array.from({length:CAPACITY},()=>new T.Vector2());let cursor=0,lastTime=0;
  const material=new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,uniforms:{time,tint:{value:new T.Color(color)},lights:{value:points},basin:{value:new T.Vector4(...basin)},impact:{value:new T.Vector3(...impact)},ripples:{value:ripples},directions:{value:directions},rippleCount:{value:CAPACITY},detail:{value:1}},
-  vertexShader:`varying vec3 vWorld;varying vec3 vLocal;varying vec3 vBase;void main(){vLocal=position;vBase=(modelMatrix*vec4(0.,0.,0.,1.)).xyz;vWorld=(modelMatrix*vec4(position,1.)).xyz;gl_Position=projectionMatrix*viewMatrix*vec4(vWorld,1.);}`,
-  fragmentShader:`uniform float time;uniform float detail;uniform vec3 tint;uniform vec3 lights[4];uniform vec4 basin;uniform vec3 impact;uniform vec4 ripples[8];uniform vec2 directions[8];uniform int rippleCount;varying vec3 vWorld;varying vec3 vLocal;varying vec3 vBase;
+  vertexShader:`varying vec3 vWorld;varying vec3 vLocal;varying vec3 vBase;varying mat3 vLocalToWorld;void main(){vLocalToWorld=mat3(modelMatrix);vLocal=position;vBase=(modelMatrix*vec4(0.,0.,0.,1.)).xyz;vWorld=(modelMatrix*vec4(position,1.)).xyz;gl_Position=projectionMatrix*viewMatrix*vec4(vWorld,1.);}`,
+  fragmentShader:`uniform float time;uniform float detail;uniform vec3 tint;uniform vec3 lights[4];uniform vec4 basin;uniform vec3 impact;uniform vec4 ripples[8];uniform vec2 directions[8];uniform int rippleCount;varying vec3 vWorld;varying vec3 vLocal;varying vec3 vBase;varying mat3 vLocalToWorld;
    float hash(vec2 p){return fract(sin(dot(p,vec2(127.1,311.7)))*43758.5453);}
    float noise(vec2 p){vec2 i=floor(p),f=fract(p);f=f*f*(3.-2.*f);return mix(mix(hash(i),hash(i+vec2(1.,0.)),f.x),mix(hash(i+vec2(0.,1.)),hash(i+1.),f.x),f.y);}
    void main(){
@@ -18,7 +18,7 @@ export function createOnsenWater({lights=[],color='#477a76',basin=[0,0,100,100],
     for(int i=0;i<8;i++){if(i>=rippleCount)break;float age=time-ripples[i].z;if(age<0.||age>3.6)continue;vec2 delta=p-ripples[i].xy;float d=length(delta),front=d-age*1.55;float envelope=exp(-front*front*7.)*exp(-age*.95)*ripples[i].w*smoothstep(0.,.1,age);float directional=1.+dot(delta/max(d,.01),directions[i])*.24;gradient+=delta/max(d,.1)*cos(front*13.)*envelope*.15*directional;disturbance+=envelope;}
     float fallDistance=length((p-impact.xy)*vec2(1.,1.3)),fallMask=exp(-fallDistance*1.6)*impact.z;
     gradient+=normalize(p-impact.xy+vec2(.001))*cos(fallDistance*13.-time*4.8)*fallMask*.06;
-    vec3 n=normalize(vec3(-gradient.x,1.,-gradient.y));vec3 view=normalize(cameraPosition-vWorld);float grazing=pow(1.-max(0.,dot(n,view)),5.),fresnel=.09+grazing*.84;
+    vec3 n=normalize(vLocalToWorld*vec3(-gradient.x,1.,-gradient.y));vec3 view=normalize(cameraPosition-vWorld);float grazing=pow(1.-max(0.,dot(n,view)),5.),fresnel=.09+grazing*.84;
     float edge=length((p-basin.xy)/basin.zw),depth=.12+2.1*pow(max(0.,1.-edge),.45);
     vec2 refracted=p+gradient*(.4+depth*.8);float stone=noise(refracted*1.3)*.6+noise(refracted*3.1)*.4;
     float caustic=pow(max(0.,sin(dot(refracted,vec2(3.1,1.3))+sin(b)*.6)*cos(dot(refracted,vec2(-1.7,2.9))+sin(a)*.8)),8.);
@@ -26,7 +26,7 @@ export function createOnsenWater({lights=[],color='#477a76',basin=[0,0,100,100],
     vec3 transmission=exp(-vec3(.78,.34,.25)*depth*2.);vec3 water=bed*transmission+tint*(1.-transmission)*.58;
     vec3 reflection=reflect(-view,n),sky=mix(vec3(.045,.085,.14),vec3(.18,.26,.32),pow(1.-abs(reflection.y),3.));
     water=mix(water,sky,fresnel);float lamp=0.;
-    for(int i=0;i<4;i++){vec3 delta=lights[i]+vBase-vWorld;vec3 lightDir=normalize(delta);float alignment=max(0.,dot(reflection,lightDir));float highlight=pow(alignment,100.)*.6+pow(alignment,22.)*.16+pow(alignment,8.)*.045;lamp+=highlight/(1.+dot(delta,delta)*.006);}
+    for(int i=0;i<4;i++){vec3 delta=vLocalToWorld*lights[i]+vBase-vWorld;vec3 lightDir=normalize(delta);float alignment=max(0.,dot(reflection,lightDir));float highlight=pow(alignment,100.)*.6+pow(alignment,22.)*.16+pow(alignment,8.)*.045;lamp+=highlight/(1.+dot(delta,delta)*.006);}
     water+=vec3(1.,.73,.38)*lamp*(.5+fresnel*.9);
     float moon=pow(max(0.,dot(reflection,normalize(vec3(-.25,.55,.8)))),110.);water+=vec3(.38,.53,.63)*moon*.28;
     float shore=smoothstep(.94,.99,edge)*(1.-smoothstep(1.,1.035,edge));float foam=(shore*.17+fallMask*.23)*smoothstep(.35,.76,noise(p*8.+vec2(time*.13,-time*.2)));

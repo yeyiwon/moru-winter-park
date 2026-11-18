@@ -12,7 +12,7 @@ test('ryokan portal hit target covers the actual doorway, not the whole building
  const scene=new T.Scene(),asset=buildSpaResort({scene,M:(color,roughness,metalness)=>new T.MeshStandardMaterial({color,roughness,metalness})});
  scene.updateMatrixWorld(true);const target=asset.interactive.find(o=>o.userData.action==='sauna'),bounds=new T.Box3().setFromObject(target),door=interiorDoors.ryokan;
  assert.ok(bounds.containsPoint(new T.Vector3(door.x,1,door.z)));
- assert.ok(bounds.max.x-bounds.min.x<5);assert.ok(bounds.max.z-bounds.min.z<2);
+ target.geometry.computeBoundingBox();const local=target.geometry.boundingBox.getSize(new T.Vector3());assert.ok(local.x<5);assert.ok(local.z<2);const center=target.getWorldPosition(new T.Vector3());assert.ok(Math.hypot(center.x-door.x,center.z-door.z)<.5);
  assert.equal(target.material.visible,false);assert.equal(target.material.depthWrite,false);
 });
 test('snow crowns face upward and their geometry stays finite',()=>{

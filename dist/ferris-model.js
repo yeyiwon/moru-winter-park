@@ -139,6 +139,15 @@ export function buildFerrisWheel(){
  }
  for(const x of [-2.7,2.7])structure.add(rod([x,footY+.1,-.95],[x,footY+.1,.12],.045),'silver');
  for(const z of [-.81,.26]){structure.add(rod([-1.60,-3.5,z],[1.60,-3.5,z],.012),'warm','light');structure.add(rod([-1.60,-3.5,z],[0,-1.05,z],.010),'cool','light');structure.add(rod([1.60,-3.5,z],[0,-1.05,z],.010),'cool','light');}
+ // The front court shares the boarding anchor's local axis. It stays flush with
+ // the snow, so the visible entrance does not introduce an invisible step.
+ const court=structure,ground=(.12-d.center.y)/d.scale;
+ court.add(roundedBlock(7.6/d.scale,.045/d.scale,5.6/d.scale),'blue','paint',[0,ground,9.5/d.scale]);
+ for(const side of [-1,1]){
+  court.add(new T.BoxGeometry(.04/d.scale,.012/d.scale,5.4/d.scale),'warm','light',[side*3.6/d.scale,ground+.03/d.scale,9.5/d.scale]);
+  court.add(new T.BoxGeometry(.10/d.scale,.016/d.scale,5.5/d.scale),'gold','metal',[side*3.7/d.scale,ground+.022/d.scale,9.5/d.scale]);
+ }
+ court.add(new T.TorusGeometry(.65/d.scale,.024/d.scale,6,32).rotateX(Math.PI/2),'gold','metal',[0,ground+.03/d.scale,9.5/d.scale]);
  structure.finish();
 
  for(const z of [-.35,.35]){

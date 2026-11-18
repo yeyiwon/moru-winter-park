@@ -1,11 +1,12 @@
 import {onsenTransitionValid} from './onsen-layout.js';
+import {spaToWorld,spaToLocal,spaYaw} from './spa-transform.js';
 import {regions} from './region-layout.js';
 // Public world coordinates. The mountain blueprint remains local so moving the district
 // never shrinks chairs, changes piste gradients or misaligns multiplayer seats.
 import * as blueprint from './resort-blueprint.js';
 export const alpineShift=regions.ski.center.z-blueprint.alpine.z;
 export const spaX=regions.spa.center.x,spaShift=regions.spa.center.z-119;
-const spaPoint=p=>({...p,x:p.x+spaX,z:p.z+spaShift-blueprint.spaShift,...(p.door?{door:{...p.door,x:p.door.x+spaX}}:{})});
+const spaPoint=p=>({...spaToWorld({...p,z:p.z-blueprint.spaShift}),yaw:(p.yaw||0)+spaYaw,...(p.door?{door:{...p.door,offset:p.door.x-p.x}}:{}),...(p.view?{view:{...p.view,yaw:p.view.yaw+spaYaw}}:{})});
 const point=p=>({...p,z:p.z+alpineShift});
 const vector=p=>[p[0],p[1],p[2]+alpineShift];
 export const alpine={...point(blueprint.alpine),landZ:blueprint.alpine.z+alpineShift,rz:144};
@@ -29,8 +30,8 @@ export const summitPositionValid=(x,z)=>blueprint.summitPositionValid(x,z-alpine
 export const liftPoint=t=>vector(blueprint.liftPoint(t)),upperLiftPoint=t=>vector(blueprint.upperLiftPoint(t));
 export const resortRidePosition=(x,y,z,mode)=>blueprint.resortRidePosition(x,y,z-alpineShift,mode);
 export const spa={...blueprint.spa,...regions.spa.center};
-export const spaPavilion={...spaPoint(blueprint.spaPavilion),sideDoorZ:blueprint.spaPavilion.sideDoorZ+spaShift-blueprint.spaShift};
+export const spaPavilion={...spaPoint(blueprint.spaPavilion),sideDoor:spaToWorld({x:0,z:blueprint.spaPavilion.sideDoorZ-blueprint.spaShift})};
 export const spaActivities=Object.fromEntries(Object.entries(blueprint.spaActivities).map(([id,p])=>[id,{...spaPoint(p),...(p.pool?{pool:spaPoint(p.pool)}:{})}]));
-export const spaPositionValid=(x,y,z,mode)=>blueprint.spaPositionValid(x-spaX,y,z-spaShift+blueprint.spaShift,mode)||onsenTransitionValid(x,y,z,mode);
+export function spaPositionValid(x,y,z,mode){const p=spaToLocal({x,z});return blueprint.spaPositionValid(p.x,y,p.z+blueprint.spaShift,mode)||onsenTransitionValid(x,y,z,mode);}
 export const restSeats=Object.fromEntries(Object.entries(blueprint.restSeats).filter(([id])=>id!=='healing').map(([id,p])=>[id,spaPoint(p)]));
-export function resortGround(x,z){if(Math.abs(x-spaX)<39&&Math.abs(z-regions.spa.center.z)<34)return blueprint.resortGround(x-spaX,z-spaShift+blueprint.spaShift);return z< -40?alpineHeight(x,z):.09;}
+export function resortGround(x,z){const p=spaToLocal({x,z});if(Math.abs(p.x)<39&&Math.abs(p.z-119)<34)return blueprint.resortGround(p.x,p.z+blueprint.spaShift);return z< -40?alpineHeight(x,z):.09;}

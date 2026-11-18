@@ -3,7 +3,6 @@ import {pathRoutes} from './path-routes.js';
 import {postOffice} from './retreat-layout.js';
 import {festivalDestinations} from './festival-layout.js';
 import {buildConnectedTerrain} from './connected-terrain.js';
-import {parkWalkways} from './park-layout.js';
 import {createTreeAtmosphere} from './tree-atmosphere.js';
 import {createSnowPaths} from './snow-path.js';
 import {createAuroraLandmarks} from './aurora-landmarks.js';
@@ -94,7 +93,6 @@ export function buildArchipelago(api){
   // Designed promenades and planted borders replace random grass and pebble rings.
   const soil=M('#2a3938',1),bedStone=M('#606771',.8);
   const promenade=createSnowPaths({root:scene,stone:[M('#a3adae',1,0),M('#adb6b4',1,0),M('#a7afac',1,0)],snow:bridgeSnow,heightAt:surfaceHeight,contains:(x,z)=>landforms.some(form=>landDistance(x,z,form)<-.25),deferBuild:true});
-  for(const route of parkWalkways)promenade(route.points,route.width);
   // Keep the original blurred snow-path material; only connect its authored routes.
   for(const route of pathRoutes)promenade(route.points,route.width);
 
