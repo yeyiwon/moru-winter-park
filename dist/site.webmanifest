@@ -1,14 +1,14 @@
 {
   "id": "/",
-  "name": "SNOWHERE",
-  "short_name": "SNOWHERE",
+  "name": "WINTERIDE",
+  "short_name": "WINTERIDE",
   "description": "함께 트리를 꾸미고, 눈 내리는 밤을 걷는 겨울 공간.",
   "lang": "ko-KR",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#0b1423",
-  "theme_color": "#0b1423",
+  "background_color": "#fffefa",
+  "theme_color": "#fffefa",
   "icons": [
     {
       "src": "/brand/icon-192.png",

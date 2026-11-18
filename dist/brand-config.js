@@ -1,10 +1,11 @@
-// A single, public source for the proposed identity. No invite or account data belongs here.
+// The selected public identity. No invite or account data belongs here.
 export const BRAND = Object.freeze({
-  name: 'SNOWHERE',
-  nameKo: '스노웨어',
+  name: 'WINTERIDE',
+  nameKo: '윈터라이드',
+  wordmark: 'winteride',
   description: '함께 트리를 꾸미고, 눈 내리는 밤을 걷는 겨울 공간.',
   url: 'https://moru-winter-park.vercel.app',
-  colors: Object.freeze({ night: '#0b1423', ivory: '#fff2de', champagne: '#e9c48f' }),
+  colors: Object.freeze({ night: '#0b1423', ivory: '#f8f7f3', champagne: '#b4935d', white: '#fffefa', gold: '#a8844c', goldLight: '#dfcea4', ink: '#554b3c' }),
   assets: Object.freeze({
     logo: '/brand/logo-primary.svg',
     logoCompact: '/brand/logo-compact.svg',
@@ -15,6 +16,6 @@ export const BRAND = Object.freeze({
     icon512: '/brand/icon-512.png',
     appleTouchIcon: '/brand/apple-touch-icon.png',
     socialImage: '/brand/og-image.png',
-    socialImageAlt: '빛의 리본으로 그린 트리와 SNOWHERE 워드마크',
+    socialImageAlt: '화이트 바탕의 골드 트리와 작은 winteride 워드마크',
   }),
 });
