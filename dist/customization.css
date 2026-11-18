@@ -97,4 +97,15 @@
 #studio .wardrobe-profile #profile-status{overflow-wrap:anywhere}
 #studio .wardrobe-profile:has(#profile-form[hidden]) #profile-count{visibility:hidden}
 #studio .wardrobe-profile:has([data-state=error]) #profile-status{color:#ffcbb8}
+@media(pointer:coarse),(max-width:650px){
+ #studio .wardrobe-profile{max-width:272px}
+ #studio .profile-field{min-height:44px;gap:8px;padding:0 2px 0 10px;border:0;border-radius:12px;box-shadow:inset 0 0 0 1px var(--ui-edge)}
+ #studio .profile-field:focus-within{box-shadow:inset 0 0 0 1px #fff6df80}
+ #studio #profile-label{font-size:10px}
+ #studio #profile-display-name{font-size:13px;font-weight:450}
+ #studio .wardrobe-profile svg{width:15px;height:15px}
+ #studio .wardrobe-profile .profile-feedback{min-height:16px;padding:0 10px}
+ #studio .wardrobe-profile #profile-status,#studio .wardrobe-profile #profile-count{min-height:16px;font-size:10px;line-height:16px}
+ /* Keep the actual input at 16px to avoid focus zoom on iOS. */
+}
 @media(prefers-reduced-motion:reduce){#studio .profile-field{transition:none}}

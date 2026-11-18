@@ -1,0 +1,49 @@
+{
+  "errors": [],
+  "screens": [
+    {
+      "name": "mobile",
+      "width": 272,
+      "height": 44,
+      "font": "13px",
+      "touchWidth": 44,
+      "touchHeight": 44,
+      "overflow": false,
+      "editStable": true,
+      "tenCharactersSaved": true
+    },
+    {
+      "name": "small",
+      "width": 272,
+      "height": 44,
+      "font": "13px",
+      "touchWidth": 44,
+      "touchHeight": 44,
+      "overflow": false,
+      "editStable": true,
+      "tenCharactersSaved": true
+    },
+    {
+      "name": "landscape",
+      "width": 272,
+      "height": 44,
+      "font": "13px",
+      "touchWidth": 44,
+      "touchHeight": 44,
+      "overflow": false,
+      "editStable": true,
+      "tenCharactersSaved": true
+    },
+    {
+      "name": "desktop",
+      "width": 320,
+      "height": 48,
+      "font": "16px",
+      "touchWidth": 44,
+      "touchHeight": 44,
+      "overflow": false,
+      "editStable": true,
+      "tenCharactersSaved": true
+    }
+  ]
+}

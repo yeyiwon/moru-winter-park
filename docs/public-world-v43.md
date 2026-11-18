@@ -109,3 +109,9 @@ Mac Apple M2, Chrome 157, 1280×800, 실제 renderer DPR 1, medium 고정, 장�
 |---|---|---|
 | 닉네임 편집 | ![이전](../qa/browser-v43-controls/before/nickname-edit-mobile.png) | ![이후](../qa/browser-v43-controls/after/nickname-edit-mobile.png) |
 | 음악 | ![이전](../qa/browser-v43-controls/before/audio-mobile.png) | ![이후](../qa/browser-v43-controls/after/audio-mobile.png) |
+
+### 모바일 닉네임 크기 보완
+
+사용자 피드백에 따라 `customization.css`의 모바일/터치 환경에서 최대 폭 320→272px, 높이 48→44px, 이름 표시 16→13px, 아이콘 18→15px, 안내 행 20→16px로 줄였다. 44×44px 버튼 영역은 유지한다. 실제 편집 input은 iOS 포커스 확대를 피하도록 16px를 유지하며, 수정 전후 미리보기 위치는 같다. PC 기본 크기는 유지한다.
+
+Mac Chrome의 390×844, 320×568, 844×390 터치 환경 및 1280×900 PC에서 크기·터치 영역·10자 저장·편집 전후 미리보기·가로 overflow 확인 PASS, pageerror 0. production과 동일한 esbuild CSS 변환 PASS(경고 0), diff 검사 PASS. 실물 모바일 키보드는 UNKNOWN. [결과](../qa/browser-v43-controls/compact/report.json) · [축소한 모바일 화면](../qa/browser-v43-controls/compact/mobile.png). 운영 배포 보류 유지.
