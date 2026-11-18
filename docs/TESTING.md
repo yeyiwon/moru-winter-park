@@ -20,6 +20,8 @@
 최종 대상과 결과는 [DEPLOYMENT.md](DEPLOYMENT.md)에 기록한다. `scripts/verify-release-v38.mjs`는 숨겨진 QA hook/인증 우회 없이 새 게스트로 접속하며 자체 테스트 게스트만 퇴장 처리한다. 운영의 기존 소원·장식은 수정하지 않는다.
 
 - `qa/browser-v38/release-local/verification.json`: PC/모바일 실제 게스트 초기 진입, 외형 저장/복원/두 클라이언트 동기화, 채팅 전송/수신, 지도, 관람차 두 좌석/개별 하차·회전목마·온천 종료·소원 패널 화면 경계, 실내 전환, Ethereal 실제 재생, 초대 로그인 PASS.
+- `qa/browser-v38/release-production/verification.json`: 배포 후 실제 Vercel 주소에서 PC/모바일 크기의 8개 묶음 검사 PASS. 로컬과 같은 진입·저장·동기화·채팅·이동·시설·실내·음원 검사, page/WebGL 오류 및 5xx 응답 0. 운영에서는 다른 이용자의 좌석을 침범하지 않도록 두 번째 관람차 좌석 경쟁 검사를 생략했다. 소원·장식 등록은 운영 데이터를 변경하지 않고 로컬 회귀 결과로 구분한다.
+- Sites/Vercel 핵심 배포 파일 9개가 검증한 production 배포물과 일치. Sites 신규 그라데이션 저장/조회 PASS.
 - 180초 꼬리 착용 12인 자동 품질 검사 완료. 장시간 보증은 아님([수치](PERFORMANCE.md)).
 
 ## UNKNOWN

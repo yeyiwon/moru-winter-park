@@ -10,6 +10,7 @@
 - 실제 장면을 흐리게 표시하는 로딩, 뿅 점프음, 초대 제목 옆 관리자 로그인.
 - Ethereal Winter Ballet Instrumental 02를 첫 곡으로 이동; 나머지 순서와 저장한 선택 유지.
 - 같은 품질·해상도의 PC/모바일 에뮬레이션 비교, 양쪽 리프트·네 코스·실내·저장·채팅 회귀 확인.
+- 실행 소스 `46b2488`: Sites 38·GitHub main·Vercel 운영 반영 후 PC/모바일 크기 게스트 검증 8개 묶음 PASS, 주요 배포 파일 9개 일치.
 - [구현·전후 화면·검증·한계](docs/customization-mobile-v38.md), [성능](docs/PERFORMANCE.md), [배포](docs/DEPLOYMENT.md).
 
 ## v37 — 2026-11-18

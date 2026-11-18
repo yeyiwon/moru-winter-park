@@ -1,0 +1,63 @@
+{
+  "at": "2026-11-18T13:58:11.217Z",
+  "source": "46b2488551f056f8c402f5c168e58002b321c64b",
+  "sites": {
+    "version": 38,
+    "versionId": "appgprj_6af6f606ab648191855ab9bd44c334fd~appgver_a90d906e0c208191942f9c5d18676386",
+    "deploymentId": "appgdep_6afdada2a0ec819194664af705c58d3d",
+    "status": "succeeded",
+    "url": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site"
+  },
+  "vercel": {
+    "deploymentId": "dpl_6B7N2pcCGvWED9vC2LziTiNVCzyk",
+    "state": "READY",
+    "target": "production",
+    "url": "https://moru-winter-park.vercel.app",
+    "aliasAssigned": true
+  },
+  "serverSmoke": {
+    "health": true,
+    "appearancePersisted": true,
+    "gradientMigration": true,
+    "temporaryGuestsCleaned": true
+  },
+  "workerLogSample": [
+    {
+      "at": "2026-11-18T13:55:23.550Z",
+      "path": "/api/quiz",
+      "status": 401,
+      "outcome": "ok"
+    },
+    {
+      "at": "2026-11-18T13:54:46.798Z",
+      "path": "/api/presence",
+      "status": null,
+      "outcome": "canceled"
+    },
+    {
+      "at": "2026-11-18T13:54:46.794Z",
+      "path": "/api/world-state",
+      "status": null,
+      "outcome": "canceled"
+    },
+    {
+      "at": "2026-11-18T13:54:32.293Z",
+      "path": "/favicon.ico",
+      "status": 404,
+      "outcome": "ok"
+    },
+    {
+      "at": "2026-11-18T13:54:24.659Z",
+      "path": "/api/quiz",
+      "status": 401,
+      "outcome": "ok"
+    },
+    {
+      "at": "2026-11-18T13:54:01.708Z",
+      "path": "/api/appearance",
+      "status": 400,
+      "outcome": "ok"
+    }
+  ],
+  "note": "Worker log sample includes expected rejected input, unauthenticated preview requests and canceled preview navigation. No sampled 5xx or unhandled exception. Physical mobile and owner OAuth completion UNKNOWN."
+}

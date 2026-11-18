@@ -1,0 +1,44 @@
+{
+  "origin": "https://moru-winter-park.vercel.app",
+  "at": "2026-11-18T13:55:39.518Z",
+  "physicalMobile": false,
+  "checks": [
+    {
+      "mobile": false,
+      "check": "world ready",
+      "ms": 6296
+    },
+    {
+      "mobile": false,
+      "check": "guest authorization, appearance save, second guest sync and chat"
+    },
+    {
+      "mobile": false,
+      "check": "map travel, ferris, carousel, bath, ryokan and museum enter/exit"
+    },
+    {
+      "mobile": false,
+      "check": "Ethereal first and playing, Invite login, reload saved appearance"
+    },
+    {
+      "mobile": true,
+      "check": "world ready",
+      "ms": 3300
+    },
+    {
+      "mobile": true,
+      "check": "guest authorization, appearance save, second guest sync and chat"
+    },
+    {
+      "mobile": true,
+      "check": "map travel, ferris, carousel, bath, ryokan and museum enter/exit"
+    },
+    {
+      "mobile": true,
+      "check": "Ethereal first and playing, Invite login, reload saved appearance"
+    }
+  ],
+  "errors": [],
+  "requestsFailed": [],
+  "stage": "music"
+}

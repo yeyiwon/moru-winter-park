@@ -1,0 +1,60 @@
+{
+  "at": "2026-11-18T13:56:29.650Z",
+  "commit": "46b2488551f056f8c402f5c168e58002b321c64b",
+  "results": [
+    {
+      "file": "music-catalog.js",
+      "sha256": "ff6dd93d6e80cd76de047932bf137bd7de30ba3e2f0d3cc430f941136b49ccde",
+      "vercel": true,
+      "sites": true
+    },
+    {
+      "file": "character-tail.js",
+      "sha256": "8f7a03b5690f6a3fb88a7c5ad58aa63a018cfb4e4a18064dbf75882a5bd8739c",
+      "vercel": true,
+      "sites": true
+    },
+    {
+      "file": "companion.js",
+      "sha256": "057265f890fdb7d0fcf2c55c10b6d4dcda0bb655fbfa198a6c4b596e1a2da22c",
+      "vercel": true,
+      "sites": true
+    },
+    {
+      "file": "wardrobe.js",
+      "sha256": "a50ddde5bbdbdc02ddd25202facd876050b2f3b4f8ad2aad1e3cf44fb99638fe",
+      "vercel": true,
+      "sites": true
+    },
+    {
+      "file": "ui-system.css",
+      "sha256": "c1a6a9f160c2d2baadd11aad4fea60580eae5c46b88d3b614637be556cc4f85d",
+      "vercel": true,
+      "sites": true
+    },
+    {
+      "file": "mobile-ui.css",
+      "sha256": "8f2d05c1cf6d1e8c023b82e396eca54c03cf05759c8ca482bc6ea788abbf85f2",
+      "vercel": true,
+      "sites": true
+    },
+    {
+      "file": "customization.css",
+      "sha256": "66640466922d5f437f8d96811a1d5a8e3cb4fd64d3604beab5a8ecdae6eeb476",
+      "vercel": true,
+      "sites": true
+    },
+    {
+      "file": "luminous-loading.css",
+      "sha256": "817028232c22c0018d72baa8551974bf9a84b46f9db5bb2c56d1e37df60c33df",
+      "vercel": true,
+      "sites": true
+    },
+    {
+      "file": "app.js",
+      "sha256": "c0b448b64842544a87b6f789f4169acb266240ef0d47232e7ce8901b18ae2745",
+      "vercel": true,
+      "sites": true
+    }
+  ]
+}
