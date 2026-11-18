@@ -16,21 +16,21 @@ SNOWHERE는 눈이 있는 어딘가를 연상시키는 이름 제안이다. 트�
 
 | 대상 | 결과 |
 | --- | --- |
-| 앱·브라우저 제목 | SNOWHERE · 스노웨어 |
+| 앱·브라우저 제목 | SNOWHERE |
 | 화면 상단 | 정적 트리 심볼 + SNOWHERE |
 | 링크 설명 | 함께 트리를 꾸미고, 눈 내리는 밤을 걷는 겨울 공간. |
 | 기본 로고 | 투명 SVG, 아이보리·샴페인 색상 |
 | 작은 로고 | 같은 곡선, 17 단위 선 두께, 블러 없음. 31–38px 헤더에서 확인 |
 | 파비콘 | SVG와 32×32 PNG |
 | 홈 화면 아이콘 | 180×180, 192×192, 512×512 PNG |
-| 공유 썸네일 | 1200×630 PNG, 138,325바이트. 벡터 원본도 보관 |
+| 공유 썸네일 | 1200×630 PNG, 132,533바이트. 벡터 원본도 보관 |
 | 정적 검토 페이지 | `/brand/preview.html`, 검색 노출 제외 |
 
 `dist/brand-config.js`는 이름·설명·색상·공개 주소·자산 경로의 기준이다. `scripts/apply-brand.mjs`가 이를 초기 HTML head와 manifest로 기록하므로 공유 크롤러가 JavaScript를 실행할 필요가 없다. `og:title`, 설명, site name, URL, 이미지 URL·크기·타입·대체 텍스트 및 Twitter large-image 카드를 포함한다.
 
 공유 이미지와 canonical은 실제 기존 공개 주소 `https://moru-winter-park.vercel.app` 기준이다. 검증하지 않은 새 도메인을 넣지 않는다. 초대 토큰은 현재와 같이 fragment로 유지하며 메타데이터·이미지·manifest에 넣지 않는다. 공통 공유 이미지에는 방문자·채팅·초대 정보가 없다.
 
-서비스 워커는 기존 `knowledge-park-` 접두사를 유지하고 v43 캐시로 올려 이전 캐시 정리 규칙과 호환된다. 로고·아이콘·manifest는 precache하고 138KB 공유 카드는 게임 시작 시 미리 받지 않는다.
+서비스 워커는 기존 `knowledge-park-` 접두사를 유지하고 v43 캐시로 올려 이전 캐시 정리 규칙과 호환된다. 로고·아이콘·manifest는 precache하고 133KB 공유 카드는 게임 시작 시 미리 받지 않는다.
 
 ## 변경 파일
 
@@ -54,7 +54,7 @@ npm run build:vercel
 
 SVG 원본은 `--svg-only`로 내보낼 수 있다. PNG 재생성은 sharp가 필요하며 현재 작업에서는 설치된 primary runtime의 sharp를 사용했다. 일반 배포 빌드는 커밋된 PNG를 사용하므로 새 이미지 생성 의존성이 필요 없다. 공유용 PNG는 폰트까지 픽셀로 고정돼 있으며 SVG 원본의 텍스트는 열람 환경 폰트에 따라 달라질 수 있다.
 
-## 실제 검증
+## 초기 시안 검증
 
 - `loading-controls`, `performance-delivery`, `social-ui`, `vercel-proxy`: **22/22 PASS**. 전체 게임 테스트를 재실행했다고 기록하지 않는다.
 - `npm run build`, `npm run build:vercel`, `npm run test:budget`: PASS. Vercel 산출물 22,562,887바이트, 코드 gzip 983,887바이트로 기존 제한 이내다. FPS나 GPU 개선 수치가 아니다.
@@ -65,6 +65,14 @@ SVG 원본은 `--svg-only`로 내보낼 수 있다. PNG 재생성은 sharp가 �
 - 명령 실행 프로세스의 localhost HTTP는 연결되지 않았지만 공식 preview relay에서 브라우저 화면은 열렸다. HTTP 계약은 위 Worker 직접 호출로 확인했고 이를 배포 후 네트워크 검증과 혼동하지 않는다.
 
 근거: [검증 JSON](../qa/brand-v43/validation.json), [브랜드 검토 화면](../qa/brand-v43/brand-review.jpg).
+
+## 후속 요청: 크기 축소와 한글 부제 제거
+
+사용자가 워드마크가 크고 아래 한글은 필요하지 않다고 요청했다. `scripts/build-brand-assets.mjs`에서 공유 이미지의 영문 이름을 77→42px, 자간을 8→5로 줄이고 한글 `<text>`를 삭제했다. 트리는 원본 경로와 배율을 유지하면서 `translate(390 90)`으로 이동하고, 이름 기준선은 y=495로 맞췄다. 공유 제목·앱 이름도 영문만 표시한다.
+
+`dist/brand.css`의 상단 이름은 20→16px, 모바일은 17→14px다. 검토 페이지에서 중복 이름·한글 소개·추가 문구를 제거했다. 접근성 이름과 일반 한국어 UI는 그대로다. `scripts/apply-brand.mjs`의 이미지·CSS URL은 `snowhere-v2`로, 서비스 워커 캐시는 `knowledge-park-v43-snowhere-simple`로 갱신했다.
+
+재생성된 PNG를 직접 열어 트리와 작은 영문 이름만 있는 구성을 확인했다. PNG 1200×630, SVG 텍스트 노드 1개·42px, 초기 HTML의 영문 제목과 캐시 URL을 확인했다. 두 배포 빌드가 통과했으며 게임 로직은 이번 수정 범위가 아니어서 전체 테스트를 반복하지 않았다. 최신 시안은 기존 `brand-review.jpg`가 아니라 `dist/brand/og-image.png`와 `dist/brand/preview.html`이다. 운영 반영 상태는 계속 미배포다.
 
 ## 배포 후 남은 확인
 
