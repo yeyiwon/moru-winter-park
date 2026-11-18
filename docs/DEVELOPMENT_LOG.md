@@ -68,3 +68,7 @@ v35의 청록 공통 토큰이 투과감을 잃게 만든 원인을 확인했다
 ### v39 배포 검증
 
 실행 `d069694`, Sites 39·Vercel READY 및 GitHub main 반영. 자동 368/368, 로컬 실제 Chrome 11개 묶음, 운영 정책/화면 4개 묶음 PASS. 운영 두 주소 18개 주요 파일 해시 일치. 실제 소유자 인증/운영 유효 초대/실물 휴대폰은 UNKNOWN. [기록](DEPLOYMENT.md).
+
+### v39 관리자 입장 자리 확보
+
+`61e34e5`: 게스트 최대 11명과 전체 12명 조건을 원자적으로 검사해 정원이 차도 관리자 입장/운영 가능. 전체 368/368 재검사 PASS. Sites 40 (`appgdep_6afdbbb4805c8191ba76fbedeaad5142`) succeeded, Vercel `dpl_HuyjcMqYcEjRgRG2ZiD92TWnDoo9` READY 및 운영 alias 확인. 실제 소유자 로그인과 초대 관리 화면은 사용자 확인 완료.

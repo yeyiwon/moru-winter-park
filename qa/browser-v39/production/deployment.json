@@ -1,11 +1,11 @@
 {
-  "releaseCommit": "d069694b54333435748ada11e28c27a8399c288e",
+  "releaseCommit": "61e34e5bc4c63eabf070fbee4ace2f9a12cf93c2",
   "githubBranch": "main",
-  "sitesVersion": 39,
-  "sitesDeployment": "appgdep_6afdb60a94448191862ab7eb90bea97b",
+  "sitesVersion": 40,
+  "sitesDeployment": "appgdep_6afdbbb4805c8191ba76fbedeaad5142",
   "sitesStatus": "succeeded",
   "vercel": {
-    "id": "dpl_GSaPShxXqazV1CBSo2kcmwzhS1Gf",
+    "id": "dpl_HuyjcMqYcEjRgRG2ZiD92TWnDoo9",
     "readyState": "READY",
     "target": "production",
     "aliasAssigned": true,
@@ -16,5 +16,7 @@
     ]
   },
   "ownerOAuth": "USER_CONFIRMED",
-  "physicalMobile": "UNKNOWN"
+  "physicalMobile": "UNKNOWN",
+  "initialReleaseCommit": "d069694b54333435748ada11e28c27a8399c288e",
+  "capacity": "11 guests plus owner, maximum 12"
 }
