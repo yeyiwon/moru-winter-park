@@ -2,7 +2,7 @@
 
 ## 요청과 상태
 
-**후속 확정:** 사용자가 윈터라이드와 화이트·골드 방향을 선택했다. 현재 구현은 [WINTERIDE 브랜드 기록](winteride-brand.md)을 따른다. 아래는 이전 후보 검토의 이력이다.
+**후속 확정:** 사용자가 윈터라이트와 화이트·골드 방향을 선택했다. 현재 구현은 [WINTERLIGHT 브랜드 기록](winterlight-brand.md)을 따른다. 아래는 이전 후보 검토의 이력이다.
 
 **최신 상태:** 사용자가 SNOWHERE 이름과 로고·서체 조합을 다시 수정 요청했다. [영문 이름 비교 시안](../qa/brand-v44/name-study.png)을 만들었으며 snowfall / winter hours / winterlight 중 최종 이름은 미정이다. 기존 SNOWHERE 저장본을 운영에 배포하지 않는다. 아래의 초기 시안 선택 이유는 과거 검토 기록이다.
 

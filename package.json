@@ -1,5 +1,5 @@
 {
-  "name": "winteride",
+  "name": "winterlight",
   "private": true,
   "scripts": {
     "test": "node --experimental-vm-modules --test tests/*.test.mjs",
