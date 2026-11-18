@@ -6,7 +6,7 @@ export function createCameraClearance(){
  const boxes=new WeakMap(),faded=new Map();let safeDistance=0,lastMode='',tick=0,limit=Infinity;
  function visible(o){for(let p=o;p;p=p.parent)if(!p.visible)return false;return true;}
  function restore(o,record){o.material=record.original;for(const m of record.clones)m.dispose();faded.delete(o);}
- function update(camera,focus,objects,dt,{mode='',minDistance=2.5}={}){
+ function update(camera,focus,objects,dt,{mode='',minDistance=2.5,maxRecoverySpeed=Infinity}={}){
   const desired=camera.position.clone(),length=desired.distanceTo(focus);if(length<.01)return;
   direction.subVectors(desired,focus).normalize();right.crossVectors(direction,up).normalize();
   const changed=lastMode!==mode;lastMode=mode;
@@ -29,7 +29,7 @@ export function createCameraClearance(){
   }
   // Retreat quickly at contact, ease back out after the obstruction clears.
   if(!safeDistance||changed)safeDistance=Math.min(length,limit);
-  const goal=Math.min(length,limit),blend=1-Math.exp(-Math.max(0,dt)*(goal<safeDistance?30:3.2));safeDistance+=(goal-safeDistance)*blend;
+  const goal=Math.min(length,limit),blend=1-Math.exp(-Math.max(0,dt)*(goal<safeDistance?30:3.2));const change=(goal-safeDistance)*blend;safeDistance+=change>0?Math.min(change,maxRecoverySpeed*Math.max(0,dt)):change;
   // Never leave the near plane behind the wall while interpolation catches up.
   safeDistance=Math.min(safeDistance,limit);end.copy(focus).addScaledVector(direction,Math.max(.8,safeDistance));camera.position.copy(end);
   for(const [o,r]of faded){for(const m of r.clones)m.opacity+=(r.target-m.opacity)*(1-Math.exp(-dt*9));if(r.target===1&&r.clones.every(m=>m.opacity>.995))restore(o,r);}

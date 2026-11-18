@@ -1,3 +1,4 @@
+import {onsenTransitionValid} from './onsen-layout.js';
 import {regions} from './region-layout.js';
 // Public world coordinates. The mountain blueprint remains local so moving the district
 // never shrinks chairs, changes piste gradients or misaligns multiplayer seats.
@@ -30,6 +31,6 @@ export const resortRidePosition=(x,y,z,mode)=>blueprint.resortRidePosition(x,y,z
 export const spa={...blueprint.spa,...regions.spa.center};
 export const spaPavilion={...spaPoint(blueprint.spaPavilion),sideDoorZ:blueprint.spaPavilion.sideDoorZ+spaShift-blueprint.spaShift};
 export const spaActivities=Object.fromEntries(Object.entries(blueprint.spaActivities).map(([id,p])=>[id,{...spaPoint(p),...(p.pool?{pool:spaPoint(p.pool)}:{})}]));
-export const spaPositionValid=(x,y,z,mode)=>blueprint.spaPositionValid(x-spaX,y,z-spaShift+blueprint.spaShift,mode);
+export const spaPositionValid=(x,y,z,mode)=>blueprint.spaPositionValid(x-spaX,y,z-spaShift+blueprint.spaShift,mode)||onsenTransitionValid(x,y,z,mode);
 export const restSeats=Object.fromEntries(Object.entries(blueprint.restSeats).filter(([id])=>id!=='healing').map(([id,p])=>[id,spaPoint(p)]));
 export function resortGround(x,z){if(Math.abs(x-spaX)<39&&Math.abs(z-regions.spa.center.z)<34)return blueprint.resortGround(x-spaX,z-spaShift+blueprint.spaShift);return z< -40?alpineHeight(x,z):.09;}

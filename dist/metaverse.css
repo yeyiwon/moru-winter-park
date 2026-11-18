@@ -88,3 +88,6 @@ body[data-controls=ride] #emote-toggle,body[data-controls=lift] #emote-toggle{di
 #island-map.coordinate-map{background:#0b1c30;border-color:#c4e8f533;min-height:280px}#island-map.coordinate-map canvas{height:100%;flex:1}.map-regions{position:absolute;inset:0;pointer-events:none}.map-region{position:absolute;transform:translate(-50%,-50%);width:110px;min-height:44px;padding:8px 10px;border:1px solid #b9dfec66;border-radius:18px;background:linear-gradient(135deg,#294960c9,#152c43dc);color:#e6f5fb;font-size:11px;letter-spacing:.01em;box-shadow:0 4px 18px #020c1d40,inset 0 1px #e2f5ff16;backdrop-filter:blur(10px);pointer-events:auto;touch-action:manipulation;transition:background .18s,border-color .18s}.map-region:hover,.map-region:focus-visible{background:#3a6078e6;border-color:#e1f4ff;outline:2px solid #a9daf366;outline-offset:3px}.map-region[hidden]{display:none}#studio:has(#pane-map:not([hidden])){background:linear-gradient(130deg,#142b43ec,#203e55e8);border-color:#cae4ef4a}#pane-map .map-controls{z-index:3}.map-controls button{width:44px;height:44px}
 
 .coordinate-map[data-compact=true] .map-controls{flex-direction:row;top:10px;right:10px;gap:6px}
+
+/* Wading keeps steering available, while jump/sprint remain disabled. */
+body[data-controls=wade] .touch-actions{display:none!important}

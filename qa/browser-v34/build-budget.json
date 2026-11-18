@@ -1,0 +1,55 @@
+{
+  "totals": {
+    "files": 161,
+    "allBytes": 22137479,
+    "codeBytes": 2884369,
+    "codeGzipBytes": 916212,
+    "audioBytes": 16329873
+  },
+  "limits": {
+    "allBytes": 25165824,
+    "codeGzipBytes": 1280000
+  },
+  "largest": [
+    {
+      "name": "audio/cinematic-christmas-piano-strings-bells.m4a",
+      "bytes": 3274060,
+      "gzip": 3176562
+    },
+    {
+      "name": "audio/moonlight.m4a",
+      "bytes": 2093421,
+      "gzip": 2036036
+    },
+    {
+      "name": "fonts/PretendardVariable.woff2",
+      "bytes": 2057688,
+      "gzip": 2045523
+    },
+    {
+      "name": "audio/ethereal-winter-ballet-02.m4a",
+      "bytes": 1815149,
+      "gzip": 1774853
+    },
+    {
+      "name": "audio/first-snow.m4a",
+      "bytes": 1754877,
+      "gzip": 1716862
+    },
+    {
+      "name": "audio/wonderful-night.m4a",
+      "bytes": 1704625,
+      "gzip": 1687108
+    },
+    {
+      "name": "audio/snow-globe.m4a",
+      "bytes": 1330587,
+      "gzip": 1315398
+    },
+    {
+      "name": "audio/christmas-cinematic-dream-piano.m4a",
+      "bytes": 1062268,
+      "gzip": 1030702
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "tests": 316,
+  "pass": 316,
+  "fail": 0,
+  "durationMs": 41210.541542,
+  "command": "node --experimental-vm-modules --test --test-concurrency=2 tests/*.test.mjs"
+}

@@ -1,0 +1,159 @@
+{
+  "errors": [],
+  "steps": [
+    {
+      "label": "arrival",
+      "player": {
+        "x": 92,
+        "y": 0.95,
+        "z": -23,
+        "yaw": 3.141592653589793,
+        "mode": "",
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "roast": 0
+      },
+      "hidden": false,
+      "buttons": [
+        "E탕에 들어가기"
+      ],
+      "lifecycle": "Idle",
+      "active": false
+    },
+    {
+      "label": "front-entry",
+      "player": {
+        "x": 92,
+        "y": 0.95,
+        "z": -20.365360838253352,
+        "yaw": 0.002864761683927097,
+        "mode": "",
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "roast": 0
+      },
+      "hidden": false,
+      "buttons": [
+        "E탕에 들어가기"
+      ],
+      "lifecycle": "Idle",
+      "active": false
+    },
+    {
+      "label": "using",
+      "player": {
+        "x": 92,
+        "y": 0.28,
+        "z": -16,
+        "yaw": 3.141592653589793,
+        "mode": "bath",
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "roast": 0
+      },
+      "hidden": true,
+      "buttons": [
+        "E탕에 들어가기"
+      ],
+      "lifecycle": "Active",
+      "active": true
+    },
+    {
+      "label": "exited",
+      "player": {
+        "x": 92,
+        "y": 0.95,
+        "z": -23,
+        "yaw": 3.141592653589793,
+        "mode": "",
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "roast": 0
+      },
+      "hidden": true,
+      "buttons": [],
+      "lifecycle": "Idle",
+      "active": false
+    },
+    {
+      "label": "entry-left",
+      "player": {
+        "x": 90.85556458353098,
+        "y": 0.95,
+        "z": -20.3296506949056,
+        "yaw": 5.877012263744693,
+        "mode": "",
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "roast": 0
+      },
+      "hidden": true,
+      "buttons": [],
+      "lifecycle": "Idle",
+      "active": false
+    },
+    {
+      "label": "entry-right",
+      "player": {
+        "x": 93.04809445187175,
+        "y": 0.95,
+        "z": -20.20840059817238,
+        "yaw": 7.7939729707691825,
+        "mode": "",
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "roast": 0
+      },
+      "hidden": true,
+      "buttons": [],
+      "lifecycle": "Idle",
+      "active": false
+    },
+    {
+      "label": "west-approach",
+      "player": {
+        "x": 83.51815312754853,
+        "y": 0.95,
+        "z": -13.145955279381292,
+        "yaw": 6.132330068178081,
+        "mode": "",
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "roast": 0
+      },
+      "hidden": false,
+      "buttons": [
+        "E탕에 들어가기"
+      ],
+      "lifecycle": "Idle",
+      "active": false
+    },
+    {
+      "label": "waterfall-front",
+      "player": {
+        "x": 83.51815312754853,
+        "y": 0.95,
+        "z": -13.145955279381292,
+        "yaw": 6.132330068178081,
+        "mode": "",
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "roast": 0
+      },
+      "hidden": false,
+      "buttons": [
+        "E탕에 들어가기"
+      ],
+      "lifecycle": "Idle",
+      "active": false
+    }
+  ]
+}

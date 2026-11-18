@@ -17,3 +17,14 @@ test('mobile sprint stays active with separate movement, camera and jump fingers
  w.dispatchEvent(new w.Event('lab:pause'));assert.equal(controls.sprinting,false);assert.deepEqual(move,{x:0,y:0});controls.setMode('ski');assert.equal(runButton.hidden,true);send(runButton,'pointerdown',5);assert.equal(controls.sprinting,false);controls.setMode('walk');send(runButton,'pointerdown',6);send(runButton,'pointercancel',6);assert.equal(controls.sprinting,false);
  w.close();delete globalThis.window;delete globalThis.document;
 });
+
+test('wading retains independent mobile movement and camera, hides jump and resets on exit',()=>{
+ const dom=new JSDOM('<canvas></canvas><div id="joy"><span class="joystick-stick"></span></div><button id="jump"></button><button id="run"></button><button id="brake"></button>'),w=dom.window,d=w.document;
+ Object.assign(globalThis,{window:w,document:d});w.HTMLElement.prototype.setPointerCapture=()=>{};
+ const joystick=d.querySelector('#joy'),jumpButton=d.querySelector('#jump'),runButton=d.querySelector('#run'),brakeButton=d.querySelector('#brake'),canvas=d.querySelector('canvas');joystick.getBoundingClientRect=()=>({left:0,top:0,width:120,height:120});let move,orbits=0,jumps=0;
+ const controls=createTouchControls({canvas,joystick,jumpButton,brakeButton,runButton,onMove:(x,y)=>move={x,y},onOrbit:()=>orbits++,onZoom:()=>{},onTap:()=>{},onJump:()=>jumps++});
+ const send=(el,type,id,x,y)=>el.dispatchEvent(Object.assign(new w.Event(type,{cancelable:true}),{pointerId:id,clientX:x,clientY:y}));
+ controls.setMode('wade');assert.equal(d.body.dataset.controls,'wade');assert.equal(jumpButton.disabled,true);assert.equal(runButton.hidden,true);
+ send(joystick,'pointerdown',1,95,60);send(canvas,'pointerdown',2,180,180);send(canvas,'pointermove',2,210,180);send(jumpButton,'pointerdown',3,0,0);assert.ok(move.x>0);assert.equal(orbits,1);assert.equal(jumps,0);
+ send(joystick,'lostpointercapture',1,95,60);assert.deepEqual(move,{x:0,y:0});controls.setMode('walk');assert.equal(jumpButton.disabled,false);assert.equal(runButton.hidden,false);assert.deepEqual(move,{x:0,y:0});controls.dispose();w.close();delete globalThis.window;delete globalThis.document;
+});
