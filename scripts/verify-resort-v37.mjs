@@ -1,5 +1,5 @@
 import fs from 'node:fs/promises';import assert from 'node:assert/strict';import {chromium} from '/tmp/winter-browser-qa/node_modules/playwright-core/index.mjs';
-const origin='http://127.0.0.1:4185',mobile=process.env.QA_MOBILE==='1',arrivalOnly=process.env.QA_ARRIVAL_ONLY==='1',out='qa/browser-v37',report={mobileEmulation:mobile,physicalMobile:false,lifts:[],runs:[],checks:[],errors:[]};
+const origin='http://127.0.0.1:4185',mobile=process.env.QA_MOBILE==='1',arrivalOnly=process.env.QA_ARRIVAL_ONLY==='1',out=process.env.QA_OUTPUT||'qa/browser-v37',report={mobileEmulation:mobile,physicalMobile:false,lifts:[],runs:[],checks:[],errors:[]};
 const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true}),context=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1440,height:900},isMobile:mobile,hasTouch:mobile,serviceWorkers:'block'}),page=await context.newPage(),peer=await browser.newContext();
 const api=(c,path,data)=>c.request.post(origin+'/api/'+path,{headers:{Origin:origin},data});
 try{

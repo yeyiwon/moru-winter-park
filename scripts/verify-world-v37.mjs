@@ -3,7 +3,7 @@ import fs from 'node:fs/promises';
 import assert from 'node:assert/strict';
 import {execFileSync} from 'node:child_process';
 import {chromium} from '/tmp/winter-browser-qa/node_modules/playwright-core/index.mjs';
-const origin='http://127.0.0.1:4185',out='qa/browser-v37',before=process.env.QA_STAGE==='before',mobile=process.env.QA_MOBILE==='1';
+const origin='http://127.0.0.1:4185',out=process.env.QA_OUTPUT||'qa/browser-v37',before=process.env.QA_STAGE==='before',mobile=process.env.QA_MOBILE==='1';
 await fs.mkdir(out,{recursive:true});const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true});
 const report={at:new Date().toISOString(),before,mobileEmulation:mobile,physicalMobile:false,checks:[],errors:[]};let context;
 try{

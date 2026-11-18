@@ -1,0 +1,52 @@
+{
+  "origin": "http://127.0.0.1:4185",
+  "at": "2026-11-18T13:46:59.986Z",
+  "physicalMobile": false,
+  "checks": [
+    {
+      "mobile": false,
+      "check": "world ready",
+      "ms": 6372
+    },
+    {
+      "mobile": false,
+      "check": "guest authorization, appearance save, second guest sync and chat"
+    },
+    {
+      "mobile": false,
+      "check": "two ferris seats and independent dismount"
+    },
+    {
+      "mobile": false,
+      "check": "map travel, ferris, carousel, bath, ryokan and museum enter/exit"
+    },
+    {
+      "mobile": false,
+      "check": "Ethereal first and playing, Invite login, reload saved appearance"
+    },
+    {
+      "mobile": true,
+      "check": "world ready",
+      "ms": 8792
+    },
+    {
+      "mobile": true,
+      "check": "guest authorization, appearance save, second guest sync and chat"
+    },
+    {
+      "mobile": true,
+      "check": "two ferris seats and independent dismount"
+    },
+    {
+      "mobile": true,
+      "check": "map travel, ferris, carousel, bath, ryokan and museum enter/exit"
+    },
+    {
+      "mobile": true,
+      "check": "Ethereal first and playing, Invite login, reload saved appearance"
+    }
+  ],
+  "errors": [],
+  "requestsFailed": [],
+  "stage": "music"
+}

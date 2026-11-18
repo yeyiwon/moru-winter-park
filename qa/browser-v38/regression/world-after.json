@@ -1,0 +1,18 @@
+{
+  "at": "2026-11-18T13:25:25.715Z",
+  "before": false,
+  "mobileEmulation": false,
+  "physicalMobile": false,
+  "checks": [
+    "museum actual region entry/loading complete",
+    "museum reserved seated pose",
+    "museum movement releases seat and exit restores outdoors",
+    "ryokan actual region entry/loading complete",
+    "ryokan reserved seated pose",
+    "ryokan movement releases seat and exit restores outdoors",
+    "nickname grapheme cap, saved state and API rejection",
+    "two distinct shared seats, third refused, remote name, seated chat",
+    "independent dismount"
+  ],
+  "errors": []
+}

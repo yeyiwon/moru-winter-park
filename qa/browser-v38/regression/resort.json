@@ -1,0 +1,93 @@
+{
+  "mobileEmulation": false,
+  "physicalMobile": false,
+  "lifts": [
+    {
+      "kind": "lift",
+      "sharedCabin": 1795008438110,
+      "distinctSeats": true,
+      "frames": 1315,
+      "p95FrameMs": 33.39999999999418,
+      "maxPlayerStep": 0.16660136559411445,
+      "maxCameraStep": 0.24954240920074594,
+      "cameraJumps": [],
+      "arrival": {
+        "x": -70,
+        "y": 30.95,
+        "z": -208,
+        "yaw": 0,
+        "mode": "summit",
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      }
+    },
+    {
+      "kind": "upperlift",
+      "sharedCabin": 1795008467502,
+      "distinctSeats": true,
+      "frames": 2041,
+      "p95FrameMs": 16.80000000000291,
+      "maxPlayerStep": 0.17507357889954248,
+      "maxCameraStep": 0.1637781134940149,
+      "cameraJumps": [],
+      "arrival": {
+        "x": 47,
+        "y": 68.98353174300836,
+        "z": -260,
+        "yaw": 0,
+        "mode": "summit",
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      }
+    }
+  ],
+  "runs": [
+    {
+      "course": "easy",
+      "maxSpeed": 24.277013262231947,
+      "mode": "",
+      "gear": "none",
+      "phase": "Idle",
+      "uiHidden": true
+    },
+    {
+      "course": "main",
+      "maxSpeed": 29.005298241493318,
+      "mode": "",
+      "gear": "none",
+      "phase": "Idle",
+      "uiHidden": true
+    },
+    {
+      "course": "advanced",
+      "maxSpeed": 29.086194981513515,
+      "mode": "",
+      "gear": "none",
+      "phase": "Idle",
+      "uiHidden": true
+    },
+    {
+      "course": "curve",
+      "maxSpeed": 28.899248214380243,
+      "mode": "",
+      "gear": "none",
+      "phase": "Idle",
+      "uiHidden": true
+    }
+  ],
+  "checks": [
+    "odeng preserved at base",
+    "campfire preserved at base",
+    "shared-data trail map and selectable courses",
+    "walked base promenade and existing bridge to ryokan entrance"
+  ],
+  "errors": []
+}
