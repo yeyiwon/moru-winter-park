@@ -2,12 +2,13 @@
   "tests": 368,
   "passed": 368,
   "failed": 0,
-  "durationMs": 207487.212875,
+  "durationMs": 38726.65,
   "build": "PASS",
   "buildVercel": "PASS",
   "assetBudget": "PASS",
   "lint": "NOT_CONFIGURED",
   "typecheck": "NOT_CONFIGURED",
   "physicalMobile": "UNKNOWN",
-  "ownerOAuth": "UNKNOWN"
+  "ownerOAuth": "USER_CONFIRMED",
+  "ownerCapacityRegression": "PASS: 11 guests + owner = 12, moderation accessible"
 }

@@ -48,9 +48,10 @@ test('owner kick invalidates the old invitation for that guest; block survives r
  assert.equal((await f.call(f.owner,'admin',{action:'kick',id:s.id})).status,200);assert.equal((await f.call(a,'presence',{x:0,y:.95,z:30,yaw:0})).status,401);assert.equal((await f.call(a,'join',{token:i.token})).status,403);
  const fresh=await f.invite();await f.join(a,fresh.token);assert.equal((await f.call(f.owner,'admin',{action:'block',id:s.id})).status,200);assert.equal((await f.call(a,'join',{token:fresh.token})).status,403);assert.equal((await f.call(a,'access')).data.blocked,true);
 });
-test('capacity never creates overflow rooms and simultaneous joins cannot exceed twelve',async t=>{
+test('capacity reserves owner access, never creates overflow rooms and cannot exceed twelve',async t=>{
  const f=await fixture(t),i=await f.invite();const results=await Promise.all(Array.from({length:14},()=>f.call(f.guest(),'join',{token:i.token,name:'손님'})));
- assert.equal(results.filter(r=>r.status===200).length,12);assert.equal(results.filter(r=>r.status===409).length,2);const rooms=(await f.DB.prepare('SELECT DISTINCT room FROM visitors').bind().all()).results;assert.deepEqual(rooms,[{room:publicRoom}]);
+ assert.equal(results.filter(r=>r.status===200).length,11);assert.equal(results.filter(r=>r.status===409).length,3);
+ await f.join(f.owner,undefined,'관리자');assert.equal((await f.call(f.owner,'admin')).status,200,'owner can enter and moderate a full guest world');assert.equal((await f.DB.prepare('SELECT COUNT(*) AS count FROM visitors').bind().first()).count,12);const rooms=(await f.DB.prepare('SELECT DISTINCT room FROM visitors').bind().all()).results;assert.deepEqual(rooms,[{room:publicRoom}]);
 });
 test('invitation attempts are bounded and untrusted origins cannot mutate state',async t=>{
  const f=await fixture(t);for(let i=0;i<120;i++)assert.equal((await f.call(f.guest(),'invite-check',{token:'invalid'})).status,403);assert.equal((await f.call(f.guest(),'invite-check',{token:'invalid'})).status,429);

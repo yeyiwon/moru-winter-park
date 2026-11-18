@@ -1,14 +1,14 @@
 # v39 단일 월드 검증
 
-- 최종 `npm test`: **368/368 PASS**, 207.49초. 격리 SQLite 사용.
+- 최종 `npm test`: **368/368 PASS**, 38.73초 (정원 보완 후 최종 재실행). 격리 SQLite 사용.
 - 첫 전체 실행은 366/367 통과였다. 음악 첫 곡 변경 후 이전/다음 테스트의 기대값이 옛 순서에 남아 있어 실제 순서(Ethereal → Cinematic)에 맞췄다. 같은 탭 초대 링크 재검증 회귀를 추가한 뒤 전체 재실행에서 368개가 통과했다.
 - `npm run build`, `npm run build:vercel`, `npm run test:budget`, `git diff --check` PASS. 별도 lint/typecheck 명령은 없다.
-- 서버 검사: 무초대·이전 세션·임의 방·다른 관리자 ID·프록시 인증 위조 차단, 랜덤 초대 해시 저장, 만료/폐기, 서로 다른 초대의 같은 월드, 채팅/외형/소원, 강퇴/차단/좌석 해제, 정원 12명 병렬 입장, Origin/rate limit.
+- 서버 검사: 무초대·이전 세션·임의 방·다른 관리자 ID·프록시 인증 위조 차단, 랜덤 초대 해시 저장, 만료/폐기, 서로 다른 초대의 같은 월드, 채팅/외형/소원, 강퇴/차단/좌석 해제, 게스트 11명 병렬 입장 + 소유자 입장/운영 가능, 전체 12명 제한, Origin/rate limit.
 - 실제 Chrome PC 1280×800 / 터치 모바일 에뮬레이션 390×844: **11개 묶음 PASS**, page 오류 0. 초대 발급 UI, 무초대 제한, 두 브라우저 입장·이동·채팅·소원·장식 공유, 외형 저장/재접속, 일반 게스트 관리 거절, 강퇴/새 초대 복귀, 차단/폐기 후 기존 세션 종료 확인.
 - 같은 초대 세션으로 PC·모바일 지도, 관람차·회전목마·온천 종료, 료칸·천문대 출입, Ethereal 첫 곡 실제 재생 확인.
 - 근거: [브라우저 결과](../qa/browser-v39/verification.json), [검사 요약](../qa/browser-v39/checks.json), [구현·재현 스크립트](single-world-v39.md).
-- 운영 두 주소의 접근 정책 검사 및 Vercel PC/모바일 크기 화면 4개 묶음 PASS, page/5xx 오류 0. 18개 배포 파일 비교 일치. [운영 결과](../qa/browser-v39/production/verification.json). 운영 유효 초대 입장과 소유자 OAuth는 UNKNOWN으로 구분한다. 로컬 관리자 fixture는 loopback 테스트 서버에만 있으며 production 인증 우회는 추가하지 않았다.
-- **UNKNOWN:** 실제 소유자 OAuth 완료, 실물 iPhone/Android, 새 버전의 장시간 부하/FPS. 로컬 다중 브라우저는 실제 두 휴대폰 검사로 표시하지 않는다.
+- 운영 두 주소의 접근 정책 검사 및 Vercel PC/모바일 크기 화면 4개 묶음 PASS, page/5xx 오류 0. 18개 배포 파일 비교 일치. [운영 결과](../qa/browser-v39/production/verification.json). 운영 유효 초대 입장은 UNKNOWN이며, 소유자 로그인/초대 관리 화면은 사용자 확인으로 구분한다. 로컬 관리자 fixture는 loopback 테스트 서버에만 있으며 production 인증 우회는 추가하지 않았다.
+- **UNKNOWN:** 운영 유효 초대 입장, 실물 iPhone/Android, 새 버전의 장시간 부하/FPS. 로컬 다중 브라우저는 실제 두 휴대폰 검사로 표시하지 않는다.
 
 ---
 
