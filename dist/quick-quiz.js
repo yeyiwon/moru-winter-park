@@ -3,8 +3,13 @@ import {closeDialog} from './ui-motion.js';
 import {fallbackTrivia} from './trivia-fallback.js';
 import {dailyQuestions,galleryQuestions,loadTrivia} from './trivia-loader.js';
 let catalog=fallbackTrivia;export const trivia=fallbackTrivia.map(q=>[q.question,q.options,q.answer,q.explanation,'✦',q.source,q.id]);
-let ready=loadTrivia().then(items=>{catalog=items;});
-window.addEventListener('lab:quiz-updated',()=>{ready=loadTrivia().then(items=>{catalog=items;});});
+// Reviewed questions require the anonymous session; loading them before join
+// returned 401 and left a fresh guest on the fallback catalog.
+let ready=Promise.resolve();
+function refreshTrivia(){ready=loadTrivia().then(items=>{catalog=items;});}
+if(window.labSocialJoined)refreshTrivia();
+window.addEventListener('lab:room',refreshTrivia);
+window.addEventListener('lab:quiz-updated',refreshTrivia);
 const dialog=document.createElement('dialog');dialog.id='quick-quiz';dialog.setAttribute('aria-labelledby','quick-question');
 dialog.innerHTML='<div class="quiz-header"><span>별빛 만물관</span><button class="icon-button" aria-label="퀴즈 닫기"><svg viewBox="0 0 24 24"><path d="m7 7 10 10M17 7 7 17"/></svg></button></div><h2 id="quick-question"></h2><div class="quiz-options"></div><div class="quiz-result" role="status" hidden></div><div class="quiz-footer"><span class="quiz-count"></span><button class="quiz-next" hidden>다음 <svg viewBox="0 0 24 24"><path d="M5 12h14m-5-5 5 5-5 5"/></svg></button></div><div class="quiz-burst" aria-hidden="true"></div>';
 document.body.append(dialog);let order=[],index=0,score=0,answered=false,cleanup,gallery=null,requestedQuestion=null;

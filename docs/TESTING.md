@@ -1,5 +1,7 @@
 # v43 공개 월드 · 입력 · 모바일 UX
 
+사용자 요청으로 **배포 보류**, 최종 분리 수정본 385/385 PASS(37.88초), 운영 배포 후 검증 NOT RUN.
+
 전체 **385/385 PASS**, 두 production build·용량 검사 PASS. 별도 TypeScript/lint 명령 없음. Mac Chrome에서 실제 Pointer Lock·WASD·방향키·한글 물리 키·텍스트 입력 차단·커마 저장 복귀를 검증했다. 390/320/844px 반응형과 독립 게스트 2개 흐름 20개 PASS, 관리자 API 거절 403, page/WebGL 오류 0. 물리 Windows/Edge/iPhone/Android 결과는 UNKNOWN이다. 음악은 무음 sink 디코딩·재생 시간·전환·재접속을 확인했으며 실제 스피커 청취 UNKNOWN.
 
 공개 QA는 더 이상 초대 토큰이 필요하지 않다. `QA_URL`/`QA_OWNER_URL`을 같은 격리 DB 서버로 지정하여 `QA_FLOW=1 QA_MOBILE=1 node scripts/verify-multiplayer.mjs`로 재현한다. 기존 v41/v42의 초대 기반 검증은 당시 정책 기록이며 현재 정책은 아니다. [전후 화면·원시 결과](public-world-v43.md).
