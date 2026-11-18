@@ -59,7 +59,7 @@ mountMuseumPuzzle();
 const experience=createWinterExperience(world.winter,companion,(id,show=true)=>window.travelToPlace(id,show));window.labWinter=world.winter;window.dispatchEvent(new Event('lab:winter-ready'));
 const glowCanvas=document.createElement('canvas');glowCanvas.width=glowCanvas.height=64;const gc=glowCanvas.getContext('2d'),gradient=gc.createRadialGradient(32,32,3,32,32,32);gradient.addColorStop(0,'#00000088');gradient.addColorStop(1,'#00000000');gc.fillStyle=gradient;gc.fillRect(0,0,64,64);
 const shadow=new T.Mesh(new T.PlaneGeometry(2.2,1.8),new T.MeshBasicMaterial({map:new T.CanvasTexture(glowCanvas),transparent:true,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.105;scene.add(shadow);
-const reduced=matchMedia('(prefers-reduced-motion: reduce)');let still=()=>reduced.matches||document.body.classList.contains('still'),paused=()=>transitioning||document.body.classList.contains('quiz-open')||document.body.classList.contains('studio-open')||document.body.classList.contains('chat-typing');
+const reduced=matchMedia('(prefers-reduced-motion: reduce)');let still=()=>reduced.matches||document.body.classList.contains('still'),paused=()=>document.body.classList.contains('invite-gate')||transitioning||document.body.classList.contains('quiz-open')||document.body.classList.contains('studio-open')||document.body.classList.contains('chat-typing');
 let target=new T.Vector3(0,12.1,22.2),yaw=castleView.yaw,targetYaw=castleView.yaw,pitch=castleView.pitch,targetPitch=castleView.pitch,requestedPitch=castleView.pitch,distance=castleView.distance,targetDistance=castleView.distance,follow=true,route=[],destination=null,phase=0,velocity=new T.Vector2(),jump=0,jumpVelocity=0,land=0,time=0,nearby=null,regionTimer,region='';
 const keys=new Set(),directions={KeyW:[0,-1],ArrowUp:[0,-1],KeyS:[0,1],ArrowDown:[0,1],KeyA:[-1,0],ArrowLeft:[-1,0],KeyD:[1,0],ArrowRight:[1,0]},joy=new T.Vector2(),gate=createDiscoveryGate(750);let shown=null;
 const navigation=createNavigationClient(findPath),physics=createSimulationClock(),playerState=createPlayerState();let simulationView=null;
@@ -142,6 +142,7 @@ function endTreeFrame(restore=true){const p=treeCameraSession;wishShot=null;tree
 window.addEventListener('lab:tree-open',frameTree);
 window.addEventListener('lab:tree-closed',e=>endTreeFrame(e.detail?.restore!==false));
 window.addEventListener('lab:room',()=>endTreeFrame(false));
+window.addEventListener('lab:session-ended',()=>{experience.cancel();clear();endTreeFrame(false);});
 let animationFrame;function animate(now){animationFrame=requestAnimationFrame(animate);const raw=now-prev;prev=now;if(document.hidden)return;
  // A callback queued before synchronous world construction can carry an older timestamp.
  const dt=Math.max(0,Math.min(.05,raw/1000)),exhibitActive=activeInterior==='museum'&&document.body.classList.contains('quiz-open'),isPaused=paused()&&frame>0&&!exhibitActive;time+=isPaused?0:dt;

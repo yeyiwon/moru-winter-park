@@ -1,55 +1,58 @@
-import test,{after} from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import {spawnSync} from 'node:child_process';import {handleAPI} from '../server/api.js';
-import {proxyRequest,backendOrigin} from '../server/vercel-proxy.js';
-import {parkOrigin} from '../dist/space-links.js';
-const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'winter-invite-')),db=path.join(tmp,'test.sqlite');
-after(()=>fs.rmSync(tmp,{recursive:true,force:true}));
-const py="import sqlite3,json,sys\np=json.load(sys.stdin)\nc=sqlite3.connect(p['db']);c.row_factory=sqlite3.Row\nif 'schema' in p:c.executescript(p['schema']);c.commit();print('{}')\nelse:\n r=c.execute(p['sql'],p['args']);rows=[dict(x) for x in r.fetchall()];n=c.total_changes;c.commit();print(json.dumps({'results':rows,'meta':{'changes':n}}))";
-function query(p){const r=spawnSync('python3',['-c',py],{input:JSON.stringify({db,...p}),encoding:'utf8'});if(r.status)throw Error(r.stderr);return JSON.parse(r.stdout);}
-query({schema:fs.readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort().map(f=>fs.readFileSync('drizzle/'+f,'utf8')).join('\n')});
-const env={OWNER_EMAIL:'owner@example.test',DB:{prepare(sql){return{bind(...args){return{async run(){return query({sql,args});},async all(){return query({sql,args});},async first(){return query({sql,args}).results[0]||null;}};}};}}};
-const owner={'oai-authenticated-user-id':'site-owner','oai-authenticated-user-email':'owner@example.test'};
-async function req(route,body,headers={}){const request=new Request('https://winter.test/api/'+route,{method:body===undefined?'GET':'POST',headers:{Origin:'https://winter.test','content-type':'application/json',...headers},body:body===undefined?undefined:JSON.stringify(body)});return handleAPI(request,env);}
-test('only the bound owner creates password-protected invitations, with no client-supplied role bypass',async()=>{
- assert.equal((await req('invite',{password:'test-pass',admin:true})).status,403);
- assert.equal((await req('access',undefined,owner)).status,200);
- assert.equal((await req('invite',{password:'test-pass'},{...owner,'oai-authenticated-user-id':'another-id'})).status,403);
- const created=await req('invite',{password:'test-pass'},owner);assert.equal(created.status,200);const {room}=await created.json();
- const stored=query({sql:'SELECT * FROM invite_rooms WHERE id=?',args:[room]}).results[0];assert.notEqual(stored.password_hash,'test-pass');assert.equal(stored.password_hash.length,64);
- assert.equal((await req('join',{room,name:'게스트',password:'wrong'})).status,403);
- assert.equal((await req('join',{room:'invented-room',name:'게스트',password:'test-pass'})).status,403);
- const joined=await req('join',{room,name:'게스트',password:'test-pass'});assert.equal(joined.status,200);assert.match(joined.headers.get('set-cookie'),/HttpOnly; SameSite=Lax; Secure/);const cookie=joined.headers.get('set-cookie').split(';')[0];
- assert.equal((await req('tree')).status,401);assert.equal((await req('tree?room=another-room',undefined,{cookie})).status,200);
- for(const kind of ['ball','star','bell','bow','moon','icicle']){const added=await req('tree',{kind,color:'#d7b5f0',angle:.5,height:12},{cookie});assert.equal(added.status,200,kind);query({sql:'UPDATE tree_decorations SET created_at=0',args:[]});}
- assert.equal((await req('tree',{kind:'unknown',color:'#d7b5f0',angle:0,height:12},{cookie})).status,400);
- const decorated=await (await req('tree',undefined,{cookie})).json();assert.equal(decorated.decorations.length,6);
- const deletion=await handleAPI(new Request('https://winter.test/api/tree',{method:'DELETE',headers:{Origin:'https://winter.test',cookie,'content-type':'application/json'},body:JSON.stringify({id:decorated.decorations[0].id})}),env);assert.equal(deletion.status,200);assert.equal((await (await req('tree',undefined,{cookie})).json()).decorations.length,5);
- const named=await req('name',{name:'새 닉네임'},{cookie});assert.deepEqual(await named.json(),{name:'새 닉네임'});
- assert.equal((await req('invite',{password:'test-pass'},{cookie})).status,403);
- for(let i=0;i<5;i++)await req('join',{room,name:'게스트',password:'wrong'});
- assert.equal((await req('join',{room,name:'게스트',password:'test-pass'})).status,429);
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
+import {createLocalDatabase} from '../scripts/local-database.mjs';import {handleAPI} from '../server/api.js';import {digest} from '../server/invitations.js';
+import {proxyRequest,backendOrigin} from '../server/vercel-proxy.js';import {parkOrigin,publicRoom} from '../dist/space-links.js';
+async function fixture(t){
+ const folder=fs.mkdtempSync(path.join(os.tmpdir(),'single-world-')),database=createLocalDatabase(path.join(folder,'test.sqlite'));t.after(()=>{database.close();fs.rmSync(folder,{recursive:true,force:true});});
+ await database.query({schema:fs.readdirSync('drizzle').filter(n=>n.endsWith('.sql')).sort().map(n=>fs.readFileSync('drizzle/'+n,'utf8')).join('\n')});
+ const DB={prepare(sql){return{bind(...args){return{run:()=>database.query({sql,args}),all:()=>database.query({sql,args}),first:async()=>(await database.query({sql,args})).results[0]||null};}};}};
+ const env={DB,OWNER_EMAIL:'owner@example.test'},owner={origin:backendOrigin,headers:{'oai-authenticated-user-id':'only-owner','oai-authenticated-user-email':'owner@example.test'}},guest=()=>({origin:parkOrigin,headers:{}});
+ async function call(client,route,body,method){const req=new Request(client.origin+'/api/'+route,{method:method||(body===undefined?'GET':'POST'),headers:{Origin:client.origin,'Content-Type':'application/json',...client.headers,...(client.cookie?{Cookie:client.cookie}:{})},body:body===undefined?undefined:JSON.stringify(body)});const response=client.origin===parkOrigin?await proxyRequest(req,(url,options)=>handleAPI(new Request(url,options),env)):await handleAPI(req,env);if(response.headers.get('set-cookie'))client.cookie=response.headers.get('set-cookie').split(';')[0];return{status:response.status,data:await response.json(),headers:response.headers};}
+ async function invite(days=7){const r=await call(owner,'invite',{days});assert.equal(r.status,200);return{...r.data,token:new URLSearchParams(new URL(r.data.url).hash.slice(1)).get('invite')};}
+ async function join(client,token,name='게스트'){const r=await call(client,'join',{token,name});assert.equal(r.status,200,JSON.stringify(r.data));return r.data;}
+ return{DB,env,owner,guest,call,invite,join};
+}
+test('only the bound owner issues random hashed invites; public, legacy and invented-room entry are denied',async t=>{
+ const f=await fixture(t),g=f.guest();assert.equal((await f.call(g,'join',{name:'손님'})).status,403);assert.equal((await f.call(g,'invite',{admin:true})).status,403);
+ for(const body of [null,[],42])assert.equal((await f.call(g,'join',body)).status,400);
+ const i=await f.invite();assert.match(i.token,/^[a-f0-9]{64}$/);assert.equal(new URL(i.url).origin,parkOrigin);assert.equal(new URL(i.url).search,'');assert.equal(i.worldId,publicRoom);
+ const stored=await f.DB.prepare('SELECT * FROM world_invites WHERE id=?').bind(i.id).first();assert.equal(stored.token_hash,await digest(i.token));assert.ok(!JSON.stringify(stored).includes(i.token));
+ const list=await f.call(f.owner,'invite');assert.ok(!JSON.stringify(list.data).includes(i.token));
+ const other={...f.owner,headers:{...f.owner.headers,'oai-authenticated-user-id':'different-user'}};assert.equal((await f.call(other,'invite',{})).status,403);
+ g.headers={'oai-authenticated-user-id':'only-owner','oai-authenticated-user-email':'owner@example.test'};assert.equal((await f.call(g,'invite',{})).status,403,'proxy strips spoofed identity');
+ assert.equal((await f.call(g,'join',{token:i.token,room:'invented-room'})).status,400);
+ const secret='f'.repeat(64),id=await digest(secret);await f.DB.prepare("INSERT INTO visitors(id,room,name,color,accessory,x,z,yaw,seen,gesture,gesture_at) VALUES(?,'winter-plaza','이전 게스트','#ffffff','none',0,30,0,?,'',0)").bind(id,Date.now()).run();g.cookie='winter_session='+secret;
+ assert.equal((await f.call(g,'access')).data.session,null);assert.equal((await f.call(g,'tree')).status,401);assert.equal((await f.call(g,'join',{})).status,403);
+ assert.equal((await f.join(g,i.token)).id,id,'valid invitation upgrades identity without losing ownership');
 });
-test('Sites host and Vercel guest meet in the same invitation, exchange movement, and survive reload',async()=>{
- const host={origin:backendOrigin,headers:owner},guest={origin:parkOrigin,headers:{}},lobby={origin:parkOrigin,headers:{}};
- async function call(client,route,body){
-  const request=new Request(client.origin+'/api/'+route,{method:body===undefined?'GET':'POST',headers:{Origin:client.origin,'Content-Type':'application/json',...client.headers,...(client.cookie?{Cookie:client.cookie}:{})},body:body===undefined?undefined:JSON.stringify(body)});
-  const response=client.origin===parkOrigin?await proxyRequest(request,(url,options)=>handleAPI(new Request(url,options),env)):await handleAPI(request,env);
-  const cookie=response.headers.get('set-cookie');if(cookie)client.cookie=cookie.split(';')[0];
-  const data=await response.json();assert.equal(response.status,200,JSON.stringify(data));return data;
- }
- const previous=await call(host,'join',{name:'관리자',room:'winter-plaza'});
- const invite=await call(host,'invite',{password:'integration-pass'});
- assert.equal(new URL(invite.url).origin,parkOrigin);assert.equal(new URL(invite.url).searchParams.get('room'),invite.room);
- const hostSession=await call(host,'join',{name:'관리자',room:invite.room});
- const guestSession=await call(guest,'join',{name:'손님',room:invite.room,password:'integration-pass'});
- assert.ok(query({sql:'SELECT seen FROM visitors WHERE id=?',args:[previous.id]}).results[0].seen<=Date.now()-20000);
- await call(lobby,'join',{room:'winter-plaza',name:'광장 손님'});
- const pose={x:0,z:30,y:.86,yaw:.4};
- await call(host,'presence',pose);
- const guestView=await call(guest,'presence',{...pose,x:2});
- assert.equal(guestView.people.length,1);assert.equal(guestView.people[0].id,hostSession.id);assert.equal(guestView.people[0].yaw,.4);
- await call(guest,'chat',{message:'같은 공간'});
- const hostView=await call(host,'presence',pose);assert.equal(hostView.people.length,1);assert.equal(hostView.people[0].id,guestSession.id);assert.equal(hostView.people[0].chat,'같은 공간');assert.equal(hostView.people[0].x,2);
- const outside=await call(lobby,'presence',pose);assert.ok(outside.people.every(p=>p.id!==hostSession.id&&p.id!==guestSession.id));
- assert.equal((await call(guest,'access')).session.room,invite.room);assert.equal((await call(guest,'join',{room:invite.room})).id,guestSession.id);
- for(const client of [host,guest,lobby])await call(client,'leave',{});
+test('different invitations and Sites/Vercel clients share one world, movement, chat, wishes and saved appearance',async t=>{
+ const f=await fixture(t),a=f.guest(),b=f.guest(),ia=await f.invite(),ib=await f.invite();assert.notEqual(ia.token,ib.token);
+ const host=await f.join(f.owner,undefined,'관리자'),sa=await f.join(a,ia.token,'손님A'),sb=await f.join(b,ib.token,'손님B');assert.equal(host.room,publicRoom);assert.equal(sa.room,sb.room);
+ await f.DB.prepare('UPDATE visitors SET seen=?').bind(Date.now()-1000).run();const pose={x:0,y:.95,z:30,yaw:.4,color:'#93a9ce',colorTop:'#eeb7cb',accessory:'cat-ears,tail-cat',fluff:100,roundness:50};
+ assert.equal((await f.call(a,'presence',{...pose,x:2})).status,200);assert.equal((await f.call(a,'chat',{message:'같은 겨울'})).status,200);
+ const view=(await f.call(b,'presence',pose)).data;assert.equal(view.people.find(p=>p.id===sa.id).x,2);assert.equal(view.people.find(p=>p.id===sa.id).chat,'같은 겨울');assert.ok(view.people.some(p=>p.id===host.id));
+ const added=await f.call(a,'tree',{kind:'star',color:'#e5bb6b',height:12,angle:1,message:'함께 보는 소원',visibility:'public'});assert.equal(added.status,200);assert.ok((await f.call(b,'tree')).data.decorations.some(d=>d.id===added.data.id));assert.equal((await f.call(b,'wishes')).data.wishes[0].message,'함께 보는 소원');
+ const rejoined=await f.call(a,'join',{});assert.equal(rejoined.data.id,sa.id);assert.equal(rejoined.data.colorTop,'#eeb7cb');assert.equal((await f.call(a,'access')).data.admin,false);
+ for(const route of ['admin','operations','fireworks','invite'])assert.equal((await f.call(a,route,{})).status,403,route);
+});
+test('expiry and revocation reject tokens and linked sessions, release seats, but preserve wishes and appearance',async t=>{
+ const f=await fixture(t),a=f.guest(),i=await f.invite(),s=await f.join(a,i.token);
+ await f.DB.prepare("UPDATE visitors SET color='#123456' WHERE id=?").bind(s.id).run();await f.call(a,'tree',{kind:'star',color:'#e5bb6b',height:12,angle:1,message:'남는 소원',visibility:'public'});
+ await f.DB.prepare("INSERT INTO ride_seats(room,kind,cabin,seat,visitor,started_at,expires_at) VALUES(?,'ferris',0,0,?,?,?)").bind(publicRoom,s.id,Date.now(),Date.now()+20000).run();
+ assert.equal((await f.call(f.owner,'invite',{id:i.id},'DELETE')).status,200);assert.equal((await f.call(a,'tree')).status,401);assert.equal((await f.call(a,'access')).data.session,null);assert.equal((await f.call(f.guest(),'join',{token:i.token})).status,403);
+ assert.equal((await f.DB.prepare('SELECT COUNT(*) AS n FROM ride_seats').bind().first()).n,0);assert.equal((await f.DB.prepare('SELECT COUNT(*) AS n FROM wishes').bind().first()).n,1);
+ const fresh=await f.invite();assert.equal((await f.join(a,fresh.token)).color,'#123456');await f.DB.prepare('UPDATE world_invites SET expires_at=? WHERE id=?').bind(Date.now()-1,fresh.id).run();assert.equal((await f.call(a,'chat',{message:'만료'})).status,401);assert.equal((await f.call(a,'join',{token:fresh.token})).status,403);
+});
+test('owner kick invalidates the old invitation for that guest; block survives reissue and self-kick is denied',async t=>{
+ const f=await fixture(t),owner=await f.join(f.owner),a=f.guest(),i=await f.invite(),s=await f.join(a,i.token);
+ assert.equal((await f.call(f.owner,'admin',{action:'kick',id:owner.id})).status,400);
+ assert.equal((await f.call(f.owner,'admin',{action:'kick',id:s.id})).status,200);assert.equal((await f.call(a,'presence',{x:0,y:.95,z:30,yaw:0})).status,401);assert.equal((await f.call(a,'join',{token:i.token})).status,403);
+ const fresh=await f.invite();await f.join(a,fresh.token);assert.equal((await f.call(f.owner,'admin',{action:'block',id:s.id})).status,200);assert.equal((await f.call(a,'join',{token:fresh.token})).status,403);assert.equal((await f.call(a,'access')).data.blocked,true);
+});
+test('capacity never creates overflow rooms and simultaneous joins cannot exceed twelve',async t=>{
+ const f=await fixture(t),i=await f.invite();const results=await Promise.all(Array.from({length:14},()=>f.call(f.guest(),'join',{token:i.token,name:'손님'})));
+ assert.equal(results.filter(r=>r.status===200).length,12);assert.equal(results.filter(r=>r.status===409).length,2);const rooms=(await f.DB.prepare('SELECT DISTINCT room FROM visitors').bind().all()).results;assert.deepEqual(rooms,[{room:publicRoom}]);
+});
+test('invitation attempts are bounded and untrusted origins cannot mutate state',async t=>{
+ const f=await fixture(t);for(let i=0;i<120;i++)assert.equal((await f.call(f.guest(),'invite-check',{token:'invalid'})).status,403);assert.equal((await f.call(f.guest(),'invite-check',{token:'invalid'})).status,429);
+ const r=await handleAPI(new Request(backendOrigin+'/api/invite',{method:'POST',headers:{...f.owner.headers,Origin:'https://evil.test'},body:'{}'}),f.env);assert.equal(r.status,403);
 });

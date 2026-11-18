@@ -1,3 +1,4 @@
+import {seedInvitation} from './helpers/world-invitation.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import {spawnSync} from 'node:child_process';import {handleAPI} from '../server/api.js';import questions from '../dist/content/daily-trivia.json' with {type:'json'};
 const tmp=fs.mkdtempSync(path.join(os.tmpdir(),'winter-community-')),db=path.join(tmp,'test.sqlite');
 const py="import sqlite3,json,sys\np=json.load(sys.stdin)\nc=sqlite3.connect(p['db']);c.row_factory=sqlite3.Row\nif 'schema' in p:c.executescript(p['schema']);c.commit();print('{}')\nelse:\n r=c.execute(p['sql'],p['args']);rows=[dict(x) for x in r.fetchall()];n=c.total_changes;c.commit();print(json.dumps({'results':rows,'meta':{'changes':n}}))";
@@ -5,9 +6,10 @@ function query(p){const r=spawnSync('python3',['-c',py],{input:JSON.stringify({d
 query({schema:fs.readdirSync('drizzle').filter(f=>f.endsWith('.sql')).sort().map(f=>fs.readFileSync('drizzle/'+f,'utf8')).join('\n')});
 const env={OWNER_EMAIL:'owner@example.test',DB:{prepare(sql){return{bind(...args){return{async run(){return query({sql,args});},async all(){return query({sql,args});},async first(){return query({sql,args}).results[0]||null;}};}};}}};
 const owner={'oai-authenticated-user-id':'site-owner','oai-authenticated-user-email':'owner@example.test'};
-async function req(route,body,headers={}){const request=new Request('https://winter.test/api/'+route,{method:body===undefined?'GET':'POST',headers:{Origin:'https://winter.test','content-type':'application/json',...headers},body:body===undefined?undefined:JSON.stringify(body)});return handleAPI(request,env);}
+const invitation=await seedInvitation(env.DB);
+async function req(route,body,headers={}){if(route==='join')body={token:invitation,...body};const request=new Request('https://winter.test/api/'+route,{method:body===undefined?'GET':'POST',headers:{Origin:'https://winter.test','content-type':'application/json',...headers},body:body===undefined?undefined:JSON.stringify(body)});return handleAPI(request,env);}
 
-test('accountless public guests reconnect to their session; wishes remain private and admin access is server verified',async t=>{
+test('invited accountless guests reconnect to their session; wishes remain private and admin access is server verified',async t=>{
  // Database fixtures use subprocesses; CPU contention must not advance the spam window.
  const clock=Date.now();t.mock.method(Date,'now',()=>clock);
  t.after(()=>fs.rmSync(tmp,{recursive:true,force:true}));

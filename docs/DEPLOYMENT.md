@@ -1,3 +1,13 @@
+# v39 단일 월드 배포
+
+기존 GitHub main, Vercel `moru-winter-park`, Sites `appgprj_6af6f606ab648191855ab9bd44c334fd` 및 D1 DB를 그대로 사용한다. 새 서버나 저장소를 생성하지 않는다.
+
+검증한 API/마이그레이션을 Sites에 먼저 적용한 뒤 같은 소스를 GitHub main에 fast-forward하고 연결된 Vercel 배포를 확인한다. `0011_busy_hawkeye.sql`은 테이블/필드 추가뿐이며 이전 외형·소원·장식을 삭제하지 않는다. 기존 무초대 세션은 의도적으로 재승인이 필요하다. 관리자 로그인 후 **관리 → 초대 링크 관리**에서 새 초대를 발급한다. 모든 새 링크는 같은 메인 월드로 연결된다.
+
+배포 진행 중. 최종 SHA, Sites 버전, Vercel READY 및 실제 운영 접근 검사는 배포 완료 후 아래에 기록한다. 실소유자 OAuth 및 새 유효 초대의 production 입장은 별도 실제 세션이 필요하며 로컬 검사와 구분한다.
+
+---
+
 # v38 프로덕션 배포
 
 ## 기존 대상

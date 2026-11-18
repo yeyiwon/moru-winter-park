@@ -1,0 +1,13 @@
+{
+  "tests": 368,
+  "passed": 368,
+  "failed": 0,
+  "durationMs": 207487.212875,
+  "build": "PASS",
+  "buildVercel": "PASS",
+  "assetBudget": "PASS",
+  "lint": "NOT_CONFIGURED",
+  "typecheck": "NOT_CONFIGURED",
+  "physicalMobile": "UNKNOWN",
+  "ownerOAuth": "UNKNOWN"
+}

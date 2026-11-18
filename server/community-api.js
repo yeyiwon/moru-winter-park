@@ -56,7 +56,13 @@ export async function communityAPI(request,env,self,admin){
  else if(b.action==='remove-decoration'||b.action==='remove-wish'){
   await DB.prepare('DELETE FROM wishes WHERE id=?').bind(id).run();await DB.prepare('DELETE FROM wish_reactions WHERE wish_id=?').bind(id).run();await DB.prepare('DELETE FROM tree_decorations WHERE id=?').bind(id).run();
  }else if(b.action==='clear-chat'){await DB.prepare('UPDATE visitors SET chat=\'\',chat_at=0 WHERE id=?').bind(id).run();}
- else if(b.action==='block'){const found=await DB.prepare('SELECT id FROM visitors WHERE id=?').bind(id).first();if(!found)return json({error:'사용자를 찾을 수 없습니다.'},404);await DB.prepare('INSERT INTO visitor_blocks(id,created_at) VALUES(?,?) ON CONFLICT(id) DO NOTHING').bind(id,now).run();await DB.prepare('UPDATE visitors SET chat=\'\',seen=0 WHERE id=?').bind(id).run();}
+ else if(b.action==='block'||b.action==='kick'){
+  const found=await DB.prepare('SELECT id,auth_type FROM visitors WHERE id=?').bind(id).first();if(!found)return json({error:'사용자를 찾을 수 없습니다.'},404);
+  if(id===self.id||found.auth_type==='owner')return json({error:'관리자 자신은 퇴장시킬 수 없습니다.'},400);
+  if(b.action==='block')await DB.prepare('INSERT INTO visitor_blocks(id,created_at) VALUES(?,?) ON CONFLICT(id) DO NOTHING').bind(id,now).run();
+  await DB.prepare('UPDATE visitors SET chat=\'\',chat_at=0,seen=?,kicked_at=?,mode=\'\' WHERE id=?').bind(now-20001,now,id).run();
+  await DB.prepare('DELETE FROM ride_seats WHERE visitor=?').bind(id).run();
+ }
  else if(b.action==='save-quiz'){
   const q=b.quiz||{},source=q.source||{};if(!Array.isArray(q.options)||q.options.length!==4||!Number.isInteger(q.answer)||q.answer<0||q.answer>3||!/^https:\/\//.test(source.url||''))return json({error:'보기 4개, 정답과 HTTPS 출처를 확인해 주세요.'},400);
   const data={question:messageText(q.question,240),options:q.options.map(v=>messageText(v,120)),answer:q.answer,explanation:messageText(q.explanation,1000),category:messageText(q.category||'일반',20),source:{title:messageText(source.title||'출처',120),url:String(source.url).slice(0,600)},disabled:!!q.disabled};

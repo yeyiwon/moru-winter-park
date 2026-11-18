@@ -1,5 +1,5 @@
 export const backendOrigin='https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site';
-const routes=new Set(['appearance','health','access','invite','join','tree','name','leave','chat','presence','ride','wishes','reports','admin','events','quiz','assist','region','operations','world-state','experience','fireworks']);
+const routes=new Set(['appearance','health','access','invite','invite-check','join','tree','name','leave','chat','presence','ride','wishes','reports','admin','events','quiz','assist','region','operations','world-state','experience','fireworks']);
 export async function proxyRequest(request,fetcher=fetch){
  const url=new URL(request.url),route=url.searchParams.get('route')||url.pathname.slice(5),write=!['GET','HEAD'].includes(request.method);
  const error=(message,status)=>Response.json({error:message},{status,headers:{'Cache-Control':'no-store'}});

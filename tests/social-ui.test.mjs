@@ -1,37 +1,32 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';import path from 'node:path';import {JSDOM} from 'jsdom';
-const root=path.resolve('dist');
-test('guest chat keeps its layout on blur, shares one join, preserves recent messages and never deletes identity on unload',async t=>{
- const dom=new JSDOM(fs.readFileSync(path.join(root,'index.html'),'utf8'),{url:'https://winter.test/',runScripts:'outside-only',pretendToBeVisual:true});t.after(()=>dom.window.close());const w=dom.window,d=w.document;w.matchMedia=()=>({matches:true});let joins=0,releaseJoin,leaves=0,inviteOpened=0;w.openWinterSettings=()=>inviteOpened++;w.labPlayerState={x:0,y:.95,z:24,yaw:0};
- w.fetch=async(url,init={})=>{let data={};if(url==='/api/access')data={admin:false,session:null};else if(url==='/api/join'){joins++;await new Promise(resolve=>releaseJoin=resolve);data={id:'abc123',name:'검사 손님',room:'winter-plaza'};}else if(url==='/api/presence')data={people:[],count:1};else if(url==='/api/chat')data={name:'검사 손님',message:JSON.parse(init.body).message,at:Date.now()};else if(url==='/api/leave')leaves++;return{ok:true,json:async()=>data};};w.navigator.sendBeacon=()=>{leaves++;};
- const modules=new Map(),context=dom.getInternalVMContext();async function mod(file){if(modules.has(file))return modules.get(file);const m=new vm.SourceTextModule(fs.readFileSync(file,'utf8'),{context,identifier:file});modules.set(file,m);await m.link(s=>mod(path.resolve(path.dirname(file),s)));return m;}await(await mod(path.join(root,'social.js'))).evaluate();await new Promise(r=>setTimeout(r,0));
- d.querySelector('#chat-toggle').click();const input=d.querySelector('#chat-input');input.value='테스트 메시지';input.blur();assert.ok(d.body.classList.contains('chat-typing'),'blur must not move the send button before pointerup');d.querySelector('#chat-form').dispatchEvent(new w.Event('submit',{cancelable:true}));assert.equal(joins,1);releaseJoin();await new Promise(r=>setTimeout(r,10));assert.equal(input.value,'');assert.equal(d.querySelector('#chat-form').hidden,true);assert.ok(!d.querySelector('#chat-log').closest('form'),'closed input must not hide floating messages');assert.match(d.querySelector('#chat-log').textContent,/검사 손님 테스트 메시지/);assert.equal(d.querySelector('#self-bubble').textContent,'테스트 메시지');d.querySelector('#chat-toggle').click();assert.match(d.querySelector('#chat-log').textContent,/테스트 메시지/);assert.equal(inviteOpened,0);w.dispatchEvent(new w.Event('pagehide'));assert.equal(leaves,0);assert.equal(d.querySelector('#open-map').hidden,false);assert.equal(d.querySelector('#open-wardrobe'),null);assert.ok(d.querySelector('[data-studio=fluff]'));
-});
-test('creating an invitation joins its host before sharing and retries the same room after failure',async t=>{
- const dom=new JSDOM(fs.readFileSync(path.join(root,'index.html'),'utf8'),{url:'https://winter.test/',runScripts:'outside-only',pretendToBeVisual:true});t.after(()=>dom.window.close());
- const w=dom.window,d=w.document;w.matchMedia=()=>({matches:true});w.labPlayerState={x:0,y:.86,z:30,yaw:0};let invitations=0,inviteJoins=0,releaseJoin;const room='invitation-12345';
- w.fetch=async(url,init={})=>{
-  let data={},ok=true;
-  if(url==='/api/access')data={admin:true,session:{id:'host-old',name:'관리자',room:'winter-plaza'}};
-  else if(url==='/api/invite'){invitations++;data={room,url:'https://backend.test/?room='+room};}
-  else if(url==='/api/join'){const body=JSON.parse(init.body);assert.equal(body.room,room);inviteJoins++;await new Promise(resolve=>releaseJoin=resolve);if(inviteJoins===1){ok=false;data={error:'연결 실패'};}else data={id:'host-new',name:'관리자',room};}
-  else if(url==='/api/presence')data={people:[],serverTime:Date.now(),count:1};
-  return{ok,status:ok?200:503,json:async()=>data};
- };
- const modules=new Map(),context=dom.getInternalVMContext();async function mod(file){if(modules.has(file))return modules.get(file);const m=new vm.SourceTextModule(fs.readFileSync(file,'utf8'),{context,identifier:file});modules.set(file,m);await m.link(s=>mod(path.resolve(path.dirname(file),s)));return m;}await(await mod(path.join(root,'social.js'))).evaluate();await new Promise(r=>setTimeout(r,0));
- const submit=()=>d.querySelector('#invite-form').dispatchEvent(new w.Event('submit',{cancelable:true}));
- d.querySelector('#invite-password').value='shared-pass';submit();await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('#room-share').hidden,true);assert.equal(w.sharedRoom(),'winter-plaza');
- releaseJoin();await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('#room-share').hidden,true);assert.match(d.querySelector('#invite-result').textContent,/재시도/);
- submit();await new Promise(r=>setTimeout(r,0));releaseJoin();await new Promise(r=>setTimeout(r,0));
- assert.equal(invitations,1);assert.equal(inviteJoins,2);assert.equal(w.sharedRoom(),room);assert.equal(w.labGuestId,'host-new');assert.equal(new URL(w.location.href).searchParams.get('room'),room);
- assert.equal(d.querySelector('#room-share').hidden,false);assert.equal(d.querySelector('#invite-url').value,'https://moru-winter-park.vercel.app/?room='+room);assert.match(d.querySelector('#invite-result').textContent,/입장했습니다/);
- assert.equal(d.querySelector('#enter-owned-room'),null);assert.equal(new URL(d.querySelector('#owner-signin').href).searchParams.get('return_to'),'/?room='+room);
-});
-test('restoring a private session retains its room in the URL, and owner login preserves an unopened invitation',async t=>{
- for(const invited of [false,true]){
-  const room='restored-invitation',dom=new JSDOM(fs.readFileSync(path.join(root,'index.html'),'utf8'),{url:'https://winter.test/'+(invited?'?room='+room:''),runScripts:'outside-only',pretendToBeVisual:true});t.after(()=>dom.window.close());const w=dom.window,d=w.document;w.matchMedia=()=>({matches:true});let opened=0;w.openWinterSettings=()=>opened++;
-  w.fetch=async()=>({ok:true,json:async()=>({admin:false,session:invited?null:{id:'guest',room,name:'손님'}})});
-  const modules=new Map(),context=dom.getInternalVMContext();async function mod(file){if(modules.has(file))return modules.get(file);const m=new vm.SourceTextModule(fs.readFileSync(file,'utf8'),{context,identifier:file});modules.set(file,m);await m.link(s=>mod(path.resolve(path.dirname(file),s)));return m;}await(await mod(path.join(root,'social.js'))).evaluate();await new Promise(r=>setTimeout(r,0));
-  assert.equal(new URL(w.location.href).searchParams.get('room'),room);assert.equal(new URL(d.querySelector('#owner-signin').href).searchParams.get('return_to'),'/?room='+room);assert.equal(opened,invited?1:0);
-  if(!invited)assert.equal(d.querySelector('#invite-url').value,'https://moru-winter-park.vercel.app/?room='+room);
+const root=path.resolve('dist'),tick=()=>new Promise(r=>setTimeout(r,10)),token='a'.repeat(64);
+async function fixture(t,{url='https://winter.test/',fetch}={}){
+ const dom=new JSDOM(fs.readFileSync(path.join(root,'index.html'),'utf8'),{url,runScripts:'outside-only',pretendToBeVisual:true});t.after(()=>dom.window.close());const w=dom.window,d=w.document;w.matchMedia=()=>({matches:true});w.labPlayerState={x:0,y:.95,z:30,yaw:0};w.HTMLDialogElement.prototype.close=function(){this.open=false;};w.openWinterSettings=()=>{d.querySelector('#studio').open=true;};
+ w.fetch=async(url,init={})=>{const reply=await fetch(url,init);return{ok:(reply.status||200)<400,status:reply.status||200,json:async()=>reply.data||reply};};
+ const modules=new Map(),context=dom.getInternalVMContext();async function mod(file){if(modules.has(file))return modules.get(file);const m=new vm.SourceTextModule(fs.readFileSync(file,'utf8'),{context,identifier:file});modules.set(file,m);await m.link(s=>mod(path.resolve(path.dirname(file),s)));return m;}await(await mod(path.join(root,'social.js'))).evaluate();await tick();return{w,d};
+}
+test('missing or invalid invite stays gated, exposes owner sign-in and never autojoins',async t=>{
+ for(const suffix of ['', '#invite=bad','?room=legacy-private']){
+ let joins=0;const {w,d}=await fixture(t,{url:'https://winter.test/'+suffix,fetch:async url=>{if(url==='/api/join')joins++;return{admin:false,session:null};}});
+ assert.equal(joins,0);assert.ok(d.body.classList.contains('invite-gate'));assert.equal(d.querySelector('#join-form').hidden,true);assert.equal(d.querySelector('#owner-signin').hidden,false);assert.equal(w.location.hash,'');assert.equal(w.location.search,'');assert.equal(d.querySelector('#room-password'),null);
  }
+});
+test('invitation is checked once, nickname/color are submitted and token disappears from subsequent gameplay',async t=>{
+ let joins=0,leaves=0;const calls=[];const {w,d}=await fixture(t,{url:'https://winter.test/#invite='+token,fetch:async(url,init)=>{const body=init.body?JSON.parse(init.body):null;calls.push({url,body});if(url==='/api/access')return{admin:false,session:null};if(url==='/api/invite-check')return{valid:true};if(url==='/api/join'){joins++;assert.equal(body.token,token);assert.equal(body.color,'#123456');return{id:'guest',name:body.name,room:'winter-plaza'};}if(url==='/api/presence')return{people:[],count:1};if(url==='/api/chat')return{name:'손님',message:body.message,at:Date.now()};if(url==='/api/leave')leaves++;return{};}});
+ assert.equal(w.location.hash,'');assert.equal(joins,0);assert.equal(d.querySelector('#join-form').hidden,false);d.querySelector('#visitor-name').value='손님';d.querySelector('#visitor-color').value='#123456';d.querySelector('#join-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await tick();assert.equal(joins,1);assert.ok(!d.body.classList.contains('invite-gate'));assert.equal(w.sharedRoom(),'winter-plaza');
+ d.querySelector('#chat-toggle').click();const input=d.querySelector('#chat-input');input.value='함께 겨울';input.blur();assert.ok(d.body.classList.contains('chat-typing'));d.querySelector('#chat-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await tick();assert.equal(input.value,'');assert.match(d.querySelector('#chat-log').textContent,/함께 겨울/);
+ assert.ok(calls.filter(c=>['/api/chat','/api/presence'].includes(c.url)).every(c=>!('token'in c.body)));w.dispatchEvent(new w.Event('pagehide'));assert.equal(leaves,0);
+});
+test('owner creates a same-world invitation without switching rooms and can revoke it',async t=>{
+ let joins=0,revoked=false;const {w,d}=await fixture(t,{fetch:async(url,init)=>{if(url==='/api/access')return{admin:true,session:{id:'owner',room:'winter-plaza',name:'관리자'}};if(url==='/api/join')joins++;if(url==='/api/invite'){if(init.method==='POST')return{id:'link',url:'https://moru-winter-park.vercel.app/#invite='+token};if(init.method==='DELETE'){revoked=true;return{ok:true};}return{invites:revoked?[]:[{id:'link',createdAt:Date.now(),expiresAt:Date.now()+86400000}]};}return{people:[],count:1};}});
+ d.querySelector('#invite-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await tick();assert.equal(joins,0);assert.equal(w.labGuestId,'owner');assert.equal(w.sharedRoom(),'winter-plaza');assert.equal(d.querySelector('#invite-created-url').value,'https://moru-winter-park.vercel.app/#invite='+token);d.querySelector('#invite-list button').click();await tick();assert.ok(revoked);assert.equal(d.querySelector('#room-share').hidden,true);
+});
+test('session-only reconnect needs no token; revoked presence gates the world and cannot auto-rejoin',async t=>{
+ let joins=0;const {w,d}=await fixture(t,{fetch:async url=>{if(url==='/api/access')return{admin:false,session:{id:'guest',room:'winter-plaza',name:'손님'}};if(url==='/api/presence')return{status:401,data:{error:'초대가 취소되었습니다.'}};if(url==='/api/join')joins++;return{};}});
+ assert.equal(w.labSocialJoined,true);d.dispatchEvent(new w.Event('visibilitychange'));await tick();assert.equal(w.labSocialJoined,false);assert.ok(d.body.classList.contains('invite-gate'));assert.equal(joins,0);
+});
+test('opening an invitation in the same tab rechecks its fragment without an automatic join',async t=>{
+ let checked=0,joins=0;const {w,d}=await fixture(t,{fetch:async(url,init)=>{if(url==='/api/access')return{admin:false,session:null};if(url==='/api/invite-check'){checked++;assert.equal(JSON.parse(init.body).token,token);return{valid:true};}if(url==='/api/join')joins++;return{};}});
+ assert.equal(d.querySelector('#join-form').hidden,true);w.location.hash='invite='+token;await tick();await tick();
+ assert.equal(checked,1);assert.equal(joins,0);assert.equal(w.location.hash,'');assert.equal(d.querySelector('#join-form').hidden,false);
 });

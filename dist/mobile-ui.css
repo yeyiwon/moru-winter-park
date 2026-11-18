@@ -28,3 +28,13 @@
  #pane-map .map-controls{top:4px;right:4px;gap:2px}.map-controls button{min-width:44px;min-height:44px;width:44px;height:44px}
 }
 @media(max-height:500px) and (orientation:landscape){header .world-meta{display:none}#joystick{bottom:calc(8px + env(safe-area-inset-bottom));width:104px;height:104px}.touch-actions{bottom:calc(12px + env(safe-area-inset-bottom))}#chat-log{max-height:54px;bottom:130px}}
+/* The invitation gate reuses the settings surface but must always expose owner sign-in. */
+body.invite-gate #owner-signin:not([hidden]){display:inline-flex}
+body.invite-gate .touch-actions,body.invite-gate #joystick,body.invite-gate #chat-toggle,body.invite-gate #chat-log,body.invite-gate #self-label,body.invite-gate #visitor-labels,body.invite-gate #place-card{display:none!important}
+body.invite-gate #pane-social{width:100%;margin:0;align-self:start}
+body.invite-gate #studio{width:min(560px,calc(100vw - 28px));height:fit-content;max-height:calc(100dvh - 32px);min-height:280px}
+body.invite-gate #studio[open]{grid-template-rows:auto minmax(0,1fr)}
+.invite-list-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 0;border-bottom:1px solid #ffffff18;font-size:12px}
+.invite-list-row span{min-width:0;overflow-wrap:anywhere}.invite-list-row button{flex-shrink:0;min-height:44px}
+#created-invite[hidden]{display:none}#created-invite input{min-width:0;width:100%;font-size:12px}
+#visitor-color{width:64px;height:44px;padding:4px}

@@ -12,16 +12,14 @@ import {experienceAPI} from './experience-api.js';
 import {amusementPositionValid} from '../dist/festival-layout.js';
 import {communityAPI,messageText,rateLimit} from './community-api.js';
 import {activityGestures} from '../dist/activity-state.js';
-import {isOwner,passwordHash,constantEqual,hex} from './invitations.js';
+import {isOwner,sessionInfo,publicSession,invitationAPI,joinWorld,digest} from './invitations.js';
 import {normalizeWardrobe,validateAppearance} from '../dist/wardrobe.js';
 import {resortRidePosition,restSeats,spaPositionValid} from '../dist/resort-layout.js';
 import {surfaceHeight} from '../dist/world-layout.js';
 import {canStandAt} from '../dist/movement.js';
-import {spaceURL} from '../dist/space-links.js';
+import {publicRoom} from '../dist/space-links.js';
 const json=(data,status=200,headers={})=>new Response(JSON.stringify(data),{status,headers:{'Content-Type':'application/json','Cache-Control':'no-store',...headers}});
 const age=20000;
-const digest=async value=>Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(value)))).map(v=>v.toString(16).padStart(2,'0')).join('');
-function token(request){return /(?:^|;\s*)winter_session=([a-f0-9]{64})(?:;|$)/.exec(request.headers.get('cookie')||'')?.[1];}
 export async function handleAPI(request,env){
  const url=new URL(request.url),path=url.pathname;if(!path.startsWith('/api/'))return null;
  if(path==='/api/health'){try{if(!env.DB)throw Error();await env.DB.prepare('SELECT 1 AS ready').bind().first();return json({ok:true,multiplayer:true});}catch{return json({ok:false,multiplayer:false},503);}}
@@ -30,45 +28,14 @@ export async function handleAPI(request,env){
  const now=Date.now();
  try{
  if(path==='/api/access'&&request.method==='GET'){
-  const admin=await isOwner(request,env),secret=token(request),self=secret?await env.DB.prepare('SELECT id,name,room,region,color,color_top AS colorTop,accessory,fluff,roundness,x,y,z,yaw,seen FROM visitors WHERE id=?').bind(await digest(secret)).first():null;
-  return json({admin,signedIn:!!request.headers.get('oai-authenticated-user-id'),session:self&&self.seen>now-2592000000?self:null});
+  const admin=await isOwner(request,env),session=await sessionInfo(request,env,now,admin);
+  return json({admin,signedIn:!!request.headers.get('oai-authenticated-user-id'),worldId:publicRoom,inviteRequired:true,blocked:session.blocked,session:session.valid?publicSession(session.self):null});
  }
- if(path==='/api/invite'&&request.method==='POST'){
-  if(!await isOwner(request,env))return json({error:'관리자만 초대 링크를 만들 수 있습니다.'},403);
-  const raw=await request.text();if(raw.length>1024)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);
-  if(typeof b.password!=='string'||b.password.length<4||b.password.length>128)return json({error:'비밀번호는 4~128자로 정해 주세요.'},400);
-  const room=crypto.randomUUID().replaceAll('-',''),salt=hex(crypto.getRandomValues(new Uint8Array(16))),hash=await passwordHash(b.password,salt);
-  await env.DB.prepare('INSERT INTO invite_rooms(id,salt,password_hash,created_at) VALUES(?,?,?,?)').bind(room,salt,hash,now).run();
-  return json({room,url:spaceURL(room)});
- }
- if(path==='/api/join'&&request.method==='POST'){
-  const raw=await request.text();if(raw.length>2048)return json({error:'요청이 너무 큽니다.'},413);const body=JSON.parse(raw),room=String(body.room||'winter-plaza');if(!/^[a-zA-Z0-9_-]{8,48}$/.test(room))return json({error:'초대 주소를 확인해 주세요.'},400);
-  const admin=await isOwner(request,env),invitation=await env.DB.prepare('SELECT salt,password_hash FROM invite_rooms WHERE id=?').bind(room).first();
-  const previous=token(request),previousId=previous?await digest(previous):null;
-  if(previousId&&await env.DB.prepare('SELECT id FROM visitor_blocks WHERE id=?').bind(previousId).first())return json({error:'이 기기의 입장이 제한되었습니다.'},403);
-  if(previousId){const restored=await env.DB.prepare('SELECT id,room,name,color,color_top AS colorTop,accessory,fluff,roundness,x,y,z,yaw,region,seen FROM visitors WHERE id=? AND room=?').bind(previousId,room).first();if(restored&&restored.seen>now-2592000000){const active=await env.DB.prepare('UPDATE visitors SET seen=? WHERE id=? AND ((SELECT COUNT(*) FROM visitors WHERE room=? AND seen>? AND id<>?)<12)').bind(now,previousId,room,now-age,previousId).run();if(!active.meta?.changes)return json({error:'이 공간에는 12명이 있습니다.'},409);return json(restored);}}
-  if(!admin&&room!=='winter-plaza'){
-   if(!invitation)return json({error:'유효한 초대 링크로 입장해 주세요.'},403);
-   const address=request.headers.get('cf-connecting-ip')||request.headers.get('x-real-ip')||'anonymous',attemptId=await digest(room+':'+address);
-   await env.DB.prepare('DELETE FROM invite_attempts WHERE reset_at<?').bind(now).run();
-   await env.DB.prepare('INSERT INTO invite_attempts(id,attempts,reset_at) VALUES(?,1,?) ON CONFLICT(id) DO UPDATE SET attempts=attempts+1').bind(attemptId,now+60000).run();
-   const attempt=await env.DB.prepare('SELECT attempts FROM invite_attempts WHERE id=?').bind(attemptId).first();
-   if(attempt.attempts>6)return json({error:'입력 횟수를 초과했어요. 1분 뒤 다시 시도해 주세요.'},429);
-   if(typeof body.password!=='string'||body.password.length>128||!constantEqual(await passwordHash(body.password,invitation.salt),invitation.password_hash))return json({error:'비밀번호를 확인해 주세요.'},403);
-  }else if(room!=='winter-plaza'&&!invitation)return json({error:'초대 공간을 찾을 수 없습니다.'},404);
-  if(room==='winter-plaza'&&!await rateLimit(env.DB,'join:'+await digest(request.headers.get('cf-connecting-ip')||'shared'),now,40))return json({error:'잠시 뒤 다시 입장해 주세요.'},429);
-  let name;try{name=validateNickname(body.name||'크림토끼');}catch(e){return json({error:e.message},400);}
-  await env.DB.prepare('DELETE FROM visitors WHERE seen < ?').bind(now-2592000000).run();
-  const secret=Array.from(crypto.getRandomValues(new Uint8Array(32))).map(v=>v.toString(16).padStart(2,'0')).join(''),id=await digest(secret);
-  // Conditional insert caps each room atomically, including concurrent joins.
-  const result=await env.DB.prepare('INSERT INTO visitors(id,room,name,color,accessory,x,z,yaw,seen,gesture,gesture_at) SELECT ?,?,?,?,?,0,30,0,?,\'\',0 WHERE (SELECT COUNT(*) FROM visitors WHERE room=? AND seen>?) < 12').bind(id,room,name,'#f4eee5','none',now,room,now-age).run();
-  if(!result.meta?.changes)return json({error:'이 공간에는 12명이 있어요. 새 초대 공간을 만들어 주세요.'},409);
-  // A successful room switch must not leave an active copy of the host in the old room.
-  if(previousId){await env.DB.prepare('UPDATE visitors SET seen=? WHERE id=?').bind(now-age,previousId).run();await env.DB.prepare('DELETE FROM ride_seats WHERE visitor=?').bind(previousId).run();}
-  const secure=url.protocol==='https:'?'; Secure':'';return json({id,room,name},200,{'Set-Cookie':`winter_session=${secret}; Path=/api; HttpOnly; SameSite=Lax${secure}; Max-Age=2592000`});
- }
- const secret=token(request);if(!secret)return json({error:'초대 링크로 입장해 주세요.'},401);const id=await digest(secret),self=await env.DB.prepare('SELECT id,room,name,x,y,z,yaw,region,mode,seen FROM visitors WHERE id=?').bind(id).first();if(await env.DB.prepare('SELECT id FROM visitor_blocks WHERE id=?').bind(id).first())return json({error:'이 기기의 이용이 제한되었습니다.'},403);
- if(!self||self.seen<=now-2592000000)return json({error:'연결이 만료됐어요. 다시 입장해 주세요.'},401);
+ const invitation=await invitationAPI(request,env,now);if(invitation)return invitation;
+ if(path==='/api/join'&&request.method==='POST')return await joinWorld(request,env,now);
+ const session=await sessionInfo(request,env,now);
+ if(!session.valid)return json({error:session.blocked?'이 게스트의 이용이 제한되었습니다.':'접속 권한이 만료되었거나 취소됐어요. 새 초대 링크를 받아 주세요.'},session.blocked?403:401);
+ const self=session.self,id=self.id;
  const operation=await operationsAPI(request,env.DB,self,path==='/api/operations'?await isOwner(request,env):false,now);if(operation)return operation;
  const fireworksResponse=await fireworksAPI(request,env.DB,self,path==='/api/fireworks'&&request.method==='POST'?await isOwner(request,env):false,now);if(fireworksResponse)return fireworksResponse;
  const regionResponse=await regionAPI(request,env.DB,self,now);if(regionResponse)return regionResponse;

@@ -1,3 +1,4 @@
+import {seedInvitation} from './helpers/world-invitation.mjs';
 import test from 'node:test';import assert from 'node:assert/strict';
 import {createAppearanceDraft} from '../dist/appearance-draft.js';
 import {normalizeWardrobe,toggleItem,validateAppearance,wardrobeSlots,furPalettes} from '../dist/wardrobe.js';
@@ -33,7 +34,8 @@ test('authenticated appearance save persists only the caller and restores throug
  const DB={prepare(sql){return{bind(...args){return{run:()=>db.query({sql,args}),all:()=>db.query({sql,args}),first:async()=>(await db.query({sql,args})).results[0]||null};}};}};
  const call=(route,body,cookie='',origin='https://winter.test')=>handleAPI(new Request('https://winter.test/api/'+route,{method:body===undefined?'GET':'POST',headers:{Origin:origin,'Content-Type':'application/json',cookie},body:body===undefined?undefined:JSON.stringify(body)}),{DB});
  assert.equal((await call('appearance',base)).status,401);
- const joined=await call('join',{name:'꾸미기',room:'winter-plaza'}),cookie=joined.headers.get('Set-Cookie').split(';')[0],other=await call('join',{name:'다른 친구',room:'winter-plaza'}),otherCookie=other.headers.get('Set-Cookie').split(';')[0];
+ const invitation=await seedInvitation(DB);
+ const joined=await call('join',{token:invitation,name:'꾸미기',room:'winter-plaza'}),cookie=joined.headers.get('Set-Cookie').split(';')[0],other=await call('join',{token:invitation,name:'다른 친구',room:'winter-plaza'}),otherCookie=other.headers.get('Set-Cookie').split(';')[0];
  const look={...base,fur:'#17191e',furTop:'#eeb7cb',accessory:'cat-ears,tail-cat,googly-glasses,eyes-star'};
  assert.equal((await call('appearance',look,cookie,'https://evil.test')).status,403);
  assert.equal((await call('appearance',{...look,accessory:'cat-ears,unknown'},cookie)).status,400);

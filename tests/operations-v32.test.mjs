@@ -1,3 +1,4 @@
+import {seedInvitation} from './helpers/world-invitation.mjs';
 import {interiorDoors} from '../dist/district-layout.js';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
 import {createLocalDatabase} from '../scripts/local-database.mjs';import {handleAPI} from '../server/api.js';import {maintainSessions} from '../server/operations.js';
@@ -7,7 +8,8 @@ async function fixture(t){
  const DB={prepare(sql){return{bind(...args){return{run:()=>database.query({sql,args}),all:()=>database.query({sql,args}),first:async()=>(await database.query({sql,args})).results[0]||null};}};}};
  const owner={'oai-authenticated-user-id':'test-owner','oai-authenticated-user-email':'test@example.test'},env={DB,OWNER_EMAIL:'test@example.test'};
  async function call(route,body,cookie='',admin=false){return handleAPI(new Request('https://winter.test/api/'+route,{method:body===undefined?'GET':'POST',headers:{Origin:'https://winter.test','Content-Type':'application/json',cookie,...(admin?owner:{})},body:body===undefined?undefined:JSON.stringify(body)}),env);}
- async function join(name){const response=await call('join',{room:'winter-plaza',name});assert.equal(response.status,200);return{...await response.json(),cookie:response.headers.get('Set-Cookie').split(';')[0]};}
+ const invitation=await seedInvitation(DB);
+ async function join(name){const response=await call('join',{token:invitation,room:'winter-plaza',name});assert.equal(response.status,200);return{...await response.json(),cookie:response.headers.get('Set-Cookie').split(';')[0]};}
  return{DB,call,join,query:database.query};
 }
 test('server authorizes actual entrances, synchronizes regions and clears rides on exit',async t=>{

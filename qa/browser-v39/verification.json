@@ -1,0 +1,19 @@
+{
+  "at": "2026-11-18T14:21:19.842Z",
+  "physicalMobile": false,
+  "production": false,
+  "checks": [
+    "No-link guest denied; owner sign-in remains accessible; world input gated",
+    "Owner creates expiring invitations from existing management UI, without changing world",
+    "PC and mobile use different invitations and join the same main world",
+    "Movement and chat synchronize across independent desktop/mobile clients",
+    "Session-only reconnect restores appearance and preserves shared wishes/decorations",
+    "All guest administrative API calls rejected",
+    "PC invited session: map, ferris/carousel/bath exit, ryokan/museum enter/exit, Ethereal first and playing",
+    "Mobile invited session: map, ferris/carousel/bath exit, ryokan/museum enter/exit, Ethereal first and playing",
+    "Kick stops the session; only a newer invitation restores the same guest",
+    "Block stops mobile gameplay and rejects another valid invitation",
+    "Revocation stops already-issued sessions and rejects the canceled link"
+  ],
+  "errors": []
+}
