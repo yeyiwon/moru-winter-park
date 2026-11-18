@@ -1,0 +1,169 @@
+{
+  "errors": [],
+  "audioResponses": [
+    {
+      "path": "/audio/ethereal-winter-ballet-02.m4a",
+      "status": 206
+    },
+    {
+      "path": "/audio/cinematic-christmas-piano-strings-bells.m4a",
+      "status": 206
+    }
+  ],
+  "initial": {
+    "label": "Ethereal Winter Ballet Instrumental 02 · alanajordan",
+    "players": [
+      {
+        "id": "winter-background-music",
+        "time": 0,
+        "paused": false,
+        "duration": 152.088005,
+        "ready": 4,
+        "network": 1,
+        "error": null,
+        "path": "/audio/ethereal-winter-ballet-02.m4a"
+      },
+      {
+        "id": "",
+        "time": 0,
+        "paused": true,
+        "duration": null,
+        "ready": 0,
+        "network": 0,
+        "error": null,
+        "path": null
+      }
+    ],
+    "context": "running"
+  },
+  "initialLater": {
+    "label": "Ethereal Winter Ballet Instrumental 02 · alanajordan",
+    "players": [
+      {
+        "id": "winter-background-music",
+        "time": 0,
+        "paused": false,
+        "duration": 152.088005,
+        "ready": 4,
+        "network": 1,
+        "error": null,
+        "path": "/audio/ethereal-winter-ballet-02.m4a"
+      },
+      {
+        "id": "",
+        "time": 0,
+        "paused": true,
+        "duration": null,
+        "ready": 0,
+        "network": 0,
+        "error": null,
+        "path": null
+      }
+    ],
+    "context": "running"
+  },
+  "next": {
+    "label": "Cinematic Christmas Piano Strings Bells · Denis-Pavlov-Music",
+    "players": [
+      {
+        "id": "winter-background-tail",
+        "time": 0,
+        "paused": true,
+        "duration": 152.088005,
+        "ready": 4,
+        "network": 1,
+        "error": null,
+        "path": "/audio/ethereal-winter-ballet-02.m4a"
+      },
+      {
+        "id": "winter-background-music",
+        "time": 0,
+        "paused": false,
+        "duration": 398.08,
+        "ready": 4,
+        "network": 1,
+        "error": null,
+        "path": "/audio/cinematic-christmas-piano-strings-bells.m4a"
+      }
+    ],
+    "context": "running"
+  },
+  "nextLater": {
+    "label": "Cinematic Christmas Piano Strings Bells · Denis-Pavlov-Music",
+    "players": [
+      {
+        "id": "winter-background-tail",
+        "time": 0,
+        "paused": true,
+        "duration": 152.088005,
+        "ready": 4,
+        "network": 1,
+        "error": null,
+        "path": "/audio/ethereal-winter-ballet-02.m4a"
+      },
+      {
+        "id": "winter-background-music",
+        "time": 0,
+        "paused": false,
+        "duration": 398.08,
+        "ready": 4,
+        "network": 1,
+        "error": null,
+        "path": "/audio/cinematic-christmas-piano-strings-bells.m4a"
+      }
+    ],
+    "context": "running"
+  },
+  "reconnected": {
+    "label": "Cinematic Christmas Piano Strings Bells · Denis-Pavlov-Music",
+    "players": [
+      {
+        "id": "winter-background-tail",
+        "time": 0,
+        "paused": true,
+        "duration": 152.088005,
+        "ready": 4,
+        "network": 1,
+        "error": null,
+        "path": "/audio/ethereal-winter-ballet-02.m4a"
+      },
+      {
+        "id": "winter-background-music",
+        "time": 0,
+        "paused": false,
+        "duration": 398.08,
+        "ready": 4,
+        "network": 1,
+        "error": null,
+        "path": "/audio/cinematic-christmas-piano-strings-bells.m4a"
+      }
+    ],
+    "context": "running"
+  },
+  "reconnectedLater": {
+    "label": "Cinematic Christmas Piano Strings Bells · Denis-Pavlov-Music",
+    "players": [
+      {
+        "id": "winter-background-tail",
+        "time": 0,
+        "paused": true,
+        "duration": 152.088005,
+        "ready": 4,
+        "network": 1,
+        "error": null,
+        "path": "/audio/ethereal-winter-ballet-02.m4a"
+      },
+      {
+        "id": "winter-background-music",
+        "time": 0,
+        "paused": false,
+        "duration": 398.08,
+        "ready": 4,
+        "network": 1,
+        "error": null,
+        "path": "/audio/cinematic-christmas-piano-strings-bells.m4a"
+      }
+    ],
+    "context": "running"
+  }
+}

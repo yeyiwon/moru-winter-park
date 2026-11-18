@@ -1,3 +1,7 @@
+## 2026-11-19 v41 운영 반영
+
+Sites 41 및 GitHub main/Vercel에 `de24003` 반영. 사용자 제공 초대의 운영 두 게스트·모바일 조작·실내/시설·재접속과 실제 원격 보행을 검증했다. 380개 자동 검사, production build 두 종류, 용량 검사 PASS. AI 후보 2개는 검토 대기로 생성. 상세 결과와 실물 기기 UNKNOWN은 [배포](DEPLOYMENT.md), [검증](TESTING.md), [성능](PERFORMANCE.md)에 기록한다.
+
 # 개발 기록
 
 ## 2026-11-19 — v41 게스트·모바일 안정화

@@ -23,6 +23,24 @@
 
 UNKNOWN: 실물 Windows·iPhone Safari·Android Chrome, Safari 실브라우저 오디오 중단, 실제 장시간 발열/배터리. 자동 검사·Mac의 모바일 에뮬레이션을 이 기기들의 검증으로 대체하지 않는다. 운영 재검증은 DEPLOYMENT 기록과 구분한다.
 
+## 운영 게스트 검증
+
+기존 Vercel 주소에서 사용자 제공 테스트 초대를 숨김 stdin으로 전달해 독립 브라우저 두 개를 실행했다. 390×844 터치 화면에서 자동 입장, 지도 선택/확인, 커마 저장/취소, 공유 채팅, 관람차·회전목마·양쪽 리프트 탑승/종료, 천문대·료칸 입퇴장, 조이스틱 경계 밖+카메라 동시 입력, 터치 종료 정지, 오프라인 복귀 PASS. 게스트 운영 API 3종은 403, page/WebGL 오류 0.
+
+원격 발 위치 75표본에서 보행 변화가 관측되고 마지막 정지 좌표는 동일했다. 단순 서버 좌표만 검사한 결과와 구분한다. [원시 결과](../qa/browser-v41/production/mobile.json).
+
+PC 1280×800 운영 화면에서도 19개 시나리오(진입 2개 포함)를 통과했고 page/WebGL 오류는 0이다. 모바일은 22개. 상대 캐릭터 발 움직임과 정지 좌표도 실제 render 객체로 관찰했다. [PC 원시 결과](../qa/browser-v41/production/pc.json).
+
+일일 AI 후보 생성은 실제 운영 호출에서 200/검토 대기 2개. 생성된 문항의 사실성 검증과 관리자 최종 공개는 이 테스트에 포함하지 않는다.
+
+### 운영 음악 검증과 출력 장치 한계
+
+처음 운영 검사에서 `paused:false`·readyState 4지만 재생 시간이 0에 머물렀다. 게임을 제외한 기본 audio 페이지에서도 localhost/운영 모두 4.5초 후 0.023초, AudioContext clock 0.005초에 정지했다. 이 실행 환경의 기본 출력 장치가 멈춰 있어 앱 재생 성공으로 표시하지 않았다.
+
+브라우저 QA에서만 무음 sink를 지정한 뒤 같은 운영 코드/파일을 재검사했다. Ethereal **5.07→7.57초**, 다음 Cinematic **4.97→7.47초**, 일시 오프라인 복귀 후 **16.49→18.98초** 진행. 크로스페이드 종료 후 재생 중인 오디오 1개, 오류 0, 파일 Range 206. 서버/배포 코드는 변경하지 않았다. 디코딩·시간 진행·곡 전환·복구 PASS이며 실제 스피커 청취와 물리 모바일 출력은 UNKNOWN이다.
+
+[최초 관측](../qa/browser-v41/production/audio-initial.json), [최소 분리 검사](../qa/browser-v41/production/audio-isolation.json), [무음 sink 운영 재검사](../qa/browser-v41/production/audio-silent-sink.json). 재현: `QA_SILENT_AUDIO=1 node scripts/verify-audio-playback.mjs`에 테스트 초대를 숨김 입력한다. 기본값은 실제 출력 장치이며 QA_SILENT_AUDIO는 앱 설정이 아니다.
+
 ---
 
 # v39 단일 월드 검증

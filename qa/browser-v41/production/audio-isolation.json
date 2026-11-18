@@ -1,0 +1,16 @@
+{
+  "method": "Blank same-origin page with audio element, with and without WebAudio; 4.5 second sample",
+  "defaultOutput": {
+    "localMediaTime": 0.02322,
+    "localContextClock": 0.005333,
+    "productionMediaTime": 0.02322,
+    "productionContextClock": 0.005333
+  },
+  "silentSink": {
+    "localMediaTime": 4.504671,
+    "localContextClock": 4.512,
+    "productionMediaTime": 4.502567,
+    "productionContextClock": 4.512
+  },
+  "conclusion": "Host default audio output is stalled in this QA environment; silent sink decoding works on both local and production files. Does not verify audible physical output."
+}

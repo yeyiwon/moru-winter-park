@@ -1,10 +1,25 @@
-# v41 배포 준비 — 2026-11-19
+# v41 프로덕션 배포 — 2026-11-19
 
-기존 Sites/D1 → GitHub main → Vercel 흐름을 유지한다. 검증된 동일 소스를 Sites에 먼저 반영하고 Vercel 프록시/프런트를 갱신한다. 마이그레이션 0012~0014는 추가형이며 기존 데이터 삭제 없음. 기존 env는 유지하고 CRON_SECRET만 양쪽 runtime에 같은 secret으로 설정했다. 환경 변수 값·초대 토큰은 문서/로그/소스에 기록하지 않는다.
+기존 Sites/D1 → GitHub main → Vercel 흐름으로 동일 소스를 반영했다. 새 서버/저장소와 권한 우회는 추가하지 않았다. 마이그레이션 0012~0014는 추가형이며 기존 소원·외형·초대 데이터 삭제 없음. 기존 env는 유지하고 예약 호출용 CRON_SECRET만 양쪽 runtime에 같은 값으로 설정했다. 비밀 값·초대 토큰·쿠키는 기록하지 않는다.
 
-Vercel의 `/api/quiz-refresh` 일일 cron은 Sites 서버와 Bearer 인증을 맞춰 호출한다. OPENAI_API_KEY/OPENAI_MODEL은 기존 설정을 재사용한다. 후보는 검토 전 공개되지 않는다. 생성 실패 시 기존 퀴즈를 유지하며 일일 재시도 폭주를 막는다.
+- 앱 실행 소스: `de2400382d36288f40051099eb1fff738798edd6`. 서버/동기화 커밋 `6c91ffe` 포함. GitHub main fast-forward 완료.
+- Sites **41**, `appgdep_6afdccbc9a84819191a266a8e0e6190f`, **succeeded**. 기존 audience·D1 유지.
+- Vercel `dpl_5WbMLco1ur8dsHFcp6LwC3uCHqy8`, **READY / production**, 실행 SHA 일치.
+- [운영 주소](https://moru-winter-park.vercel.app) 및 Sites health 200. `winter-plaza`, `inviteRequired:true` 유지.
+- 핵심 렌더/VFX/모바일 파일 6개 × 2개 운영 주소: **12/12 SHA-256 일치**.
+- 유효한 사용자 제공 테스트 초대로 독립 게스트 접속. 테스트 종료 후 해당 테스트 세션만 퇴장했다. 실제 운영 소원·장식 삭제는 수행하지 않았다.
+- 관리자 API는 일반 게스트에게 403. 실제 소유자 로그인과 초대 관리 화면은 이전 사용자 확인이며, 새 운영 관리자 세션을 테스트 fixture로 대체하지 않았다.
+- 배포 후 10분 오류 필터의 5건은 접근 전 퀴즈 401 및 게스트 운영 API 403. Worker outcome 모두 `ok`, 표본의 예외/5xx 없음. [요약](../qa/browser-v41/production/server-log-summary.json). 원시 요청 헤더는 저장하지 않았다.
+- 운영 음악은 파일 로딩·첫 곡 Ethereal·다음 곡·복귀의 재생 시간 진행을 무음 QA 출력으로 검증했다. 기본 호스트 출력 장치 정지와 실제 청취 UNKNOWN은 [검증 기록](TESTING.md)에 구분했다.
+- 인증된 일일 퀴즈 생성 실제 호출: HTTP **200**, 후보 **2개**, `review`. 후보는 공개되지 않으며 관리자 검토가 필요하다. 기존 OPENAI 설정 재사용. 실제 비용은 UNKNOWN.
 
-배포 상태와 실제 운영 초대/연결 결과는 배포 성공 후 아래에 기록한다. 이 준비 문구는 배포 완료를 뜻하지 않는다. 장애 시 Vercel 이전 READY와 Sites 40으로 복귀 가능하며 추가형 DB 테이블은 남겨 기존 데이터 손실을 방지한다.
+Vercel cron `0 21 * * *`(한국 오전 6시, 요금제 시간 오차 가능)을 설정했다. 수동 인증 호출은 검증했으며 미래 예약 실행 자체는 아직 UNKNOWN. 생성 실패 시 기존 퀴즈를 유지하고 하루 중복 호출을 제한한다.
+
+근거: [배포/에셋 결과](../qa/browser-v41/production/deployment.json), [운영 모바일](../qa/browser-v41/production/mobile.json), [운영 PC](../qa/browser-v41/production/pc.json). 모바일 화면은 Mac Chrome 에뮬레이션이며 실물 Windows/iOS/Android 검증이 아니다.
+
+아래 과거 v39의 ‘운영 유효 초대 UNKNOWN’은 당시 기록이며 이번 v41에서 위 검사로 갱신했다. 장애 시 이전 정상 Vercel 배포 및 Sites 40으로 복귀할 수 있다. 추가형 DB 테이블을 삭제할 필요는 없다.
+
+후속 기록 커밋은 QA와 문서만 포함한다. Sites 앱 실행 소스는 위 SHA를 유지하며 후속 Vercel 배포도 동일한 앱 코드다.
 
 ---
 

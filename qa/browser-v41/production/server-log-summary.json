@@ -1,0 +1,36 @@
+{
+  "windowMinutes": 10,
+  "errorsOnly": true,
+  "events": [
+    {
+      "time": "2026-11-18T16:29:19.049Z",
+      "path": "/api/operations",
+      "outcome": "ok",
+      "status": 403
+    },
+    {
+      "time": "2026-11-18T16:29:18.941Z",
+      "path": "/api/admin",
+      "outcome": "ok",
+      "status": 403
+    },
+    {
+      "time": "2026-11-18T16:29:18.807Z",
+      "path": "/api/invite",
+      "outcome": "ok",
+      "status": 403
+    },
+    {
+      "time": "2026-11-18T16:28:53.341Z",
+      "path": "/api/quiz",
+      "outcome": "ok",
+      "status": 401
+    },
+    {
+      "time": "2026-11-18T16:28:41.181Z",
+      "path": "/api/quiz",
+      "outcome": "ok",
+      "status": 401
+    }
+  ]
+}

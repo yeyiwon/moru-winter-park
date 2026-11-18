@@ -28,7 +28,7 @@ try{
  if(!await page.evaluate(()=>!!window.labSocialJoined))await page.locator('#join-form button[type=submit]').click();await page.waitForFunction(()=>window.labSocialJoined&&document.body.classList.contains('world-ready')&&document.querySelector('#world-loading').hidden,null,{timeout:120000});await page.evaluate(()=>{for(const d of document.querySelectorAll('dialog[open]'))d.close();document.body.classList.remove('studio-open');});
  console.log('Guest ready',i,Date.now()-start);report.scenarios.push({name:'entry-'+i,ms:Date.now()-start});await page.waitForTimeout(8000);
  }
- const [a,b]=contexts.map(c=>c.pages()[0]);const aId=await a.evaluate(()=>labGuestId);await b.evaluate(()=>{window.__qaGait=[];window.__qaGaitTimer=setInterval(()=>{for(const p of window.__qaPeers?.values()||[])__qaGait.push({x:p.pet.group.position.x,z:p.pet.group.position.z,feet:p.pet.feet.map(f=>f.position.toArray())});},100);});await a.bringToFront();await a.keyboard.down('KeyW');await a.waitForTimeout(2400);await a.keyboard.up('KeyW');await a.waitForTimeout(5000);
+ const [a,b]=contexts.map(c=>c.pages()[0]);const aId=await a.evaluate(()=>labGuestId);await b.evaluate(id=>{window.__qaGait=[];window.__qaGaitTimer=setInterval(()=>{const p=window.__qaPeers?.get(id);if(p)__qaGait.push({x:p.pet.group.position.x,z:p.pet.group.position.z,feet:p.pet.feet.map(f=>f.position.toArray())});},100);},aId);await a.bringToFront();await a.keyboard.down('KeyW');await a.waitForTimeout(2400);await a.keyboard.up('KeyW');await a.waitForTimeout(5000);
  report.gait=await b.evaluate(()=>{clearInterval(__qaGaitTimer);return __qaGait});
  report.movement=await b.evaluate(id=>({samples:__qaSnapshots.map(s=>({at:s.at,state:s.people.find(p=>p.id===id)})).filter(s=>s.state).map(s=>({...s,state:{...s.state,id:undefined}}))}),aId);
  await a.screenshot({path:out+'/guest-world.png'});report.guestUI=await a.evaluate(()=>({invite:!!document.querySelector('#tab-social:not([hidden])'),ownerLogin:!!document.querySelector('#owner-signin:not([hidden])'),quality:document.documentElement.dataset.renderQuality,ready:labSocialJoined,world:typeof sharedRoom==='function'?sharedRoom():null}));
@@ -36,7 +36,7 @@ try{
  await b.bringToFront();await b.evaluate(()=>{__qaCapture=true;__qaFrames.length=0;__qaLong.length=0;});await b.waitForTimeout(8000);const frames=await b.evaluate(()=>{__qaCapture=false;return{frames:__qaFrames,longTasks:__qaLong}});const sorted=frames.frames.map(x=>x.ms).sort((x,y)=>x-y);report.performance={fps:1000/(sorted.reduce((x,y)=>x+y,0)/sorted.length),p95:sorted[Math.floor(sorted.length*.95)],p99:sorted[Math.floor(sorted.length*.99)],cpuMean:frames.frames.reduce((x,y)=>x+y.cpu,0)/frames.frames.length,longTasks:frames.longTasks};
  report.denied={};for(const route of ['invite','admin','operations']){const r=await contexts[0].request.get(origin+'/api/'+route);report.denied[route]=r.status();}
  const access=await contexts[0].request.get(origin+'/api/access');report.access={admin:(await access.json()).admin};
- if(process.env.QA_FLOW==='1'&&!production){
+ if(process.env.QA_FLOW==='1'){
   const check=(name,pass,detail)=>{console.log('Check',name,pass);report.scenarios.push({name,pass,detail});if(!pass)throw Error(name);};
   await a.bringToFront();await a.locator('#hud-map').click();await a.waitForTimeout(800);await a.screenshot({path:out+'/map.png'});
   if(mobile){await a.locator('[data-region=tree]').tap();check('mobile-map-confirm',await a.locator('.map-travel-confirm').isVisible());await a.screenshot({path:out+'/map-selected.png'});await a.locator('.map-travel-confirm button').tap();}else await a.locator('[data-region=tree]').click();
@@ -58,5 +58,6 @@ try{
   await a.screenshot({path:out+'/final.png'});
  }
 
+ report.audio=await a.evaluate(()=>({active:[...document.querySelectorAll('audio')].filter(a=>!a.paused).length,time:document.querySelector('#winter-background-music')?.currentTime,error:document.querySelector('#winter-background-music')?.error?.message||null}));
  await fs.writeFile(out+'/report.json',JSON.stringify(report,null,2));console.log(JSON.stringify({...report,movement:{samples:report.movement.samples.length}}));
 }catch(error){report.failure=error.message.split('Call log:')[0];await fs.writeFile(out+'/report.json',JSON.stringify(report,null,2).replace(/[a-f0-9]{64}/g,'[redacted]'));throw Error(report.failure.replace(/[a-f0-9]{64}/g,'[redacted]'));}finally{for(const c of contexts){await c.request.post(origin+'/api/leave',{headers:{Origin:origin}}).catch(()=>{});await c.close();}token=null;await browser.close();}

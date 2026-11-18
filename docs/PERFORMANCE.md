@@ -34,6 +34,12 @@ Apple M2 / Chrome 157 / 같은 localhost SQLite 테스트 월드. 실제 모바�
 
 초기 진단에서 화질 변경 중 수 초 shader stall이 관측되어 HDR와 직접 출력 variant 사전 준비를 추가했다. 수정 전후의 다른 화질/워밍업 표본을 동일 조건 성능 비교로 섞지 않는다.
 
+## 운영 주소 표본
+
+Mac Chrome에서 사용자 제공 초대로 독립 브라우저 두 개를 실행했다. PC 1280×800 자동 medium: 8초 평균 **38.55fps**, p95 **33.4ms**, p99 **50.1ms**, CPU **6.36ms**, Long Task **120/315ms**. 모바일 화면 390×844 자동 high: **60.00fps**, p95 **16.7ms**, p99 **16.8ms**, CPU **3.45ms**, Long Task 0. 초기 준비는 PC 4,170/4,050ms, 모바일 5,170/4,124ms.
+
+PC 자동 화질에서는 프레임 저하가 남아 있으며 모든 장면의 60fps를 달성했다고 주장하지 않는다. 위 low 고정 전후 비교와 품질·네트워크·동시 실행 조건이 달라 직접 비교하지 않는다. 모바일 화면 검사는 같은 Mac GPU이므로 스마트폰 성능을 뜻하지 않는다. [PC 원시값](../qa/browser-v41/production/pc.json), [모바일 원시값](../qa/browser-v41/production/mobile.json).
+
 ---
 
 # v39 성능 범위

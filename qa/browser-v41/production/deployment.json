@@ -1,0 +1,39 @@
+{
+  "source": "de2400382d36288f40051099eb1fff738798edd6",
+  "sites": {
+    "version": 41,
+    "deployment": "appgdep_6afdccbc9a84819191a266a8e0e6190f",
+    "status": "succeeded"
+  },
+  "vercel": {
+    "deployment": "dpl_5WbMLco1ur8dsHFcp6LwC3uCHqy8",
+    "state": "READY",
+    "target": "production"
+  },
+  "health": {
+    "sites": 200,
+    "vercel": 200
+  },
+  "world": "winter-plaza",
+  "inviteRequired": true,
+  "assetComparison": {
+    "files": [
+      "glow-pass.js",
+      "remote-motion.js",
+      "visitors.js",
+      "luminous-loading.css",
+      "world-map.js",
+      "mobile-ui.css"
+    ],
+    "sitesMatches": 6,
+    "vercelMatches": 6
+  },
+  "quizGeneration": {
+    "status": 200,
+    "count": 2,
+    "state": "review",
+    "autoPublished": false
+  },
+  "physicalWindows": "UNKNOWN",
+  "physicalMobile": "UNKNOWN"
+}
