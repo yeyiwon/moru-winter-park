@@ -1,0 +1,58 @@
+{
+  "query": {
+    "sinceMinutes": 5,
+    "errorsOnly": true,
+    "limit": 25
+  },
+  "note": "Sanitized request metadata only. All four returned events were expected admission denials with outcome ok; no runtime exception/5xx in this sample.",
+  "events": [
+    {
+      "at": "2026-11-18T14:30:26.127Z",
+      "level": "info",
+      "outcome": "ok",
+      "status": 403,
+      "path": "/api/invite-check",
+      "eventKeys": [
+        "request",
+        "path",
+        "response"
+      ]
+    },
+    {
+      "at": "2026-11-18T14:29:16.533Z",
+      "level": "info",
+      "outcome": "ok",
+      "status": 403,
+      "path": "/api/join",
+      "eventKeys": [
+        "request",
+        "path",
+        "response"
+      ]
+    },
+    {
+      "at": "2026-11-18T14:29:16.264Z",
+      "level": "info",
+      "outcome": "ok",
+      "status": 401,
+      "path": "/api/presence",
+      "eventKeys": [
+        "request",
+        "path",
+        "response"
+      ]
+    },
+    {
+      "at": "2026-11-18T14:29:06.536Z",
+      "level": "info",
+      "outcome": "ok",
+      "status": 403,
+      "path": "/api/join",
+      "eventKeys": [
+        "request",
+        "path",
+        "response"
+      ]
+    }
+  ]
+}

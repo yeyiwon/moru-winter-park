@@ -1,0 +1,41 @@
+{
+  "at": "2026-11-18T14:30:22.125Z",
+  "origin": "https://moru-winter-park.vercel.app",
+  "physicalMobile": false,
+  "ownerOAuth": "UNKNOWN",
+  "validProductionInvitation": "UNKNOWN",
+  "checks": [
+    {
+      "target": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "check": "health, single world, no public entry, invalid token, guest admin rejection, protected wishes"
+    },
+    {
+      "target": "https://moru-winter-park.vercel.app",
+      "check": "health, single world, no public entry, invalid token, guest admin rejection, protected wishes"
+    },
+    {
+      "mobile": false,
+      "check": "gate, owner link, viewport, same-tab invalid invitation, Ethereal first",
+      "rect": {
+        "x": 360,
+        "y": 251.859375,
+        "width": 560,
+        "height": 296.28125,
+        "within": true
+      }
+    },
+    {
+      "mobile": true,
+      "check": "gate, owner link, viewport, same-tab invalid invitation, Ethereal first",
+      "rect": {
+        "x": 14,
+        "y": 272.953125,
+        "width": 362,
+        "height": 298.078125,
+        "within": true
+      }
+    }
+  ],
+  "errors": [],
+  "serverErrors": []
+}

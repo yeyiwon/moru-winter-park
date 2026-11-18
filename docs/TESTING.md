@@ -7,7 +7,7 @@
 - 실제 Chrome PC 1280×800 / 터치 모바일 에뮬레이션 390×844: **11개 묶음 PASS**, page 오류 0. 초대 발급 UI, 무초대 제한, 두 브라우저 입장·이동·채팅·소원·장식 공유, 외형 저장/재접속, 일반 게스트 관리 거절, 강퇴/새 초대 복귀, 차단/폐기 후 기존 세션 종료 확인.
 - 같은 초대 세션으로 PC·모바일 지도, 관람차·회전목마·온천 종료, 료칸·천문대 출입, Ethereal 첫 곡 실제 재생 확인.
 - 근거: [브라우저 결과](../qa/browser-v39/verification.json), [검사 요약](../qa/browser-v39/checks.json), [구현·재현 스크립트](single-world-v39.md).
-- 운영 검증은 아래 배포 문서에 별도로 기록한다. 로컬 관리자 fixture는 loopback 테스트 서버에만 있으며 production 인증 우회는 추가하지 않았다.
+- 운영 두 주소의 접근 정책 검사 및 Vercel PC/모바일 크기 화면 4개 묶음 PASS, page/5xx 오류 0. 18개 배포 파일 비교 일치. [운영 결과](../qa/browser-v39/production/verification.json). 운영 유효 초대 입장과 소유자 OAuth는 UNKNOWN으로 구분한다. 로컬 관리자 fixture는 loopback 테스트 서버에만 있으며 production 인증 우회는 추가하지 않았다.
 - **UNKNOWN:** 실제 소유자 OAuth 완료, 실물 iPhone/Android, 새 버전의 장시간 부하/FPS. 로컬 다중 브라우저는 실제 두 휴대폰 검사로 표시하지 않는다.
 
 ---
