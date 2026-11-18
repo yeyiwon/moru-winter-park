@@ -13,7 +13,7 @@ import {amusementPositionValid} from '../dist/festival-layout.js';
 import {communityAPI,messageText,rateLimit} from './community-api.js';
 import {activityGestures} from '../dist/activity-state.js';
 import {isOwner,passwordHash,constantEqual,hex} from './invitations.js';
-import {normalizeWardrobe} from '../dist/wardrobe.js';
+import {normalizeWardrobe,validateAppearance} from '../dist/wardrobe.js';
 import {resortRidePosition,restSeats,spaPositionValid} from '../dist/resort-layout.js';
 import {surfaceHeight} from '../dist/world-layout.js';
 import {canStandAt} from '../dist/movement.js';
@@ -30,7 +30,7 @@ export async function handleAPI(request,env){
  const now=Date.now();
  try{
  if(path==='/api/access'&&request.method==='GET'){
-  const admin=await isOwner(request,env),secret=token(request),self=secret?await env.DB.prepare('SELECT id,name,room,region,color,accessory,fluff,roundness,x,y,z,yaw,seen FROM visitors WHERE id=?').bind(await digest(secret)).first():null;
+  const admin=await isOwner(request,env),secret=token(request),self=secret?await env.DB.prepare('SELECT id,name,room,region,color,color_top AS colorTop,accessory,fluff,roundness,x,y,z,yaw,seen FROM visitors WHERE id=?').bind(await digest(secret)).first():null;
   return json({admin,signedIn:!!request.headers.get('oai-authenticated-user-id'),session:self&&self.seen>now-2592000000?self:null});
  }
  if(path==='/api/invite'&&request.method==='POST'){
@@ -46,7 +46,7 @@ export async function handleAPI(request,env){
   const admin=await isOwner(request,env),invitation=await env.DB.prepare('SELECT salt,password_hash FROM invite_rooms WHERE id=?').bind(room).first();
   const previous=token(request),previousId=previous?await digest(previous):null;
   if(previousId&&await env.DB.prepare('SELECT id FROM visitor_blocks WHERE id=?').bind(previousId).first())return json({error:'이 기기의 입장이 제한되었습니다.'},403);
-  if(previousId){const restored=await env.DB.prepare('SELECT id,room,name,color,accessory,fluff,roundness,x,y,z,yaw,region,seen FROM visitors WHERE id=? AND room=?').bind(previousId,room).first();if(restored&&restored.seen>now-2592000000){const active=await env.DB.prepare('UPDATE visitors SET seen=? WHERE id=? AND ((SELECT COUNT(*) FROM visitors WHERE room=? AND seen>? AND id<>?)<12)').bind(now,previousId,room,now-age,previousId).run();if(!active.meta?.changes)return json({error:'이 공간에는 12명이 있습니다.'},409);return json(restored);}}
+  if(previousId){const restored=await env.DB.prepare('SELECT id,room,name,color,color_top AS colorTop,accessory,fluff,roundness,x,y,z,yaw,region,seen FROM visitors WHERE id=? AND room=?').bind(previousId,room).first();if(restored&&restored.seen>now-2592000000){const active=await env.DB.prepare('UPDATE visitors SET seen=? WHERE id=? AND ((SELECT COUNT(*) FROM visitors WHERE room=? AND seen>? AND id<>?)<12)').bind(now,previousId,room,now-age,previousId).run();if(!active.meta?.changes)return json({error:'이 공간에는 12명이 있습니다.'},409);return json(restored);}}
   if(!admin&&room!=='winter-plaza'){
    if(!invitation)return json({error:'유효한 초대 링크로 입장해 주세요.'},403);
    const address=request.headers.get('cf-connecting-ip')||request.headers.get('x-real-ip')||'anonymous',attemptId=await digest(room+':'+address);
@@ -77,6 +77,11 @@ export async function handleAPI(request,env){
  const personalized=await experienceAPI(request,env,self);if(personalized)return personalized;
  const community=await communityAPI(request,env,self,path==='/api/admin'?await isOwner(request,env):false);if(community)return community;
  if(path==='/api/tree'&&request.method==='GET'){const rows=await env.DB.prepare('SELECT id,kind,color,angle,height,origin_x AS originX,origin_y AS originY,origin_z AS originZ,created_at AS createdAt,CASE WHEN author=? THEN 1 ELSE 0 END AS mine FROM tree_decorations WHERE room=? ORDER BY created_at LIMIT 160').bind(self.id,self.room).all();const decorations=rows.results||[],revision=(await digest(JSON.stringify(decorations))).slice(0,24);return json(url.searchParams.get('revision')===revision?{unchanged:true,revision}:{decorations,revision});}
+ if(path==='/api/appearance'&&request.method==='POST'){
+  const raw=await request.text();if(raw.length>1024)return json({error:'요청이 너무 큽니다.'},413);
+  let look;try{look=validateAppearance(JSON.parse(raw));}catch(e){return json({error:e.message},400);}
+  await env.DB.prepare('UPDATE visitors SET color=?,color_top=?,accessory=?,fluff=?,roundness=? WHERE id=?').bind(look.fur,look.furTop,look.accessory,look.fluff,look.roundness,id).run();return json(look);
+ }
  if(path==='/api/name'&&request.method==='POST'){const raw=await request.text();if(raw.length>1024)return json({error:'닉네임은 10자까지 입력하세요.'},413);let name;try{name=validateNickname(JSON.parse(raw).name);}catch(e){return json({error:e.message},400);}await env.DB.prepare('UPDATE visitors SET name=? WHERE id=?').bind(name,id).run();return json({name});}
  if(path==='/api/leave'&&request.method==='POST'){await env.DB.prepare('DELETE FROM ride_seats WHERE visitor=?').bind(id).run();await env.DB.prepare('DELETE FROM visitors WHERE id=?').bind(id).run();return json({ok:true});}
  if(path==='/api/tree'&&request.method==='POST'){
@@ -105,13 +110,13 @@ export async function handleAPI(request,env){
   if(!Number.isFinite(b.x)||!Number.isFinite(b.z)||!Number.isFinite(b.yaw)||!Number.isFinite(b.y)||!(interiorPositionValid(b.x,b.y,b.z)||groundOK||restOK||benchOK||amusementPositionValid(b.x,b.y,b.z,b.mode)||spaPositionValid(b.x,b.y,b.z,b.mode)||resortRidePosition(b.x,b.y,b.z,b.mode)))return json({error:'이동 위치를 확인해 주세요.'},400);
   const fluff=Number.isFinite(b.fluff)?Math.max(50,Math.min(100,b.fluff)):100,roundness=Number.isFinite(b.roundness)?Math.max(0,Math.min(100,b.roundness)):50;
   const color=/^#[0-9a-f]{6}$/i.test(b.color)?b.color:'#f4eee5',accessory=normalizeWardrobe(b.accessory),gesture=activityGestures.includes(b.gesture)?b.gesture:'';
-  await env.DB.prepare('UPDATE visitors SET x=?,z=?,yaw=?,y=?,mode=?,color=?,accessory=?,fluff=?,roundness=?,seen=?,gesture=?,gesture_at=?,region=? WHERE id=? AND seen<=?').bind(b.x,b.z,b.yaw,b.y,['lift','summit','ski','rest','bath','sauna','lie','tea','dining','carousel','ferris','view','footbath'].includes(b.mode)?b.mode:'',color,accessory,fluff,roundness,now,gesture,gesture?now:0,interiorAt(b.x,b.z)?.id||'outdoors',id,now-500).run();
+  await env.DB.prepare('UPDATE visitors SET x=?,z=?,yaw=?,y=?,mode=?,color=?,color_top=?,accessory=?,fluff=?,roundness=?,seen=?,gesture=?,gesture_at=?,region=? WHERE id=? AND seen<=?').bind(b.x,b.z,b.yaw,b.y,['lift','summit','ski','rest','bath','sauna','lie','tea','dining','carousel','ferris','view','footbath'].includes(b.mode)?b.mode:'',color,/^#[0-9a-f]{6}$/i.test(b.colorTop)?b.colorTop:null,accessory,fluff,roundness,now,gesture,gesture?now:0,interiorAt(b.x,b.z)?.id||'outdoors',id,now-500).run();
   await env.DB.prepare("UPDATE visitors SET chat='',chat_at=0 WHERE room=? AND chat_at>0 AND chat_at<?").bind(self.room,now-600000).run();
   if(benchOK||['ferris','lift'].includes(b.mode))await env.DB.prepare('UPDATE ride_seats SET expires_at=? WHERE visitor=? AND expires_at>?').bind(now+20000,id,now).run();
   else await env.DB.prepare('DELETE FROM ride_seats WHERE visitor=? AND started_at<?').bind(id,now-6000).run();
   await maintainSessions(env.DB,now);
   const rideSeats=await listRideSeats(env.DB,self.room,now);
-  const people=await env.DB.prepare('SELECT id,name,color,accessory,fluff,roundness,x,z,yaw,y,mode,region,gesture,gesture_at AS gestureAt,chat,chat_at AS chatAt FROM visitors WHERE room=? AND seen>? AND id<>? ORDER BY seen DESC LIMIT 11').bind(self.room,now-age,id).all();return json({...interestSnapshot(people.results||[],b,b,now,rideSeats),rideSeats,fireworks:await readFireworkShow(env.DB,now),serverTime:now,count:(people.results?.length||0)+1});
+  const people=await env.DB.prepare('SELECT id,name,color,color_top AS colorTop,accessory,fluff,roundness,x,z,yaw,y,mode,region,gesture,gesture_at AS gestureAt,chat,chat_at AS chatAt FROM visitors WHERE room=? AND seen>? AND id<>? ORDER BY seen DESC LIMIT 11').bind(self.room,now-age,id).all();return json({...interestSnapshot(people.results||[],b,b,now,rideSeats),rideSeats,fireworks:await readFireworkShow(env.DB,now),serverTime:now,count:(people.results?.length||0)+1});
  }
  return json({error:'지원하지 않는 요청입니다.'},404);
  }catch(e){if(e instanceof SyntaxError)return json({error:'잘못된 요청입니다.'},400);await recordServerError(env.DB,path,e,now);return json({error:'공유 공간에 연결할 수 없어요. 잠시 뒤 다시 시도해 주세요.'},503);}

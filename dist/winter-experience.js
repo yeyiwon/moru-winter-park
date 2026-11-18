@@ -36,9 +36,9 @@ export function createWinterExperience(winter,companion,travel){
  window.addEventListener('lab:emote',e=>{if(['heart','joy','sad','surprise','dance'].includes(e.detail)&&!rides.mode&&!parkRide){act(e.detail,e.detail==='dance'?7:3.5);}});
  window.addEventListener('lab:wave',()=>{clearItem();act('wave',3);});
  function button(text,fn){
-  const b=document.createElement('button'),k=document.createElement('kbd');
+  const b=document.createElement('button'),k=document.createElement('kbd'),label=document.createElement('span');label.className='action-label';label.textContent=text;
   k.textContent=['E','F','G','H'][actionKeys.length]||'';
-  b.append(k,document.createTextNode(text));b.setAttribute('aria-label',text);b.onclick=fn;actionKeys.push(fn);actions.append(b);
+  b.append(k,label);b.setAttribute('aria-label',text);b.onclick=fn;actionKeys.push(fn);actions.append(b);
  }
  function clearGesture(){if(gesture){exitControl.hide();lifecycle.finish();hideActions();}gesture='';gestureTime=0;}
  function hideActions(){card.hidden=true;anchor=null;actionKeys=[];actions.replaceChildren();}

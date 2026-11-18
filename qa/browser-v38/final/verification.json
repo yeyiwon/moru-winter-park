@@ -1,0 +1,12 @@
+{
+  "errors": [],
+  "checks": [
+    "short plush cat tail: front, quarter, side and rear",
+    "two independent gradient colors save and synchronize to another guest",
+    "solid/reset are draft changes; cancel restores saved gradient",
+    "walking/running tail remains rooted; no shader errors",
+    "owner login aligned with Invite heading and hidden in other tabs",
+    "reload restores gradient; loading uses cached real scene and exits on readiness"
+  ],
+  "physicalMobile": false
+}

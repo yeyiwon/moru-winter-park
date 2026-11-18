@@ -14,15 +14,15 @@ test('fashion accessories share finite geometry with a bounded draw-group budget
   const normals=mesh.geometry.attributes.normal;let valid=0;for(let i=0;i<normals.count;i++)if(Math.hypot(normals.getX(i),normals.getY(i),normals.getZ(i))>.5)valid++;
   assert.ok(valid/normals.count>.98,key+' has usable lighting normals');
  }
- const pet=createCompanion({detail:'remote'});let meshes=0;pet.group.traverse(o=>{if(o.isMesh)meshes++;});assert.ok(meshes<60);
+ const pet=createCompanion({detail:'remote'});let meshes=0;pet.group.traverse(o=>{if(o.isMesh)meshes++;});assert.ok(meshes<80);
 });
 
 test('new headwear and eyewear replace their own slots and stay attached during activities',()=>{
  assert.equal(normalizeWardrobe('eyes-wink'),'none');
  assert.equal(toggleItem('santa,sunglasses,eyes-heart,scarf','silver-glasses'),'santa,eyes-heart,silver-glasses');
  assert.equal(toggleItem('santa,eyes-heart,scarf','crown'),'eyes-heart,crown');
- const pet=createCompanion({detail:'remote'});pet.customize({accessory:'silver-glasses,crown,scarf,star,ribbon'});
- const items=['silver-glasses','jewel-crown','star-hairpin','satin-ribbon'].map(name=>pet.group.getObjectByName(name));
+ const pet=createCompanion({detail:'remote'});pet.customize({accessory:'silver-glasses,crown,soft-scarf'});
+ const items=['silver-glasses','jewel-crown'].map(name=>pet.group.getObjectByName(name));
  assert.ok(items.every(m=>m.visible));assert.ok(pet.nameHeight>1.1);
  const anchors=items.map(m=>m.position.clone());for(const state of [{walking:true,phase:1.4},{mode:'ski',speed:20,lean:.7},{gesture:'drink',heldItem:'coffee',time:2}]){
   pet.pose(state);items.forEach((m,i)=>{assert.ok(m.position.equals(anchors[i]));assert.equal(m.visible,true);});

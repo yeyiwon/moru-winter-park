@@ -14,9 +14,14 @@ export function createLabelLayout(element){
  const bubble=element.querySelector('.speech-bubble');let dirty=true,signature='',extent=null;
  const Observer=element.ownerDocument.defaultView.ResizeObserver,observer=Observer?new Observer(()=>dirty=true):null;
  observer?.observe(element);if(bubble)observer?.observe(bubble);
- return{bounds(x,y){
+ const layout={bounds(x,y){
   const key=element.textContent+'|'+!!bubble?.hidden+'|'+element.ownerDocument.defaultView.innerWidth;
   if(dirty||key!==signature||!extent){const r=element.getBoundingClientRect(),b=bubble&&!bubble.hidden?bubble.getBoundingClientRect():r;extent={left:Math.min(r.left,b.left)-r.left-r.width/2,right:Math.max(r.right,b.right)-r.left-r.width/2,top:Math.min(r.top,b.top)-r.bottom,bottom:Math.max(r.bottom,b.bottom)-r.bottom};dirty=false;signature=key;}
   return{left:x+extent.left,right:x+extent.right,top:y+extent.top,bottom:y+extent.bottom};
+ },fit(x,y,width,height){
+  const b=layout.bounds(x,y),margin=10;
+  const dx=Math.max(0,margin-b.left)-Math.max(0,b.right-width+margin),dy=Math.max(0,margin-b.top)-Math.max(0,b.bottom-height+margin);
+  return {x:x+dx,y:y+dy,bounds:{left:b.left+dx,right:b.right+dx,top:b.top+dy,bottom:b.bottom+dy}};
  },dispose(){observer?.disconnect();}};
+ return layout;
 }

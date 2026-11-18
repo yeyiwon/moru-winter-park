@@ -1,0 +1,14 @@
+{
+  "physicalDevice": false,
+  "checks": [
+    "dash and jump share the lower row without overlapping chat/emotes",
+    "real pointer capture: analog, beyond ring, camera multitouch, sprint, cancel and blur",
+    "mobile action label is centered with no keyboard placeholder",
+    "chat sends; compact bubble stays inside viewport",
+    "map first touch shows destination, second travels and closes; no residual ride state",
+    "one head item, retired choices absent, direct nickname field, heart and googly glasses",
+    "saved short tail at mobile world distance; actual touch jump and soft landing sound events",
+    "mobile Invite heading and owner login align without clipping"
+  ],
+  "errors": []
+}

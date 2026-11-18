@@ -5,14 +5,14 @@ import {createCompanion} from '../dist/companion.js';
 import {createStyleAccessories} from '../dist/character-accessories.js';
 import {normalizeWardrobe,toggleItem,selectedItems} from '../dist/wardrobe.js';
 
-test('new eyewear and beret replace their own slots while the scarf and expression persist',()=>{
- let outfit='santa,sunglasses,eyes-happy,soft-scarf';
- outfit=toggleItem(outfit,'oval-sunglasses');assert.equal(outfit,'santa,eyes-happy,soft-scarf,oval-sunglasses');
- outfit=toggleItem(outfit,'cat-eye-sunglasses');assert.equal(outfit,'santa,eyes-happy,soft-scarf,cat-eye-sunglasses');
- outfit=toggleItem(outfit,'beret');assert.deepEqual(selectedItems(outfit),['eyes-happy','soft-scarf','cat-eye-sunglasses','beret']);
- assert.equal(normalizeWardrobe(outfit+',helmet,goggles'),'eyes-happy,soft-scarf,helmet,goggles');
- assert.equal(toggleItem(outfit,'soft-scarf'),'eyes-happy,cat-eye-sunglasses,beret');
- assert.equal(normalizeWardrobe('unknown,scarf,beret,beret,oval-sunglasses'),'beret,oval-sunglasses');
+test('new eyewear and crown replace their own slots while the scarf and expression persist',()=>{
+ let outfit='santa,sunglasses,eyes-happy,tail-cat';
+ outfit=toggleItem(outfit,'oval-sunglasses');assert.equal(outfit,'santa,eyes-happy,tail-cat,oval-sunglasses');
+ outfit=toggleItem(outfit,'cat-eye-sunglasses');assert.equal(outfit,'santa,eyes-happy,tail-cat,cat-eye-sunglasses');
+ outfit=toggleItem(outfit,'crown');assert.deepEqual(selectedItems(outfit),['eyes-happy','tail-cat','cat-eye-sunglasses','crown']);
+ assert.equal(normalizeWardrobe(outfit+',helmet,goggles'),'eyes-happy,tail-cat,helmet,goggles');
+ assert.equal(toggleItem(outfit,'tail-cat'),'eyes-happy,cat-eye-sunglasses,crown');
+ assert.equal(normalizeWardrobe('unknown,scarf,crown,crown,oval-sunglasses'),'crown,oval-sunglasses');
 });
 
 test('all sunglass lenses cover the existing eyes and the frames fit in front of the face',()=>{
@@ -35,15 +35,15 @@ test('all sunglass lenses cover the existing eyes and the frames fit in front of
 test('new wearables remain attached in movement, clear for bathing, and restore afterward',()=>{
  const pet=createCompanion({detail:'remote'}),names=['sunglasses','oval-sunglasses','cat-eye-sunglasses','silver-glasses'];
  for(const item of ['oval-sunglasses','cat-eye-sunglasses']){
-  pet.customize({accessory:item+',beret,soft-scarf',fur:'#e6c4de'});
-  const selected=pet.group.getObjectByName(item),beret=pet.group.getObjectByName('wool-beret'),scarf=pet.group.getObjectByName('winter-scarf'),anchor=selected.position.clone();
-  assert.ok(Math.abs(pet.nameHeight-beret.geometry.boundingBox.max.y-.1)<1e-6);
+  pet.customize({accessory:item+',crown,tail-cat',fur:'#e6c4de'});
+  const selected=pet.group.getObjectByName(item),crown=pet.group.getObjectByName('jewel-crown'),scarf=pet.group.getObjectByName('plush-tail'),anchor=selected.position.clone();
+  assert.ok(Math.abs(pet.nameHeight-crown.geometry.boundingBox.max.y-.1)<1e-6);
   for(const state of [{walking:true,phase:1.2},{mode:'ski',speed:16,lean:.6},{still:true}]){
-   pet.pose(state);assert.ok(selected.visible&&beret.visible&&scarf.visible);assert.ok(selected.position.equals(anchor));
+   pet.pose(state);assert.ok(selected.visible&&crown.visible&&scarf.visible);assert.ok(selected.position.equals(anchor));
    assert.equal(names.filter(name=>pet.group.getObjectByName(name).visible).length,1);
   }
-  pet.pose({mode:'bath'});assert.ok(!selected.visible&&!beret.visible&&!scarf.visible);
-  pet.pose();assert.ok(selected.visible&&beret.visible&&scarf.visible);
+  pet.pose({mode:'bath'});assert.ok(!selected.visible&&!crown.visible&&!scarf.visible);
+  pet.pose();assert.ok(selected.visible&&crown.visible&&scarf.visible);
  }
- pet.customize({accessory:'none'});for(const name of [...names,'wool-beret','winter-scarf'])assert.equal(pet.group.getObjectByName(name).visible,false);
+ pet.customize({accessory:'none'});for(const name of [...names,'jewel-crown','plush-tail'])assert.equal(pet.group.getObjectByName(name).visible,false);
 });

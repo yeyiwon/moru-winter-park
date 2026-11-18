@@ -12,8 +12,8 @@ const materials={
  glint:new THREE.MeshBasicMaterial({color:'#dcebf0',transparent:true,opacity:.6}),
  gold:new THREE.MeshStandardMaterial({color:'#dcb877',metalness:.86,roughness:.25,side:THREE.DoubleSide}),
  gem:new THREE.MeshPhysicalMaterial({color:'#e7edf8',metalness:.18,roughness:.12,clearcoat:1}),
- satin:new THREE.MeshPhysicalMaterial({color:'#a38caf',roughness:.5,side:THREE.DoubleSide,sheen:1,sheenColor:'#efd9f3',sheenRoughness:.36}),
- satinEdge:new THREE.MeshPhysicalMaterial({color:'#d0b3d8',roughness:.64,sheen:.9}),
+ satin:new THREE.MeshPhysicalMaterial({color:'#c795a6',roughness:.72,side:THREE.DoubleSide,sheen:1,sheenColor:'#dfbac9',sheenRoughness:.78}),
+ satinEdge:new THREE.MeshPhysicalMaterial({color:'#e1bfc8',roughness:.8,sheen:.9}),
  knit:new THREE.MeshPhysicalMaterial({color:'#d5c6b4',roughness:1,sheen:.8,sheenColor:'#f0e5d7'}),
  knitRib:new THREE.MeshStandardMaterial({color:'#e7dbcb',roughness:1}),
  wool:new THREE.MeshPhysicalMaterial({color:'#5e6878',roughness:1,sheen:.85,sheenColor:'#a9b1c0',sheenRoughness:1}),
@@ -154,8 +154,59 @@ function beret(){
  geometry.rotateZ(-.12).translate(-.055,.69,-.035);
  return {geometry,materials:[materials.wool,materials.woolBand],name:'wool-beret'};
 }
+function winterHat(kind){
+ const parts=[],add=(geometry,material=0)=>parts.push({geometry,material});
+ const cap=new THREE.SphereGeometry(1,36,20,0,Math.PI*2,0,Math.PI/2).scale(.52,kind==='beanie'?.41:.29,.46).translate(0,.65,-.07);add(cap);
+ const rim=new THREE.TorusGeometry(.49,kind==='fur-hat'?.072:.042,10,48).rotateX(Math.PI/2).scale(1,1,.93).translate(0,.66,-.07);add(rim,1);
+ if(kind==='beanie'){
+  for(let i=0;i<24;i++){const a=i/24*Math.PI*2,points=[];for(let j=0;j<=12;j++){const t=j/12*Math.PI/2;points.push([Math.cos(a)*.522*Math.cos(t),.65+.412*Math.sin(t),-.07+Math.sin(a)*.462*Math.cos(t)]);}add(tube(points,.004,12,4),1);}
+  add(sphere([0,1.07,-.07],[.095,.09,.09],18),1);
+ }else if(kind==='fur-hat'){
+  for(const side of [-1,1])add(sphere([side*.48,.56,-.08],[.07,.15,.15]),1);
+ }else{
+  add(new THREE.SphereGeometry(1,28,14).scale(.36,.028,.25).translate(0,.635,.33),1);
+  add(extrude(star(.055,.026),.012,.005).translate(0,.81,.365),2);
+ }
+ return{geometry:merge(parts),materials:[materials.wool,materials.knit,materials.silver],name:kind};
+}
+function charmGlasses(kind){
+ const parts=[],add=(geometry,material=0)=>parts.push({geometry,material});
+ const heart=(cx,scale)=>{const s=new THREE.Shape(),p=(x,y)=>[cx+x*scale,.075+y*scale];s.moveTo(...p(0,-.20));s.bezierCurveTo(...p(-.28,-.01),...p(-.24,.23),...p(-.10,.20));s.quadraticCurveTo(...p(-.035,.19),...p(0,.115));s.quadraticCurveTo(...p(.035,.19),...p(.10,.20));s.bezierCurveTo(...p(.24,.23),...p(.28,-.01),...p(0,-.20));return s;};
+ for(const side of [-1,1]){
+  let outline,inner;
+  if(kind==='heart-glasses'){outline=heart(side*.235,1);inner=heart(side*.235,.89);const pts=inner.getPoints(20);outline.holes.push(new THREE.Path(pts));add(curveEyewear(extrude(outline,.013,.004,20)));}
+  else{outline=new THREE.Shape();outline.absellipse(side*.225,.085,.177,.153,0,Math.PI*2);inner=new THREE.Path();inner.absellipse(side*.225,.085,.163,.139,0,Math.PI*2,true);outline.holes.push(inner);add(curveEyewear(extrude(outline,.013,.004,20)));add(curveEyewear(extrude(star(.053,.026),.016,.004).translate(side*.4,.2,.02)),1);}
+  add(tube([[side*.41,.15,.71],[side*.58,.16,.41],[side*.66,.08,-.14]],.01,20,6));
+ }
+ add(tube([[-.055,.115,.79],[0,.14,.8],[.055,.115,.79]],.01,14,6));
+ return{geometry:merge(parts),materials:[materials.silver,materials.gem],name:kind};
+}
+function horns(){const parts=[];for(const side of [-1,1]){const pts=[[side*.45,.65,-.06],[side*.54,.78,-.08],[side*.53,.93,-.1],[side*.46,1.06,-.12]],curve=new THREE.CatmullRomCurve3(pts.map(p=>new THREE.Vector3(...p))),g=new THREE.TubeGeometry(curve,24,.09,10);const p=g.attributes.position;for(let i=0;i<p.count;i++){const t=Math.floor(i/11)/24,c=curve.getPointAt(Math.min(1,t)),scale=Math.max(.04,1-t);p.setXYZ(i,c.x+(p.getX(i)-c.x)*scale,c.y+(p.getY(i)-c.y)*scale,c.z+(p.getZ(i)-c.z)*scale);}g.computeVertexNormals();parts.push({geometry:g,material:0});}return{geometry:merge(parts),materials:[materials.knit],name:'little-horns'};}
+function snowFlower(){
+ const parts=[];for(let i=0;i<6;i++){const a=i*Math.PI/3;parts.push({geometry:sphere([0,0,0],[.035,.058,.025]).rotateZ(-a).translate(Math.sin(a)*.071,Math.cos(a)*.071,0),material:0});}
+ parts.push({geometry:sphere([0,0,.025],[.034,.034,.022]),material:1});return{geometry:merge(parts),materials:[materials.knitRib,materials.silver],name:'winter-flower',position:[-.42,.48,.41],rotation:[-.2,-.4,0]};
+}
+function neckPiece(kind){
+ const parts=[],add=(geometry,material=0)=>parts.push({geometry,material});
+ const collar=[];for(let i=0;i<=48;i++){const a=i/48*Math.PI*2;collar.push([Math.cos(a)*.72,-.19-(Math.sin(a)+1)*.07,Math.sin(a)*.66]);}
+ add(tube(collar,kind==='winter-cape'?.045:.018,48,7,true));
+ if(kind==='winter-cape'){
+  const p=[],uv=[],idx=[];for(let row=0;row<=12;row++)for(let col=0;col<=48;col++){const t=row/12,a=.72+col/48*(Math.PI*2-1.44),r=.72+t*.1; p.push(Math.sin(a)*r,-.2-t*.42,-Math.cos(a)*r*.94);uv.push(col/48,t);if(row<12&&col<48){const n=row*49+col;idx.push(n,n+49,n+1,n+1,n+49,n+50);}}
+  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();add(g);
+  add(sphere([0,-.33,.68],[.048,.048,.028]),1);
+ }else if(kind==='bell'){
+  add(sphere([0,-.43,.687],[.085,.085,.065]),1);add(tube([[0,-.37,.7],[0,-.32,.7]],.012,8,6),1);add(tube([[-.055,-.45,.742],[0,-.46,.754],[.055,-.45,.742]],.005,12,5),2);
+ }else if(kind==='snow-pendant'){
+  add(extrude(star(.09,.039),.023,.007).translate(0,-.43,.69),1);
+ }else{
+  for(const side of [-1,1]){add(sphere([side*.105,-.4,.69],[.12,.075,.055]),kind==='bow-tie'?2:0);if(kind==='neck-ribbon')add(new THREE.CapsuleGeometry(.027,.12,4,10).rotateZ(side*.25).translate(side*.05,-.51,.69));}
+  add(sphere([0,-.4,.73],[.044,.054,.036]),1);
+ }
+ return{geometry:merge(parts),materials:[materials.satin,materials.silver,materials.wool],name:kind};
+}
+export const extraAccessoryIDs=['heart-glasses','star-glasses','little-horns','winter-flower'];
 export function createStyleAccessories({detail='full'}={}){
  const level=detail==='remote'?'remote':'full';
- if(!cache.has(level))cache.set(level,{glasses:sunglasses(),ovalGlasses:sunglasses('oval'),catEyeGlasses:sunglasses('cat-eye'),silverGlasses:silverGlasses(),crown:crown(),brooch:brooch(),ribbon:ribbon(),scarf:scarf(level==='remote'),beret:beret()});
- return Object.fromEntries(Object.entries(cache.get(level)).map(([key,spec])=>{const mesh=new THREE.Mesh(spec.geometry,spec.materials);mesh.name=spec.name;mesh.visible=false;mesh.castShadow=true;if(spec.position)mesh.position.set(...spec.position);if(spec.rotation)mesh.rotation.set(...spec.rotation);return[key,mesh];}));
+ if(!cache.has(level))cache.set(level,{glasses:sunglasses(),ovalGlasses:sunglasses('oval'),catEyeGlasses:sunglasses('cat-eye'),silverGlasses:silverGlasses(),crown:crown(),brooch:brooch(),ribbon:ribbon(),scarf:scarf(level==='remote'),beret:beret(),...Object.fromEntries(extraAccessoryIDs.map(id=>[id,id.includes('glasses')?charmGlasses(id):['beanie','fur-hat','winter-cap'].includes(id)?winterHat(id):id==='little-horns'?horns():id==='winter-flower'?snowFlower():neckPiece(id)]))});
+ return Object.fromEntries(Object.entries(cache.get(level)).map(([key,spec])=>{spec.geometry.userData.shared=true;spec.materials.forEach(m=>m.userData.shared=true);const mesh=new THREE.Mesh(spec.geometry,spec.materials);mesh.name=spec.name;mesh.visible=false;mesh.castShadow=true;if(spec.position)mesh.position.set(...spec.position);if(spec.rotation)mesh.rotation.set(...spec.rotation);return[key,mesh];}));
 }

@@ -15,3 +15,9 @@
 .no-webgl #world-loading:not([hidden]){display:grid}
 @media(max-width:650px){.luminous-loading{width:min(88vw,68dvh)}#world-loading.has-world,#room-transition{backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}}
 @media(prefers-reduced-motion:reduce){#world-loading,#room-transition{transition:none}}
+/* The first visit uses a small capture of this actual world. Later visits use
+   the last rendered scene; a ready world is blurred live through the overlay. */
+#world-loading{background:#101b322e;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
+#world-loading::before{content:'';position:absolute;inset:-24px;z-index:-1;background-image:linear-gradient(#17213828,#17213828),var(--loading-scene,url('./textures/loading-world.webp'));background-size:cover;background-position:center;filter:blur(22px);transform:scale(1.04);opacity:1}
+#world-loading.has-world::before{opacity:0}
+#world-loading::after{display:none}

@@ -1,11 +1,12 @@
 import {createLuminousLoading} from './luminous-loading.js';
+import {createLoadingBackdrop} from './loading-backdrop.js';
 const root=document.querySelector('#world-loading'),bar=root.querySelector('progress'),label=root.querySelector('#loading-stage'),done=new Set(),animation=createLuminousLoading(root);
 const stages=['interface','world','interiors','frame','connection'];let hideTimer=0,timeout=0,failed=false;
-animation.start();
+const backdrop=createLoadingBackdrop(root);animation.start();
 function hide(){root.hidden=true;clearTimeout(hideTimer);}
-window.labLoading={complete(stage){
+window.labLoading={complete(stage,canvas){
  if(!stages.includes(stage)||done.has(stage))return;done.add(stage);bar.value=done.size;
- if(stage==='frame')root.classList.add('has-world');
+ if(stage==='frame'){root.classList.add('has-world');if(canvas)backdrop.capture(canvas);}
  label.textContent=!done.has('world')?'월드 준비':!done.has('interiors')?'실내 공간 준비':!done.has('frame')?'화면 준비':!done.has('connection')?'서버 연결':'준비 완료';
  if(done.size===stages.length&&!failed){clearTimeout(timeout);animation.stop();root.classList.add('loaded');root.addEventListener('transitionend',hide,{once:true});if(matchMedia('(prefers-reduced-motion:reduce)').matches)hide();else hideTimer=setTimeout(hide,250);}
 },error(message){

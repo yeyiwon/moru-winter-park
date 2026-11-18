@@ -1,0 +1,90 @@
+/* Keep the existing pearl glass and settings frame. Only this pane gets a new layout. */
+#studio #pane-fluff:not([hidden]){display:grid;grid-template-columns:minmax(0,1.08fr) minmax(0,1fr);gap:24px;overflow:hidden;min-height:440px;height:min(560px,calc(100dvh - 220px));padding:0}
+#studio #pane-fluff .fluff-controls{grid-column:1;grid-row:1;overflow-y:auto;min-width:0;padding:0 8px 0 0;max-height:none}
+#studio #pane-fluff .fluff-stage{grid-column:2;grid-row:1;display:flex;flex-direction:column;min-width:0;min-height:0;padding:0 0 0 12px;align-self:stretch;background:transparent;position:relative}
+#studio #pane-fluff #profile-form{margin:0 0 12px;padding:0}#studio #pane-fluff .profile-entry{min-height:44px}
+#studio .wardrobe-tabs{display:flex;gap:4px;flex-wrap:wrap;margin:0 0 16px;padding:4px 0;position:relative}
+#studio .wardrobe-tabs button{min-height:38px;padding:7px 10px;border:0;border-radius:10px;background:transparent;font-size:12px;flex:none;box-shadow:none}
+#studio .wardrobe-tabs [aria-selected=true],#studio .palette-families [aria-pressed=true]{background:var(--ui-selected)}
+#studio .wardrobe-tabs button:hover{background:var(--ui-hover)}
+#studio #wardrobe-options{min-width:0;padding:0 0 12px}
+#studio .wardrobe-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#studio .wardrobe-cards button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;width:100%;min-width:0;min-height:88px;padding:12px 5px;border:1px solid #fff8e91c;border-radius:12px;background:var(--ui-field);font-size:11px;line-height:1.4;box-shadow:none;transform:none}
+#studio .wardrobe-cards button[aria-pressed=true]{background:var(--ui-selected);border-color:#e5d7ba8c}
+#studio .wardrobe-cards button:hover{background:var(--ui-hover)}
+#studio .wardrobe-cards i{position:absolute;right:6px;top:4px;font-size:10px;font-style:normal;visibility:hidden}
+#studio .wardrobe-cards [aria-pressed=true] i{visibility:visible}
+#studio .wardrobe-symbol{display:grid;place-items:center;width:32px;height:28px}
+#studio .wardrobe-symbol svg{display:block;width:32px;height:28px;fill:none;stroke:currentColor;stroke-width:1.35;stroke-linecap:round;stroke-linejoin:round}
+#studio .palette-families{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:16px}
+#studio .palette-families button{min-height:36px;padding:6px 8px;border:0;border-radius:9px;background:transparent;font-size:11px}
+#studio .wardrobe-swatches{display:flex;gap:8px;overflow-x:auto;padding:6px 2px 14px;scroll-snap-type:x proximity}
+#studio .wardrobe-swatches button{flex:0 0 56px;min-width:56px;min-height:74px;display:flex;align-items:center;flex-direction:column;gap:8px;background:none;border:0;padding:4px;box-shadow:none;scroll-snap-align:start}
+#studio .wardrobe-swatches button>span{position:relative;display:block;width:36px;height:36px;border-radius:50%;background:var(--swatch);box-shadow:inset 0 0 0 1px #ffffff42}
+#studio .wardrobe-swatches [aria-pressed=true]>span:after{content:'';position:absolute;inset:-4px;border:1px solid #fff3dc;border-radius:50%}
+#studio .wardrobe-swatches small{font-size:11px}
+#studio .wardrobe-sliders{display:grid;gap:10px;margin-top:12px}
+#studio .wardrobe-sliders label{display:flex;justify-content:space-between;font-size:12px;align-items:center}
+#studio .wardrobe-sliders input{width:100%;margin:0 0 12px}
+#studio .ear-options{min-width:0;margin:18px 0 0;padding:0;border:0}
+#studio .ear-options legend{font-size:12px;margin-bottom:10px}
+#studio .ear-options>div{display:flex;gap:6px;margin-bottom:8px}
+#studio .ear-options button{flex:1;min-height:40px;border:1px solid transparent;border-radius:10px;background:var(--ui-field);font-size:11px}
+#studio .ear-options [aria-pressed=true]{background:var(--ui-selected);border-color:#e5d7ba8c}
+#studio .ear-options small{font-size:10px;line-height:1.6}
+#studio .preview-title{display:flex;align-items:center;justify-content:space-between;font-size:12px;gap:8px;flex:none}
+#studio #preview-front{border:0;background:var(--ui-field);border-radius:10px;font-size:11px;min-height:36px;padding:6px 12px}
+#studio #pane-fluff #fluff-preview{flex:1;min-height:0;height:260px;width:100%;touch-action:none;cursor:grab;border-radius:16px}
+#studio #fluff-preview.dragging{cursor:grabbing}
+#studio .preview-hint{font-size:10px;margin:8px 0}
+#studio #wardrobe-equipped{font-size:11px;min-height:30px;line-height:1.5;overflow-wrap:anywhere;margin:0 0 10px}
+#studio .wardrobe-actions{margin-top:auto;flex:none;width:100%}
+#studio #wardrobe-status{display:block;font-size:11px;min-height:32px;line-height:1.5;text-align:center;overflow-wrap:anywhere}
+#studio .wardrobe-actions>div{display:flex;gap:8px}
+#studio .wardrobe-actions button{flex:1;min-height:44px;border:1px solid #fff8e929;border-radius:12px;background:var(--ui-field);font-size:12px}
+#studio #wardrobe-save{background:var(--ui-selected)}#studio #pane-fluff button:disabled{opacity:.45;cursor:default}
+#studio:has(#pane-fluff:not([hidden])) .studio-saved{visibility:hidden}
+@media(max-width:650px){
+ #studio #pane-fluff:not([hidden]){grid-template-columns:1fr;grid-template-rows:minmax(200px,.85fr) minmax(160px,1fr);height:calc(100dvh - 200px);min-height:0;gap:12px}
+ #studio #pane-fluff .fluff-stage{grid-column:1;grid-row:1;padding:0;display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-rows:30px minmax(100px,1fr) auto;gap:2px 8px}
+ #studio .preview-title{grid-column:1/-1}#studio #pane-fluff #fluff-preview{grid-column:1/-1;grid-row:2;height:100%;min-height:0}
+ #studio #pane-fluff .preview-hint,#studio #wardrobe-equipped{display:none}
+ #studio .wardrobe-actions{grid-column:1/-1;display:flex;align-items:center;gap:8px;margin:0}
+ #studio #wardrobe-status{min-height:0;flex:1;text-align:left;font-size:10px}
+ #studio .wardrobe-actions>div{flex:0 0 186px;gap:6px}#studio .wardrobe-actions button{min-height:42px}
+ #studio #pane-fluff .fluff-controls{grid-column:1;grid-row:2;min-height:0;padding:0 3px 12px 0}
+ #studio .wardrobe-tabs{gap:2px;margin-bottom:8px}#studio .wardrobe-tabs button{padding:7px 8px;min-height:40px;font-size:11px}
+ #studio .wardrobe-cards{gap:6px}#studio .wardrobe-cards button{min-height:78px}
+}
+@media(max-height:500px) and (orientation:landscape){
+ #studio #pane-fluff:not([hidden]){grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);grid-template-rows:1fr;height:calc(100dvh - 158px);min-height:0;gap:14px}
+ #studio #pane-fluff .fluff-controls{grid-column:1;grid-row:1}#studio #pane-fluff .fluff-stage{grid-column:2;grid-row:1;display:flex;padding:0}
+ #studio #pane-fluff #fluff-preview{height:130px;min-height:70px}#studio #wardrobe-equipped,#studio .preview-hint{display:none}
+ #studio .wardrobe-actions{display:block}#studio #wardrobe-status{min-height:16px}
+}
+/* Let the settings grid allocate the pane; fixed child heights used to scroll
+   the entire dialog and could push its title/close control out of view. */
+#studio:has(#pane-fluff:not([hidden])){overflow:hidden}
+#studio #pane-fluff:not([hidden]){height:100%;min-height:0;max-height:none}
+#studio:has(#pane-fluff:not([hidden])) .studio-saved{display:none}
+#studio:has(#pane-fluff:not([hidden])){grid-template-rows:auto minmax(0,1fr)}
+@media(max-width:650px) and (min-height:501px){#studio #pane-fluff:not([hidden]){grid-template-rows:minmax(170px,.85fr) minmax(100px,1fr)}}
+#studio #pane-fluff .fluff-controls{display:flex;flex-direction:column;overflow:hidden}
+#studio .wardrobe-profile{flex:none;margin:0 0 8px;border:0;background:transparent}
+#studio .wardrobe-profile #profile-form{padding:4px 0;margin:0}
+#studio .wardrobe-tabs{flex:none}
+#studio #wardrobe-options{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#fff8e92e transparent;padding-right:5px}
+@media(max-width:650px){#studio .wardrobe-tabs{flex-wrap:nowrap;overflow-x:auto;margin-bottom:8px;padding:2px;scrollbar-width:none;min-height:44px}#studio .wardrobe-tabs button{flex:none}#studio .wardrobe-profile{margin-bottom:4px}}
+
+#studio .wardrobe-profile #profile-form{display:grid;grid-template-columns:auto minmax(0,1fr);gap:4px 10px;align-items:center}
+#studio .wardrobe-profile #profile-form[hidden]{display:none}
+#studio .wardrobe-profile .profile-feedback{grid-column:2;font-size:10px;min-height:15px}
+#studio .wardrobe-profile .profile-entry{min-width:0}
+
+#studio #wardrobe-reset{flex:.8;background:transparent;border-color:transparent}
+
+#studio .dye-mode,#studio .dye-targets{display:flex;gap:6px;margin:0 0 12px}
+#studio .dye-mode button,#studio .dye-targets button{min-height:40px;padding:8px 12px;border-radius:10px;border:1px solid transparent;background:var(--ui-field);font-size:12px;box-shadow:none}
+#studio .dye-mode [aria-pressed=true],#studio .dye-targets [aria-pressed=true]{background:var(--ui-selected);border-color:#e5d7ba8c}
+#studio .dye-targets button{display:flex;align-items:center;gap:8px;flex:1}
+#studio .dye-targets span{width:20px;height:20px;border-radius:50%;background:var(--swatch);box-shadow:inset 0 0 0 1px #ffffff42}

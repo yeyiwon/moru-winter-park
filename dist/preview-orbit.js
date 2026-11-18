@@ -5,5 +5,5 @@ export function createPreviewOrbit(canvas){
  const release=e=>{if(pointer!==e.pointerId)return;pointer=null;canvas.classList.remove('dragging');};
  canvas.onpointerup=release;canvas.onpointercancel=e=>{release(e);velocity=0;};canvas.onlostpointercapture=release;
  canvas.onkeydown=e=>{if(!['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key))return;e.preventDefault();e.stopPropagation();if(e.key==='ArrowLeft')angle-=.25;else if(e.key==='ArrowRight')angle+=.25;else pitch=Math.max(-.35,Math.min(.38,pitch+(e.key==='ArrowUp'?-.1:.1)));};
- return{update(dt,still=false){if(pointer===null){if(still)velocity=0;angle+=velocity*Math.min(dt,.05);velocity*=Math.exp(-Math.min(dt,.05)*9);}return{angle,pitch};}};
+ return{reset(){angle=0;pitch=0;velocity=0;pointer=null;canvas.classList.remove('dragging');},update(dt,still=false){if(pointer===null){if(still)velocity=0;angle+=velocity*Math.min(dt,.05);velocity*=Math.exp(-Math.min(dt,.05)*9);}return{angle,pitch};}};
 }

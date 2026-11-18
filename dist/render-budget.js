@@ -6,8 +6,8 @@ export function projectedCharacterHeight(camera,position,height){
 // require sustained spare frame time before restoring a higher resolution.
 export function createRenderBudget({pixelRatio=1,mobile=false,mode='auto'}={}){
  let level=mobile?1:0,count=0,total=0,started=0,changed=0,fastWindows=0,windowStarted=0;
- const ratios=()=>mobile?[1.25,1,.9,.75]:[1.5,1.2,1,.85];
- function settings(){const manual=mode!=='auto',tier=manual?({high:0,medium:2,low:3})[mode]:level;return{quality:manual?mode:tier<2&&!mobile?'high':'medium',pixelRatio:Math.min(pixelRatio,ratios()[tier]),samples:tier===0?2:0,shadowSize:mobile?(tier<2?1024:512):tier<2?2048:tier===2?1024:512,shadowInterval:[1/24,1/20,1/15,1/12][tier]};}
+ const ratios=()=>mobile?[1.5,1.25,1,1]:[1.5,1.2,1,.85];
+ function settings(){const manual=mode!=='auto',tier=manual?({high:0,medium:2,low:3})[mode]:level;return{quality:manual?mode:tier===3?'low':tier===0?'high':'medium',pixelRatio:Math.min(pixelRatio,ratios()[tier]),samples:tier<3?2:0,shadowSize:mobile?(tier===0?1024:tier<3?512:256):tier<2?2048:tier===2?1024:512,shadowInterval:(mobile?[1/24,1/15,1/10,1/8]:[1/24,1/20,1/15,1/12])[tier]};}
  return{
   get mode(){return mode;},get settings(){return settings();},
   setMode(value){mode=['auto','high','medium','low'].includes(value)?value:'auto';count=total=started=changed=fastWindows=windowStarted=0;if(mode==='auto')level=mobile?1:0;return settings();},

@@ -71,6 +71,13 @@
       "when": 1794939535292,
       "tag": "0009_appearance",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "6",
+      "when": 1795006562051,
+      "tag": "0010_loose_kronos",
+      "breakpoints": true
     }
   ]
 }

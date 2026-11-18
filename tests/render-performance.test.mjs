@@ -44,7 +44,7 @@ test('automatic resolution responds to sustained slow frames, ignores pauses, an
  const budget=createRenderBudget({pixelRatio:2});let now=100;for(let i=0;i<250;i++){now+=33;budget.sample(33,now);}assert.ok(budget.settings.pixelRatio<1.5);assert.notEqual(budget.settings.quality,'low');const reduced=budget.settings.pixelRatio;
  for(let i=0;i<500;i++){now+=1000;budget.sample(1000,now);}assert.equal(budget.settings.pixelRatio,reduced);
  budget.setMode('high');for(let i=0;i<500;i++){now+=50;budget.sample(50,now);}assert.equal(budget.settings.pixelRatio,1.5);assert.equal(budget.settings.quality,'high');
- budget.viewport(3,true);budget.setMode('auto');assert.equal(budget.settings.pixelRatio,1);assert.equal(budget.settings.quality,'medium');
+ budget.viewport(3,true);budget.setMode('auto');assert.equal(budget.settings.pixelRatio,1.25);assert.equal(budget.settings.quality,'medium');assert.equal(budget.settings.samples,2);
 });
 test('distance detail keeps the exact character and restores all fur in close-ups',()=>{
  const pet=createCompanion(),fur=pet.group.getObjectByName('plush-fur'),body=pet.group.getObjectByName('plush-body'),full=fur.count,matrix=fur.instanceMatrix.array.slice(),bodyPosition=body.geometry.attributes.position.array.slice();
