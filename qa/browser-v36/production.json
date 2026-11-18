@@ -1,0 +1,239 @@
+{
+  "at": "2026-11-18T08:47:25.091Z",
+  "commit": "a2e1bf748a14bdc8bbce420c28ef879666fbc282",
+  "files": [
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "index.html",
+      "status": 200,
+      "match": false
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "index.html",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "ui-system.css",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "ui-system.css",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "glass.css",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "glass.css",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "aurora.css",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "aurora.css",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "metaverse.css",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "metaverse.css",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "park.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "park.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "region-layout.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "region-layout.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "spa-transform.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "spa-transform.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "spa-resort.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "spa-resort.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "onsen-water.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "onsen-water.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "winter-experience.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "winter-experience.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "activity-state.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "activity-state.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "held-popcorn.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "held-popcorn.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "park-layout.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "park-layout.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "map-atlas.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "map-atlas.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "textures/winter-world-map.webp",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "textures/winter-world-map.webp",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "file": "sw.js",
+      "status": 200,
+      "match": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "file": "sw.js",
+      "status": 200,
+      "match": true
+    }
+  ],
+  "sitesHtml": {
+    "applicationHtmlIntact": true,
+    "hostingRuntimeInsertions": [
+      {
+        "kind": "insert",
+        "localLength": 0,
+        "remoteLength": 1114,
+        "cloudflareChallenge": true
+      }
+    ]
+  },
+  "health": [
+    {
+      "base": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+      "status": 200,
+      "ok": true,
+      "multiplayer": true
+    },
+    {
+      "base": "https://moru-winter-park.vercel.app",
+      "status": 200,
+      "ok": true,
+      "multiplayer": true
+    }
+  ],
+  "sitesVersion": 36,
+  "sitesDeployment": "appgdep_6afd658037288191a9b59e01103b7bc7",
+  "vercelDeployment": "dpl_4ZKaj1myCmWBa1sarwFjfs2P74jx",
+  "verified": true
+}

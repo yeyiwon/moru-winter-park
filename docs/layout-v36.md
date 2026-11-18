@@ -100,4 +100,10 @@ Apple M2 / 실제 Chrome, 동일한 `medium` 품질, 같은 장소 ID에서 각�
 
 ## 배포
 
-GitHub와 기존 Sites·Vercel 운영 주소에 같은 검증본을 반영한다. 실제 배포 버전과 커밋은 릴리스 확인 후 개발 로그에 기록한다.
+- 소스·1차 증거: `77eb4b714a0312ea562de4ff40fae1f8bae6a4cb`. 전체 검증 자료 포함 릴리스: `a2e1bf748a14bdc8bbce420c28ef879666fbc282`.
+- 기존 Sites **버전 36**, 배포 `appgdep_6afd658037288191a9b59e01103b7bc7` 성공.
+- GitHub main 반영 후 기존 Vercel Git 연결의 자동 운영 배포 `dpl_4ZKaj1myCmWBa1sarwFjfs2P74jx`가 같은 릴리스 커밋으로 READY가 되었다. 중복 수동 배포는 하지 않았다.
+- 두 운영 주소에서 CSS/JS/지도 등 16개 파일의 SHA-256이 검증한 빌드와 일치했다. Vercel HTML도 일치한다. Sites HTML은 Cloudflare 보안 코드 1,114자 삽입 외에 앱 본문 변경이 없음을 확인했다.
+- 두 주소의 `/api/health`: HTTP 200, `ok:true`, `multiplayer:true`. 이 읽기 전용 확인이 실제 여러 물리 기기의 동시 플레이 검증을 대신하지는 않는다.
+- 화면 비교 자료가 포함된 최초 push는 저장소의 64MiB 한도로 거절됐다. 미전송 원본 커밋은 보존하고, 자료를 두 커밋으로 나눠 성공적으로 저장했다. 최종 소스·자료는 원래 검증본과 동일하다.
+- [운영 확인 원자료](../qa/browser-v36/production.json). 이 릴리스 기록만 추가하는 후속 문서 커밋은 앱 파일을 변경하지 않는다.
