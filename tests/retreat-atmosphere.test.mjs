@@ -38,6 +38,6 @@ test('interiors only animate the active room and share the quality setting',()=>
 
 test('outdoor bath atmosphere stays inside existing basin footprints and uses a bounded draw set',()=>{
  const scene=new T.Scene(),asset=buildSpaResort({scene,M:(color,roughness,metalness)=>new T.MeshStandardMaterial({color,roughness,metalness})});let draws=0,water=0;
- asset.atmosphere.root.traverse(o=>{if(o.geometry)draws++;if(o.userData.waterFootprint){water++;assert.ok(o.userData.waterFootprint.rx<=7.4);assert.ok(o.userData.waterFootprint.rz<=6.4);}});
+ asset.atmosphere.root.traverse(o=>{if(o.geometry)draws++;});asset.root.traverse(o=>{if(o.userData.waterFootprint){water++;assert.ok(o.userData.waterFootprint.rx<=7.4);assert.ok(o.userData.waterFootprint.rz<=6.4);}});
  assert.equal(water,3);assert.ok(draws<=6);asset.update(5,false,'low');assert.equal(asset.atmosphere.quality,'low');assert.equal(asset.atmosphere.time,5);asset.update(20,true);assert.equal(asset.atmosphere.time,5);
 });

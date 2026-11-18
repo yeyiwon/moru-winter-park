@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import {pathToFileURL} from 'node:url';
 const {chromium}=await import(pathToFileURL(process.env.PLAYWRIGHT_PATH||'/tmp/winter-browser-qa/node_modules/playwright-core/index.mjs'));
-const origin=process.env.PROFILE_URL||'http://127.0.0.1:4184',out='qa/browser-v32/map-render';await fs.mkdir(out,{recursive:true});await fs.mkdir('dist/textures',{recursive:true});
+const origin=process.env.PROFILE_URL||'http://127.0.0.1:4184',out=process.env.MAP_OUTPUT||'qa/browser-v32/map-render';await fs.mkdir(out,{recursive:true});await fs.mkdir('dist/textures',{recursive:true});
 const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true}),page=await browser.newPage({viewport:{width:1600,height:1400},deviceScaleFactor:1,serviceWorkers:'block'});
 const errors=[];page.on('pageerror',e=>errors.push(e.message));page.on('console',m=>{if(m.type()==='error'&&/THREE|Shader|WebGL/.test(m.text()))errors.push(m.text());});
 await page.route('**/map-render.html',r=>r.fulfill({contentType:'text/html',body:`<!doctype html><style>html,body{margin:0;background:transparent}canvas{display:block}</style><script type="module">

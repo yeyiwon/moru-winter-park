@@ -1,0 +1,131 @@
+{
+  "checks": [
+    {
+      "name": "walk to actual ryokan door and enter",
+      "status": 200,
+      "body": {
+        "region": "ryokan",
+        "position": {
+          "x": 400,
+          "z": 8.5
+        },
+        "yaw": 3.141592653589793
+      }
+    },
+    {
+      "name": "walk and use interior-tea",
+      "frame": [
+        0.014457564486644321,
+        -0.10376683253734809,
+        0.9742435277440588
+      ]
+    },
+    {
+      "name": "walk and use interior-dining",
+      "frame": [
+        -0.000014193679520878893,
+        -0.11018205328373125,
+        0.9740875116620578
+      ]
+    },
+    {
+      "name": "walk and use interior-rest",
+      "frame": [
+        0.007073728989197321,
+        -0.13050700537705914,
+        0.9758125440558572
+      ]
+    },
+    {
+      "name": "walk and use interior-footbath",
+      "frame": [
+        0.002664225739096021,
+        -0.12794953275527424,
+        0.9758218495249242
+      ]
+    },
+    {
+      "name": "walk and use interior-sauna",
+      "frame": [
+        -0.0003095619633611543,
+        -0.10154919090516062,
+        0.9757209009422086
+      ]
+    },
+    {
+      "name": "walk and use interior-aquarium",
+      "frame": [
+        0.0010003794646072344,
+        -0.5470113029853387,
+        0.9762268126012574
+      ]
+    },
+    {
+      "name": "peer appears in same interior",
+      "id": "a22c27ff9b3f69ce601066c4aa585f4e128f08d3b7a810ba4ea78e6ef92713f7"
+    },
+    {
+      "name": "exit returns to outdoor door",
+      "player": {
+        "x": 114,
+        "y": 0.95,
+        "z": -23.4,
+        "yaw": 3.141592653589793,
+        "mode": "",
+        "speed": 0
+      }
+    },
+    {
+      "name": "large bath enters, wades, exits",
+      "initial": {
+        "x": 92,
+        "y": 0.28,
+        "z": -16,
+        "yaw": 3.141592653589793,
+        "mode": "bath",
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "roast": 0
+      },
+      "final": {
+        "x": 91.00102808373822,
+        "y": 0.28,
+        "z": -16.472313563340062,
+        "yaw": -2.012389950615803,
+        "mode": "bath",
+        "speed": 1.3000000000003538,
+        "gesture": "",
+        "heldItem": "",
+        "roast": 0
+      }
+    },
+    {
+      "name": "mobile tap entry, joystick and exit",
+      "before": {
+        "x": 400,
+        "y": 0.95,
+        "z": 8.5,
+        "yaw": 3.141592653589793,
+        "mode": "",
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "roast": 0
+      },
+      "after": {
+        "x": 400,
+        "y": 0.95,
+        "z": 6.645714931172236,
+        "yaw": 3.141592653589793,
+        "mode": "",
+        "speed": 2.790513537776569,
+        "gesture": "",
+        "heldItem": "",
+        "roast": 0
+      }
+    }
+  ],
+  "errors": [],
+  "physicalMobile": false
+}

@@ -1,3 +1,6 @@
+import {ryokanFinish} from './ryokan-finish.js';
+import {ryokanWindow} from './ryokan-window.js';
+import {createOnsenWater} from './onsen-water.js';
 import {buildMuseumInterior} from './museum-world.js';
 import {buildRyokanChef} from './ryokan-chef.js';
 import {buildRyokanAquarium} from './ryokan-aquarium.js';
@@ -30,14 +33,17 @@ function makeTeaService(b,m,x,y,z){
 }
 
 function buildRyokan(root,m){
+ m.cedar.color.set('#967a5b');m.lightWood.color.set('#bda77c');m.endgrain.color.set('#584536');m.cream.color.set('#d8d0bb');m.tatami.color.set('#a3a584');
+ for(const material of [m.cedar,m.lightWood,m.endgrain])ryokanFinish(material);ryokanFinish(m.darkStone,'stone');
  const b=makeBuilder(root),walls=[],ceil=new T.Group();ceil.name='ryokan-cutaway-ceiling';ceil.userData.keepGroup=true;root.add(ceil);const cb=makeBuilder(ceil);
  b.box(42,.28,34,m.endgrain,0,-.05,0);b.box(41.6,.035,33.6,m.cedar,0,.072,0);
- for(let i=0;i<84;i++){const x=-20.75+i*.5;b.box(.012,.006,33.5,m.endgrain,x,.092,0);for(let j=0;j<8;j++)b.box(.48,.007,.012,m.endgrain,x+.24,.094,-16+(j+.5*(i%2))*4.2);}
+ for(let i=0;i<60;i++){const x=-20.65+i*.7;b.box(.008,.006,33.5,m.endgrain,x,.092,0);for(let j=0;j<8;j++)b.box(.68,.007,.008,m.endgrain,x+.24,.094,-16+(j+.5*(i%2))*4.2);}
  // Quiet central circulation is 8 m wide, framed by actual occupied rooms.
  for(const x of [-3.8,3.8])b.box(.035,.008,30,m.brass,x,.097,0);
  for(const side of [-1,1]){const wall=new T.Group();wall.name='ryokan-cutaway-wall-'+(side<0?'west':'east');wall.userData.keepGroup=true;wall.userData.cutawayAxis='x';wall.userData.cutawaySign=side;root.add(wall);walls.push(wall);const wb=makeBuilder(wall);
   wb.box(.22,1,34,m.cedar,side*20.9,.55,0);wb.box(.26,.35,34,m.endgrain,side*20.9,6.7,0);
   for(let j=0;j<9;j++){const z=-16+j*4;wb.box(.3,6.5,.3,m.endgrain,side*20.8,3.35,z);if(j<8){wb.box(.035,4.7,3.7,m.glass,side*20.9,3.5,z+2);for(let n=1;n<5;n++)wb.box(.07,4.8,.045,m.lightWood,side*20.74,3.5,z+n*.8);for(const y of [1.15,3.5,5.85])wb.box(.09,.055,4,m.lightWood,side*20.73,y,z+2);}}
+  if(side>0){for(const z of [-10,-6])wall.add(ryokanWindow(wb,m,20.62,3.1,z,3.6,3.25,-Math.PI/2));}
   mergeFinish(wall);
  }
  for(const side of [-1,1]){const wall=new T.Group();wall.name='ryokan-cutaway-wall-'+(side<0?'north':'south');wall.userData.keepGroup=true;wall.userData.cutawayAxis='z';wall.userData.cutawaySign=side;root.add(wall);walls.push(wall);const wb=makeBuilder(wall);
@@ -47,10 +53,21 @@ function buildRyokan(root,m){
   else{wb.box(6.2,5.5,.025,m.glass,0,3.2,-16.9);for(const x of [-2,0,2])wb.box(.06,5.5,.09,m.lightWood,x,3.2,-16.8);}
   mergeFinish(wall);
  }
+ for(const x of [-19.9,19.9])cb.box(.09,.04,31,m.lamp,x,6.62,0);
  cb.box(42,.15,34,m.cream,0,7.25,0);for(const z of [-16,-8,0,8,16]){cb.box(42,.32,.3,m.endgrain,0,7.04,z);for(const x of [-14,-7,0,7,14])cb.box(.22,.3,34,m.lightWood,x,6.8,0);}mergeFinish(ceil);
  const partitions=new T.Group();partitions.name='ryokan-room-screens';root.add(partitions);const pb=makeBuilder(partitions);
  for(const o of ryokanFixtures.filter(o=>o.id.includes('wall')||o.id==='tatami-screen')){pb.box(o.rx*2,2.5,o.rz*2,m.cream,o.x,1.34,o.z);const horizontal=o.rx>o.rz,length=horizontal?o.rx*2:o.rz*2;for(let i=0;i<=length/.38;i++)pb.box(horizontal?.045:.32,2.6,horizontal?.32:.045,m.endgrain,o.x+(horizontal?-o.rx+i*.38:0),1.39,o.z+(horizontal?0:-o.rz+i*.38));pb.box(o.rx*2+.06,.12,o.rz*2+.06,m.lightWood,o.x,2.68,o.z);}
  mergeFinish(partitions);
+ // Genkan stone inlay and a narrow brass threshold are flush with the walkable floor.
+ b.box(7.3,.009,6.8,m.darkStone,0,.1,12.9);for(const x of [-3.65,3.65])b.box(.035,.012,6.8,m.brass,x,.106,12.9);
+ for(let i=0;i<6;i++)b.box(7.2,.004,.012,m.stone,0,.107,10.15+i*1.05);
+ // A recessed tokonoma behind the tatami keeps the main aisle open.
+ b.box(5.6,.08,.65,m.endgrain,12,.14,-16.2);b.box(4.5,4.3,.04,m.linen,12,3.1,-16.72);
+ for(const x of [9.7,14.3])b.box(.1,4.5,.13,m.endgrain,x,3.1,-16.63);
+ b.box(1.4,2.8,.03,m.cream,12,3.3,-16.63);for(const y of [1.9,4.7])b.box(1.5,.05,.05,m.brass,12,y,-16.58);
+ b.tube([[11.7,2.2,-16.59],[12.2,2.9,-16.59],[11.9,3.4,-16.59],[12.3,4.2,-16.59]],.018,m.endgrain);
+ b.mesh(new T.LatheGeometry([[.2,0],[.34,.18],[.24,.65],[.14,.72]].map(v=>new T.Vector2(...v)),20),m.darkStone,13.5,.2,-16.1);
+ for(let i=0;i<3;i++)b.tube([[13.5,.8,-16.1],[13.4+i*.12,1.3,-16.12],[13.1+i*.4,1.7+i*.12,-16.1]],.012,m.endgrain);
  // Tatami mats have woven linework and sewn cloth borders at actual floor height.
  for(let x=8;x<=17;x+=3)for(let z=-13;z<=-4;z+=3){b.box(2.95,.025,2.95,m.tatami,x,.108,z);for(const side of [-1,1])b.box(.085,.01,2.95,m.tatamiEdge,x+side*1.41,.128,z);for(let i=0;i<18;i++)b.box(2.7,.004,.009,m.sage,x,.13,z-1.4+i*.16);}
  const table=(id,material)=>{const o=ryokanFixtures.find(o=>o.id===id);b.box(o.rx*2,.18,o.rz*2,material,o.x,.73,o.z);for(const x of [-o.rx+.25,o.rx-.25])for(const z of [-o.rz+.25,o.rz-.25])b.box(.13,.54,.13,m.endgrain,o.x+x,.38,o.z+z);makeTeaService(b,m,o.x,.83,o.z);};table('tea-table',m.lightWood);table('tatami-table',m.cedar);
@@ -65,18 +82,18 @@ function buildRyokan(root,m){
  // Layered shoji panels slide from a clear doorway; the collision opening remains unchanged.
  const doors=[];for(const side of [-1,1]){const door=new T.Group();door.name='ryokan-sliding-door';door.userData.keepGroup=true;door.position.set(side*1.55,0,16.6);root.add(door);const db=makeBuilder(door);db.box(2.9,3.8,.07,m.cream,0,2.0,0);for(const x of [-1.43,1.43])db.box(.09,3.9,.12,m.endgrain,x,2,0);for(const y of [.1,1.4,2.7,3.95])db.box(2.9,.065,.12,m.endgrain,0,y,0);for(let i=-3;i<=3;i++)db.box(.03,3.8,.1,m.lightWood,i*.36,2,0);db.box(.04,.23,.04,m.brass,-side*1.1,1.9,-.08);mergeFinish(door);doors.push({root:door,side});}
  const stove=ryokanFixtures.find(o=>o.id==='sauna-stove');b.mesh(new T.CylinderGeometry(.8,.9,1.2,24),m.darkStone,stove.x,.7,stove.z);for(let i=0;i<20;i++){const a=i*2.399,r=.65*Math.sqrt(i/20);b.oval(m.stone,stove.x+Math.cos(a)*r,1.32+(i%3)*.08,stove.z+Math.sin(a)*r,.24,.16,.22);}for(let j=0;j<20;j++){const a=j*Math.PI/10;b.rod([stove.x+Math.cos(a)*1,.2,stove.z+Math.sin(a)*1],[stove.x+Math.cos(a)*1,1.45,stove.z+Math.sin(a)*1],.035,m.cedar);}b.ring(1,.04,m.lightWood,stove.x,1.45,stove.z);
- const bath=ryokanFixtures.find(o=>o.id==='footbath');b.box(bath.rx*2,.28,bath.rz*2,m.darkStone,bath.x,.16,bath.z);b.box(5.3,.035,3.5,m.water,bath.x,.32,bath.z);for(const z of [-1,1])b.box(6.2,.16,.45,m.cedar,bath.x,.41,bath.z+z*1.95);for(const x of [-1,1])b.box(.45,.16,3.5,m.cedar,bath.x+x*2.85,.41,bath.z);
+ const bath=ryokanFixtures.find(o=>o.id==='footbath');b.box(bath.rx*2,.28,bath.rz*2,m.darkStone,bath.x,.16,bath.z);const footWater=createOnsenWater({lights:[[0,5.5,-6],[-12,5.5,-8],[12,5.5,-8]]});const waterGeo=new T.PlaneGeometry(5.3,3.5,18,12);waterGeo.rotateX(-Math.PI/2);waterGeo.translate(bath.x,.33,bath.z);b.mesh(waterGeo,footWater.material);for(const z of [-1,1])b.box(6.2,.16,.45,m.cedar,bath.x,.41,bath.z+z*1.95);for(const x of [-1,1])b.box(.45,.16,3.5,m.cedar,bath.x+x*2.85,.41,bath.z);
  for(const o of ryokanFixtures.filter(o=>['locker','tatami-cabinet'].includes(o.id))){b.box(o.rx*2,1.8,o.rz*2,m.cedar,o.x,1,o.z);for(let i=0;i<4;i++)for(let j=0;j<3;j++){const xx=o.x-o.rx+.5+i*(o.rx*2/4),y=.5+j*.55;b.box(o.rx*.43,.5,.04,m.lightWood,xx,y,o.z+o.rz+.035);b.oval(m.brass,xx+.12,y,o.z+o.rz+.065,.025,.025,.015);}}
  for(const p of ryokanFixtures.filter(o=>o.id.startsWith('planter')))makePlanter(b,m,p.x,p.z);
  for(const [x,z]of [[-12,7],[12,10],[-12,-8],[12,-8],[0,-6],[0,8]]){makeLantern(b,m,x,5.25,z,1.1);b.rod([x,6.8,z],[x,6.05,z],.015,m.endgrain);}
  const aquarium=buildRyokanAquarium(root,m),chef=buildRyokanChef(root,m);
- const light=new T.PointLight('#ffc991',75,38,2);light.position.set(0,5,0);root.add(light);const fill=new T.HemisphereLight('#ffe4bf','#685743',1.5);root.add(fill);
+ const light=new T.PointLight('#ffc991',85,38,2);light.position.set(0,5,0);root.add(light);const fill=new T.HemisphereLight('#ffe4bf','#79674f',1.8);root.add(fill);
  const atmosphere=createRetreatAtmosphere(root,{name:'ryokan',
-  waters:[{x:bath.x,y:.344,z:bath.z,rx:2.64,rz:1.74,rect:true,lights:[[0,5.5,-6],[-12,5.5,-8],[12,5.5,-8]]}],
+  waters:[],
   vapour:[{x:bath.x,y:.34,z:bath.z-.5,rx:2.15,rz:1.05,rise:1.25,size:.9,count:20,opacity:.11},{x:-13,y:1.25,z:7,rx:.18,rz:.18,rise:.65,size:.32,count:6,opacity:.1},{x:12,y:1.38,z:.1,rx:.2,rz:.2,rise:.6,size:.26,count:5,opacity:.08},{x:12,y:1.25,z:-9,rx:.18,rz:.18,rise:.65,size:.32,count:6,opacity:.1},{x:stove.x,y:1.5,z:stove.z,rx:.65,rz:.65,rise:1.6,size:.6,count:8,opacity:.065}],
   lamps:[[-12,7],[12,10],[-12,-8],[12,-8],[0,-6],[0,8]].map(([x,z])=>({x,y:.143,z,rx:3.3,rz:2.5}))
  });
- mergeFinish(root);return{root,walls,doors,doorOpen:0,ceiling:ceil,uniforms:[],atmosphere,update:(t,still,p)=>{aquarium.update(t,still,p);chef.update(t,still,p);},setQuality:q=>aquarium.setQuality(q),dispose:()=>aquarium.dispose()};
+ mergeFinish(root);return{root,walls,doors,doorOpen:0,ceiling:ceil,uniforms:[],atmosphere,update:(t,still,p)=>{footWater.update(t,still);aquarium.update(t,still,p);chef.update(t,still,p);},setQuality:q=>aquarium.setQuality(q),dispose:()=>aquarium.dispose()};
 }
 
 export function buildInteriors(scene,{lazy=false,onLoad=()=>{},onRelease=()=>{},retainMs=90000}={}){

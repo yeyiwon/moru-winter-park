@@ -1,3 +1,4 @@
+import {ryokanGardenObstacles} from './ryokan-exterior-layout.js';
 // Terrain, ride routes and collision rules share world coordinates.
 export const spaShift=-40;
 export const alpine={x:0,z:-260,r:144,landZ:-230,rx:144,rz:174},spa={x:0,z:119+spaShift,r:31};
@@ -136,7 +137,7 @@ export function alpineHeight(x,z){
 export const resortDestinations=[
  {id:'ski',name:'초급·중급 리프트',x:-36,z:-185,kind:'ski',view:{distance:10,yaw:1.5,pitch:.22,lookAhead:-1.8,lookHeight:0}},
  {id:'onsen',name:'설림 노천 온천',x:-10,z:114+spaShift,kind:'onsen',view:{distance:40,yaw:2.65,pitch:.62}},
- {id:'sauna',name:'편백 휴양관',x:12,z:113.6+spaShift,kind:'sauna',view:{distance:32,yaw:2.65,pitch:.55}}
+ {id:'sauna',name:'료칸',x:12,z:113.6+spaShift,kind:'sauna',view:{distance:32,yaw:2.65,pitch:.55}}
 ];
 export const restSeats={onsen:{x:-17.8,y:1.35,z:124+spaShift,yaw:Math.PI/2},sauna:{x:7.5,y:1.55,z:125+spaShift,yaw:Math.PI/2},healing:{x:50,y:1,z:35.5,yaw:Math.PI}};
 export const spaPavilion={x:12,z:126+spaShift,w:24,d:22,sideDoorZ:121.5+spaShift};
@@ -159,6 +160,7 @@ export const resortObstacles=[
  {x:-55,z:-176,w:9.3,d:6},{x:-44,z:-185,w:1.5,d:1.4},
  ...summitObstacles,
  ...[
+ ...ryokanGardenObstacles,
  {x:-10,z:124,rx:7.4,rz:6.4},{x:-19,z:132,rx:3.7,rz:3},
  {x:12,z:137,w:12,d:.18},{x:24,z:126,w:.18,d:11},
  {x:0,z:117.1,w:.18,d:2.1},{x:0,z:130.4,w:.18,d:6.6},

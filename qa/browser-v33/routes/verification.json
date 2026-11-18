@@ -1,0 +1,74 @@
+{
+  "routes": [
+    {
+      "mobile": false,
+      "from": "park",
+      "to": "spa",
+      "complete": true,
+      "seconds": 29.272,
+      "minClearance": 0.8599999999999999,
+      "visibleSamples": 71,
+      "samples": 71,
+      "last": {
+        "route": 0,
+        "velocity": [
+          0,
+          0
+        ],
+        "camera": [
+          106.05772651993207,
+          8.826568449433989,
+          -26.3858723981876
+        ],
+        "player": [
+          101.86357330655717,
+          0.95,
+          -40.93122276555102
+        ],
+        "safe": true,
+        "ground": 0.09,
+        "screen": [
+          0.026540894710564054,
+          -0.24766381711046903,
+          0.9883851023901814
+        ]
+      }
+    },
+    {
+      "mobile": true,
+      "from": "park",
+      "to": "spa",
+      "complete": true,
+      "seconds": 29.449,
+      "minClearance": 0.8599999999999999,
+      "visibleSamples": 72,
+      "samples": 72,
+      "last": {
+        "route": 0,
+        "velocity": [
+          0,
+          0
+        ],
+        "camera": [
+          106.34726091372497,
+          8.826568449433871,
+          -26.531845070622232
+        ],
+        "player": [
+          101.86357330655717,
+          0.95,
+          -40.93122276555102
+        ],
+        "safe": true,
+        "ground": 0.09,
+        "screen": [
+          -0.0064931971106858095,
+          -0.1835816362356562,
+          0.9883502696215357
+        ]
+      }
+    }
+  ],
+  "errors": [],
+  "physicalMobile": false
+}

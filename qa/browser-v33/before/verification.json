@@ -1,0 +1,29 @@
+{
+  "checks": [
+    {
+      "name": "walk to actual ryokan door and enter",
+      "status": 200,
+      "body": {
+        "region": "ryokan",
+        "position": {
+          "x": 400,
+          "z": 8.5
+        },
+        "yaw": 3.141592653589793
+      }
+    },
+    {
+      "name": "exit returns to outdoor door",
+      "player": {
+        "x": 114,
+        "y": 0.95,
+        "z": -23.4,
+        "yaw": 3.141592653589793,
+        "mode": "",
+        "speed": 0
+      }
+    }
+  ],
+  "errors": [],
+  "physicalMobile": false
+}

@@ -1,9 +1,13 @@
+import {ryokanGardenTrees,ryokanCanopyPosts} from './ryokan-exterior-layout.js';
+import {createOnsenWater} from './onsen-water.js';
+import {ryokanFinish} from './ryokan-finish.js';
+import {snowPine} from './ryokan-garden.js';
 import {createSnowPaths} from './snow-path.js';
 import {createRetreatAtmosphere} from './retreat-atmosphere.js';
 import * as T from './vendor/three.module.js';
 import {spa as worldSpa,spaPavilion as worldPavilion,spaActivities as worldActivities,spaShift,spaX} from './resort-layout.js';
 
-// A bath garden laid out around water, with an open-front pavilion rather than a prop hut.
+// One enclosed snow lodge and its sheltered natural-stone bath garden.
 export function buildSpaResort(api){
  // Keep authored joinery in its original local frame; translate the whole district once.
  const spa={...worldSpa,x:worldSpa.x-spaX,z:worldSpa.z-spaShift},spaPavilion={...worldPavilion,x:worldPavilion.x-spaX,z:worldPavilion.z-spaShift,sideDoorZ:worldPavilion.sideDoorZ-spaShift};
@@ -11,8 +15,10 @@ export function buildSpaResort(api){
  const hitMaterial=new T.MeshBasicMaterial({visible:false,colorWrite:false,depthTest:false,transparent:true,opacity:0,depthWrite:false});
  const {scene,M}=api,root=new T.Group();root.name='spa-resort';scene.add(root);
  const interactive=[],moving=new Set();
- const snow=M('#e8eeeb',.98,0),stone=M('#858d88',.94,0),stoneLight=M('#b5b8a8',.96,0),stoneDark=M('#5e6863',.94,0),rock=M('#5c6c70',.97,0),rockShade=M('#485b62',.98,0),cedar=M('#b17e52',.92,0),cedarLight=M('#d2aa72',.96,0),cedarDark=M('#70513b',.94,0),slate=M('#3e5358',.86,.04),brass=M('#b59b72',.6,.2),cloth=M('#ece4d0',1,0),green=M('#335b50',1,0),greenLight=M('#4d7262',1,0);
+ const snow=M('#e8eeeb',.98,0),stone=M('#858d88',.94,0),stoneLight=M('#b5b8a8',.96,0),stoneDark=M('#5e6863',.94,0),rock=M('#5c6c70',.97,0),rockShade=M('#485b62',.98,0),cedar=M('#79543b',.92,0),cedarLight=M('#b99b70',.96,0),cedarDark=M('#3c3029',.94,0),slate=M('#3e5358',.86,.04),brass=M('#b59b72',.6,.2),cloth=M('#ece4d0',1,0),green=M('#335b50',1,0),greenLight=M('#4d7262',1,0);
  const water=new T.MeshPhysicalMaterial({color:'#8db6a7',emissive:'#a1793d',emissiveIntensity:.08,roughness:.22,metalness:.08,transparent:true,opacity:.78,clearcoat:.62,depthWrite:false});
+ for(const m of [cedar,cedarLight,cedarDark])ryokanFinish(m);for(const m of [stone,stoneDark,rock,rockShade])ryokanFinish(m,'stone');
+ const bathWater=createOnsenWater({lights:[[-19.6,1.4,120],[-21.8,1.4,136],[1,1.4,136]]});
  const lamp=new T.MeshStandardMaterial({color:'#ffe4b2',emissive:'#ffc177',emissiveIntensity:.62,roughness:.72});
  let seed=913;const rand=()=>{seed=seed*16807%2147483647;return(seed-1)/2147483646;};
  const cube=new T.BoxGeometry(1,1,1),sphere=new T.SphereGeometry(1,12,8);
@@ -52,25 +58,41 @@ export function buildSpaResort(api){
  for(let poolIndex=0;poolIndex<pools.length;poolIndex++){
   const p=pools[poolIndex],ring=shape(outline(p.x,p.z,p.rx+1.35,p.rz+1.35,80,.045));ring.holes.push(new T.Path(outline(p.x,p.z,p.rx,p.rz,64).reverse()));const g=new T.ShapeGeometry(ring,1);g.rotateX(-Math.PI/2);mesh(g,stoneLight,0,.145,0);
   const basin=shape(outline(p.x,p.z,p.rx*.99,p.rz*.99,64)),bg=new T.ShapeGeometry(basin,1);bg.rotateX(-Math.PI/2);mesh(bg,stoneDark,0,-1.05,0);
-  const wg=bg.clone(),surface=mesh(wg,water,0,.025,0);surface.name='recessed-hot-spring';moving.add(surface);
+  const wg=bg.clone(),surface=mesh(wg,bathWater.material,0,.025,0);surface.name='recessed-hot-spring';surface.userData.waterFootprint={...p};moving.add(surface);
   const wall=[],wallIdx=[];const edge=outline(p.x,p.z,p.rx,p.rz,64);for(let i=0;i<=64;i++){const e=edge[i%64];wall.push(e.x,.15,-e.y,e.x,-1.06,-e.y);if(i<64){const k=i*2;wallIdx.push(k,k+1,k+2,k+2,k+1,k+3);}}const wallGeo=new T.BufferGeometry();wallGeo.setAttribute('position',new T.Float32BufferAttribute(wall,3));wallGeo.setIndex(wallIdx);wallGeo.computeVertexNormals();mesh(wallGeo,stoneDark);
-  const stones=poolIndex?30:52;for(let i=0;i<stones;i++){const a=i/stones*Math.PI*2,f=1+Math.sin(a*3+.6)*.025+Math.sin(a*5-.3)*.0125,x=p.x+Math.cos(a)*p.rx*f,z=p.z+Math.sin(a)*p.rz*f,sz=.44+rand()*.28,b=boulder(i%4?stone:rockShade,x,.20,z,sz,.20+rand()*.16,sz*(.65+rand()*.3));b.rotation.y=-a;if(i%3===0){const vein=[];for(const t of [-.62,-.3,0,.3,.62]){const xx=t*sz,zz=Math.sin(t*4)*sz*.065,yy=.25+b.scale.y*Math.sqrt(Math.max(0,1-t*t-(zz/(sz*.8))**2))+.004;vein.push([x+Math.cos(a)*xx-Math.sin(a)*zz,yy,z+Math.sin(a)*xx+Math.cos(a)*zz]);}curve(vein,.0035,stoneLight);}if(i%4===0&&z>p.z+1)oval(snow,x,.46,z,sz*.8,.065,sz*.6);}
+  // Large embedded slabs with small infill: no identical necklace of boulders.
+  const stones=poolIndex?17:29;for(let i=0;i<stones;i++){
+   const a=(i+.18*Math.sin(i*3.7))/stones*Math.PI*2,f=1+Math.sin(a*3+.6)*.025+Math.sin(a*5-.3)*.0125,x=p.x+Math.cos(a)*p.rx*f,z=p.z+Math.sin(a)*p.rz*f;
+   if(!poolIndex&&Math.abs(x+10)<1.75&&z<p.z)continue;
+   const wide=.7+rand()*.65,high=.2+rand()*.36,b=boulder(i%3?stone:rockShade,x,.08,z,wide,high,.5+rand()*.32);b.rotation.set(.06*Math.sin(i),-a,.05*Math.cos(i));
+   if(z>p.z+.6&&i%2===0)oval(snow,x,high+.08,z,wide*.72,.085,.38);
+   if(i%3===0)boulder(stoneDark,x-Math.cos(a)*.45,-.17,z-Math.sin(a)*.45,.6,.22,.43);
+  }
  }
  // Two low ledges make the large bath readable from the footpath.
  for(const [x,z,w,d]of [[-17.8,124,1.15,4],[-8,116.3,4,1],[-23.8,132,1,2.7]]){box(w,.22,d,cedarDark,x,.24,z);for(let i=0;i<Math.max(3,Math.round(w/.17));i++)box(.13,.07,d,cedarLight,x-w/2+.1+i*.17,.39,z);}
- // Rinse station and a small stone cascade into the rear soaking pool.
- for(let i=0;i<10;i++){const a=i*2.4,x=-17.7+Math.cos(a)*(1.5+rand()),z=136+Math.sin(a)*1.2,h=.8+rand()*2.1;const b=boulder(i%3?rock:rockShade,x,h*.4,z,1.15+rand()*.5,h,1.05+rand()*.4);b.rotation.y=a;oval(snow,x,h*1.35,z,.85,.14,.7);}
- const fallUniforms={time:{value:0}},fallMat=new T.ShaderMaterial({transparent:true,depthWrite:false,uniforms:fallUniforms,vertexShader:'varying vec2 vUv;void main(){vUv=uv;gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.);}',fragmentShader:'varying vec2 vUv;uniform float time;void main(){float flow=.5+.5*sin(vUv.x*110.-time*4.5);gl_FragColor=vec4(.74,.88,.82,.28+flow*.2);}'});
- for(let i=0;i<3;i++){const curve=new T.CatmullRomCurve3([new T.Vector3(-18.7+i*.18,2.8,135.1),new T.Vector3(-18.7+i*.18,2.1,134.7),new T.Vector3(-18.9+i*.17,.08,134)]);const fall=mesh(new T.TubeGeometry(curve,20,.045,5,false),fallMat);moving.add(fall);}
+ // A stepped rock ravine feeds two falling sheets into the small pool.
+ for(const [x,z,w,h,d]of [[-20.7,136.7,1.7,2.2,1.5],[-17.6,137,1.6,2.7,1.5],[-19.1,137.1,1.4,2.1,1.2],[-18,135.8,1.5,1.15,.9],[-21.5,135.2,1.2,.8,1.2]]){
+  const b=boulder(rockShade,x,h*.65,z,w,h*.66,d);b.rotation.y=x;oval(snow,x,h*1.25+.08,z,w*.85,.16,d*.7);
+ }
+ const fallUniforms={time:{value:0}},fallMat=new T.ShaderMaterial({transparent:true,depthWrite:false,side:T.DoubleSide,uniforms:fallUniforms,
+ vertexShader:'uniform float time;varying vec2 vUv;void main(){vUv=uv;vec3 p=position;p.z+=sin(uv.y*17.+time*1.1)*.018;gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);}',
+ fragmentShader:'varying vec2 vUv;uniform float time;void main(){float thread=pow(.5+.5*sin(vUv.x*73.+sin(vUv.y*12.-time*2.)),4.);float surge=.7+.3*sin(vUv.y*27.-time*3.);float edge=smoothstep(0.,.12,vUv.x)*(1.-smoothstep(.88,1.,vUv.x));gl_FragColor=vec4(.62,.81,.78,edge*(.18+thread*.28)*surge);}' });
+ for(const [x,y,z,w,h]of [[-19.2,2.15,135.9,1.35,1.4],[-19.5,.77,134.9,1.7,1.4]]){
+  const fall=mesh(new T.PlaneGeometry(w,h,8,16),fallMat,x,y,z);fall.rotation.x=-.2;moving.add(fall);
+  const lip=boulder(stoneDark,x,y+h/2-.08,z+.2,w*.7,.18,.5);lip.rotation.y=.16;
+ }
  for(const [x,z]of [[-3.4,116.8],[-1.8,117.4]]){box(.85,.14,.75,cedarDark,x,.21,z);box(.6,.5,.08,stoneDark,x,.47,z+.3);rod([x,.4,z+.28],[x,.82,z+.28],.035,brass);rod([x,.82,z+.28],[x,.82,z+.04],.035,brass);cedarBucket(x,.28,z-.1,.23);}
- // The 24 × 22 m lounge has two open entrances and a roof confined to its rear eaves.
+ // Full-depth snow roof, framed entrance and private shoji facade, all on the existing slab.
  box(spaPavilion.w+.4,.3,spaPavilion.d+.4,stoneDark,spaPavilion.x,.14,spaPavilion.z);box(spaPavilion.w,.08,spaPavilion.d,cedar,spaPavilion.x,.3,spaPavilion.z);
  for(let i=0;i<80;i++)box(.017,.012,21.9,cedarDark,.1+i*.3,.347,126);
  function threshold(a,b,width,side){const positions=side?[a[0],a[1],a[2]-width/2,a[0],a[1],a[2]+width/2,b[0],b[1],b[2]-width/2,b[0],b[1],b[2]+width/2]:[a[0]-width/2,a[1],a[2],a[0]+width/2,a[1],a[2],b[0]-width/2,b[1],b[2],b[0]+width/2,b[1],b[2]];const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(positions,3));geometry.setAttribute('uv',new T.Float32BufferAttribute([0,0,1,0,0,1,1,1],2));geometry.setIndex(side?[0,1,2,1,3,2]:[0,2,1,1,2,3]);geometry.computeVertexNormals();mesh(geometry,cedarLight);}
  threshold([12,.09,114.2],[12,.34,115],4.4,false);threshold([-.8,.09,121.5],[0,.34,121.5],4.6,true);
+ const facadePaper=new T.MeshStandardMaterial({color:'#d9cba9',emissive:'#e8b66f',emissiveIntensity:.13,roughness:.9});
  // Front doors are open, with an uninterrupted 4.4 m entry passage.
- for(const [x,w]of [[4.9,9.8],[19.1,9.8]]){box(w,.62,.18,cedar,x,.65,115);for(let i=0;i<Math.floor(w/.38);i++)box(.045,2.7,.08,cedarDark,x-w/2+.15+i*.38,2.3,115);}
- const glass=new T.MeshPhysicalMaterial({color:'#d0d9c6',transparent:true,opacity:.16,roughness:.3,metalness:0,side:T.DoubleSide,depthWrite:false});
+ for(const [x,w]of [[4.9,9.8],[19.1,9.8]]){box(w,.62,.18,cedar,x,.65,115);box(w,3.2,.14,facadePaper,x,2.55,115.09);for(let i=0;i<Math.floor(w/.38);i++)box(.045,2.7,.08,cedarDark,x-w/2+.15+i*.38,2.3,114.93);}
+ for(const [x,w]of [[4.9,9.8],[19.1,9.8]])for(const y of [1.05,2.35,3.7])box(w,.065,.1,cedarDark,x,y,114.92);
+ const glass=new T.MeshStandardMaterial({color:'#cbbf9c',emissive:'#edbd76',emissiveIntensity:.18,roughness:.88,side:T.DoubleSide});
  for(const [x,z,d]of [[0,117.1,4.2],[0,130.4,13.2],[24,126,22]]){box(.2,.8,d,cedar,x,.74,z);const gl=box(.025,2.9,d-.12,glass,x,2.6,z);moving.add(gl);for(let zz=z-d/2;zz<=z+d/2+.01;zz+=2)box(.22,4.3,.22,cedarDark,x,2.5,zz);box(.3,.24,d+.1,cedarDark,x,4.65,z);}
  box(.28,4.3,.28,cedarDark,0,2.5,119.2);box(.28,4.3,.28,cedarDark,0,2.5,123.8);box(.3,.24,4.6,cedarDark,0,4.65,121.5);
  box(24,4.25,.22,cedar,12,2.45,137);for(let x=.3;x<24;x+=.3)box(.035,4.1,.04,cedarLight,x,2.45,136.86);
@@ -78,8 +100,29 @@ export function buildSpaResort(api){
  for(const x of [4,9.3,14.7,20]){box(3.4,1.45,.08,lamp,x,3.3,136.72);for(const side of [-1,0,1])box(.065,1.5,.12,cedarDark,x+side*1.12,3.3,136.64);for(const y of [2.58,3.3,4.02])box(3.5,.065,.12,cedarDark,x,y,136.62);}
  for(const z of [115,129,137]){for(const x of [0,24])box(.28,4.6,.28,cedarDark,x,2.64,z);rod([-.35,4.85,z],[12,6.8,z],.13,cedarDark);rod([12,6.8,z],[24.35,4.85,z],.13,cedarDark);box(24.7,.22,.22,cedarDark,12,4.75,z);rod([8,4.82,z],[12,6.65,z],.085,cedarLight);rod([16,4.82,z],[12,6.65,z],.085,cedarLight);}
  box(.25,.25,22.8,cedarDark,12,6.8,126);
- function roofPanel(side){const w=12.65,d=6.6,m=box(w,.21,d,slate,12+side*6.15,5.82,134.2);m.rotation.z=-side*.158;const cap=box(w,.1,d,snow,12+side*6.15,5.97,134.2);cap.rotation.z=-side*.158;for(let x=.6;x<12.2;x+=.75){const beam=box(.07,.07,d+.1,cedarDark,12+side*x,6.77-x*.16,134.2);beam.rotation.z=-side*.158;}}
- roofPanel(-1);roofPanel(1);
+ function roofPanel(side){
+  const slope=.18,w=14.1,d=25.6,cx=12+side*6.85,cy=6.85-6.85*slope;
+  const roof=box(w,.26,d,slate,cx,cy,126);roof.rotation.z=-side*Math.atan(slope);
+  const cap=box(w,.22,d,snow,cx,cy+.23,126);cap.rotation.z=roof.rotation.z;
+  box(.32,.3,d,cedarDark,12+side*13.75,4.44,126);
+  for(let i=0;i<26;i++){const z=113.4+i*.99;const r=box(w,.13,.11,cedarLight,cx,cy-.2,z);r.rotation.z=roof.rotation.z;}
+  for(let i=0;i<15;i++){const z=113.6+i*1.7;oval(snow,12+side*13.67,4.62,z,.25,.18,.84);}
+ }
+ roofPanel(-1);roofPanel(1);box(.38,.32,26,snow,12,7.01,126);
+ // Low clerestories articulate the long roof without changing its footprint.
+ for(const x of [5.8,18.2]){
+  box(4.4,1.4,4.5,cedarDark,x,6.57,125.4);box(3.9,.9,.07,facadePaper,x,6.7,123.1);
+  for(let j=0;j<7;j++)box(.07,1,.11,cedarDark,x-1.8+j*.6,6.7,123.02);
+  for(const side of [-1,1]){const cap=box(2.65,.18,5.4,snow,x+side*1.23,7.35,125.1);cap.rotation.z=-side*.22;box(.13,.2,5.4,cedarDark,x+side*2.5,6.98,125.1);}
+ }
+
+ // Deep genkan canopy makes the door legible from the bridge approach.
+ for(const {x} of ryokanCanopyPosts){box(.3,3.7,.3,cedarDark,x,2.08,112.3);box(.52,.22,.52,stoneDark,x,.22,112.3);}
+ for(const side of [-1,1]){const r=box(4.4,.19,5.2,slate,12+side*2.1,4.44,112.9);r.rotation.z=-side*.19;const c=box(4.4,.18,5.2,snow,12+side*2.1,4.62,112.9);c.rotation.z=-side*.19;}
+ box(8.6,.22,.24,cedarDark,12,3.98,110.35);
+ for(const x of [7,17]){box(1.1,1.9,.32,cedarDark,x,1.35,114.7);box(.83,1.5,.08,lamp,x,1.39,114.5);for(let i=0;i<5;i++)box(.04,1.5,.08,cedarDark,x-.35+i*.175,1.39,114.44);}
+ // Horizontal foundation stones and recessed trim, rather than more free-standing props.
+ for(const x of [-.12,24.12])for(let j=0;j<14;j++)box(.26,.22,1.45,stoneDark,x,.17,115.4+j*1.56);
  // Recessed grain and joinery are attached to the existing timber faces, never to the walkways.
  for(const x of [0,24])for(const z of [115,129,137]){
   box(.28,.07,.28,cedarLight,x,.48,z);box(.28,.075,.28,cedarLight,x,4.42,z);
@@ -110,9 +153,9 @@ export function buildSpaResort(api){
  const branchPositions=[],branchUvs=[],branchIndices=[];
  for(let i=0;i<=12;i++){const t=i/12,w=Math.pow(Math.sin(t*Math.PI),.7)*.23*(1-t*.5)*(i%2?.82:1);for(const side of [-1,0,1]){branchPositions.push(t,.05*Math.sin(t*Math.PI)-t*t*.1+(side===0?.05:0),w*side);branchUvs.push(t,(side+1)/2);}if(i<12){const n=i*3;branchIndices.push(n,n+1,n+3,n+1,n+4,n+3,n+1,n+2,n+4,n+2,n+5,n+4);}}
  const boughGeo=new T.BufferGeometry();boughGeo.setAttribute('position',new T.Float32BufferAttribute(branchPositions,3));boughGeo.setAttribute('uv',new T.Float32BufferAttribute(branchUvs,2));boughGeo.setIndex(branchIndices);boughGeo.computeVertexNormals();green.side=greenLight.side=T.DoubleSide;
- function pine(x,z,h){mesh(new T.CylinderGeometry(.07,.16,h*.8,8),cedarDark,x,h*.4,z);for(let tier=0;tier<7;tier++){const y=h*(.22+tier*.105),r=h*(.28-tier*.032);for(let j=0;j<7;j++){const a=j*Math.PI*2/7+tier*2.399,reach=r*(.9+.1*Math.sin(j*3+tier));const b=mesh(boughGeo,tier%2?green:greenLight,x,y,z);b.rotation.y=-a;b.scale.set(reach,reach,reach);rod([x,y-.025,z],[x+Math.cos(a)*reach*.85,y-.025-reach*.045,z+Math.sin(a)*reach*.85],.016,cedarDark);const cap=mesh(boughGeo,snow,x,y+.045,z);cap.rotation.y=-a;cap.scale.set(reach*.9,reach*.83,reach*.61);}}}
+ const gardenBuilder={mesh,rod,tube:(points,r,mat)=>curve(points,r,mat)};
+ for(const [i,[x,z,h]]of ryokanGardenTrees.entries())snowPine(gardenBuilder,{wood:cedarDark,green,sage:greenLight,snow},x,z,h,i*.73);
 
- for(const [x,z,h]of [[-24,113,5.5],[-26,119,6.3],[-26,126,5.2],[-24,137,6],[-15,141,7],[-7,143,6.5],[1,144,7.2],[9,142,6.6],[17,139,6],[26,132,7],[27,124,6.5],[25,114,6],[-11,100,4.6],[10,99,5.5],[-18,104,5.8],[19,106,5]])pine(x,z,h);
  for(const [x,z,rx,rz]of [[-16,101,2.8,1.9],[19,103,2.5,1.8],[-27,106,2.8,1.5],[23,112,2.2,1.5]]){for(let i=0;i<5;i++){const a=i*2.4,r=Math.sqrt(rand()),b=boulder(rockShade,x+Math.cos(a)*rx*r,.33,z+Math.sin(a)*rz*r,.6+rand()*.7,.45+rand()*.4,.5+rand()*.7);b.rotation.y=a;oval(snow,b.position.x,b.position.y+.4,b.position.z,b.scale.x*.85,.12,b.scale.z*.8);}}
 
  for(const [cx,cz]of [[-16,101],[19,103],[-27,106],[23,112]]){
@@ -192,20 +235,20 @@ export function buildSpaResort(api){
   mesh(new T.CylinderGeometry(.31,.23,.45,16),stoneLight,x,.37,z);mesh(new T.CylinderGeometry(.27,.27,.018,16),stoneDark,x,.605,z);
   for(let j=0;j<10;j++){const a=j*2.399,h=.4+(j%3)*.15,reach=.25+(j%2)*.12;rod([x,.6,z],[x+Math.cos(a)*reach,.6+h,z+Math.sin(a)*reach],.012,green);for(let k=0;k<3;k++){const u=.4+k*.25,leaf=oval(j%2?green:greenLight,x+Math.cos(a)*reach*u,.6+h*u,z+Math.sin(a)*reach*u,.17,.035,.075);leaf.rotation.set(.25,a,-.25);}}
  }
- target('onsen',-10,.7,124,14.8,1.5,12.8);target('sauna',12,2.2,126,24,4.3,22);target('footbath',footbath.x,.95,footbath.z,4.3,1.5,3.5);target('lounge',lounge.x,1.1,lounge.z,1.8,1.5,4.8);
+ target('onsen',-10,.7,124,14.8,1.5,12.8);target('sauna',12,1.8,114,4.2,3.4,1.6);target('footbath',footbath.x,.95,footbath.z,4.3,1.5,3.5);target('lounge',lounge.x,1.1,lounge.z,1.8,1.5,4.8);
  // Merge opaque static geometry by material while keeping water and vapour separate.
  root.updateMatrixWorld(true);const groups=new Map();root.traverse(o=>{if(!o.isMesh||o.userData.snowTrail||moving.has(o)||Array.isArray(o.material))return;const key=o.material.uuid;if(!groups.has(key))groups.set(key,{material:o.material,items:[]});groups.get(key).items.push(o);});
  for(const {material,items}of groups.values()){if(items.length<2)continue;const chunks={position:[],normal:[],uv:[]};let count=0;for(const o of items){let g=o.geometry.clone().applyMatrix4(o.matrixWorld);if(g.index){const old=g;g=g.toNonIndexed();old.dispose();}if(!g.attributes.normal)g.computeVertexNormals();const size=g.attributes.position.count;chunks.position.push(g.attributes.position.array);chunks.normal.push(g.attributes.normal.array);chunks.uv.push(g.attributes.uv?.array||new Float32Array(size*2));count+=size;g.dispose();o.removeFromParent();}const g=new T.BufferGeometry();for(const key of Object.keys(chunks)){const size=key==='uv'?2:3,out=new Float32Array(count*size);let at=0;for(const chunk of chunks[key]){out.set(chunk,at);at+=chunk.length;}g.setAttribute(key,new T.BufferAttribute(out,size));}g.computeBoundingSphere();mesh(g,material);}
  // Keep the approach readable: vapour originates inside the rear half of each
  // basin; warm floor light and material detail do not add any new obstacles.
  const atmosphere=createRetreatAtmosphere(root,{name:'spa',
-  waters:[...pools.map(p=>({...p,y:.032,rx:p.rx*.97,rz:p.rz*.97,lights:[[-19.6,1.4,120],[-21.8,1.4,136],[1,1.4,136]]})),{x:footbath.x,y:.665,z:footbath.z,rx:1.9,rz:1.5,lights:[[14.8,3.45,121.4],[20,3.3,136.7]]}],
-  vapour:[{x:-10,y:.04,z:125.8,rx:5.2,rz:3.3,rise:2.5,size:1.85,count:34,opacity:.145},{x:-19,y:.04,z:132.7,rx:2.55,rz:1.7,rise:1.7,size:1.3,count:18,opacity:.15},{x:footbath.x,y:.67,z:footbath.z+.25,rx:1.35,rz:.9,rise:1.1,size:.7,count:10,opacity:.1},{x:16.6,y:1.35,z:120.25,rx:.15,rz:.15,rise:.65,size:.28,count:6,opacity:.095},{x:12,y:1.5,z:130,rx:.65,rz:.65,rise:1.45,size:.5,count:7,opacity:.055}],
+  waters:[{x:footbath.x,y:.665,z:footbath.z,rx:1.9,rz:1.5,lights:[[14.8,3.45,121.4],[20,3.3,136.7]]}],
+  vapour:[{x:-19.5,y:.08,z:134.6,rx:.8,rz:.35,rise:.5,size:.45,count:12,opacity:.18},{x:-10,y:.04,z:125.8,rx:5.2,rz:3.3,rise:2.7,size:3.3,count:40,opacity:.2},{x:-19,y:.04,z:132.7,rx:2.55,rz:1.7,rise:2,size:2.4,count:22,opacity:.19},{x:footbath.x,y:.67,z:footbath.z+.25,rx:1.35,rz:.9,rise:1.1,size:.7,count:10,opacity:.1},{x:16.6,y:1.35,z:120.25,rx:.15,rz:.15,rise:.65,size:.28,count:6,opacity:.095},{x:12,y:1.5,z:130,rx:.65,rz:.65,rise:1.45,size:.5,count:7,opacity:.055}],
   fireflies:[{x:-23.8,y:.7,z:131,rx:1.6,rz:2,height:1.1,count:9,color:'#e9c783'},{x:-7.5,y:.7,z:139,rx:2.1,rz:1.3,height:1.1,count:9,color:'#e9c783'}],
   lamps:[...[[9.2,121.4],[14.8,121.4],[4,134.8],[9.3,134.8],[14.7,134.8],[20,134.8]].map(([x,z])=>({x,y:.365,z,rx:2.5,rz:2.1})),...[[-2.6,96],[2.6,104],[-8,111],[-19.6,120],[8.6,112],[15.4,115],[-21.8,136],[1,136]].map(([x,z])=>({x,y:.158,z,rx:1.7,rz:1.7}))]
  });
  // Local warmth comes from the actual fixtures; emissive shades alone cannot light cedar.
  for(const [x,y,z,intensity,range]of [[11.5,3.2,122,24,15],[18,3.4,134,18,12],[-18,2.3,132,13,12]]){const light=new T.PointLight('#ffc88a',intensity,range,2);light.position.set(x,y,z);light.name='spa-local-lantern-warmth';root.add(light);}
  root.position.set(spaX,0,spaShift);
- return{root,interactive,atmosphere,setQuality:atmosphere.setQuality,update(time,still,quality){if(!still)fallUniforms.time.value=time;atmosphere.update(time,still,quality);}};
+ return{root,interactive,atmosphere,setQuality:atmosphere.setQuality,update(time,still,quality){if(!still)fallUniforms.time.value=time;bathWater.update(time,still);atmosphere.update(time,still,quality);}};
 }
