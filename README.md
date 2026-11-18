@@ -12,7 +12,7 @@
 
 운영 기록: [성능 측정](docs/PERFORMANCE.md) · [최적화 내역](docs/OPTIMIZATION_LOG.md) · [검증](docs/TESTING.md) · [배포](docs/DEPLOYMENT.md).
 
-v41 운영: [겨울 월드](https://moru-winter-park.vercel.app). Sites 41·GitHub main·Vercel READY. 전체 380개 자동 검사와 두 production build를 통과했습니다. 사용자가 제공한 유효 초대로 운영 공유 월드·이동·채팅·커마·시설·재접속을 검증했습니다. 실제 Windows 및 실물 휴대폰 결과는 UNKNOWN입니다. [운영 검증 기록](docs/DEPLOYMENT.md).
+v42 운영: [겨울 월드](https://moru-winter-park.vercel.app). Sites 42·GitHub main·Vercel READY. 382개 자동 검사와 두 production build, 운영 PC/모바일 모션·지도·권한 14개 검사를 통과했습니다. 실제 Windows 및 실물 휴대폰 결과는 UNKNOWN입니다. [운영 검증 기록](docs/DEPLOYMENT.md).
 
 이전 변경: 지도 컬러 아이콘·호버 가독성, 초급 하차장 지형, 팝업 없는 스키 이정표. [랜덤 풍선·투명 장식·움직이는 끈](docs/balloons-v37.md), [v37 스키 리조트·천문대·트리 광장](docs/resort-festival-v37.md), [나선 트리 로딩·3D 불꽃놀이·스파클러](docs/luminous-fireworks-v37.md), [유리 UI·모루 표정·리조트 디테일·2인 벤치](docs/winter-v37.md).
 

@@ -1,0 +1,136 @@
+[
+  {
+    "host": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+    "file": "app.js",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+    "file": "community-ui.js",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+    "file": "companion.js",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+    "file": "firework-score.js",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+    "file": "index.html",
+    "status": 200,
+    "match": false,
+    "platformInjectedScript": true,
+    "authoredHtmlMatch": true
+  },
+  {
+    "host": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+    "file": "mobile-ui.css",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+    "file": "park.js",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+    "file": "studio.js",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+    "file": "ui-system.css",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+    "file": "winter-fireworks.js",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+    "file": "winter-sky.js",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://moru-winter-park.vercel.app",
+    "file": "app.js",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://moru-winter-park.vercel.app",
+    "file": "community-ui.js",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://moru-winter-park.vercel.app",
+    "file": "companion.js",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://moru-winter-park.vercel.app",
+    "file": "firework-score.js",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://moru-winter-park.vercel.app",
+    "file": "index.html",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://moru-winter-park.vercel.app",
+    "file": "mobile-ui.css",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://moru-winter-park.vercel.app",
+    "file": "park.js",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://moru-winter-park.vercel.app",
+    "file": "studio.js",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://moru-winter-park.vercel.app",
+    "file": "ui-system.css",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://moru-winter-park.vercel.app",
+    "file": "winter-fireworks.js",
+    "status": 200,
+    "match": true
+  },
+  {
+    "host": "https://moru-winter-park.vercel.app",
+    "file": "winter-sky.js",
+    "status": 200,
+    "match": true
+  }
+]

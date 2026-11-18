@@ -1,0 +1,97 @@
+{
+  "errors": [],
+  "checks": [
+    {
+      "name": "pc-entry",
+      "pass": true
+    },
+    {
+      "name": "pc-gait-and-snow-reduced",
+      "pass": true,
+      "detail": {
+        "reduced": true,
+        "footRange": 0.3988927136101451,
+        "snowFirst": 16.077698358617877,
+        "snowLast": 14.748308020826315
+      }
+    },
+    {
+      "name": "pc-map-visibility",
+      "pass": true
+    },
+    {
+      "name": "pc-map-opens",
+      "pass": true
+    },
+    {
+      "name": "pc-explicit-full-motion",
+      "pass": true
+    },
+    {
+      "name": "pc-guest-admin-denied",
+      "pass": true
+    },
+    {
+      "name": "pc-shared-world",
+      "pass": true,
+      "detail": {
+        "keys": [
+          "admin",
+          "signedIn",
+          "worldId",
+          "inviteRequired",
+          "blocked",
+          "session"
+        ],
+        "worldId": "winter-plaza"
+      }
+    },
+    {
+      "name": "mobile-entry",
+      "pass": true
+    },
+    {
+      "name": "mobile-gait-and-snow-reduced",
+      "pass": true,
+      "detail": {
+        "reduced": true,
+        "footRange": 0.3988927136101451,
+        "snowFirst": 16.10298293914265,
+        "snowLast": 14.836276218455897
+      }
+    },
+    {
+      "name": "mobile-map-visibility",
+      "pass": true
+    },
+    {
+      "name": "mobile-map-opens",
+      "pass": true
+    },
+    {
+      "name": "mobile-explicit-full-motion",
+      "pass": true
+    },
+    {
+      "name": "mobile-guest-admin-denied",
+      "pass": true
+    },
+    {
+      "name": "mobile-shared-world",
+      "pass": true,
+      "detail": {
+        "keys": [
+          "admin",
+          "signedIn",
+          "worldId",
+          "inviteRequired",
+          "blocked",
+          "session"
+        ],
+        "worldId": "winter-plaza"
+      }
+    }
+  ],
+  "physicalWindows": false,
+  "physicalMobile": false
+}

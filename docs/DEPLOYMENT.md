@@ -1,3 +1,19 @@
+# v42 운영 배포 — 2026-11-19
+
+- 실행 소스 **14998b17a754bfcecc7df61bf1020c08c7004ad6**, GitHub main fast-forward 완료.
+- 기존 Sites **42**, `appgdep_6afe011904548191999a262520ca34b6`, **succeeded**. 공개 범위·D1·런타임 환경 변수 유지, 마이그레이션 없음.
+- Vercel **dpl_GLwPNPgbyxtRPRUauPsruKWcfcxS**, **READY / production**, 위 SHA 일치 및 `moru-winter-park.vercel.app` alias 확인.
+- Sites/Vercel health 모두 200. 앱 파일 11개×두 주소 중 21개 원문 SHA 일치. Sites HTML은 Cloudflare가 붙인 script 때문에 원문만 다르며 삽입 부분을 제외한 앱 HTML은 정확히 일치.
+- 사용자 제공 초대를 숨김 입력으로 전달해 실제 운영 PC 1280×800 / 터치 모바일 390×844 게스트 2개에서 **14개 검사 PASS**, page/WebGL 오류 0. 초대 입장, 모션 감소 중 발 보행·눈 낙하, 전체 모션 설정 복귀, PC 지도 버튼 숨김/모바일 표시, 지도 열기, 게스트 관리 API 403, 동일 `winter-plaza` 확인. 종료 후 해당 테스트 세션만 퇴장.
+- PC/모바일 모두 보행 발 z 변화 범위 **0.39889**. 카메라 기준을 제외한 눈 높이 PC **16.07770→14.74831**, 모바일 **16.10298→14.83628**. 운영 서버에 테스트 불꽃 공연·소원·장식을 생성하지 않았다.
+- 관리자 진입 위치는 **설정 → 초대 → 관리**. 로컬 owner fixture에서 열기/권한 노출을 검사했고, 실제 소유자 운영 로그인은 이전 사용자 확인이다.
+
+[운영 검사](../qa/browser-v42/production/report.json), [배포 정보](../qa/browser-v42/production/deployment.json), [제공 파일 비교](../qa/browser-v42/production/assets.json), [수정 원인과 로컬 검증](platform-motion-v42.md).
+
+실제 Windows·갤럭시·iPhone 기기와 모니터 색 프로필 비교는 UNKNOWN. OS 모션 설정 에뮬레이션을 물리 기기 검사로 표현하지 않는다. 앱 소스가 같은 후속 문서/QA 커밋은 Vercel에서 다시 빌드되며 Sites 실행 소스는 위 SHA를 유지한다. 앱 rollback 시 이전 Sites 41/Vercel 앱 `4af6a06`을 기준으로 삼을 수 있으며 데이터 변경은 없다.
+
+---
+
 # v41 프로덕션 배포 — 2026-11-19
 
 기존 Sites/D1 → GitHub main → Vercel 흐름으로 동일 소스를 반영했다. 새 서버/저장소와 권한 우회는 추가하지 않았다. 마이그레이션 0012~0014는 추가형이며 기존 소원·외형·초대 데이터 삭제 없음. 기존 env는 유지하고 예약 호출용 CRON_SECRET만 양쪽 runtime에 같은 값으로 설정했다. 비밀 값·초대 토큰·쿠키는 기록하지 않는다.

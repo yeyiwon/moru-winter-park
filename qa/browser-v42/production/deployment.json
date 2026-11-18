@@ -1,0 +1,19 @@
+{
+  "appCommit": "14998b17a754bfcecc7df61bf1020c08c7004ad6",
+  "sites": {
+    "version": 42,
+    "deployment": "appgdep_6afe011904548191999a262520ca34b6",
+    "status": "succeeded"
+  },
+  "vercel": {
+    "id": "dpl_GLwPNPgbyxtRPRUauPsruKWcfcxS",
+    "state": "READY",
+    "target": "production",
+    "sha": "14998b17a754bfcecc7df61bf1020c08c7004ad6",
+    "alias": [
+      "moru-winter-park.vercel.app",
+      "moru-winter-park-yeyiwons-projects.vercel.app",
+      "moru-winter-park-git-main-yeyiwons-projects.vercel.app"
+    ]
+  }
+}

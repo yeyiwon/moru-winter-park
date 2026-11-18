@@ -1,6 +1,6 @@
 # v42 모션·지도·불꽃 회귀
 
-전체 **382/382** 검사, Sites/Vercel production build, 용량 검사 PASS. Mac Chrome OS 모션 감소 에뮬레이션에서 보행·눈 낙하 및 명시적 전체 모션 복귀를 확인했다. PC/작은 모바일/일반 모바일/가로 화면 지도 버튼과 설정·관리 메뉴 검사 15개 PASS, page/WebGL 오류 0. 실제 Windows·실물 휴대폰 UNKNOWN. [상세·전후 자료](platform-motion-v42.md).
+전체 **382/382** 검사, Sites/Vercel production build, 용량 검사 PASS. Mac Chrome OS 모션 감소 에뮬레이션에서 보행·눈 낙하 및 명시적 전체 모션 복귀를 확인했다. PC/작은 모바일/일반 모바일/가로 화면 지도 버튼과 설정·관리 메뉴 검사 15개 PASS, page/WebGL 오류 0. 실제 운영 PC/모바일 게스트 14개 검사도 PASS이며 모션 감소 중 보행·눈 낙하와 설정 복귀를 확인했다. [운영 결과](../qa/browser-v42/production/report.json). 실제 Windows·실물 휴대폰 UNKNOWN. [상세·전후 자료](platform-motion-v42.md).
 
 ---
 
