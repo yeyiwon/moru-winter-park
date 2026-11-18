@@ -53,10 +53,10 @@ test('googly pupils stay inside the black frames through turns and freeze with r
  glasses.update({time:4,walking:true,phase:10,still:true});const fixed=[...pupils.instanceMatrix.array];glasses.update({time:5,walking:true,phase:20,yaw:2,still:true});assert.deepEqual([...pupils.instanceMatrix.array],fixed);
 });
 
-test('short cat tail stays low, plush, non-emissive and attached while walking and turning',()=>{
+test('cat tail stays low, groomed, color-matched and attached while walking and turning',()=>{
  const a=createCompanion({detail:'remote'});a.customize({...base,fur:'#42342a',accessory:'tail-cat'});
  const root=a.group.getObjectByName('plush-tail'),body=root.getObjectByName('tail-cat-body'),round=root.getObjectByName('tail-round-body');body.geometry.computeBoundingBox();const b=body.geometry.boundingBox;
- assert.ok(b.max.y<.4&&b.max.z<.16&&b.min.z>-.65);assert.ok(b.max.x<.8);assert.equal(body.material.color.getHexString(),'42342a');assert.equal(body.material.emissiveIntensity,0);assert.equal(round.geometry.parameters.radius,.17);
+ assert.ok(b.max.y<.52&&b.max.z<.10&&b.min.z>-.82);assert.ok(b.max.x<.8);assert.equal(body.material.color.getHexString(),'42342a');assert.equal(body.material.emissiveIntensity,a.group.getObjectByName('plush-body').material.emissiveIntensity);assert.equal(body.material.emissive.getHexString(),body.material.color.getHexString());assert.equal(body.material.sheen,.45);const coat=root.getObjectByName('cat-tail-coat');assert.equal(coat.material.color.getHexString(),body.material.color.getHexString());assert.equal(coat.geometry,a.group.getObjectByName('plush-fur').geometry);assert.ok(coat.count>=650);a.setViewDetail(30);assert.ok(coat.count<650);a.setViewDetail(Infinity);assert.equal(coat.count,650);assert.equal(round.geometry.parameters.radius,.17);
  const attached=root.position.clone();let min=Infinity,max=-Infinity;
  for(let i=0;i<240;i++){a.group.rotation.y=i<120?3.12:-3.12;a.pose({time:i/60,phase:i*.2,walking:true,speed:i<120?4:8});assert.deepEqual(root.position,attached);assert.ok(Math.abs(root.rotation.y)<.21);min=Math.min(min,root.rotation.y);max=Math.max(max,root.rotation.y);}
  assert.ok(max-min>.01);a.pose({time:5,walking:true,still:true});assert.equal(root.rotation.y,0);a.customize({...base,accessory:'tail-round'});assert.equal(root.getObjectByName('tail-cat').visible,false);assert.equal(root.getObjectByName('tail-round').visible,true);a.dispose();

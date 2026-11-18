@@ -44,9 +44,9 @@ export function createCompanion({detail='full'}={}){
   // At walking-camera distance most fibres are subpixel. Preserve full grooming
   // in close-ups and the wardrobe, and use the same uniformly distributed fur.
   const density=THREE.MathUtils.clamp((Math.max(0,pixels)/220)**1.25,detail==='remote'?.28:.06,1);
-  fur.count=Math.min(count,Math.max(1,Math.round(count*density)));
+  fur.count=Math.min(count,Math.max(1,Math.round(count*density)));tail.setViewDetail(pixels);
  }
- function groom(fluff){if(lastFluff===fluff)return;lastFluff=fluff;
+ function groom(fluff){if(lastFluff===fluff)return;lastFluff=fluff;tail.groom(fluff);
   for(let i=0;i<count;i++){const f=fibres[i],eyeDistance=Math.min(Math.hypot((f.position.x-.205)/.13,(f.position.y-.075)/.15),Math.hypot((f.position.x+.205)/.13,(f.position.y-.075)/.15)),faceBlend=f.position.z>.45?1-Math.exp(-eyeDistance*eyeDistance*1.5):1;
    dummy.position.copy(f.position);dummy.quaternion.setFromUnitVectors(up,f.normal);dummy.rotateY(f.twist);
    // A continuous radial falloff avoids a rectangular shaved patch around the eyes.
