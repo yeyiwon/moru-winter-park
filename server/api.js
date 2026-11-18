@@ -1,3 +1,4 @@
+import {quizGenerationAPI} from './quiz-generation.js';
 import {fireworksAPI,readFireworkShow} from './fireworks.js';
 import {benchPoseValid} from '../dist/bench-layout.js';
 import {validateNickname} from '../dist/nickname.js';
@@ -31,6 +32,7 @@ export async function handleAPI(request,env){
   const admin=await isOwner(request,env),session=await sessionInfo(request,env,now,admin);
   return json({admin,signedIn:!!request.headers.get('oai-authenticated-user-id'),worldId:publicRoom,inviteRequired:true,blocked:session.blocked,session:session.valid?publicSession(session.self):null});
  }
+ const generated=await quizGenerationAPI(request,env);if(generated)return generated;
  const invitation=await invitationAPI(request,env,now);if(invitation)return invitation;
  if(path==='/api/join'&&request.method==='POST')return await joinWorld(request,env,now);
  const session=await sessionInfo(request,env,now);
@@ -75,15 +77,16 @@ export async function handleAPI(request,env){
   const restOK=b.mode==='rest'&&Object.values(restSeats).some(p=>Math.hypot(b.x-p.x,b.z-p.z)<.15&&Math.abs(b.y-p.y)<.15);
   const groundOK=canStandAt(b.x,b.z)&&b.y>=surfaceHeight(b.x,b.z)+.5&&b.y<=surfaceHeight(b.x,b.z)+3;
   if(!Number.isFinite(b.x)||!Number.isFinite(b.z)||!Number.isFinite(b.yaw)||!Number.isFinite(b.y)||!(interiorPositionValid(b.x,b.y,b.z)||groundOK||restOK||benchOK||amusementPositionValid(b.x,b.y,b.z,b.mode)||spaPositionValid(b.x,b.y,b.z,b.mode)||resortRidePosition(b.x,b.y,b.z,b.mode)))return json({error:'이동 위치를 확인해 주세요.'},400);
+  const speed=Number.isFinite(b.speed)?Math.max(0,Math.min(b.mode==='ski'?40:8,b.speed)):0;
   const fluff=Number.isFinite(b.fluff)?Math.max(50,Math.min(100,b.fluff)):100,roundness=Number.isFinite(b.roundness)?Math.max(0,Math.min(100,b.roundness)):50;
   const color=/^#[0-9a-f]{6}$/i.test(b.color)?b.color:'#f4eee5',accessory=normalizeWardrobe(b.accessory),gesture=activityGestures.includes(b.gesture)?b.gesture:'';
-  await env.DB.prepare('UPDATE visitors SET x=?,z=?,yaw=?,y=?,mode=?,color=?,color_top=?,accessory=?,fluff=?,roundness=?,seen=?,gesture=?,gesture_at=?,region=? WHERE id=? AND seen<=?').bind(b.x,b.z,b.yaw,b.y,['lift','summit','ski','rest','bath','sauna','lie','tea','dining','carousel','ferris','view','footbath'].includes(b.mode)?b.mode:'',color,/^#[0-9a-f]{6}$/i.test(b.colorTop)?b.colorTop:null,accessory,fluff,roundness,now,gesture,gesture?now:0,interiorAt(b.x,b.z)?.id||'outdoors',id,now-500).run();
+  await env.DB.prepare('UPDATE visitors SET x=?,z=?,yaw=?,y=?,mode=?,color=?,color_top=?,accessory=?,fluff=?,roundness=?,seen=?,gesture=?,gesture_at=?,region=?,pose_at=?,speed=? WHERE id=? AND pose_at<=?').bind(b.x,b.z,b.yaw,b.y,['lift','summit','ski','rest','bath','sauna','lie','tea','dining','carousel','ferris','view','footbath'].includes(b.mode)?b.mode:'',color,/^#[0-9a-f]{6}$/i.test(b.colorTop)?b.colorTop:null,accessory,fluff,roundness,now,gesture,gesture?now:0,interiorAt(b.x,b.z)?.id||'outdoors',now,speed,id,now-500).run();
   await env.DB.prepare("UPDATE visitors SET chat='',chat_at=0 WHERE room=? AND chat_at>0 AND chat_at<?").bind(self.room,now-600000).run();
   if(benchOK||['ferris','lift'].includes(b.mode))await env.DB.prepare('UPDATE ride_seats SET expires_at=? WHERE visitor=? AND expires_at>?').bind(now+20000,id,now).run();
   else await env.DB.prepare('DELETE FROM ride_seats WHERE visitor=? AND started_at<?').bind(id,now-6000).run();
   await maintainSessions(env.DB,now);
   const rideSeats=await listRideSeats(env.DB,self.room,now);
-  const people=await env.DB.prepare('SELECT id,name,color,color_top AS colorTop,accessory,fluff,roundness,x,z,yaw,y,mode,region,gesture,gesture_at AS gestureAt,chat,chat_at AS chatAt FROM visitors WHERE room=? AND seen>? AND id<>? ORDER BY seen DESC LIMIT 11').bind(self.room,now-age,id).all();return json({...interestSnapshot(people.results||[],b,b,now,rideSeats),rideSeats,fireworks:await readFireworkShow(env.DB,now),serverTime:now,count:(people.results?.length||0)+1});
+  const people=await env.DB.prepare('SELECT id,name,color,color_top AS colorTop,accessory,fluff,roundness,x,z,yaw,y,mode,region,CASE WHEN pose_at>0 THEN pose_at ELSE seen END AS updatedAt,speed,gesture,gesture_at AS gestureAt,chat,chat_at AS chatAt FROM visitors WHERE room=? AND seen>? AND id<>? ORDER BY seen DESC LIMIT 11').bind(self.room,now-age,id).all();return json({...interestSnapshot(people.results||[],b,b,now,rideSeats),rideSeats,fireworks:await readFireworkShow(env.DB,now),serverTime:now,count:(people.results?.length||0)+1});
  }
  return json({error:'지원하지 않는 요청입니다.'},404);
  }catch(e){if(e instanceof SyntaxError)return json({error:'잘못된 요청입니다.'},400);await recordServerError(env.DB,path,e,now);return json({error:'공유 공간에 연결할 수 없어요. 잠시 뒤 다시 시도해 주세요.'},503);}

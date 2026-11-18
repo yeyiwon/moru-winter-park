@@ -2,7 +2,7 @@
 // 20 s expiry. A quiet tab still sends heartbeats; it does not silently leave.
 export function presenceDelay({hidden=false,moving=false,chat=false,failures=0}={}){
  if(failures)return Math.min(8000,1000*2**Math.min(failures,3));
- return hidden?8000:moving||chat?1000:2000;
+ return hidden?8000:moving||chat?700:1600;
 }
 export function createPresenceCache(){
  const states=new Map();let bucket=null;

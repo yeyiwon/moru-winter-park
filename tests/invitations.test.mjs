@@ -57,3 +57,25 @@ test('invitation attempts are bounded and untrusted origins cannot mutate state'
  const f=await fixture(t);for(let i=0;i<120;i++)assert.equal((await f.call(f.guest(),'invite-check',{token:'invalid'})).status,403);assert.equal((await f.call(f.guest(),'invite-check',{token:'invalid'})).status,429);
  const r=await handleAPI(new Request(backendOrigin+'/api/invite',{method:'POST',headers:{...f.owner.headers,Origin:'https://evil.test'},body:'{}'}),f.env);assert.equal(r.status,403);
 });
+
+test('decoration cleanup requires the owner and a current confirmed snapshot; wishes and backups survive',async t=>{
+ const f=await fixture(t),g=f.guest(),i=await f.invite();await f.join(f.owner);await f.join(g,i.token);
+ const created=await f.call(g,'tree',{kind:'star',color:'#e5bb6b',height:12,angle:1,message:'보존할 소원',visibility:'public'});assert.equal(created.status,200);
+ let snapshot=(await f.call(f.owner,'admin')).data;const command={action:'clear-decorations',count:snapshot.decorations.length,revision:snapshot.decorationRevision,confirmation:'장식 1개 삭제'};
+ assert.equal((await f.call(g,'admin',command)).status,403);
+ assert.equal((await f.call(f.owner,'admin',{...command,revision:'stale'})).status,409);
+ assert.equal((await f.call(f.owner,'admin',{...command,confirmation:'yes'})).status,409);
+ const cleared=await f.call(f.owner,'admin',command);assert.equal(cleared.status,200);assert.equal(cleared.data.removed,1);
+ assert.equal((await f.call(g,'tree')).data.decorations.length,0);assert.equal((await f.call(g,'wishes')).data.wishes[0].message,'보존할 소원');
+ const backup=await f.DB.prepare('SELECT payload,actor FROM decoration_backups WHERE id=?').bind(cleared.data.backupId).first();assert.equal(JSON.parse(backup.payload)[0].id,created.data.id);assert.ok(backup.actor);
+ assert.equal((await f.call(f.owner,'admin',command)).status,409,'replay cannot clear a different set');
+});
+test('server pose time and speed remain authoritative when chat updates the heartbeat',async t=>{
+ const f=await fixture(t),a=f.guest(),b=f.guest(),i=await f.invite();const sa=await f.join(a,i.token);await f.join(b,i.token);
+ await f.DB.prepare('UPDATE visitors SET pose_at=? WHERE id=?').bind(Date.now()-1000,sa.id).run();
+ await f.call(a,'chat',{message:'걷는 중'});
+ const start=Date.now();assert.equal((await f.call(a,'presence',{x:2,y:.95,z:30,yaw:0,speed:999,updatedAt:1})).status,200);
+ const view=(await f.call(b,'presence',{x:0,y:.95,z:30,yaw:0})).data.people.find(p=>p.id===sa.id);assert.equal(view.x,2);assert.equal(view.speed,8);assert.ok(view.updatedAt>=start);
+ await f.DB.prepare('UPDATE visitors SET pose_at=? WHERE id=?').bind(Date.now()-1000,sa.id).run();await f.call(a,'presence',{x:2,y:.95,z:30,yaw:0,speed:0});
+ assert.equal((await f.call(b,'presence',{x:0,y:.95,z:30,yaw:0})).data.people.find(p=>p.id===sa.id).speed,0);
+});

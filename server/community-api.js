@@ -1,3 +1,4 @@
+import {clearDecorations,decorationRevision} from './tree-moderation.js';
 import baseQuestions from '../dist/content/daily-trivia.json' with {type:'json'};
 export const json=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
 export function messageText(value,max=160){
@@ -41,20 +42,22 @@ export async function communityAPI(request,env,self,admin){
  if(path!=='/api/admin')return json({error:'지원하지 않는 요청입니다.'},405);
  if(!admin)return json({error:'관리자만 사용할 수 있습니다.'},403);
  if(request.method==='GET'){
-  const [reports,people,decorations,events,quizzes]=await Promise.all([
+  const [reports,people,decorations,events,quizzes,candidates,generation]=await Promise.all([
    DB.prepare('SELECT id,room,target_type AS type,target_id AS targetId,reason,created_at AS createdAt FROM reports WHERE resolved=0 ORDER BY created_at DESC LIMIT 80').bind().all(),
    DB.prepare('SELECT id,room,name,chat,chat_at AS chatAt FROM visitors WHERE seen>? ORDER BY seen DESC LIMIT 80').bind(now-600000).all(),
-   DB.prepare('SELECT id,room,kind FROM tree_decorations ORDER BY created_at DESC LIMIT 160').bind().all(),
+   DB.prepare('SELECT id,room,kind FROM tree_decorations WHERE room=? ORDER BY created_at DESC LIMIT 160').bind(self.room).all(),
    DB.prepare('SELECT id,title,starts_at AS startsAt,ends_at AS endsAt,kind,enabled FROM world_events ORDER BY starts_at DESC LIMIT 30').bind().all(),
-   DB.prepare('SELECT id,payload FROM quiz_overrides ORDER BY updated_at DESC LIMIT 100').bind().all()]);
+   DB.prepare('SELECT id,payload FROM quiz_overrides ORDER BY updated_at DESC LIMIT 100').bind().all(),DB.prepare("SELECT id,payload FROM quiz_candidates WHERE status='review' ORDER BY created_at DESC LIMIT 30").bind().all(),DB.prepare('SELECT day,status,count,usage FROM quiz_generation_runs ORDER BY day DESC LIMIT 7').bind().all()]);
   // Private wish text is deliberately never included in moderation listings.
-  return json({reports:reports.results,people:people.results,decorations:decorations.results,events:events.results,quizzes:quizzes.results.map(r=>({id:r.id,...JSON.parse(r.payload)}))});
+  return json({candidates:candidates.results.map(r=>({id:r.id,...JSON.parse(r.payload)})),generation:generation.results,reports:reports.results,people:people.results,decorations:decorations.results,decorationRevision:await decorationRevision(decorations.results),events:events.results,quizzes:quizzes.results.map(r=>({id:r.id,...JSON.parse(r.payload)}))});
  }
  if(request.method!=='POST')return json({error:'지원하지 않는 요청입니다.'},405);
  const b=await bodyOf(request,8192),id=String(b.id||'');
+ if(b.action==='reject-candidate'){await DB.prepare("UPDATE quiz_candidates SET status='rejected' WHERE id=?").bind(id).run();return json({ok:true});}
+ if(b.action==='clear-decorations'){const result=await clearDecorations(DB,self,b,now);return json(result,result.status||200);}
  if(b.action==='resolve'){await DB.prepare('UPDATE reports SET resolved=1 WHERE id=?').bind(id).run();}
  else if(b.action==='remove-decoration'||b.action==='remove-wish'){
-  await DB.prepare('DELETE FROM wishes WHERE id=?').bind(id).run();await DB.prepare('DELETE FROM wish_reactions WHERE wish_id=?').bind(id).run();await DB.prepare('DELETE FROM tree_decorations WHERE id=?').bind(id).run();
+  if(b.action==='remove-wish'){await DB.prepare('DELETE FROM wishes WHERE id=?').bind(id).run();await DB.prepare('DELETE FROM wish_reactions WHERE wish_id=?').bind(id).run();}await DB.prepare('DELETE FROM tree_decorations WHERE id=?').bind(id).run();
  }else if(b.action==='clear-chat'){await DB.prepare('UPDATE visitors SET chat=\'\',chat_at=0 WHERE id=?').bind(id).run();}
  else if(b.action==='block'||b.action==='kick'){
   const found=await DB.prepare('SELECT id,auth_type FROM visitors WHERE id=?').bind(id).first();if(!found)return json({error:'사용자를 찾을 수 없습니다.'},404);
@@ -65,8 +68,9 @@ export async function communityAPI(request,env,self,admin){
  }
  else if(b.action==='save-quiz'){
   const q=b.quiz||{},source=q.source||{};if(!Array.isArray(q.options)||q.options.length!==4||!Number.isInteger(q.answer)||q.answer<0||q.answer>3||!/^https:\/\//.test(source.url||''))return json({error:'보기 4개, 정답과 HTTPS 출처를 확인해 주세요.'},400);
+  if(new Set(q.options.map(v=>String(v).trim().toLowerCase())).size!==4)return json({error:'서로 다른 보기 4개를 입력하세요.'},400);
   const data={question:messageText(q.question,240),options:q.options.map(v=>messageText(v,120)),answer:q.answer,explanation:messageText(q.explanation,1000),category:messageText(q.category||'일반',20),source:{title:messageText(source.title||'출처',120),url:String(source.url).slice(0,600)},disabled:!!q.disabled};
-  await DB.prepare('INSERT INTO quiz_overrides(id,payload,updated_at) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload,updated_at=excluded.updated_at').bind(id||crypto.randomUUID(),JSON.stringify(data),now).run();
+  await DB.prepare('INSERT INTO quiz_overrides(id,payload,updated_at) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload,updated_at=excluded.updated_at').bind(id||crypto.randomUUID(),JSON.stringify(data),now).run();if(id.startsWith('ai-'))await DB.prepare("UPDATE quiz_candidates SET status='reviewed' WHERE id=?").bind(id).run();
  }else if(b.action==='remove-quiz'){const base=baseQuestions.find(q=>q.id===id);if(base){await DB.prepare('INSERT INTO quiz_overrides(id,payload,updated_at) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload,updated_at=excluded.updated_at').bind(id,JSON.stringify({...base,disabled:true}),now).run();}else await DB.prepare('DELETE FROM quiz_overrides WHERE id=?').bind(id).run();}
  else if(b.action==='save-event'){
   if(!['lights','quiz','tree'].includes(b.kind)||!Number.isFinite(b.startsAt)||!Number.isFinite(b.endsAt)||b.endsAt<=b.startsAt||b.endsAt-b.startsAt>604800000)return json({error:'종류와 시작·종료 시간을 확인해 주세요.'},400);

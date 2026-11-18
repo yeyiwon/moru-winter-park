@@ -5,15 +5,15 @@ async function fixture(t,{url='https://winter.test/',fetch}={}){
  w.fetch=async(url,init={})=>{const reply=await fetch(url,init);return{ok:(reply.status||200)<400,status:reply.status||200,json:async()=>reply.data||reply};};
  const modules=new Map(),context=dom.getInternalVMContext();async function mod(file){if(modules.has(file))return modules.get(file);const m=new vm.SourceTextModule(fs.readFileSync(file,'utf8'),{context,identifier:file});modules.set(file,m);await m.link(s=>mod(path.resolve(path.dirname(file),s)));return m;}await(await mod(path.join(root,'social.js'))).evaluate();await tick();return{w,d};
 }
-test('missing or invalid invite stays gated, exposes owner sign-in and never autojoins',async t=>{
+test('missing or invalid invite stays gated, hides owner sign-in and never autojoins',async t=>{
  for(const suffix of ['', '#invite=bad','?room=legacy-private']){
  let joins=0;const {w,d}=await fixture(t,{url:'https://winter.test/'+suffix,fetch:async url=>{if(url==='/api/join')joins++;return{admin:false,session:null};}});
- assert.equal(joins,0);assert.ok(d.body.classList.contains('invite-gate'));assert.equal(d.querySelector('#join-form').hidden,true);assert.equal(d.querySelector('#owner-signin').hidden,false);assert.equal(w.location.hash,'');assert.equal(w.location.search,'');assert.equal(d.querySelector('#room-password'),null);
+ assert.equal(joins,0);assert.ok(d.body.classList.contains('invite-gate'));assert.equal(d.querySelector('#join-form').hidden,true);assert.equal(d.querySelector('#owner-signin').hidden,true);assert.equal(w.location.hash,'');assert.equal(w.location.search,'');assert.equal(d.querySelector('#room-password'),null);
  }
 });
-test('invitation is checked once, nickname/color are submitted and token disappears from subsequent gameplay',async t=>{
- let joins=0,leaves=0;const calls=[];const {w,d}=await fixture(t,{url:'https://winter.test/#invite='+token,fetch:async(url,init)=>{const body=init.body?JSON.parse(init.body):null;calls.push({url,body});if(url==='/api/access')return{admin:false,session:null};if(url==='/api/invite-check')return{valid:true};if(url==='/api/join'){joins++;assert.equal(body.token,token);assert.equal(body.color,'#123456');return{id:'guest',name:body.name,room:'winter-plaza'};}if(url==='/api/presence')return{people:[],count:1};if(url==='/api/chat')return{name:'손님',message:body.message,at:Date.now()};if(url==='/api/leave')leaves++;return{};}});
- assert.equal(w.location.hash,'');assert.equal(joins,0);assert.equal(d.querySelector('#join-form').hidden,false);d.querySelector('#visitor-name').value='손님';d.querySelector('#visitor-color').value='#123456';d.querySelector('#join-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await tick();assert.equal(joins,1);assert.ok(!d.body.classList.contains('invite-gate'));assert.equal(w.sharedRoom(),'winter-plaza');
+test('invitation is checked once, saved/default appearance enters automatically and token disappears from subsequent gameplay',async t=>{
+ let joins=0,leaves=0;const calls=[];const {w,d}=await fixture(t,{url:'https://winter.test/#invite='+token,fetch:async(url,init)=>{const body=init.body?JSON.parse(init.body):null;calls.push({url,body});if(url==='/api/access')return{admin:false,session:null};if(url==='/api/invite-check')return{valid:true};if(url==='/api/join'){joins++;assert.equal(body.token,token);assert.equal(body.color,'#f4eee5');return{id:'guest',name:body.name,room:'winter-plaza'};}if(url==='/api/presence')return{people:[],count:1};if(url==='/api/chat')return{name:'손님',message:body.message,at:Date.now()};if(url==='/api/leave')leaves++;return{};}});
+ assert.equal(w.location.hash,'');await tick();assert.equal(joins,1);assert.ok(!d.body.classList.contains('invite-gate'));assert.equal(w.sharedRoom(),'winter-plaza');
  d.querySelector('#chat-toggle').click();const input=d.querySelector('#chat-input');input.value='함께 겨울';input.blur();assert.ok(d.body.classList.contains('chat-typing'));d.querySelector('#chat-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await tick();assert.equal(input.value,'');assert.match(d.querySelector('#chat-log').textContent,/함께 겨울/);
  assert.ok(calls.filter(c=>['/api/chat','/api/presence'].includes(c.url)).every(c=>!('token'in c.body)));w.dispatchEvent(new w.Event('pagehide'));assert.equal(leaves,0);
 });
@@ -25,8 +25,8 @@ test('session-only reconnect needs no token; revoked presence gates the world an
  let joins=0;const {w,d}=await fixture(t,{fetch:async url=>{if(url==='/api/access')return{admin:false,session:{id:'guest',room:'winter-plaza',name:'손님'}};if(url==='/api/presence')return{status:401,data:{error:'초대가 취소되었습니다.'}};if(url==='/api/join')joins++;return{};}});
  assert.equal(w.labSocialJoined,true);d.dispatchEvent(new w.Event('visibilitychange'));await tick();assert.equal(w.labSocialJoined,false);assert.ok(d.body.classList.contains('invite-gate'));assert.equal(joins,0);
 });
-test('opening an invitation in the same tab rechecks its fragment without an automatic join',async t=>{
- let checked=0,joins=0;const {w,d}=await fixture(t,{fetch:async(url,init)=>{if(url==='/api/access')return{admin:false,session:null};if(url==='/api/invite-check'){checked++;assert.equal(JSON.parse(init.body).token,token);return{valid:true};}if(url==='/api/join')joins++;return{};}});
+test('opening an invitation in the same tab rechecks its fragment and automatically joins',async t=>{
+ let checked=0,joins=0;const {w,d}=await fixture(t,{fetch:async(url,init)=>{if(url==='/api/access')return{admin:false,session:null};if(url==='/api/invite-check'){checked++;assert.equal(JSON.parse(init.body).token,token);return{valid:true};}if(url==='/api/join'){joins++;return{id:'guest',name:'손님',room:'winter-plaza'};}return{people:[],count:1};}});
  assert.equal(d.querySelector('#join-form').hidden,true);w.location.hash='invite='+token;await tick();await tick();
- assert.equal(checked,1);assert.equal(joins,0);assert.equal(w.location.hash,'');assert.equal(d.querySelector('#join-form').hidden,false);
+ assert.equal(checked,1);assert.equal(joins,1);assert.equal(w.location.hash,'');assert.equal(d.querySelector('#join-form').hidden,true);assert.equal(d.querySelector('#tab-social').hidden,true);
 });
