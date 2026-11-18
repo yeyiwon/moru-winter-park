@@ -38,7 +38,7 @@ try{
  const access=await contexts[0].request.get(origin+'/api/access');report.access={admin:(await access.json()).admin};
  if(process.env.QA_FLOW==='1'){
   const check=(name,pass,detail)=>{console.log('Check',name,pass);report.scenarios.push({name,pass,detail});if(!pass)throw Error(name);};
-  await a.bringToFront();await a.locator('#hud-map').click();await a.waitForTimeout(800);await a.screenshot({path:out+'/map.png'});
+  await a.bringToFront();if(mobile)await a.locator('#hud-map').click();else{await a.locator('#open-settings').click();await a.locator('#tab-map').click();}await a.waitForTimeout(800);await a.screenshot({path:out+'/map.png'});
   if(mobile){await a.locator('[data-region=tree]').tap();check('mobile-map-confirm',await a.locator('.map-travel-confirm').isVisible());await a.screenshot({path:out+'/map-selected.png'});await a.locator('.map-travel-confirm button').tap();}else await a.locator('[data-region=tree]').click();
   await a.waitForTimeout(1500);check('map-closes-after-travel',!await a.locator('#studio').evaluate(n=>n.open));
   await a.evaluate(()=>openWinterSettings('fluff'));await a.waitForTimeout(1500);await a.screenshot({path:out+'/customization.png'});

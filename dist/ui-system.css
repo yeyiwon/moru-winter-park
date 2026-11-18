@@ -1,16 +1,16 @@
 /* One optical surface; nested controls never add another backdrop filter. */
 :root{
  --ui-font:'Winter Sans','Apple SD Gothic Neo',sans-serif;
- --ui-display:'AppleMyungjo','Nanum Myeongjo','Noto Serif CJK KR',serif;
+ --ui-display:var(--ui-font);
  --ui-ink:#f3f7ff;--ui-muted:#c9d5e7;--ui-accent:#d4e7ff;
  --ui-glass:rgba(9,18,37,.46);
  --ui-edge:rgba(218,234,255,.2);--ui-hover:rgba(219,235,255,.07);--ui-selected:rgba(219,235,255,.12);
- --ui-field:rgba(8,17,34,.2);--ui-blur:10px;--ui-shadow:inset 0 1px 0 #ffffff1c,0 12px 32px #030b1726;
+ --ui-field:rgba(8,17,34,.2);--ui-blur:8px;--ui-shadow:inset 0 1px 0 #ffffff1c,0 12px 32px #030b1726;
  --ui-radius:22px;--ui-control-radius:12px;--ui-control-height:44px;
  --ui-space-1:4px;--ui-space-2:8px;--ui-space-3:12px;--ui-space-4:16px;--ui-space-5:24px;
  --ui-fast:140ms;--ui-duration:180ms;--ui-ease:cubic-bezier(.2,.7,.3,1);
  --ui-layer-dock:26;--ui-layer-picker:100;
- --panel-glass:linear-gradient(145deg,rgba(255,247,230,.24),rgba(232,244,251,.1) 58%,rgba(255,250,240,.17));
+ --panel-glass:linear-gradient(145deg,rgba(255,247,230,.18),rgba(232,244,251,.08) 58%,rgba(255,250,240,.12)),linear-gradient(rgba(24,33,49,.42),rgba(24,33,49,.42));
 }
 #studio,#studio:has(#pane-map:not([hidden])),.glass-panel,#wish-panel.is-composing,#wish-feed[open],#tree-tools,#quick-quiz,#museum-puzzle,.select-options,.menu-panel,.control-help>div,.chat-entry,#emote-panel{
  /* Panel ink is local: floating world labels still need their light text. */
@@ -85,7 +85,7 @@ button[aria-label$='닫기']:focus-visible,.studio-head>button:focus-visible{out
 .glass-panel button:active,.studio button:active{filter:brightness(1.08)}
 .panel-primary,.primary{background:var(--ui-selected);border-color:var(--ui-edge);box-shadow:none}
 #tree-tools{z-index:var(--ui-layer-dock)}
-.chat-entry{--ui-blur:6px}.chat-entry input{background:transparent!important}
+.chat-entry{--ui-blur:8px}.chat-entry input{background:transparent!important}
 .preference-settings{margin-top:var(--ui-space-4);border-top:1px solid var(--ui-edge)}
 .preference-settings .preference-body{display:grid;gap:var(--ui-space-3);padding:var(--ui-space-2) 0 var(--ui-space-4);min-width:0}
 .preference-body p{margin:0;font-size:12px;line-height:1.7}
@@ -111,17 +111,17 @@ body.reduce-flash .quiz-burst,body.reduce-flash .quiz-burst i{display:none}
 body.reduce-flash .quiz-correct,body.reduce-flash .quiz-wrong{animation:none}
 body.still *,body.still *::before,body.still *::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}
 @media(max-width:650px),(pointer:coarse){
- :root{--ui-blur:6px;--ui-radius:20px}
+ :root{--ui-blur:8px;--ui-radius:20px}
  #studio{padding:16px}#exhibit-panel{inset:auto 10px max(10px,env(safe-area-inset-bottom)) 10px;width:auto;max-height:55dvh;padding:16px}
  .preference-grid{gap:8px}.experience-card{padding:12px}.brand-word{font-size:13px}
  #wish-feed[open],.chat-entry{backdrop-filter:none;-webkit-backdrop-filter:none}
 }
 @media(max-width:350px){.preference-grid{grid-template-columns:1fr}}
 @media(max-height:500px){#exhibit-panel{left:auto;right:10px;bottom:10px;max-height:calc(100dvh - 20px);width:min(380px,calc(100vw - 20px))}}
-:root[data-render-quality=low]{--ui-blur:0px}
-@media(prefers-reduced-transparency:reduce){:root{--panel-glass:#35434f;--ui-blur:0px}.select-options{--panel-glass:#35434f}}
+/* Render quality changes the world, never the settings surface. */
+@media(prefers-reduced-transparency:reduce){:root{--panel-glass:#303b4e;--ui-blur:0px}.select-options{--panel-glass:#303b4e}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
-@supports not (backdrop-filter:blur(1px)){:root{--panel-glass:#35434ff2}}
+
 
 /* Title and category tabs have distinct rows. Frame dimensions stay stable
    across tabs; only the content pane owns scrolling. */
@@ -142,7 +142,7 @@ body.still *,body.still *::before,body.still *::after{animation-duration:.001ms!
 #studio .fluff-controls .accessories [aria-pressed=true]{background:var(--ui-selected);border-color:#e5d7ba8c;box-shadow:inset 0 0 0 1px #e5d7ba19}
 #studio .studio-description:empty{display:none}
 @media(max-width:650px){
- #studio,#studio:has(#pane-map:not([hidden])){width:calc(100vw - 20px);height:calc(100dvh - 24px - var(--safe-top,0px) - var(--safe-bottom,0px));padding:12px;--ui-blur:5px}
+ #studio,#studio:has(#pane-map:not([hidden])){width:calc(100vw - 20px);height:calc(100dvh - 24px - var(--safe-top,0px) - var(--safe-bottom,0px));padding:12px;--ui-blur:8px}
  #studio[open]{gap:10px}.studio-header{grid-template-columns:minmax(0,1fr) 44px;gap:2px 8px}
  #studio .studio-head>button{grid-column:2}.studio-head>span{padding-left:4px;font-size:17px}
  #studio .studio-tabs{grid-column:1/-1;grid-row:2;justify-content:space-between;gap:2px}

@@ -207,12 +207,13 @@ export function createCompanion({detail='full'}={}){
   if(gesture!==lastGesture){lastGesture=gesture;gestureStartedAt=time;}const gestureTime=Math.max(0,time-gestureStartedAt),carrying=!!skewerShapes[heldItem]&&mode!=='ski'&&mode!=='lift';heldSkewer.visible=carrying;
   if(carrying){if(currentHeldItem!==heldItem){currentHeldItem=heldItem;skewerMesh.geometry=skewerShapes[heldItem];lastRoast=-1;}const cooked=THREE.MathUtils.clamp(roast,0,1);if(cooked!==lastRoast){lastRoast=cooked;skewerWood.color.set(heldItem==='popcorn'?'#8b3445':heldItem==='balloon'?'#e1d7c8':'#b38b60');skewerFood.roughness=heldItem==='balloon'?.28:.78;if(heldItem==='popcorn')skewerFood.color.set('#fff0cc');else if(heldItem==='balloon')skewerFood.color.set('#d9a0ce');else if(heldItem==='candyfloss')skewerFood.color.set('#efc4d5');else if(heldItem==='icecream')skewerFood.color.set('#f1d8c5');else if(heldItem==='odeng')skewerFood.color.set('#dcb079');else skewerFood.color.copy(cooked<.5?toastWhite:toastTan).lerp(cooked<.5?toastTan:toastBrown,cooked<.5?cooked*2:(cooked-.5)*2);}}
   let sipProgress=0,blowProgress=0,eatProgress=0;bubbleWand.visible=(bubbling||heldItem==='bubble-wand')&&!spa&&mode!=='ski'&&mode!=='lift'&&!carrying;if(carrying)teaCup.visible=false;
-  const swing=walking&&!still?Math.sin(phase):0;
+  // Locomotion communicates input even when decorative sway is reduced.
+  const swing=walking?Math.sin(phase):0;
   group.rotation.z=mode==='ski'?lean*.2:still?0:-swing*.065;
   const bounce=still?0:walking?Math.sin(phase*2)*.035:Math.sin(time*2.2)*.009;
   shape.position.set(0,0,0);shape.rotation.set(0,0,0);teaCup.rotation.set(0,0,0);
   shape.scale.set(1+roundness+landing*.11-bounce*.5,1-roundness*.5-landing*.16+bounce,1+landing*.08);
-  feet.forEach((f,i)=>{const ph=phase+i*Math.PI;f.matrixAutoUpdate=true;f.position.set((i?1:-1)*.27,-.74+(walking&&!still?Math.max(0,Math.cos(ph))*.11:0),.14+(walking&&!still?Math.sin(ph)*.2:0));f.rotation.set(0,0,0);f.scale.set(.18,.12,.25);});
+  feet.forEach((f,i)=>{const ph=phase+i*Math.PI;f.matrixAutoUpdate=true;f.position.set((i?1:-1)*.27,-.74+(walking?Math.max(0,Math.cos(ph))*.11:0),.14+(walking?Math.sin(ph)*.2:0));f.rotation.set(0,0,0);f.scale.set(.18,.12,.25);});
   for(const equipment of [skis,board]){equipment.matrixAutoUpdate=true;equipment.position.set(0,0,0);equipment.rotation.set(0,0,0);equipment.scale.set(1,1,1);}skiBlades.forEach((blade,i)=>{blade.position.x=(i?1:-1)*.27;blade.rotation.set(0,0,0);});
   for(let i=0;i<2;i++){const side=i?1:-1;armPose(i,[side*.68,-.38,.14-swing*side*.1]);}
   // Keep the supporting sole on the ground as the body rolls, changes shape or lands.

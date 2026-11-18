@@ -1,0 +1,228 @@
+{
+  "errors": [],
+  "checks": [
+    {
+      "name": "owner-management-visible",
+      "pass": true
+    },
+    {
+      "name": "management-opens-without-stacked-settings",
+      "pass": true
+    },
+    {
+      "name": "map-clear-320",
+      "pass": true,
+      "detail": {
+        "map": {
+          "x": 138,
+          "y": 502,
+          "width": 44,
+          "height": 44
+        },
+        "blockers": [
+          {
+            "id": "joystick",
+            "x": 14,
+            "y": 440,
+            "width": 112,
+            "height": 112,
+            "top": 440,
+            "right": 126,
+            "bottom": 552,
+            "left": 14
+          },
+          {
+            "id": "run-button",
+            "x": 198,
+            "y": 500,
+            "width": 48,
+            "height": 48,
+            "top": 500,
+            "right": 246,
+            "bottom": 548,
+            "left": 198
+          },
+          {
+            "id": "jump-button",
+            "x": 256,
+            "y": 500,
+            "width": 48,
+            "height": 48,
+            "top": 500,
+            "right": 304,
+            "bottom": 548,
+            "left": 256
+          },
+          {
+            "id": "chat-toggle",
+            "x": 260,
+            "y": 442,
+            "width": 44,
+            "height": 44,
+            "top": 442,
+            "right": 304,
+            "bottom": 486,
+            "left": 260
+          }
+        ]
+      }
+    },
+    {
+      "name": "map-opens-320",
+      "pass": true
+    },
+    {
+      "name": "map-clear-390",
+      "pass": true,
+      "detail": {
+        "map": {
+          "x": 173,
+          "y": 778,
+          "width": 44,
+          "height": 44
+        },
+        "blockers": [
+          {
+            "id": "joystick",
+            "x": 14,
+            "y": 716,
+            "width": 112,
+            "height": 112,
+            "top": 716,
+            "right": 126,
+            "bottom": 828,
+            "left": 14
+          },
+          {
+            "id": "run-button",
+            "x": 268,
+            "y": 776,
+            "width": 48,
+            "height": 48,
+            "top": 776,
+            "right": 316,
+            "bottom": 824,
+            "left": 268
+          },
+          {
+            "id": "jump-button",
+            "x": 326,
+            "y": 776,
+            "width": 48,
+            "height": 48,
+            "top": 776,
+            "right": 374,
+            "bottom": 824,
+            "left": 326
+          },
+          {
+            "id": "chat-toggle",
+            "x": 330,
+            "y": 718,
+            "width": 44,
+            "height": 44,
+            "top": 718,
+            "right": 374,
+            "bottom": 762,
+            "left": 330
+          }
+        ]
+      }
+    },
+    {
+      "name": "map-opens-390",
+      "pass": true
+    },
+    {
+      "name": "map-clear-844",
+      "pass": true,
+      "detail": {
+        "map": {
+          "x": 400,
+          "y": 334,
+          "width": 44,
+          "height": 44
+        },
+        "blockers": [
+          {
+            "id": "joystick",
+            "x": 14,
+            "y": 278,
+            "width": 104,
+            "height": 104,
+            "top": 278,
+            "right": 118,
+            "bottom": 382,
+            "left": 14
+          },
+          {
+            "id": "run-button",
+            "x": 722,
+            "y": 330,
+            "width": 48,
+            "height": 48,
+            "top": 330,
+            "right": 770,
+            "bottom": 378,
+            "left": 722
+          },
+          {
+            "id": "jump-button",
+            "x": 780,
+            "y": 330,
+            "width": 48,
+            "height": 48,
+            "top": 330,
+            "right": 828,
+            "bottom": 378,
+            "left": 780
+          },
+          {
+            "id": "chat-toggle",
+            "x": 784,
+            "y": 264,
+            "width": 44,
+            "height": 44,
+            "top": 264,
+            "right": 828,
+            "bottom": 308,
+            "left": 784
+          }
+        ]
+      }
+    },
+    {
+      "name": "map-opens-844",
+      "pass": true
+    },
+    {
+      "name": "guest-admin-hidden",
+      "pass": true
+    },
+    {
+      "name": "escape-closes-before",
+      "pass": true
+    },
+    {
+      "name": "escape-opens-before",
+      "pass": true
+    },
+    {
+      "name": "m-opens-map-before",
+      "pass": true
+    },
+    {
+      "name": "escape-closes-after",
+      "pass": true
+    },
+    {
+      "name": "escape-opens-after",
+      "pass": true
+    },
+    {
+      "name": "m-opens-map-after",
+      "pass": true
+    }
+  ],
+  "physicalDevices": false
+}

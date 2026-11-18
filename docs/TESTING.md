@@ -1,3 +1,9 @@
+# v42 모션·지도·불꽃 회귀
+
+전체 **382/382** 검사, Sites/Vercel production build, 용량 검사 PASS. Mac Chrome OS 모션 감소 에뮬레이션에서 보행·눈 낙하 및 명시적 전체 모션 복귀를 확인했다. PC/작은 모바일/일반 모바일/가로 화면 지도 버튼과 설정·관리 메뉴 검사 15개 PASS, page/WebGL 오류 0. 실제 Windows·실물 휴대폰 UNKNOWN. [상세·전후 자료](platform-motion-v42.md).
+
+---
+
 # v41 검증 — 2026-11-19
 
 최종 전체 자동 검사 **380/380 PASS**(36.04초). 불꽃 광원 한도와 신고·운영 폼 회귀도 포함한다. 별도 lint/typecheck 명령은 없는 JavaScript 프로젝트이며 Node/bundling으로 구문을 검사한다. `npm run build`, `npm run build:vercel`, `npm run test:budget` PASS.

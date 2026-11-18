@@ -38,9 +38,16 @@ body.invite-gate #studio[open]{grid-template-rows:auto minmax(0,1fr)}
 #created-invite[hidden]{display:none}#created-invite input{min-width:0;width:100%;font-size:12px}
 #visitor-color{width:64px;height:44px;padding:4px}
 
-#hud-map{display:grid;place-items:center;width:44px;height:44px;flex:0 0 44px;border:0;border-radius:14px;color:var(--ui-ink);background:#ffffff0b}
+#hud-map{display:none;place-items:center;width:44px;height:44px;flex:0 0 44px;border:0;border-radius:14px;color:var(--ui-ink);background:#ffffff0b}
 #hud-map svg{width:23px;height:23px;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linejoin:round}
-@media(max-width:650px){header{grid-template-columns:minmax(0,1fr) 92px}header .header-actions{gap:4px}}
+/* A mobile-only utility between the left joystick and right action controls. */
+@media(pointer:coarse),(max-width:650px){
+ #hud-map{display:grid;position:fixed;z-index:12;left:calc(50% - 22px);bottom:calc(22px + env(safe-area-inset-bottom));background:rgba(24,33,49,.28);border:1px solid #fff8e933;border-radius:50%;touch-action:manipulation}
+ body.studio-open #hud-map,body.tree-decorating #hud-map,body.chat-typing #hud-map,body:has(#ride-hud:not([hidden])) #hud-map{visibility:hidden;pointer-events:none}
+}
+@media(max-height:500px) and (orientation:landscape){#hud-map{bottom:calc(12px + env(safe-area-inset-bottom))}}
+#open-settings{display:grid;place-items:center;width:44px;height:44px;padding:10px;border:0;border-radius:14px;background:#ffffff0b;color:var(--ui-ink)}
+#open-settings svg{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round}
 body.invite-gate #hud-map{visibility:hidden}
 #tab-social[hidden]{display:none}
 #pane-map .map-travel-confirm{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;max-width:calc(100% - 24px);padding:6px 8px 6px 16px;border-radius:16px;background:#122033b3;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff8ed;z-index:5}
@@ -48,4 +55,4 @@ body.invite-gate #hud-map{visibility:hidden}
 #copy-created-invite,#copy-room{white-space:nowrap;min-width:64px;flex-shrink:0}
 /* Explicit colors and bundled font also apply to native Windows controls. */
 :root{color-scheme:dark}button,input,textarea,select{font-family:var(--ui-font);font-synthesis:none}
-@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){#studio,.glass-panel,.select-options,.menu-panel{background:rgba(29,38,51,.88)}}
+/* Unsupported blur retains the same authored tint; it never swaps to another palette. */

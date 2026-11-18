@@ -75,3 +75,10 @@ test('departing characters release previously selected eye, ear and held-item GP
  for(const heldItem of ['odeng','marshmallow','balloon','icecream']){pet.pose({heldItem});capture();}
  pet.customize({accessory:'none'});pet.pose({heldItem:''});pet.dispose();pet.dispose();assert.ok(resources.size>40);for(const count of resources.values())assert.equal(count,1);
 });
+
+
+test('reduced decorative motion preserves essential walking feet without body sway',()=>{
+ const pet=createCompanion({detail:'remote'});pet.pose({walking:true,phase:0,time:1,still:true});const before=pet.feet.map(f=>f.position.toArray());
+ pet.pose({walking:true,phase:Math.PI/2,time:1.2,still:true});assert.notDeepEqual(pet.feet.map(f=>f.position.toArray()),before);assert.equal(pet.group.rotation.z,0);
+ pet.pose({walking:false,phase:3,time:2,still:true});for(const f of pet.feet)assert.equal(f.position.z,.14);pet.dispose();
+});

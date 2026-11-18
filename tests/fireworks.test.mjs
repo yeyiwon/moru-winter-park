@@ -24,3 +24,16 @@ test('firework lighting reuses the world light with bounded pulses and respects 
  light.intensity=.8;light.color.set('#eef5ff');const color=light.color.clone();show.update(now+10,{listener,reduceFlash:true});
  assert.equal(light.intensity,.8);assert.ok(light.color.equals(color));show.dispose();assert.equal(scene.children.length,1);
 });
+
+
+test('embers finish in the sky with short tapered tails instead of long vertical rain',()=>{
+ const score=createFireworkScore(42);assert.ok(score.every(s=>s.life<=5.6));assert.ok(score.filter(s=>s.pattern!=='willow').every(s=>s.life<=4.2));
+ const scene=new T.Scene(),show=createWinterFireworks(scene);show.setShow({id:'tail-test',seed:42,startsAt:0,state:'playing'});
+ const {position,velocity,timing,design}=show.root.geometry.attributes;for(let i=0;i<timing.count;i++){assert.ok(timing.getY(i)<=.551);assert.ok(design.getZ(i)<=5.601);}
+ // Sample actual seeded trajectories at extinction: even the lowest ember stays above the ground.
+ for(let i=0;i<timing.count;i+=12){const t=design.getZ(i);if(!t)continue;const willow=design.getX(i)===2,drag=willow?.19:.46;
+  const height=position.getY(i)+timing.getW(i)+velocity.getY(i)*(1-Math.exp(-t*drag))/drag-(willow?1.15:1.8)*t*t;
+  assert.ok(height>10,'embers must extinguish before descending into the park');
+ }
+ show.dispose();
+});
