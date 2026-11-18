@@ -2,17 +2,19 @@
 
 모루 캐릭터로 돌아다니는 Three.js 겨울 소셜 공간입니다. 중앙 놀이공원과 성, 설산, 온천·료칸, 소원 트리, 별빛 만물관이 독립된 부유섬과 다리로 연결됩니다. 제거한 오로라 식물원·아이스링크·눈썰매·회전컵·범퍼카는 제공하지 않습니다.
 
-최근 변경: [v42 Windows 모션·모바일 지도·불꽃 잔광](docs/platform-motion-v42.md). 움직임 감소에서도 보행과 눈 내림을 유지하고, 명시적인 전체 모션 선택을 적용합니다. 모바일 하단 지도와 직접 설정 버튼, 같은 유리 패널 색상, 짧은 불꽃 잔광을 반영했습니다.
+최근 변경: [v43 공개 월드·관리자 분리·PC/모바일 입력](docs/public-world-v43.md). 공개 주소로 가입·초대 없이 자동 입장합니다. 관리자만 [/admin](https://moru-winter-park.vercel.app/admin)에서 소유자 인증 후 같은 월드를 관리합니다. 모바일 지도 직접 탭, 햄버거 설정·커마, 60px 점프와 입력 복구를 개선했습니다.
+
+이전 변경: [v42 Windows 모션·모바일 지도·불꽃 잔광](docs/platform-motion-v42.md). 움직임 감소에서도 보행과 눈 내림을 유지하고, 명시적인 전체 모션 선택을 적용합니다. 모바일 하단 지도와 직접 설정 버튼, 같은 유리 패널 색상, 짧은 불꽃 잔광을 반영했습니다.
 
 이전 변경: [v41 게스트·모바일·VFX 안정화](docs/stability-v41.md). 원격 이동/정지 보간, 출력 색상·셰이더 사전 준비, 모바일 지도와 커마, 작은 로딩 트리, 음악 중복 전환을 개선했습니다.
 
-이전 변경: [v39 단일 월드·초대 링크·접속 권한](docs/single-world-v39.md). 모든 게스트는 관리자가 발급한 초대로 하나의 겨울 광장에 접속합니다. 별도 방 생성과 비밀번호 방은 제공하지 않습니다.
+이전 변경: [v39 단일 월드·초대 링크·접속 권한](docs/single-world-v39.md). 당시에는 초대 전용이었으며, 현재 v43의 공개 입장으로 대체했습니다. 별도 방 생성과 비밀번호 방은 제공하지 않습니다.
 
 이전 변경: [v38 커스터마이징·그라데이션·복슬 꼬리·모바일 조작](docs/customization-mobile-v38.md). 저장/취소/초기화, 머리 슬롯 통합, 초대 제목 옆 관리자 로그인, 흐린 실제 장면 로딩과 점프 사운드. Ethereal Winter Ballet을 첫 곡으로 정렬.
 
 운영 기록: [성능 측정](docs/PERFORMANCE.md) · [최적화 내역](docs/OPTIMIZATION_LOG.md) · [검증](docs/TESTING.md) · [배포](docs/DEPLOYMENT.md).
 
-v42 운영: [겨울 월드](https://moru-winter-park.vercel.app). Sites 42·GitHub main·Vercel READY. 382개 자동 검사와 두 production build, 운영 PC/모바일 모션·지도·권한 14개 검사를 통과했습니다. 실제 Windows 및 실물 휴대폰 결과는 UNKNOWN입니다. [운영 검증 기록](docs/DEPLOYMENT.md).
+이전 v42 운영 검증: [겨울 월드](https://moru-winter-park.vercel.app). Sites 42·GitHub main·Vercel READY. 382개 자동 검사와 두 production build, 운영 PC/모바일 모션·지도·권한 14개 검사를 통과했습니다. 실제 Windows 및 실물 휴대폰 결과는 UNKNOWN입니다. [운영 검증 기록](docs/DEPLOYMENT.md).
 
 이전 변경: 지도 컬러 아이콘·호버 가독성, 초급 하차장 지형, 팝업 없는 스키 이정표. [랜덤 풍선·투명 장식·움직이는 끈](docs/balloons-v37.md), [v37 스키 리조트·천문대·트리 광장](docs/resort-festival-v37.md), [나선 트리 로딩·3D 불꽃놀이·스파클러](docs/luminous-fireworks-v37.md), [유리 UI·모루 표정·리조트 디테일·2인 벤치](docs/winter-v37.md).
 

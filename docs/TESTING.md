@@ -1,3 +1,11 @@
+# v43 공개 월드 · 입력 · 모바일 UX
+
+전체 **385/385 PASS**, 두 production build·용량 검사 PASS. 별도 TypeScript/lint 명령 없음. Mac Chrome에서 실제 Pointer Lock·WASD·방향키·한글 물리 키·텍스트 입력 차단·커마 저장 복귀를 검증했다. 390/320/844px 반응형과 독립 게스트 2개 흐름 20개 PASS, 관리자 API 거절 403, page/WebGL 오류 0. 물리 Windows/Edge/iPhone/Android 결과는 UNKNOWN이다. 음악은 무음 sink 디코딩·재생 시간·전환·재접속을 확인했으며 실제 스피커 청취 UNKNOWN.
+
+공개 QA는 더 이상 초대 토큰이 필요하지 않다. `QA_URL`/`QA_OWNER_URL`을 같은 격리 DB 서버로 지정하여 `QA_FLOW=1 QA_MOBILE=1 node scripts/verify-multiplayer.mjs`로 재현한다. 기존 v41/v42의 초대 기반 검증은 당시 정책 기록이며 현재 정책은 아니다. [전후 화면·원시 결과](public-world-v43.md).
+
+---
+
 # v42 모션·지도·불꽃 회귀
 
 전체 **382/382** 검사, Sites/Vercel production build, 용량 검사 PASS. Mac Chrome OS 모션 감소 에뮬레이션에서 보행·눈 낙하 및 명시적 전체 모션 복귀를 확인했다. PC/작은 모바일/일반 모바일/가로 화면 지도 버튼과 설정·관리 메뉴 검사 15개 PASS, page/WebGL 오류 0. 실제 운영 PC/모바일 게스트 14개 검사도 PASS이며 모션 감소 중 보행·눈 낙하와 설정 복귀를 확인했다. [운영 결과](../qa/browser-v42/production/report.json). 실제 Windows·실물 휴대폰 UNKNOWN. [상세·전후 자료](platform-motion-v42.md).

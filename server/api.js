@@ -30,13 +30,13 @@ export async function handleAPI(request,env){
  try{
  if(path==='/api/access'&&request.method==='GET'){
   const admin=await isOwner(request,env),session=await sessionInfo(request,env,now,admin);
-  return json({admin,signedIn:!!request.headers.get('oai-authenticated-user-id'),worldId:publicRoom,inviteRequired:true,blocked:session.blocked,session:session.valid?publicSession(session.self):null});
+  return json({admin,signedIn:!!request.headers.get('oai-authenticated-user-id'),worldId:publicRoom,inviteRequired:false,blocked:session.blocked,session:session.valid?publicSession(session.self):null});
  }
  const generated=await quizGenerationAPI(request,env);if(generated)return generated;
  const invitation=await invitationAPI(request,env,now);if(invitation)return invitation;
  if(path==='/api/join'&&request.method==='POST')return await joinWorld(request,env,now);
  const session=await sessionInfo(request,env,now);
- if(!session.valid)return json({error:session.blocked?'이 게스트의 이용이 제한되었습니다.':'접속 권한이 만료되었거나 취소됐어요. 새 초대 링크를 받아 주세요.'},session.blocked?403:401);
+ if(!session.valid)return json({error:session.blocked?'이 게스트의 이용이 제한되었습니다.':'세션이 종료되었습니다. 다시 입장해 주세요.'},session.blocked?403:401);
  const self=session.self,id=self.id;
  const operation=await operationsAPI(request,env.DB,self,path==='/api/operations'?await isOwner(request,env):false,now);if(operation)return operation;
  const fireworksResponse=await fireworksAPI(request,env.DB,self,path==='/api/fireworks'&&request.method==='POST'?await isOwner(request,env):false,now);if(fireworksResponse)return fireworksResponse;
@@ -80,6 +80,10 @@ export async function handleAPI(request,env){
   const speed=Number.isFinite(b.speed)?Math.max(0,Math.min(b.mode==='ski'?40:8,b.speed)):0;
   const fluff=Number.isFinite(b.fluff)?Math.max(50,Math.min(100,b.fluff)):100,roundness=Number.isFinite(b.roundness)?Math.max(0,Math.min(100,b.roundness)):50;
   const color=/^#[0-9a-f]{6}$/i.test(b.color)?b.color:'#f4eee5',accessory=normalizeWardrobe(b.accessory),gesture=activityGestures.includes(b.gesture)?b.gesture:'';
+  // Stationary polls still receive peers, but do not rewrite an identical pose.
+  // Keep a bounded heartbeat well inside the shared 20-second presence expiry.
+  const poseChanged=self.x!==b.x||self.y!==b.y||self.z!==b.z||self.yaw!==b.yaw||self.speed!==speed||self.mode!==(b.mode||'')||self.color!==color||self.color_top!==(b.colorTop||null)||self.accessory!==accessory||self.fluff!==fluff||self.roundness!==roundness||self.gesture!==gesture;
+  if(poseChanged||gesture||now-self.seen>=8000)
   await env.DB.prepare('UPDATE visitors SET x=?,z=?,yaw=?,y=?,mode=?,color=?,color_top=?,accessory=?,fluff=?,roundness=?,seen=?,gesture=?,gesture_at=?,region=?,pose_at=?,speed=? WHERE id=? AND pose_at<=?').bind(b.x,b.z,b.yaw,b.y,['lift','summit','ski','rest','bath','sauna','lie','tea','dining','carousel','ferris','view','footbath'].includes(b.mode)?b.mode:'',color,/^#[0-9a-f]{6}$/i.test(b.colorTop)?b.colorTop:null,accessory,fluff,roundness,now,gesture,gesture?now:0,interiorAt(b.x,b.z)?.id||'outdoors',now,speed,id,now-500).run();
   await env.DB.prepare("UPDATE visitors SET chat='',chat_at=0 WHERE room=? AND chat_at>0 AND chat_at<?").bind(self.room,now-600000).run();
   if(benchOK||['ferris','lift'].includes(b.mode))await env.DB.prepare('UPDATE ride_seats SET expires_at=? WHERE visitor=? AND expires_at>?').bind(now+20000,id,now).run();

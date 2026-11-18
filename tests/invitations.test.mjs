@@ -11,8 +11,8 @@ async function fixture(t){
  async function join(client,token,name='게스트'){const r=await call(client,'join',{token,name});assert.equal(r.status,200,JSON.stringify(r.data));return r.data;}
  return{DB,env,owner,guest,call,invite,join};
 }
-test('only the bound owner issues random hashed invites; public, legacy and invented-room entry are denied',async t=>{
- const f=await fixture(t),g=f.guest();assert.equal((await f.call(g,'join',{name:'손님'})).status,403);assert.equal((await f.call(g,'invite',{admin:true})).status,403);
+test('public admission upgrades old identities while only the bound owner manages legacy links',async t=>{
+ const f=await fixture(t),g=f.guest();assert.equal((await f.call(g,'join',{name:'손님'})).status,200);assert.equal((await f.call(g,'invite',{admin:true})).status,403);
  for(const body of [null,[],42])assert.equal((await f.call(g,'join',body)).status,400);
  const i=await f.invite();assert.match(i.token,/^[a-f0-9]{64}$/);assert.equal(new URL(i.url).origin,parkOrigin);assert.equal(new URL(i.url).search,'');assert.equal(i.worldId,publicRoom);
  const stored=await f.DB.prepare('SELECT * FROM world_invites WHERE id=?').bind(i.id).first();assert.equal(stored.token_hash,await digest(i.token));assert.ok(!JSON.stringify(stored).includes(i.token));
@@ -21,8 +21,8 @@ test('only the bound owner issues random hashed invites; public, legacy and inve
  g.headers={'oai-authenticated-user-id':'only-owner','oai-authenticated-user-email':'owner@example.test'};assert.equal((await f.call(g,'invite',{})).status,403,'proxy strips spoofed identity');
  assert.equal((await f.call(g,'join',{token:i.token,room:'invented-room'})).status,400);
  const secret='f'.repeat(64),id=await digest(secret);await f.DB.prepare("INSERT INTO visitors(id,room,name,color,accessory,x,z,yaw,seen,gesture,gesture_at) VALUES(?,'winter-plaza','이전 게스트','#ffffff','none',0,30,0,?,'',0)").bind(id,Date.now()).run();g.cookie='winter_session='+secret;
- assert.equal((await f.call(g,'access')).data.session,null);assert.equal((await f.call(g,'tree')).status,401);assert.equal((await f.call(g,'join',{})).status,403);
- assert.equal((await f.join(g,i.token)).id,id,'valid invitation upgrades identity without losing ownership');
+ assert.equal((await f.call(g,'access')).data.session,null);assert.equal((await f.call(g,'tree')).status,401);assert.equal((await f.call(g,'join',{})).status,200);
+ assert.equal((await f.join(g,i.token)).id,id,'public admission preserves identity and ownership');
 });
 test('different invitations and Sites/Vercel clients share one world, movement, chat, wishes and saved appearance',async t=>{
  const f=await fixture(t),a=f.guest(),b=f.guest(),ia=await f.invite(),ib=await f.invite();assert.notEqual(ia.token,ib.token);
@@ -34,13 +34,11 @@ test('different invitations and Sites/Vercel clients share one world, movement, 
  const rejoined=await f.call(a,'join',{});assert.equal(rejoined.data.id,sa.id);assert.equal(rejoined.data.colorTop,'#eeb7cb');assert.equal((await f.call(a,'access')).data.admin,false);
  for(const route of ['admin','operations','fireworks','invite'])assert.equal((await f.call(a,route,{})).status,403,route);
 });
-test('expiry and revocation reject tokens and linked sessions, release seats, but preserve wishes and appearance',async t=>{
+test('public admission is independent of retired links and preserves wishes and appearance',async t=>{
  const f=await fixture(t),a=f.guest(),i=await f.invite(),s=await f.join(a,i.token);
  await f.DB.prepare("UPDATE visitors SET color='#123456' WHERE id=?").bind(s.id).run();await f.call(a,'tree',{kind:'star',color:'#e5bb6b',height:12,angle:1,message:'남는 소원',visibility:'public'});
- await f.DB.prepare("INSERT INTO ride_seats(room,kind,cabin,seat,visitor,started_at,expires_at) VALUES(?,'ferris',0,0,?,?,?)").bind(publicRoom,s.id,Date.now(),Date.now()+20000).run();
- assert.equal((await f.call(f.owner,'invite',{id:i.id},'DELETE')).status,200);assert.equal((await f.call(a,'tree')).status,401);assert.equal((await f.call(a,'access')).data.session,null);assert.equal((await f.call(f.guest(),'join',{token:i.token})).status,403);
- assert.equal((await f.DB.prepare('SELECT COUNT(*) AS n FROM ride_seats').bind().first()).n,0);assert.equal((await f.DB.prepare('SELECT COUNT(*) AS n FROM wishes').bind().first()).n,1);
- const fresh=await f.invite();assert.equal((await f.join(a,fresh.token)).color,'#123456');await f.DB.prepare('UPDATE world_invites SET expires_at=? WHERE id=?').bind(Date.now()-1,fresh.id).run();assert.equal((await f.call(a,'chat',{message:'만료'})).status,401);assert.equal((await f.call(a,'join',{token:fresh.token})).status,403);
+ await f.call(f.owner,'invite',{id:i.id},'DELETE');assert.equal((await f.call(a,'tree')).status,200);assert.equal((await f.call(a,'access')).data.session.id,s.id);assert.equal((await f.call(f.guest(),'join',{token:i.token})).status,403,'explicit invalid legacy token is not accepted');
+ const again=await f.join(a);assert.equal(again.color,'#123456');assert.equal(again.id,s.id);assert.equal((await f.call(a,'access')).data.inviteRequired,false);assert.equal((await f.call(a,'wishes')).data.wishes[0].message,'남는 소원');
 });
 test('owner kick invalidates the old invitation for that guest; block survives reissue and self-kick is denied',async t=>{
  const f=await fixture(t),owner=await f.join(f.owner),a=f.guest(),i=await f.invite(),s=await f.join(a,i.token);
@@ -49,7 +47,7 @@ test('owner kick invalidates the old invitation for that guest; block survives r
  const fresh=await f.invite();await f.join(a,fresh.token);assert.equal((await f.call(f.owner,'admin',{action:'block',id:s.id})).status,200);assert.equal((await f.call(a,'join',{token:fresh.token})).status,403);assert.equal((await f.call(a,'access')).data.blocked,true);
 });
 test('capacity reserves owner access, never creates overflow rooms and cannot exceed twelve',async t=>{
- const f=await fixture(t),i=await f.invite();const results=await Promise.all(Array.from({length:14},()=>f.call(f.guest(),'join',{token:i.token,name:'손님'})));
+ const f=await fixture(t),i=await f.invite();const results=await Promise.all(Array.from({length:14},()=>f.call(f.guest(),'join',{name:'손님'})));
  assert.equal(results.filter(r=>r.status===200).length,11);assert.equal(results.filter(r=>r.status===409).length,3);
  await f.join(f.owner,undefined,'관리자');assert.equal((await f.call(f.owner,'admin')).status,200,'owner can enter and moderate a full guest world');assert.equal((await f.DB.prepare('SELECT COUNT(*) AS count FROM visitors').bind().first()).count,12);const rooms=(await f.DB.prepare('SELECT DISTINCT room FROM visitors').bind().all()).results;assert.deepEqual(rooms,[{room:publicRoom}]);
 });
@@ -78,4 +76,13 @@ test('server pose time and speed remain authoritative when chat updates the hear
  const view=(await f.call(b,'presence',{x:0,y:.95,z:30,yaw:0})).data.people.find(p=>p.id===sa.id);assert.equal(view.x,2);assert.equal(view.speed,8);assert.ok(view.updatedAt>=start);
  await f.DB.prepare('UPDATE visitors SET pose_at=? WHERE id=?').bind(Date.now()-1000,sa.id).run();await f.call(a,'presence',{x:2,y:.95,z:30,yaw:0,speed:0});
  assert.equal((await f.call(b,'presence',{x:0,y:.95,z:30,yaw:0})).data.people.find(p=>p.id===sa.id).speed,0);
+});
+
+test('owner departure leaves public guest movement, chat and persistence available; unchanged polls do not rewrite pose',async t=>{
+ const f=await fixture(t),a=f.guest(),b=f.guest();await f.join(f.owner);const sa=await f.join(a);await f.join(b);await f.call(f.owner,'leave',{});
+ const pose={x:1,y:.95,z:30,yaw:0,speed:0,mode:'',color:'#f4eee5',accessory:'none',fluff:100,roundness:50};await f.call(a,'presence',pose);
+ const first=await f.DB.prepare('SELECT pose_at,seen FROM visitors WHERE id=?').bind(sa.id).first();
+ await f.DB.prepare('UPDATE visitors SET pose_at=? WHERE id=?').bind(first.pose_at-1000,sa.id).run();
+ await f.call(a,'presence',pose);const unchanged=await f.DB.prepare('SELECT pose_at,seen FROM visitors WHERE id=?').bind(sa.id).first();assert.equal(unchanged.pose_at,first.pose_at-1000);assert.equal(unchanged.seen,first.seen);
+ await f.call(a,'chat',{message:'관리자 없이도 함께'});const people=(await f.call(b,'presence',{...pose,x:0})).data.people;assert.equal(people.length,1);assert.equal(people[0].chat,'관리자 없이도 함께');assert.equal(people[0].x,1);
 });

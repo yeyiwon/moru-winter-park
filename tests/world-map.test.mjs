@@ -27,8 +27,8 @@ test('one region tap travels immediately, dragging does not; no destination sele
  const before=trips.length;canvas.onpointerdown(event(p.x,p.y));canvas.onpointermove(event(p.x+55,p.y+12));canvas.onpointerup(event(p.x+55,p.y+12));assert.equal(trips.length,before);
 });
 
-test('touch selection shows a separate travel confirmation and never teleports on the first tap',t=>{
+test('touch selection travels directly without a second confirmation',t=>{
  const dom=new JSDOM('<div id="map"></div>');t.after(()=>dom.window.close());const w=dom.window,d=w.document;w.matchMedia=()=>({matches:true});Object.assign(globalThis,{window:w,document:d,requestAnimationFrame:fn=>fn(),devicePixelRatio:1});
  const gradient={addColorStop(){}};const context=new Proxy({measureText:s=>({width:s.length*6}),createRadialGradient:()=>gradient,createLinearGradient:()=>gradient},{get:(o,k)=>o[k]||(()=>{})});w.HTMLCanvasElement.prototype.getContext=()=>context;w.HTMLCanvasElement.prototype.getBoundingClientRect=()=>({left:0,top:0,width:334,height:460});
- const trips=[],root=d.querySelector('#map'),map=createWorldMap(root,id=>trips.push(id));map.resize();const marker=root.querySelector('[data-region=onsen]');marker.onpointerdown({pointerType:'touch',stopPropagation(){}});marker.dispatchEvent(new w.MouseEvent('click',{detail:1,bubbles:true}));assert.deepEqual(trips,[]);assert.equal(root.querySelector('.map-travel-confirm').hidden,false);root.querySelector('.map-travel-confirm button').click();assert.deepEqual(trips,['onsen']);
+ const trips=[],root=d.querySelector('#map'),map=createWorldMap(root,id=>trips.push(id));map.resize();const marker=root.querySelector('[data-region=onsen]');marker.onpointerdown({pointerType:'touch',stopPropagation(){}});marker.dispatchEvent(new w.MouseEvent('click',{detail:1,bubbles:true}));assert.deepEqual(trips,['onsen']);assert.equal(root.querySelector('.map-travel-confirm'),null);
 });

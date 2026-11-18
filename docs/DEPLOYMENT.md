@@ -1,3 +1,11 @@
+# v43 배포 준비 · 공개 월드
+
+공개 입장은 초대 없이 같은 winter-plaza를 사용한다. 일반 방문자는 https://moru-winter-park.vercel.app 로, 관리자는 https://moru-winter-park.vercel.app/admin 으로 들어간다. `/admin`은 기존 Sites의 소유자 인증 경로에 연결되며 서버 소유자 검증을 통과해야 관리 UI를 사용할 수 있다. 기존 D1·환경 변수·소원/외형/장식 데이터 유지, 마이그레이션 없음.
+
+385개 자동 검사와 두 build·용량 검사를 통과했다. 운영 반영과 배포 후 검증 결과는 이어서 기록한다. 아래 v42 이전 초대 제한 및 관리자 진입 설명은 과거 기록이다.
+
+---
+
 # v42 운영 배포 — 2026-11-19
 
 - 실행 소스 **14998b17a754bfcecc7df61bf1020c08c7004ad6**, GitHub main fast-forward 완료.

@@ -1,22 +1,17 @@
 // QA only. Use an isolated guest server + owner fixture locally. For production,
-// provide an authorized invitation on hidden stdin; it is never written to disk.
+// guests now enter the public world without an invitation.
 import {pathToFileURL} from 'node:url';
 const {chromium}=await import(pathToFileURL(process.env.PLAYWRIGHT_PATH||'/tmp/winter-browser-qa/node_modules/playwright-core/index.mjs'));
 import fs from 'node:fs/promises';
 import {execFileSync} from 'node:child_process';
 const baseline=new Map(),revision=process.env.QA_REV;
 if(revision){if(!/^[a-f0-9]{7,40}$/.test(revision))throw Error('invalid revision');for(const file of execFileSync('git',['ls-tree','-r','--name-only',revision,'dist'],{encoding:'utf8'}).trim().split('\n').filter(f=>/\.(js|css|html|json)$/.test(f))){baseline.set(file.slice(5),execFileSync('git',['show',revision+':'+file],{encoding:'utf8',maxBuffer:16000000}));}}
-async function readInvitation(){
- console.log('Ready for test invitation (hidden input)');
- return new Promise((resolve,reject)=>{let value='';const tty=process.stdin.isTTY;function finish(){process.stdin.removeListener('data',receive);process.stdin.removeListener('end',finish);if(tty)process.stdin.setRawMode(false);process.stdin.pause();resolve(value.trim());}function receive(chunk){value+=chunk;if(value.includes('\u0003')||value.length>128){process.stdin.removeListener('data',receive);if(tty)process.stdin.setRawMode(false);process.stdin.pause();reject(Error('Invalid test invitation input'));}else if(/[\r\n]/.test(value))finish();}if(tty)process.stdin.setRawMode(true);process.stdin.setEncoding('utf8');process.stdin.on('data',receive);process.stdin.once('end',finish);process.stdin.resume();});
-}
 const origin=process.env.QA_URL||'http://127.0.0.1:4187',production=!origin.includes('127.0.0.1'),out=process.env.QA_OUT||'/tmp/winter-v41-before',mobile=process.env.QA_MOBILE==='1';
 await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true,args:['--disable-background-timer-throttling','--disable-renderer-backgrounding']});
-const contexts=[],report={production,mobileEmulation:mobile,physicalDevice:false,errors:[],scenarios:[]};let token;
+const contexts=[],report={production,mobileEmulation:mobile,physicalDevice:false,errors:[],scenarios:[]};
 try{
- if(production){token=await readInvitation();if(!/^[a-f0-9]{64}$/.test(token))throw Error('Invalid invitation input');}
- else {const c=await browser.newContext();const o=process.env.QA_OWNER_URL||'http://127.0.0.1:4188';await c.request.post(o+'/api/join',{headers:{Origin:o},data:{name:'테스트관리자'}});const r=await c.request.post(o+'/api/invite',{headers:{Origin:o},data:{days:1}});if(!r.ok())throw Error('Test invitation '+r.status());token=new URLSearchParams(new URL((await r.json()).url).hash.slice(1)).get('invite');await c.request.post(o+'/api/leave',{headers:{Origin:o}});await c.close();}
+ if(!production){const c=await browser.newContext(),o=process.env.QA_OWNER_URL||'http://127.0.0.1:4188';await c.request.post(o+'/api/join',{headers:{Origin:o},data:{name:'테스트관리자'}});await c.request.post(o+'/api/leave',{headers:{Origin:o}});await c.close();report.ownerLeftBeforeGuests=true;}
  for(let i=0;i<2;i++){
  const c=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1280,height:800},deviceScaleFactor:mobile?3:1,isMobile:mobile,hasTouch:mobile});contexts.push(c);const page=await c.newPage();
  page.on('pageerror',e=>report.errors.push(e.message.slice(0,300)));page.on('console',m=>{if(m.type()==='error'&&/THREE|WebGL|shader/i.test(m.text()))report.errors.push(m.text().slice(0,500));});
@@ -24,7 +19,7 @@ try{
  await page.addInitScript(mode=>{if(mode)localStorage.setItem('winter-render-mode',mode);window.__qaSnapshots=[];window.addEventListener('lab:visitors',e=>{window.__qaSnapshots.push({at:performance.now(),people:e.detail.map(p=>({id:p.id,x:p.x,y:p.y,z:p.z,mode:p.mode,updatedAt:p.updatedAt,speed:p.speed,motion:p.motion,chat:p.chat}))});if(__qaSnapshots.length>100)__qaSnapshots.shift();});window.__qaFrames=[];window.__qaLong=[];new PerformanceObserver(list=>{if(window.__qaCapture)for(const e of list.getEntries())__qaLong.push(e.duration);}).observe({type:'longtask',buffered:false});const raf=requestAnimationFrame.bind(window);let prev;window.requestAnimationFrame=fn=>raf(now=>{const start=performance.now();fn(now);if(fn.name==='animate'){if(window.__qaCapture&&prev)__qaFrames.push({ms:now-prev,cpu:performance.now()-start});prev=now;}});},process.env.QA_MODE||null);
  if(baseline.size)await page.route('**/*',r=>{const f=new URL(r.request().url()).pathname.slice(1)||'index.html';return baseline.has(f)?r.fulfill({contentType:f.endsWith('.html')?'text/html':f.endsWith('.css')?'text/css':f.endsWith('.json')?'application/json':'text/javascript',body:baseline.get(f)}):r.continue();});
  await page.route('**/park.js*',async route=>{const response=await route.fetch();await route.fulfill({response,body:(baseline.get('park.js')||await response.text()).replace(/}\s*$/, ';window.__winterQA={renderer,scene,camera,experience,world,interiors,companion,renderBudget,visitors};\n}')});});
- const start=Date.now();await page.goto(origin+'/#invite='+token,{waitUntil:'domcontentloaded',timeout:120000});await page.waitForFunction(()=>window.labSocialJoined||document.querySelector('#join-form:not([hidden])'),null,{timeout:120000});
+ const start=Date.now();await page.goto(origin,{waitUntil:'domcontentloaded',timeout:120000});await page.waitForFunction(()=>window.labSocialJoined||document.querySelector('#join-form:not([hidden])'),null,{timeout:120000});
  if(!await page.evaluate(()=>!!window.labSocialJoined))await page.locator('#join-form button[type=submit]').click();await page.waitForFunction(()=>window.labSocialJoined&&document.body.classList.contains('world-ready')&&document.querySelector('#world-loading').hidden,null,{timeout:120000});await page.evaluate(()=>{for(const d of document.querySelectorAll('dialog[open]'))d.close();document.body.classList.remove('studio-open');});
  console.log('Guest ready',i,Date.now()-start);report.scenarios.push({name:'entry-'+i,ms:Date.now()-start});await page.waitForTimeout(8000);
  }
@@ -38,8 +33,8 @@ try{
  const access=await contexts[0].request.get(origin+'/api/access');report.access={admin:(await access.json()).admin};
  if(process.env.QA_FLOW==='1'){
   const check=(name,pass,detail)=>{console.log('Check',name,pass);report.scenarios.push({name,pass,detail});if(!pass)throw Error(name);};
-  await a.bringToFront();if(mobile)await a.locator('#hud-map').click();else{await a.locator('#open-settings').click();await a.locator('#tab-map').click();}await a.waitForTimeout(800);await a.screenshot({path:out+'/map.png'});
-  if(mobile){await a.locator('[data-region=tree]').tap();check('mobile-map-confirm',await a.locator('.map-travel-confirm').isVisible());await a.screenshot({path:out+'/map-selected.png'});await a.locator('.map-travel-confirm button').tap();}else await a.locator('[data-region=tree]').click();
+  await a.bringToFront();if(mobile)await a.locator('#hud-map').click();else{await a.keyboard.press('KeyM');}await a.waitForTimeout(800);await a.screenshot({path:out+'/map.png'});
+  if(mobile){await a.locator('[data-region=tree]').tap();check('mobile-direct-map',await a.locator('.map-travel-confirm').count()===0);}else await a.locator('[data-region=tree]').click();
   await a.waitForTimeout(1500);check('map-closes-after-travel',!await a.locator('#studio').evaluate(n=>n.open));
   await a.evaluate(()=>openWinterSettings('fluff'));await a.waitForTimeout(1500);await a.screenshot({path:out+'/customization.png'});
   const before=await a.evaluate(()=>({...labAppearance}));await a.locator('[data-fur]').nth(2).click();await a.locator('#wardrobe-cancel').click();check('customization-cancel',(await a.evaluate(()=>labAppearance.fur))===before.fur);
@@ -60,4 +55,4 @@ try{
 
  report.audio=await a.evaluate(()=>({active:[...document.querySelectorAll('audio')].filter(a=>!a.paused).length,time:document.querySelector('#winter-background-music')?.currentTime,error:document.querySelector('#winter-background-music')?.error?.message||null}));
  await fs.writeFile(out+'/report.json',JSON.stringify(report,null,2));console.log(JSON.stringify({...report,movement:{samples:report.movement.samples.length}}));
-}catch(error){report.failure=error.message.split('Call log:')[0];await fs.writeFile(out+'/report.json',JSON.stringify(report,null,2).replace(/[a-f0-9]{64}/g,'[redacted]'));throw Error(report.failure.replace(/[a-f0-9]{64}/g,'[redacted]'));}finally{for(const c of contexts){await c.request.post(origin+'/api/leave',{headers:{Origin:origin}}).catch(()=>{});await c.close();}token=null;await browser.close();}
+}catch(error){report.failure=error.message.split('Call log:')[0];await fs.writeFile(out+'/report.json',JSON.stringify(report,null,2).replace(/[a-f0-9]{64}/g,'[redacted]'));throw Error(report.failure.replace(/[a-f0-9]{64}/g,'[redacted]'));}finally{for(const c of contexts){await c.request.post(origin+'/api/leave',{headers:{Origin:origin}}).catch(()=>{});await c.close();}await browser.close();}

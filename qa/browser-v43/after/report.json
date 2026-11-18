@@ -1,0 +1,149 @@
+{
+  "physicalWindows": false,
+  "physicalMobile": false,
+  "errors": [],
+  "checks": [
+    {
+      "name": "public-keyboard",
+      "poses": [
+        {
+          "x": 0,
+          "y": 0.95,
+          "z": 24,
+          "yaw": -0.15,
+          "mode": "",
+          "speed": 0,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        },
+        {
+          "x": -1.1100857305944738,
+          "y": 0.95,
+          "z": 20.759109087175624,
+          "yaw": -2.8115060707267023,
+          "mode": "",
+          "speed": 0.20705957119242843,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        }
+      ]
+    },
+    {
+      "name": "customization-save-and-input-recovery",
+      "ok": true
+    },
+    {
+      "name": "chat-block-and-recovery",
+      "ok": true
+    },
+    {
+      "name": "mobile-layout",
+      "width": 390,
+      "height": 844,
+      "preview": {
+        "x": 23,
+        "y": 203,
+        "w": 344,
+        "h": 166,
+        "bottom": 369
+      },
+      "options": {
+        "x": 23,
+        "y": 433,
+        "w": 344,
+        "h": 334,
+        "bottom": 767
+      },
+      "actions": {
+        "x": 23,
+        "y": 775,
+        "w": 344,
+        "h": 44,
+        "bottom": 819
+      },
+      "studio": {
+        "x": 10,
+        "y": 12,
+        "w": 370,
+        "h": 820,
+        "bottom": 832
+      },
+      "overflow": false
+    },
+    {
+      "name": "mobile-layout",
+      "width": 320,
+      "height": 568,
+      "preview": {
+        "x": 23,
+        "y": 203,
+        "w": 274,
+        "h": 103.671875,
+        "bottom": 306.671875
+      },
+      "options": {
+        "x": 23,
+        "y": 370.671875,
+        "w": 274,
+        "h": 120.328125,
+        "bottom": 491
+      },
+      "actions": {
+        "x": 23,
+        "y": 499,
+        "w": 274,
+        "h": 44,
+        "bottom": 543
+      },
+      "studio": {
+        "x": 10,
+        "y": 12,
+        "w": 300,
+        "h": 544,
+        "bottom": 556
+      },
+      "overflow": false
+    },
+    {
+      "name": "mobile-layout",
+      "width": 844,
+      "height": 390,
+      "preview": {
+        "x": 345.59375,
+        "y": 163,
+        "w": 461.40625,
+        "h": 160,
+        "bottom": 323
+      },
+      "options": {
+        "x": 37,
+        "y": 181,
+        "w": 284.59375,
+        "h": 142,
+        "bottom": 323
+      },
+      "actions": {
+        "x": 37,
+        "y": 329,
+        "w": 770,
+        "h": 44,
+        "bottom": 373
+      },
+      "studio": {
+        "x": 22,
+        "y": 8,
+        "w": 800,
+        "h": 374,
+        "bottom": 382
+      },
+      "overflow": false
+    }
+  ],
+  "pointerLock": true
+}

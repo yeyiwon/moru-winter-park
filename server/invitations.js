@@ -24,7 +24,7 @@ export async function sessionInfo(request,env,now,owner){
  const id=await digest(secret),self=await env.DB.prepare('SELECT v.*,i.expires_at AS inviteExpires,i.revoked_at AS inviteRevoked,b.id AS blocked FROM visitors v LEFT JOIN world_invites i ON i.id=v.invite_id LEFT JOIN visitor_blocks b ON b.id=v.id WHERE v.id=?').bind(id).first();
  const blocked=!!(self?self.blocked:await env.DB.prepare('SELECT id FROM visitor_blocks WHERE id=?').bind(id).first());
  let valid=!!self&&!blocked&&self.room===publicRoom&&self.admitted_at>0&&self.kicked_at===0&&self.seen>now-2592000000;
- if(valid)valid=self.auth_type==='owner'?(owner??await isOwner(request,env)):self.auth_type==='invite'&&self.inviteExpires>now&&self.inviteRevoked==null;
+ if(valid)valid=self.auth_type==='owner'?(owner??await isOwner(request,env)):self.auth_type==='public'||self.auth_type==='invite'&&self.inviteExpires>now&&self.inviteRevoked==null;
  return{self,id,valid,blocked};
 }
 export function publicSession(self){return{id:self.id,name:self.name,room:publicRoom,region:self.region,color:self.color,colorTop:self.color_top,accessory:self.accessory,fluff:self.fluff,roundness:self.roundness,x:self.x,y:self.y,z:self.z,yaw:self.yaw};}
@@ -63,20 +63,19 @@ export async function invitationAPI(request,env,now){
 export async function joinWorld(request,env,now){
  const raw=await request.text();if(raw.length>2048)return json({error:'요청이 너무 큽니다.'},413);const body=JSON.parse(raw);
  if(!body||typeof body!=='object'||Array.isArray(body))return json({error:'요청을 확인해 주세요.'},400);
- if(body.room&&body.room!==publicRoom)return json({error:'별도 공간은 운영하지 않습니다. 새 초대 링크를 받아 주세요.'},400);
+ if(body.room&&body.room!==publicRoom)return json({error:'하나의 공개 겨울 광장만 운영합니다.'},400);
  if(!await rateLimit(env.DB,'join:'+await digest(request.headers.get('cf-connecting-ip')||'shared'),now,120))return json({error:'잠시 뒤 다시 입장해 주세요.'},429);
  const admin=await isOwner(request,env),session=await sessionInfo(request,env,now,admin);
  if(session.blocked)return json({error:'이 게스트의 입장이 제한되었습니다.'},403);
  let invitation=null;
  if(body.token!=null){invitation=await validInvitation(env.DB,body.token,now);if(!invitation)return json({error:'만료되었거나 취소된 초대입니다. 새 링크를 받아 주세요.'},403);}
- if(!admin&&!session.valid&&!invitation)return json({error:'관리자가 공유한 초대 링크로 입장해 주세요.'},403);
- if(!admin&&session.self?.kicked_at&&(!invitation||invitation.createdAt<=session.self.kicked_at))return json({error:'관리자에 의해 퇴장했습니다. 새 초대를 받아 주세요.'},403);
+ if(!admin&&session.self?.kicked_at&&(!invitation||invitation.createdAt<=session.self.kicked_at))return json({error:'관리자에 의해 이 세션의 입장이 제한되었습니다.'},403);
  let name;try{name=validateNickname(body.name||session.self?.name||'크림토끼');}catch(e){return json({error:e.message},400);}
  // Keep one of the twelve slots available so the owner can enter and moderate a full guest world.
- const authType=admin?'owner':'invite',inviteId=admin?null:invitation?.id||session.self?.invite_id;
+ const authType=admin?'owner':'public',inviteId=null;
  if(session.self){
   const changed=await env.DB.prepare("UPDATE visitors SET room=?,name=?,seen=?,invite_id=?,admitted_at=?,kicked_at=0,auth_type=? WHERE id=? AND (SELECT COUNT(*) FROM visitors WHERE room=? AND seen>? AND admitted_at>0 AND id<>?)<12 AND (?=1 OR (SELECT COUNT(*) FROM visitors WHERE room=? AND seen>? AND admitted_at>0 AND auth_type<>'owner' AND id<>?)<11) AND (? IS NULL OR EXISTS(SELECT id FROM world_invites WHERE id=? AND revoked_at IS NULL AND expires_at>?))").bind(publicRoom,name,now,inviteId,now,authType,session.id,publicRoom,now-20000,session.id,admin?1:0,publicRoom,now-20000,session.id,inviteId,inviteId,now).run();
-  if(!changed.meta?.changes)return json({error:'입장할 수 없습니다. 정원 또는 초대 유효기간을 확인해 주세요.'},409);
+  if(!changed.meta?.changes)return json({error:'광장이 가득 찼습니다. 잠시 뒤 다시 입장해 주세요. 게스트 정원은 11명입니다.'},409);
   if(!session.valid){await env.DB.prepare("UPDATE visitors SET x=0,y=.95,z=30,yaw=0,region='outdoors',mode='',chat='',chat_at=0 WHERE id=?").bind(session.id).run();await env.DB.prepare('DELETE FROM ride_seats WHERE visitor=?').bind(session.id).run();}
   return json(publicSession(await env.DB.prepare('SELECT * FROM visitors WHERE id=?').bind(session.id).first()));
  }

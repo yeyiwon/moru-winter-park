@@ -50,7 +50,7 @@ export function createCustomizationUI(initial,commit){
  options.addEventListener('input',e=>{if(e.target.id==='fur-length'||e.target.id==='roundness'){success=false;editor.edit({[e.target.id==='fur-length'?'fluff':'roundness']:Number(e.target.value)});}});
  save.onclick=async()=>{success=await editor.save();renderState(editor.state());};cancel.onclick=()=>{success=false;editor.cancel();renderOptions();};
  root.querySelector('#wardrobe-reset').onclick=()=>{success=false;editor.edit({fur:'#f4eee5',furTop:null,accessory:'none',fluff:100,roundness:50});renderOptions();};
- root.querySelector('#preview-front').onclick=()=>window.dispatchEvent(new Event('lab:preview-front'));
+
  renderOptions();
  return {open(){if(active)return;active=true;success=false;editor.restore(window.labAppearance);renderOptions();},close(){active=false;window.labDraftAppearance=null;editor.cancel();window.dispatchEvent(new CustomEvent('lab:preview-appearance',{detail:window.labAppearance}));},restore(look){editor.restore(look);renderOptions();}};
 }

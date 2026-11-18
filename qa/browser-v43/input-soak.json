@@ -1,0 +1,33 @@
+{
+  "physicalMobile": false,
+  "errors": [],
+  "checks": [
+    {
+      "name": "three-finger-move-camera-jump",
+      "pass": true
+    },
+    {
+      "name": "touch-cancel-stops",
+      "pass": true
+    },
+    {
+      "name": "bounded-ui-resources",
+      "pass": true
+    }
+  ],
+  "before": {
+    "geometry": 597,
+    "textures": 19,
+    "programs": 197,
+    "heap": 375706044,
+    "audio": 2
+  },
+  "after": {
+    "geometry": 597,
+    "textures": 19,
+    "programs": 197,
+    "heap": 391595118,
+    "audio": 2
+  },
+  "cycles": 12
+}

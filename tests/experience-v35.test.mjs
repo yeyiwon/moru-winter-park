@@ -57,10 +57,7 @@ test('component rendering cannot inject HTML, arbitrary actions or invented musi
  renderExperienceCards(container,{cards:[{component:'RecommendationCard',item:{id:'winter-waltz',title:'<script>bad()</script>'}},{component:'AdminPanel',item:{}},{component:'RecommendationCard',item:{id:'invented'}}]},{onPlay:id=>selected=id});
  assert.equal(container.children.length,1);assert.equal(container.querySelector('h3').textContent,'Winter Waltz');assert.equal(container.querySelector('script'),null);container.querySelector('button').click();assert.equal(selected,'winter-waltz');dom.window.close();
 });
-test('voice input starts only explicitly, maps whitelisted commands, and always releases recognition',()=>{
- let starts=0,aborts=0,instance,command;const statuses=[];
- class FakeRecognition{constructor(){instance=this;}start(){starts++;}abort(){aborts++;}}
- const voice=createVoiceInput(FakeRecognition,{onCommand:c=>command=c,onStatus:s=>statuses.push(s)});assert.equal(starts,0);assert.equal(voiceCommand('관리자 로그인'),null);assert.equal(voiceCommand('지도 열기.'),'map');
- assert.equal(voice.start(),true);assert.equal(voice.start(),false);instance.onresult({results:[[{transcript:'손 흔들기'}]]});assert.equal(command,'wave');assert.equal(voice.listening,false);assert.equal(aborts,1);
- voice.start();instance.onerror({error:'not-allowed'});assert.match(statuses.at(-1),/권한/);assert.equal(voice.listening,false);voice.stop();
+test('retired voice compatibility module never constructs recognition or accepts commands',()=>{
+ let starts=0;class FakeRecognition{constructor(){starts++;}}
+ const voice=createVoiceInput(FakeRecognition);assert.equal(voice.start(),false);assert.equal(starts,0);assert.equal(voiceCommand('지도 열기'),null);assert.equal(voice.listening,false);voice.stop();voice.dispose();
 });

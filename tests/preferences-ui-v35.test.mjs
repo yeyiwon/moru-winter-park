@@ -31,5 +31,5 @@ test('physical exhibit opens sourced cards without an AI request, and its quiz u
  const a=setup(t);await a.run('dist/exhibit-cards.js');let quiz;a.w.openQuickQuiz=value=>quiz=value;await a.w.openKnowledgeExhibit('science');const panel=a.d.querySelector('#exhibit-panel');assert.equal(panel.open,true);assert.equal(a.calls.filter(c=>c.url==='/api/experience').length,0);assert.equal(panel.querySelectorAll('.experience-card').length,2);assert.ok(panel.querySelector('a').href.startsWith('https://'));panel.querySelector('.experience-card button').click();assert.equal(panel.open,false);assert.equal(quiz.gallery,'science');assert.match(quiz.questionId,/daily-sci/);assert.equal(a.d.body.classList.contains('quiz-open'),false);
 });
 test('unsupported voice input does not request permission or create hidden controls',async t=>{
- const a=setup(t);await a.run('dist/voice-controls.js');assert.equal(a.d.querySelector('#voice-settings input').disabled,true);assert.equal(a.d.querySelector('#voice-settings [data-listen]').disabled,true);assert.equal(a.calls.length,0);assert.match(a.d.querySelector('#voice-settings [role=status]').textContent,/지원하지/);
+ const a=setup(t);await a.run('dist/voice-controls.js');assert.equal(a.d.querySelector('#voice-settings'),null);assert.equal(a.calls.length,0);
 });

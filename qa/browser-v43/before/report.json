@@ -1,0 +1,25 @@
+{
+  "physicalWindows": false,
+  "freshGuest": {
+    "gate": true,
+    "joined": false,
+    "status": "",
+    "player": {
+      "x": 0,
+      "y": 0.95,
+      "z": 24,
+      "yaw": -0.15,
+      "mode": "",
+      "speed": 0,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    }
+  },
+  "mobile": {
+    "jump": "48px",
+    "previewTitle": "나의 겨울 친구정면"
+  }
+}
