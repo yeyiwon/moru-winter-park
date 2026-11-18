@@ -1,0 +1,65 @@
+{
+  "errors": [],
+  "screens": [
+    {
+      "label": "desktop",
+      "width": 1280,
+      "height": 900,
+      "previewStable": true,
+      "nicknameSaveCancel": true,
+      "tenCharacters": true,
+      "shuffleRepeat": true,
+      "bgmOffPreserved": true,
+      "fieldWidth": 318,
+      "fieldScroll": 318,
+      "panelWidth": 798,
+      "panelScroll": 798,
+      "previewHeight": 289
+    },
+    {
+      "label": "mobile",
+      "width": 390,
+      "height": 844,
+      "previewStable": true,
+      "nicknameSaveCancel": true,
+      "tenCharacters": true,
+      "shuffleRepeat": true,
+      "bgmOffPreserved": true,
+      "fieldWidth": 318,
+      "fieldScroll": 318,
+      "panelWidth": 368,
+      "panelScroll": 368,
+      "previewHeight": 142
+    },
+    {
+      "label": "small",
+      "width": 320,
+      "height": 568,
+      "previewStable": true,
+      "nicknameSaveCancel": true,
+      "tenCharacters": true,
+      "shuffleRepeat": true,
+      "bgmOffPreserved": true,
+      "fieldWidth": 272,
+      "fieldScroll": 272,
+      "panelWidth": 298,
+      "panelScroll": 298,
+      "previewHeight": 80
+    },
+    {
+      "label": "landscape",
+      "width": 844,
+      "height": 390,
+      "previewStable": true,
+      "nicknameSaveCancel": true,
+      "tenCharacters": true,
+      "shuffleRepeat": true,
+      "bgmOffPreserved": true,
+      "fieldWidth": 318,
+      "fieldScroll": 318,
+      "panelWidth": 798,
+      "panelScroll": 798,
+      "previewHeight": 136
+    }
+  ]
+}

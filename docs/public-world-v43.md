@@ -92,3 +92,20 @@ Mac Apple M2, Chrome 157, 1280×800, 실제 renderer DPR 1, medium 고정, 장�
 ## 남은 확인
 
 별도 브랜드 병합본의 연속 브라우저 context 검사에서 320px 초기화가 한 차례 90초 timeout이었다. 독립 브라우저에서는 정상 입장했지만 최초 timeout 원인은 UNKNOWN이다. 해당 브랜드 코드는 이 수정본에 포함하지 않았다. 물리 Windows/Edge/iPhone/Android 및 장시간 안정성 검증도 완료로 처리하지 않는다.
+
+## 후속 UI 정리 · 음악과 닉네임
+
+음악 켜기·끄기와 중복되는 트랙 음소거 버튼을 제거했다. `winter-music.js`에서 해당 버튼 참조와 임시 음량 상태도 제거했으며, 전체 음소거·음량·재생 정책은 유지한다. 셔플·반복은 기존 기능과 `aria-pressed`를 유지하고 글자만 표시한다.
+
+닉네임은 이름+연필 표시와 입력+체크 표시의 너비·높이가 달라 편집 시 미리보기 크기가 달라졌다. `index.html`과 `customization.css`에서 공통 유리 입력줄로 묶고 동일한 44px 조작 영역을 사용한다. 성공 안내는 숨겨지는 form 밖에 두어 저장 직후에도 보이며, 글자 수는 편집 중에만 표시한다. 기존 10자 검증과 서버 저장을 유지하고, Escape로 취소하면 수정 버튼에 초점을 돌려준다. `social.js`에서 저장 중 중복 진입을 막고 재편집 시 이전 오류를 정리했다.
+
+- 관련 자동 검사: settings, audio-engine, nickname, social-ui, customization-v38, glass-ui **24/24 PASS**.
+- 두 production build, 용량 검사, JavaScript 구문 및 diff 검사 PASS. 새 dependency 없음. code gzip 982,188 bytes로 기존 한도 이내; 신규 FPS/GPU 측정은 UNKNOWN.
+- 실제 Mac Chrome의 PC 1280×900, 모바일 크기 390×844·320×568·844×390에서 저장/취소/10자 입력, 편집 전후 미리보기 영역 동일, 가로 overflow 없음, 셔플/반복 상태 변경과 BGM 꺼짐 유지 확인. pageerror 0.
+- 로컬 API 실패 응답을 주입해 오류 안내/입력 보존/재시도 저장/취소 복원 확인. 실제 iOS/Android 키보드와 물리 기기 검증은 UNKNOWN.
+- [브라우저 결과](../qa/browser-v43-controls/report.json), [실패·재시도 결과](../qa/browser-v43-controls/retry.json). 운영 배포 및 원격 push 없음. 변경 코드는 로컬 수정본에만 보관한다.
+
+| 상태 | 수정 전 | 수정 후 |
+|---|---|---|
+| 닉네임 편집 | ![이전](../qa/browser-v43-controls/before/nickname-edit-mobile.png) | ![이후](../qa/browser-v43-controls/after/nickname-edit-mobile.png) |
+| 음악 | ![이전](../qa/browser-v43-controls/before/audio-mobile.png) | ![이후](../qa/browser-v43-controls/after/audio-mobile.png) |

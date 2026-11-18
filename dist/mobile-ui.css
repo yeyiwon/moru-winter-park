@@ -64,7 +64,6 @@ body.invite-gate #park-menu{visibility:hidden}
 body.mouse-look #park-canvas{cursor:none}
 #studio .music-modes{display:flex;gap:6px;align-items:center;justify-content:center}
 #studio .music-modes button{display:flex;align-items:center;justify-content:center;gap:6px;min-height:44px;padding:8px 10px;font-size:11px;border-radius:12px;flex:1;min-width:0}
-.music-modes svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
 #studio .music-track{font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 #chat-log .chat-report,#chat-log .chat-hide{font-size:11px;min-height:44px;min-width:44px;margin-left:4px;border:0;border-radius:10px;background:#ffffff0b;color:inherit}
 #chat-log button[hidden]{display:none}
