@@ -1,4 +1,4 @@
-import {execFileSync} from 'node:child_process';
+import {buildRevision} from './build-revision.mjs';
 import fs from 'node:fs';import path from 'node:path';import {build} from 'esbuild';
 import {productionAsset,releaseServiceWorker,stampReleaseHTML} from './production-assets.mjs';
 import {createHash} from 'node:crypto';
@@ -9,5 +9,5 @@ for(const [name,asset]of Object.entries(assets))if(!asset.binary&&name!=='/sw.js
 assets['/sw.js'].body=releaseServiceWorker(assets['/sw.js'].body,Object.fromEntries(Object.entries(assets).filter(([name])=>!name.endsWith('.m4a')).map(([name,a])=>[name,a.binary?Buffer.from(a.body,'base64'):a.body])));
 assets['/index.html'].body=stampReleaseHTML(assets['/index.html'].body,assets['/sw.js'].body);
 for(const [name,asset]of Object.entries(assets)){if(name==='/sw.js')asset.body=productionAsset(asset.body,path.extname(name));asset.etag='"'+createHash('sha256').update(asset.body).digest('hex').slice(0,24)+'"';}fs.mkdirSync('.winter-build',{recursive:true});fs.writeFileSync('.winter-build/assets.js','export default '+JSON.stringify(assets)+';');
-await build({entryPoints:['server/worker.js'],bundle:true,format:'esm',platform:'browser',target:'es2022',outfile:'dist/server/index.js',minify:true,define:{__WINTER_REVISION__:JSON.stringify(execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim()+(execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim()?'-dirty':''))}});
+await build({entryPoints:['server/worker.js'],bundle:true,format:'esm',platform:'browser',target:'es2022',outfile:'dist/server/index.js',minify:true,define:{__WINTER_REVISION__:JSON.stringify(buildRevision())}});
 fs.mkdirSync('dist/.openai',{recursive:true});fs.copyFileSync('.openai/hosting.json','dist/.openai/hosting.json');fs.cpSync('drizzle','dist/.openai/drizzle',{recursive:true});console.log('Built worker with '+Object.keys(assets).length+' static assets.');

@@ -1,4 +1,4 @@
-import {execFileSync} from 'node:child_process';
+import {buildRevision} from './build-revision.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import {productionAsset,releaseServiceWorker,stampReleaseHTML} from './production-assets.mjs';
@@ -11,4 +11,4 @@ fs.writeFileSync(path.join(output,'index.html'),stampReleaseHTML(fs.readFileSync
 fs.writeFileSync(path.join(output,'sw.js'),productionAsset(worker,'.js'));
 console.log('Built Vercel web assets.');
 
-fs.writeFileSync(path.join(output,'release.json'),JSON.stringify({revision:execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim()+(execFileSync('git',['status','--porcelain'],{encoding:'utf8'}).trim()?'-dirty':''),apiOrigin:'https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site'}));
+fs.writeFileSync(path.join(output,'release.json'),JSON.stringify({revision:buildRevision(),apiOrigin:'https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site'}));
