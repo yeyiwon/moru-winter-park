@@ -1,0 +1,66 @@
+{
+  "environment": "macOS Chrome, 1280x800; browser visual inspection; no physical mobile test",
+  "geometry": {
+    "treeParticles": 9240,
+    "treeDraws": 1,
+    "fenceBulbs": 7108,
+    "terrain": {
+      "resident": 28,
+      "queued": 0,
+      "coarseTiles": 284,
+      "illuminatedTrees": 220,
+      "worker": true
+    }
+  },
+  "map": [
+    {
+      "id": "park",
+      "name": "놀이공원 이동"
+    },
+    {
+      "id": "onsen",
+      "name": "온천 · 료칸 이동"
+    },
+    {
+      "id": "tree",
+      "name": "소원 트리 광장 이동"
+    },
+    {
+      "id": "quiz",
+      "name": "별빛 만물관 이동"
+    },
+    {
+      "id": "ski",
+      "name": "초급 리프트 · 왼쪽 이동"
+    },
+    {
+      "id": "ski-right-base",
+      "name": "포레스트 리프트 · 오른쪽 이동"
+    },
+    {
+      "id": "ski-middle",
+      "name": "중턱 · 초급 출발 이동"
+    },
+    {
+      "id": "ski-forest",
+      "name": "중간 쉼터 · 포레스트 출발 이동"
+    },
+    {
+      "id": "ski-gondola-base",
+      "name": "구름정상 곤돌라 이동"
+    },
+    {
+      "id": "ski-ridge-base",
+      "name": "중간 쉼터 · 정상 리프트 이동"
+    },
+    {
+      "id": "ski-ridge-top",
+      "name": "정상 리프트 · 은하 파노라마 이동"
+    },
+    {
+      "id": "ski-peak",
+      "name": "구름정상 · 은하 파노라마 이동"
+    }
+  ],
+  "errors": []
+}

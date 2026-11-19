@@ -1,0 +1,115 @@
+{
+  "environment": "macOS headless Chrome; desktop 1280x800 and touch 390x844, DPR 1",
+  "physicalMobileVerified": false,
+  "left": {
+    "startedAt": 1795101486012,
+    "kind": "lift",
+    "exit": {
+      "pose": {
+        "x": -340,
+        "y": 201.31314794859676,
+        "z": -830,
+        "yaw": 0,
+        "mode": "summit",
+        "lean": 0,
+        "tilt": 0,
+        "brake": false,
+        "air": 0,
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      },
+      "reservation": null
+    }
+  },
+  "right": {
+    "startedAt": 1795101530606,
+    "kind": "upperlift",
+    "exit": {
+      "pose": {
+        "x": 815,
+        "y": 614.7400567192072,
+        "z": -2330,
+        "yaw": 0,
+        "mode": "summit",
+        "lean": 0,
+        "tilt": 0,
+        "brake": false,
+        "air": 0,
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      },
+      "reservation": null
+    }
+  },
+  "ridge": {
+    "startedAt": 1795101750672,
+    "kind": "ridgelift",
+    "exit": {
+      "pose": {
+        "x": -153.85270073965424,
+        "y": 1386.4112334127162,
+        "z": -3954,
+        "yaw": 0,
+        "mode": "summit",
+        "lean": 0,
+        "tilt": 0,
+        "brake": false,
+        "air": 0,
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      },
+      "reservation": null
+    }
+  },
+  "outsideRing": {
+    "magnitude": 1,
+    "speed": 22.121458311645394
+  },
+  "multitouch": {
+    "magnitude": 1,
+    "yaw": -0.04999999999999999
+  },
+  "brake": {
+    "held": true,
+    "speed": 7.783357460514287
+  },
+  "jump": {
+    "maxAir": 1.1994917213592324,
+    "currentAir": 0,
+    "gear": "board"
+  },
+  "stop": {
+    "pose": {
+      "x": 393.8446565626999,
+      "y": 830.4010247953282,
+      "z": -2834.3022155339127,
+      "yaw": 0.3093584645277549,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 0,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    "gear": "none",
+    "input": 0
+  },
+  "errors": []
+}

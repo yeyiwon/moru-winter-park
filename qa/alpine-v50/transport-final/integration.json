@@ -1,0 +1,209 @@
+{
+  "environment": "macOS Chrome headless; desktop 1440x900 and touch emulation 390x844; isolated local DB, HTTP presence",
+  "physicalMobileVerified": false,
+  "곤돌라검증": {
+    "readyMs": 6470
+  },
+  "동승검증": {
+    "readyMs": 9992
+  },
+  "reservations": [
+    {
+      "kind": "gondola",
+      "cabin": 1795109670000,
+      "seat": 1,
+      "startedAt": 1795109670000
+    },
+    {
+      "kind": "gondola",
+      "cabin": 1795109670000,
+      "seat": 0,
+      "startedAt": 1795109670000
+    }
+  ],
+  "chat": true,
+  "gondolaPC": {
+    "fps": 59.11959734760722,
+    "p50": 16.69999999999709,
+    "p95": 16.799999999995634,
+    "calls": 165,
+    "triangles": 532289,
+    "geometry": 641,
+    "textures": 21,
+    "terrain": {
+      "resident": 21,
+      "queued": 0,
+      "coarseTiles": 284,
+      "illuminatedTrees": 220,
+      "worker": true
+    },
+    "camera": {
+      "yaw": 0.33,
+      "pitch": 0.48,
+      "distance": 16.5,
+      "fov": 50,
+      "context": null,
+      "manualYaw": false,
+      "revision": 0,
+      "treeOffset": 0,
+      "rendered": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50
+      },
+      "focus": {
+        "x": -193.7163197658032,
+        "y": 104.88656511015223,
+        "z": -335.63552023875565
+      },
+      "eye": {
+        "x": -188.9738151701567,
+        "y": 112.50592150658669,
+        "z": -321.78979677393136
+      },
+      "aim": {
+        "x": -193.7163197658032,
+        "y": 104.88656511015223,
+        "z": -335.63552023875565
+      }
+    }
+  },
+  "gondolaMobile": {
+    "fps": 60.15788947736584,
+    "p50": 16.69999999999709,
+    "p95": 16.799999999995634,
+    "calls": 146,
+    "triangles": 413606,
+    "geometry": 609,
+    "textures": 14,
+    "terrain": {
+      "resident": 20,
+      "queued": 0,
+      "coarseTiles": 284,
+      "illuminatedTrees": 220,
+      "worker": true
+    },
+    "camera": {
+      "yaw": 0.33,
+      "pitch": 0.48,
+      "distance": 16.5,
+      "fov": 50,
+      "context": null,
+      "manualYaw": false,
+      "revision": 0,
+      "treeOffset": 0,
+      "rendered": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50
+      },
+      "focus": {
+        "x": -289.3026824240287,
+        "y": 161.37175514698305,
+        "z": -504.50479818929136
+      },
+      "eye": {
+        "x": -284.5601778283822,
+        "y": 168.9911115434175,
+        "z": -490.6590747244671
+      },
+      "aim": {
+        "x": -289.3026824240287,
+        "y": 161.37175514698305,
+        "z": -504.50479818929136
+      }
+    }
+  },
+  "exits": [
+    {
+      "position": {
+        "x": 41.517305114269256,
+        "y": 1403.3427172271806,
+        "z": -3005.4,
+        "yaw": 0,
+        "mode": "summit",
+        "lean": 0,
+        "tilt": 0,
+        "brake": false,
+        "air": 0,
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      },
+      "reservation": null
+    },
+    {
+      "position": {
+        "x": 41.517305114269256,
+        "y": 1403.3427172271806,
+        "z": -3005.4,
+        "yaw": 0,
+        "mode": "summit",
+        "lean": 0,
+        "tilt": 0,
+        "brake": false,
+        "air": 0,
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      },
+      "reservation": null
+    }
+  ],
+  "summit": {
+    "fps": 55.12282804076763,
+    "p50": 16.699999999982538,
+    "p95": 33.30000000001746,
+    "calls": 1199,
+    "triangles": 5079113,
+    "geometry": 967,
+    "textures": 35,
+    "terrain": {
+      "resident": 22,
+      "queued": 0,
+      "coarseTiles": 284,
+      "illuminatedTrees": 220,
+      "worker": true
+    },
+    "camera": {
+      "yaw": 3.141592653589793,
+      "pitch": 0.21999999999999997,
+      "distance": 16.5,
+      "fov": 50,
+      "context": null,
+      "manualYaw": true,
+      "revision": 1,
+      "treeOffset": 0,
+      "rendered": {
+        "yaw": 3.1415926535897927,
+        "pitch": 0.22,
+        "distance": 16.5,
+        "fov": 50
+      },
+      "focus": {
+        "x": 41.51730511426925,
+        "y": 1403.872717227181,
+        "z": -3005.4000000000005
+      },
+      "eye": {
+        "x": 41.517305114269256,
+        "y": 1407.4735060080154,
+        "z": -3021.5023079139555
+      },
+      "aim": {
+        "x": 41.51730511426925,
+        "y": 1403.872717227181,
+        "z": -3005.4000000000005
+      }
+    }
+  },
+  "errors": []
+}

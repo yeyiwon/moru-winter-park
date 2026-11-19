@@ -1,0 +1,37 @@
+{
+  "environment": "macOS arm64 / headless Chrome / 1280x800; actual elapsed time; automated steering",
+  "stage": "final 1,800m drop, faster physics, worker terrain and authoritative transport",
+  "elapsedSeconds": 182.60840000000076,
+  "frames": 7147,
+  "averageFPS": 39.13839670026134,
+  "frameMsMean": 25.550356793060015,
+  "frameMsP50": 16.70000000001164,
+  "frameMsP95": 50,
+  "callsRange": [
+    100,
+    1245
+  ],
+  "trianglesRange": [
+    455911,
+    5218271
+  ],
+  "terrainResidentMax": 28,
+  "final": {
+    "x": -5.682750627732972,
+    "y": 0.95,
+    "z": -71.90119514303656,
+    "yaw": -0.045720546757320145,
+    "mode": "",
+    "lean": 0,
+    "tilt": 0,
+    "brake": false,
+    "air": 0,
+    "speed": 0,
+    "gesture": "",
+    "heldItem": "",
+    "balloonTone": -1,
+    "balloonStyle": "classic",
+    "roast": 0
+  },
+  "errors": []
+}

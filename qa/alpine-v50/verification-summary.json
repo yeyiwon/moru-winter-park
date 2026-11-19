@@ -1,0 +1,27 @@
+{
+  "scope": "ski resort only; existing unrelated working changes preserved",
+  "deployment": "local only; no commit/push/production deployment",
+  "automatedTests": {
+    "passed": 523,
+    "failed": 0
+  },
+  "syntaxModules": 287,
+  "build": [
+    "build",
+    "build:realtime",
+    "build:vercel",
+    "test:budget"
+  ],
+  "browser": {
+    "desktopDescent": "desktop-descent-final.json",
+    "walkingMapCamera": "access-final/access.json",
+    "touchControlsChairlifts": "transport-final/mobile-controls.json",
+    "twoGuestGondola": "transport-final/integration.json"
+  },
+  "unknown": [
+    "physical Windows PC",
+    "physical iPhone/Android",
+    "GPU memory/time",
+    "long-running production connections"
+  ]
+}

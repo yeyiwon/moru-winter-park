@@ -1,0 +1,32 @@
+{
+  "stage": "before worker streaming and flank-ridge refinement",
+  "environment": "macOS arm64 / headless Chrome / 1280x800; browser loop in real time, automated steering, no accelerated clock",
+  "elapsedSeconds": 524.3385999999996,
+  "skiFrameSamples": 24801,
+  "frameMsMean": 21.091722107979518,
+  "frameMsP50": 16.70000000001164,
+  "frameMsP95": 33.40000000002328,
+  "averageFPS": 47.41196545642308,
+  "callsRange": [
+    82,
+    1304
+  ],
+  "trianglesRange": [
+    371904,
+    5373914
+  ],
+  "final": {
+    "x": -5.177879726564051,
+    "y": 0.95,
+    "z": -78.56275743887784,
+    "yaw": -0.08869447018798861,
+    "mode": "",
+    "speed": 0,
+    "gesture": "",
+    "heldItem": "",
+    "balloonTone": -1,
+    "balloonStyle": "classic",
+    "roast": 0
+  },
+  "errors": []
+}
