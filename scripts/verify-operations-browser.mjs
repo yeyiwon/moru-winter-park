@@ -6,7 +6,18 @@ const report={at:new Date().toISOString(),browser:browser.version(),physicalMobi
 const check=(name,ok,details)=>{report.checks.push({name,ok,...(details?{details}:{})});if(!ok)throw Error(name);};
 const offlinePages=new WeakSet();
 async function pageFor(options={}){const context=await browser.newContext({viewport:{width:1280,height:800},serviceWorkers:'block',...options}),page=await context.newPage();page.on('pageerror',error=>report.errors.push(error.message));page.on('console',message=>{if(message.type()!=='error')return;const error={text:message.text(),url:message.location().url};if(offlinePages.has(page)&&/ERR_INTERNET_DISCONNECTED/.test(error.text))report.expectedNetworkFaults.push(error);else report.consoleErrors.push(error);});page.on('response',response=>{if(response.status()>=400)report.httpErrors.push({path:new URL(response.url()).pathname,status:response.status()});});return page;}
-async function enter(page,url){await page.bringToFront();await page.goto(url,{waitUntil:'domcontentloaded',timeout:120000});await page.waitForFunction(()=>window.labSocialJoined&&document.body.classList.contains('world-ready'),null,{timeout:120000});try{await page.locator('#world-loading').waitFor({state:'hidden',timeout:30000});}catch(error){console.error('Loading diagnostics',await page.evaluate(()=>({hidden:document.hidden,stage:document.querySelector('#loading-stage')?.textContent,error:document.querySelector('.loading-error')?.textContent})));throw error;}}
+async function enter(page,url){
+ await page.bringToFront();const started=Date.now();
+ await page.goto(url,{waitUntil:'domcontentloaded',timeout:120000});
+ await page.waitForFunction(()=>window.labSocialJoined&&document.body.classList.contains('world-ready'),null,{timeout:120000});
+ const worldReadyMs=Date.now()-started;
+ // world-ready means scene construction ended, not that the first GPU frame
+ // finished. Software-rendered CI needs the same startup budget for that frame.
+ try{await page.locator('#world-loading').waitFor({state:'hidden',timeout:120000});}
+ catch(error){console.error('Loading diagnostics',await page.evaluate(()=>{const r=document.querySelector('#world-loading'),s=getComputedStyle(r);return{documentHidden:document.hidden,hidden:r.hidden,classes:r.className,display:s.display,visibility:s.visibility,progress:r.querySelector('progress')?.value,stage:r.querySelector('#loading-stage')?.textContent,error:r.querySelector('.loading-error')?.textContent};}),{errors:report.errors,consoleErrors:report.consoleErrors});throw error;}
+ const timing={viewport:page.viewportSize(),worldReadyMs,firstFrameReadyMs:Date.now()-started};
+ (report.startup??=[]).push(timing);console.log('Startup',timing);
+}
 try{
  const a=await pageFor(),b=await pageFor({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true});
  // The game deliberately pauses rendering in hidden tabs. Linux headless

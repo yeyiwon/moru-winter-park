@@ -46,3 +46,9 @@ PC 첫 수정 후 측정은 빌드와 겹쳐 54.50 FPS였으며 원본을 그대
 [자산 비교](../qa/operations-v46/artifact-parity.json) · [캐시 검사](../qa/operations-v46/cache-browser.json) · [Cloudflare 사전 검사](../qa/operations-v46/cloudflare-preflight.json) · [PC 재측정](../qa/operations-v46/profile-after-desktop-repeat.json)
 
 [모바일 트리](../qa/operations-v46/mobile-tree.png) · [커마](../qa/operations-v46/mobile-customization.png) · [채팅](../qa/operations-v46/mobile-chat.png) · [변경 전 광장](../qa/operations-v46/profile-before-desktop-plaza.png) · [변경 후 광장](../qa/operations-v46/profile-after-desktop-repeat-plaza.png)
+
+## 배포 환경 검사 보강
+
+Vercel의 Git 아카이브 빌드에는 `.git`이 없으므로 검증된 `VERCEL_GIT_COMMIT_SHA`를 사용하고, 로컬에서는 Git HEAD와 dirty 상태를 기록한다. 별도 테스트를 포함한 전체 488개 자동 검사는 원격에서도 통과했다.
+
+Linux CI의 브라우저는 하드웨어 GPU가 없다. Mac에서 SwiftShader로 재현한 모바일 화면은 scene 생성 35.084초, 첫 프레임 64.374초, 로딩 숨김 64.625초였다. 실제 초기화 완료와 지연 안내 복구는 정상이며, `world-ready` 후 추가 30초만 기다리던 검사 제한을 첫 GPU 프레임에도 기존 초기 진입 한도 120초로 적용했다. 검사 조건을 생략하거나 게임 품질을 낮추지 않았으며, 각 진입 시간과 오류 상태를 별도 출력한다. 소프트웨어 렌더러 수치는 실제 모바일 성능 수치가 아니다.
