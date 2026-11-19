@@ -1,5 +1,9 @@
 # v44 운영 배포 완료 — 2026-11-19
 
+## 2026-11-19 · v45 직접 시야·활동 탭·닉네임
+
+앱 commit `4b4d12014f5edc0cbeee98035cfbda8673f49831`를 Sites 50(succeeded)과 Vercel production(`dpl_GxAUTntqV82aPkmL4wUDtzj5un1P`, READY)에 배포했다. Vercel 핵심 자산12/12 해시 및 health/access/anonymous quiz-journal 검사 통과. Sites는 실행기 직접HTTP403이었으나 실제 브라우저에서 새 UI 자산 참조와 초대 화면을 확인했다. DB 마이그레이션·데이터 변경 없음. GitHub 쓰기403은 이전부터 남아 있어 검증 소스를 직접 배포했다. [구체적인 변경·검증·제약](direct-input-ui-v45.md).
+
 최신 투명 글래스 UI·중앙 퀴즈·카메라·좌석·료칸/천문대 개선과 WINTERLIGHT 브랜드를 기존 운영 주소에 반영했다.
 
 - [운영 주소](https://moru-winter-park.vercel.app/).

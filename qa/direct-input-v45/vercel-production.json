@@ -1,0 +1,134 @@
+{
+  "checkedAt": "2026-11-19T06:14:25.620683+00:00",
+  "origin": "https://moru-winter-park.vercel.app",
+  "sourceCommit": "4b4d12014f5edc0cbeee98035cfbda8673f49831",
+  "authentication": "anonymous public HTTP",
+  "passed": true,
+  "assets": [
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 22411,
+      "sha256": "4ca58f54c383c1a8cb85ea4f99ad421909197f5aa7e1b1b4e59263527c6f7b81",
+      "expectedSha256": "4ca58f54c383c1a8cb85ea4f99ad421909197f5aa7e1b1b4e59263527c6f7b81",
+      "match": true
+    },
+    {
+      "path": "sw.js",
+      "status": 200,
+      "bytes": 4656,
+      "sha256": "4426f56baf93d4f713ca01d40c59ad6a0239773bd0db64f54077a0a1a39d7761",
+      "expectedSha256": "4426f56baf93d4f713ca01d40c59ad6a0239773bd0db64f54077a0a1a39d7761",
+      "match": true
+    },
+    {
+      "path": "game-input.js",
+      "status": 200,
+      "bytes": 7666,
+      "sha256": "2663472cea353bb72233bca2a431c1ffe672035f25eba2f312eba5f203625b25",
+      "expectedSha256": "2663472cea353bb72233bca2a431c1ffe672035f25eba2f312eba5f203625b25",
+      "match": true
+    },
+    {
+      "path": "park.js",
+      "status": 200,
+      "bytes": 37218,
+      "sha256": "f2110072715173ba018de8ce8fbd6f8cb7132f9ccc339bc572aee2d2114258ee",
+      "expectedSha256": "f2110072715173ba018de8ce8fbd6f8cb7132f9ccc339bc572aee2d2114258ee",
+      "match": true
+    },
+    {
+      "path": "studio.js",
+      "status": 200,
+      "bytes": 7917,
+      "sha256": "74e76951fb141d5cb783d1209aeccf9fb404a8bcc0633807b8bd4d5c77969f70",
+      "expectedSha256": "74e76951fb141d5cb783d1209aeccf9fb404a8bcc0633807b8bd4d5c77969f70",
+      "match": true
+    },
+    {
+      "path": "social.js",
+      "status": 200,
+      "bytes": 20793,
+      "sha256": "bea6421e34e4039d6c60fb41bb41062d27ab50cdfc9a0657b132ee20b7e37e9a",
+      "expectedSha256": "bea6421e34e4039d6c60fb41bb41062d27ab50cdfc9a0657b132ee20b7e37e9a",
+      "match": true
+    },
+    {
+      "path": "customization-ui.js",
+      "status": 200,
+      "bytes": 11690,
+      "sha256": "8ca79e8b8ecc08786955f727113cca82bbf03968e48aace86fc3bb2cb9d8a292",
+      "expectedSha256": "8ca79e8b8ecc08786955f727113cca82bbf03968e48aace86fc3bb2cb9d8a292",
+      "match": true
+    },
+    {
+      "path": "customization.css",
+      "status": 200,
+      "bytes": 9985,
+      "sha256": "00cf5b65e10752421d6d77a4e3e4a9fa569dd485378488accf92a85c8a1cf5f7",
+      "expectedSha256": "00cf5b65e10752421d6d77a4e3e4a9fa569dd485378488accf92a85c8a1cf5f7",
+      "match": true
+    },
+    {
+      "path": "resort-ui-v43.css",
+      "status": 200,
+      "bytes": 12364,
+      "sha256": "8bea73572f5a8b68dcf4ae38c8e5bf908602850500633c3afe2a1b35b09bc455",
+      "expectedSha256": "8bea73572f5a8b68dcf4ae38c8e5bf908602850500633c3afe2a1b35b09bc455",
+      "match": true
+    },
+    {
+      "path": "winter-music.js",
+      "status": 200,
+      "bytes": 6955,
+      "sha256": "82b985abe37ba1e3cdafbbf2a356da30e64df90e28c2d79f452bd94369897a08",
+      "expectedSha256": "82b985abe37ba1e3cdafbbf2a356da30e64df90e28c2d79f452bd94369897a08",
+      "match": true
+    },
+    {
+      "path": "fireworks-request.js",
+      "status": 200,
+      "bytes": 5909,
+      "sha256": "5353a2972280e6ff463c8de1f18c95f3f53b7755396c7ef81b890c4785d530ef",
+      "expectedSha256": "5353a2972280e6ff463c8de1f18c95f3f53b7755396c7ef81b890c4785d530ef",
+      "match": true
+    },
+    {
+      "path": "camera-policy.js",
+      "status": 200,
+      "bytes": 5843,
+      "sha256": "8888aa20d8e6469243ef7a784a811d0a0c98d1ceecb26954ff1fa48867780c01",
+      "expectedSha256": "8888aa20d8e6469243ef7a784a811d0a0c98d1ceecb26954ff1fa48867780c01",
+      "match": true
+    }
+  ],
+  "api": [
+    {
+      "path": "api/health",
+      "status": 200,
+      "expectedStatus": 200,
+      "ok": true,
+      "health": {
+        "ok": true,
+        "multiplayer": true
+      }
+    },
+    {
+      "path": "api/access",
+      "status": 200,
+      "expectedStatus": 200,
+      "ok": true,
+      "access": {
+        "worldId": "winter-plaza",
+        "inviteRequired": true,
+        "admin": false
+      }
+    },
+    {
+      "path": "api/quiz-journal",
+      "status": 401,
+      "expectedStatus": 401,
+      "ok": true
+    }
+  ]
+}
