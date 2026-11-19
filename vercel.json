@@ -14,11 +14,6 @@
   ],
   "redirects": [
     {
-      "source": "/admin/:path*",
-      "destination": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site/admin",
-      "permanent": false
-    },
-    {
       "source": "/signin-with-chatgpt",
       "destination": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site/signin-with-chatgpt",
       "permanent": false

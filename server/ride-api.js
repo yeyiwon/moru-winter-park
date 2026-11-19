@@ -4,7 +4,7 @@ import {ferrisDimensions} from '../dist/ferris-layout.js';
 import {ferrisCabinAtStation,sharedRideKinds} from '../dist/ride-seats.js';
 import {upperLiftEntry,resortDestinations} from '../dist/resort-layout.js';
 const json=(v,status=200)=>Response.json(v,{status,headers:{'Cache-Control':'no-store'}});
-export async function listRideSeats(DB,room,now){return(await DB.prepare('SELECT visitor AS id,kind,cabin,seat,started_at AS startedAt FROM ride_seats WHERE room=? AND expires_at>?').bind(room,now).all()).results||[];}
+export async function listRideSeats(DB,room,now){return(await DB.prepare('SELECT visitor AS id,kind,cabin,seat,started_at AS startedAt,expires_at AS expiresAt FROM ride_seats WHERE room=? AND expires_at>?').bind(room,now).all()).results||[];}
 export async function rideAPI(request,DB,self,now){
  if(new URL(request.url).pathname!=='/api/ride')return null;
  if(request.method==='DELETE'){await DB.prepare('DELETE FROM ride_seats WHERE visitor=?').bind(self.id).run();return json({ok:true});}

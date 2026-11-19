@@ -32,7 +32,7 @@ test('different invitations and Sites/Vercel clients share one world, movement, 
  const view=(await f.call(b,'presence',pose)).data;assert.equal(view.people.find(p=>p.id===sa.id).x,2);assert.equal(view.people.find(p=>p.id===sa.id).chat,'같은 겨울');assert.ok(view.people.some(p=>p.id===host.id));
  const added=await f.call(a,'tree',{kind:'star',color:'#e5bb6b',height:12,angle:1,message:'함께 보는 소원',visibility:'public'});assert.equal(added.status,200);assert.ok((await f.call(b,'tree')).data.decorations.some(d=>d.id===added.data.id));assert.equal((await f.call(b,'wishes')).data.wishes[0].message,'함께 보는 소원');
  const rejoined=await f.call(a,'join',{});assert.equal(rejoined.data.id,sa.id);assert.equal(rejoined.data.colorTop,'#eeb7cb');assert.equal((await f.call(a,'access')).data.admin,false);
- for(const route of ['admin','operations','fireworks','invite'])assert.equal((await f.call(a,route,{})).status,403,route);
+ for(const route of ['admin','operations','invite'])assert.equal((await f.call(a,route,{})).status,403,route);
 });
 test('public admission is independent of retired links and preserves wishes and appearance',async t=>{
  const f=await fixture(t),a=f.guest(),i=await f.invite(),s=await f.join(a,i.token);

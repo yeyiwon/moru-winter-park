@@ -1,3 +1,6 @@
+import {boundedRequest} from './request-body.js';
+import {realtimeAPI,realtimeConfigured,realtimeRPC,publishRealtime,realtimeProfile,worldCapacity} from './realtime.js';
+import {ownerAuthAPI} from './owner-auth.js';
 import {quizGenerationAPI} from './quiz-generation.js';
 import {fireworksAPI,readFireworkShow} from './fireworks.js';
 import {sharedRestPoseValid} from '../dist/ride-seats.js';
@@ -23,11 +26,13 @@ const json=(data,status=200,headers={})=>new Response(JSON.stringify(data),{stat
 const age=20000;
 export async function handleAPI(request,env){
  const url=new URL(request.url),path=url.pathname;if(!path.startsWith('/api/'))return null;
- if(path==='/api/health'){try{if(!env.DB)throw Error();await env.DB.prepare('SELECT 1 AS ready').bind().first();return json({ok:true,multiplayer:true});}catch{return json({ok:false,multiplayer:false},503);}}
+ if(path==='/api/health'){try{if(!env.DB)throw Error();await env.DB.prepare('SELECT 1 AS ready').bind().first();return json({ok:true,multiplayer:true,revision:typeof __WINTER_REVISION__==='string'?__WINTER_REVISION__:'local',transport:realtimeConfigured(env)?'websocket-configured':'polling'});}catch{return json({ok:false,multiplayer:false},503);}}
  if(!env.DB)return json({error:'공간 연결을 준비하고 있어요.'},503);
  if(request.method!=='GET'&&(request.headers.get('origin')!==url.origin||request.headers.get('sec-fetch-site')==='cross-site'))return json({error:'다른 사이트에서는 변경할 수 없습니다.'},403);
+ try{request=await boundedRequest(request);}catch{return json({error:'요청이 너무 큽니다.'},413);}
  const now=Date.now();
  try{
+ const ownerAuth=await ownerAuthAPI(request,env,now);if(ownerAuth)return ownerAuth;
  if(path==='/api/access'&&request.method==='GET'){
   const admin=await isOwner(request,env),session=await sessionInfo(request,env,now,admin);
   return json({admin,signedIn:!!request.headers.get('oai-authenticated-user-id'),worldId:publicRoom,inviteRequired:false,blocked:session.blocked,session:session.valid?publicSession(session.self):null});
@@ -38,21 +43,23 @@ export async function handleAPI(request,env){
  const session=await sessionInfo(request,env,now);
  if(!session.valid)return json({error:session.blocked?'이 게스트의 이용이 제한되었습니다.':'세션이 종료되었습니다. 다시 입장해 주세요.'},session.blocked?403:401);
  const self=session.self,id=self.id;
- const operation=await operationsAPI(request,env.DB,self,path==='/api/operations'?await isOwner(request,env):false,now);if(operation)return operation;
- const fireworksResponse=await fireworksAPI(request,env.DB,self,path==='/api/fireworks'&&request.method==='POST'?await isOwner(request,env):false,now);if(fireworksResponse)return fireworksResponse;
- const regionResponse=await regionAPI(request,env.DB,self,now);if(regionResponse)return regionResponse;
- const rideResponse=await rideAPI(request,env.DB,self,now);if(rideResponse)return rideResponse;
+ const realtimeResponse=await realtimeAPI(request,env,self,now);if(realtimeResponse)return realtimeResponse;
+ if(realtimeConfigured(env)&&request.method!=='GET'&&['/api/tree','/api/ride','/api/region'].includes(path)){const live=await realtimeRPC(env,{action:'profile',id});if(live?.profile)Object.assign(self,live.profile);}
+ const operation=await operationsAPI(request,env.DB,self,path==='/api/operations'?await isOwner(request,env):false,now,env);if(operation)return operation;
+ const fireworksResponse=await fireworksAPI(request,env.DB,self,path==='/api/fireworks'&&request.method==='POST'?await isOwner(request,env):false,now);if(fireworksResponse){if(fireworksResponse.ok&&request.method==='POST')await publishRealtime(env,{action:'shared',fireworks:(await fireworksResponse.clone().json()).show});return fireworksResponse;}
+ const regionResponse=await regionAPI(request,env.DB,self,now);if(regionResponse){if(regionResponse.ok){const row=await env.DB.prepare('SELECT * FROM visitors WHERE id=?').bind(id).first();await publishRealtime(env,{action:'checkpoint',id,profile:realtimeProfile(row),rideSeats:await listRideSeats(env.DB,self.room,now)});}return regionResponse;}
+ const rideResponse=await rideAPI(request,env.DB,self,now);if(rideResponse){if(rideResponse.ok)await publishRealtime(env,{action:'shared',rideSeats:await listRideSeats(env.DB,self.room,now)});return rideResponse;}
  const assisted=await assistAPI(request,env,self);if(assisted)return assisted;
  const personalized=await experienceAPI(request,env,self);if(personalized)return personalized;
- const community=await communityAPI(request,env,self,path==='/api/admin'?await isOwner(request,env):false);if(community)return community;
+ const communityRequest=request.clone();const community=await communityAPI(request,env,self,path==='/api/admin'?await isOwner(request,env):false);if(community){if(community.ok&&path==='/api/admin'&&request.method==='POST'){const command=await communityRequest.json().catch(()=>null);if(command&&['kick','block'].includes(command.action))await publishRealtime(env,{action:'revoke',id:command.id});}return community;}
  if(path==='/api/tree'&&request.method==='GET'){const rows=await env.DB.prepare('SELECT id,kind,color,angle,height,origin_x AS originX,origin_y AS originY,origin_z AS originZ,created_at AS createdAt,CASE WHEN author=? THEN 1 ELSE 0 END AS mine FROM tree_decorations WHERE room=? ORDER BY created_at LIMIT 160').bind(self.id,self.room).all();const decorations=rows.results||[],revision=(await digest(JSON.stringify(decorations))).slice(0,24);return json(url.searchParams.get('revision')===revision?{unchanged:true,revision}:{decorations,revision});}
  if(path==='/api/appearance'&&request.method==='POST'){
   const raw=await request.text();if(raw.length>1024)return json({error:'요청이 너무 큽니다.'},413);
   let look;try{look=validateAppearance(JSON.parse(raw));}catch(e){return json({error:e.message},400);}
-  await env.DB.prepare('UPDATE visitors SET color=?,color_top=?,accessory=?,fluff=?,roundness=? WHERE id=?').bind(look.fur,look.furTop,look.accessory,look.fluff,look.roundness,id).run();return json(look);
+  await env.DB.prepare('UPDATE visitors SET color=?,color_top=?,accessory=?,fluff=?,roundness=? WHERE id=?').bind(look.fur,look.furTop,look.accessory,look.fluff,look.roundness,id).run();await publishRealtime(env,{action:'patch',id,profile:{color:look.fur,colorTop:look.furTop,accessory:look.accessory,fluff:look.fluff,roundness:look.roundness}});return json(look);
  }
- if(path==='/api/name'&&request.method==='POST'){const raw=await request.text();if(raw.length>1024)return json({error:'닉네임은 10자까지 입력하세요.'},413);let name;try{name=validateNickname(JSON.parse(raw).name);}catch(e){return json({error:e.message},400);}await env.DB.prepare('UPDATE visitors SET name=? WHERE id=?').bind(name,id).run();return json({name});}
- if(path==='/api/leave'&&request.method==='POST'){await env.DB.prepare('DELETE FROM ride_seats WHERE visitor=?').bind(id).run();await env.DB.prepare('DELETE FROM visitors WHERE id=?').bind(id).run();return json({ok:true});}
+ if(path==='/api/name'&&request.method==='POST'){const raw=await request.text();if(raw.length>1024)return json({error:'닉네임은 10자까지 입력하세요.'},413);let name;try{name=validateNickname(JSON.parse(raw).name);}catch(e){return json({error:e.message},400);}await env.DB.prepare('UPDATE visitors SET name=? WHERE id=?').bind(name,id).run();await publishRealtime(env,{action:'patch',id,profile:{name}});return json({name});}
+ if(path==='/api/leave'&&request.method==='POST'){await publishRealtime(env,{action:'revoke',id});await env.DB.prepare('DELETE FROM ride_seats WHERE visitor=?').bind(id).run();await env.DB.prepare('DELETE FROM visitors WHERE id=?').bind(id).run();return json({ok:true});}
  if(path==='/api/tree'&&request.method==='POST'){
   if((await readWorldSettings(env.DB)).disabled.includes('tree'))return json({error:'트리 꾸미기는 점검 중입니다.'},409);
   const raw=await request.text();if(raw.length>1024)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);
@@ -68,7 +75,7 @@ export async function handleAPI(request,env){
  if(path==='/api/tree'&&request.method==='DELETE'){const raw=await request.text();if(raw.length>256)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);const target=String(b.id||'');await env.DB.prepare('DELETE FROM wish_reactions WHERE wish_id IN (SELECT id FROM wishes WHERE id=? AND room=? AND author=?)').bind(target,self.room,id).run();await env.DB.prepare('DELETE FROM wishes WHERE id=? AND room=? AND author=?').bind(target,self.room,id).run();await env.DB.prepare('DELETE FROM tree_decorations WHERE id=? AND room=? AND author=?').bind(target,self.room,id).run();return json({ok:true});}
  if(path==='/api/chat'&&request.method==='POST'){
   const raw=await request.text();if(raw.length>1024)return json({error:'말풍선은 160자까지 쓸 수 있어요.'},413);const b=JSON.parse(raw);let message;try{message=messageText(b.message);}catch(e){return json({error:e.message},400);}
-  const result=await env.DB.prepare('UPDATE visitors SET chat=?,chat_at=?,seen=? WHERE id=? AND chat_at<?').bind(message,now,now,id,now-1500).run();if(!result.meta?.changes)return json({error:'잠깐 숨을 고르고 보내 주세요.'},429);return json({message,at:now,name:self.name});
+  const result=await env.DB.prepare('UPDATE visitors SET chat=?,chat_at=?,seen=? WHERE id=? AND chat_at<?').bind(message,now,now,id,now-1500).run();if(!result.meta?.changes)return json({error:'잠깐 숨을 고르고 보내 주세요.'},429);await publishRealtime(env,{action:'patch',id,profile:{chat:message,chatAt:now}});return json({message,at:now,name:self.name});
  }
  if(path==='/api/presence'&&request.method==='POST'){
   const raw=await request.text();if(raw.length>2048)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);
@@ -86,12 +93,12 @@ export async function handleAPI(request,env){
   const poseChanged=self.x!==b.x||self.y!==b.y||self.z!==b.z||self.yaw!==b.yaw||self.speed!==speed||self.mode!==(b.mode||'')||self.color!==color||self.color_top!==(b.colorTop||null)||self.accessory!==accessory||self.fluff!==fluff||self.roundness!==roundness||self.gesture!==gesture;
   if(poseChanged||gesture||now-self.seen>=8000)
   await env.DB.prepare('UPDATE visitors SET x=?,z=?,yaw=?,y=?,mode=?,color=?,color_top=?,accessory=?,fluff=?,roundness=?,seen=?,gesture=?,gesture_at=?,region=?,pose_at=?,speed=? WHERE id=? AND pose_at<=?').bind(b.x,b.z,b.yaw,b.y,['lift','summit','ski','rest','bath','sauna','lie','tea','dining','carousel','ferris','view','footbath'].includes(b.mode)?b.mode:'',color,/^#[0-9a-f]{6}$/i.test(b.colorTop)?b.colorTop:null,accessory,fluff,roundness,now,gesture,gesture?now:0,interiorAt(b.x,b.z)?.id||'outdoors',now,speed,id,now-500).run();
-  await env.DB.prepare("UPDATE visitors SET chat='',chat_at=0 WHERE room=? AND chat_at>0 AND chat_at<?").bind(self.room,now-600000).run();
   if(benchOK||['ferris','lift'].includes(b.mode))await env.DB.prepare('UPDATE ride_seats SET expires_at=? WHERE visitor=? AND expires_at>?').bind(now+20000,id,now).run();
   else await env.DB.prepare('DELETE FROM ride_seats WHERE visitor=? AND started_at<?').bind(id,now-6000).run();
   await maintainSessions(env.DB,now);
   const rideSeats=await listRideSeats(env.DB,self.room,now);
-  const people=await env.DB.prepare('SELECT id,name,color,color_top AS colorTop,accessory,fluff,roundness,x,z,yaw,y,mode,region,CASE WHEN pose_at>0 THEN pose_at ELSE seen END AS updatedAt,speed,gesture,gesture_at AS gestureAt,chat,chat_at AS chatAt FROM visitors WHERE room=? AND seen>? AND id<>? ORDER BY seen DESC LIMIT 11').bind(self.room,now-age,id).all();return json({...interestSnapshot(people.results||[],b,b,now,rideSeats),rideSeats,fireworks:await readFireworkShow(env.DB,now),serverTime:now,count:(people.results?.length||0)+1});
+  if(realtimeConfigured(env)){const row=await env.DB.prepare('SELECT * FROM visitors WHERE id=?').bind(id).first();await publishRealtime(env,{action:'checkpoint',id,profile:realtimeProfile(row),rideSeats,fireworks:await readFireworkShow(env.DB,now)});}
+  const people=await env.DB.prepare('SELECT id,name,color,color_top AS colorTop,accessory,fluff,roundness,x,z,yaw,y,mode,region,CASE WHEN pose_at>0 THEN pose_at ELSE seen END AS updatedAt,speed,gesture,gesture_at AS gestureAt,chat,chat_at AS chatAt FROM visitors WHERE room=? AND seen>? AND id<>? ORDER BY seen DESC LIMIT 99').bind(self.room,now-age,id).all();return json({...interestSnapshot(people.results||[],b,b,now,rideSeats),rideSeats,fireworks:await readFireworkShow(env.DB,now),serverTime:now,count:(people.results?.length||0)+1});
  }
  return json({error:'지원하지 않는 요청입니다.'},404);
  }catch(e){if(e instanceof SyntaxError)return json({error:'잘못된 요청입니다.'},400);await recordServerError(env.DB,path,e,now);return json({error:'공유 공간에 연결할 수 없어요. 잠시 뒤 다시 시도해 주세요.'},503);}

@@ -106,6 +106,20 @@
       "when": 1795016171671,
       "tag": "0014_useful_night_thrasher",
       "breakpoints": true
+    },
+    {
+      "idx": 15,
+      "version": "6",
+      "when": 1795072677950,
+      "tag": "0015_violet_spitfire",
+      "breakpoints": true
+    },
+    {
+      "idx": 16,
+      "version": "6",
+      "when": 1795073444663,
+      "tag": "0016_exotic_raider",
+      "breakpoints": true
     }
   ]
 }

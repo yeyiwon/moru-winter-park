@@ -48,8 +48,9 @@ export async function communityAPI(request,env,self,admin){
    DB.prepare('SELECT id,room,kind FROM tree_decorations WHERE room=? ORDER BY created_at DESC LIMIT 160').bind(self.room).all(),
    DB.prepare('SELECT id,title,starts_at AS startsAt,ends_at AS endsAt,kind,enabled FROM world_events ORDER BY starts_at DESC LIMIT 30').bind().all(),
    DB.prepare('SELECT id,payload FROM quiz_overrides ORDER BY updated_at DESC LIMIT 100').bind().all(),DB.prepare("SELECT id,payload FROM quiz_candidates WHERE status='review' ORDER BY created_at DESC LIMIT 30").bind().all(),DB.prepare('SELECT day,status,count,usage FROM quiz_generation_runs ORDER BY day DESC LIMIT 7').bind().all()]);
+  const blocks=await DB.prepare('SELECT id,created_at AS createdAt FROM visitor_blocks ORDER BY created_at DESC LIMIT 100').bind().all(),audit=await DB.prepare('SELECT action,target,created_at AS createdAt FROM moderation_audit ORDER BY created_at DESC LIMIT 50').bind().all();
   // Private wish text is deliberately never included in moderation listings.
-  return json({candidates:candidates.results.map(r=>({id:r.id,...JSON.parse(r.payload)})),generation:generation.results,reports:reports.results,people:people.results,decorations:decorations.results,decorationRevision:await decorationRevision(decorations.results),events:events.results,quizzes:quizzes.results.map(r=>({id:r.id,...JSON.parse(r.payload)}))});
+  return json({blocks:blocks.results,audit:audit.results,candidates:candidates.results.map(r=>({id:r.id,...JSON.parse(r.payload)})),generation:generation.results,reports:reports.results,people:people.results,decorations:decorations.results,decorationRevision:await decorationRevision(decorations.results),events:events.results,quizzes:quizzes.results.map(r=>({id:r.id,...JSON.parse(r.payload)}))});
  }
  if(request.method!=='POST')return json({error:'지원하지 않는 요청입니다.'},405);
  const b=await bodyOf(request,8192),id=String(b.id||'');
@@ -59,6 +60,7 @@ export async function communityAPI(request,env,self,admin){
  else if(b.action==='remove-decoration'||b.action==='remove-wish'){
   if(b.action==='remove-wish'){await DB.prepare('DELETE FROM wishes WHERE id=?').bind(id).run();await DB.prepare('DELETE FROM wish_reactions WHERE wish_id=?').bind(id).run();}await DB.prepare('DELETE FROM tree_decorations WHERE id=?').bind(id).run();
  }else if(b.action==='clear-chat'){await DB.prepare('UPDATE visitors SET chat=\'\',chat_at=0 WHERE id=?').bind(id).run();}
+ else if(b.action==='unblock'){await DB.prepare('DELETE FROM visitor_blocks WHERE id=?').bind(id).run();await DB.prepare('UPDATE visitors SET kicked_at=0 WHERE id=?').bind(id).run();}
  else if(b.action==='block'||b.action==='kick'){
   const found=await DB.prepare('SELECT id,auth_type FROM visitors WHERE id=?').bind(id).first();if(!found)return json({error:'사용자를 찾을 수 없습니다.'},404);
   if(id===self.id||found.auth_type==='owner')return json({error:'관리자 자신은 퇴장시킬 수 없습니다.'},400);
@@ -77,6 +79,7 @@ export async function communityAPI(request,env,self,admin){
   await DB.prepare('INSERT INTO world_events(id,title,starts_at,ends_at,kind,enabled) VALUES(?,?,?,?,?,1) ON CONFLICT(id) DO UPDATE SET title=excluded.title,starts_at=excluded.starts_at,ends_at=excluded.ends_at,kind=excluded.kind,enabled=1').bind(id||crypto.randomUUID(),messageText(b.title,60),b.startsAt,b.endsAt,b.kind).run();
  }else if(b.action==='remove-event'){await DB.prepare('DELETE FROM world_events WHERE id=?').bind(id).run();}
  else return json({error:'지원하지 않는 관리 작업입니다.'},400);
+ await DB.prepare('INSERT INTO moderation_audit(id,actor,action,target,created_at) VALUES(?,?,?,?,?)').bind(crypto.randomUUID(),self.id,b.action,id.slice(0,80),now).run();
  return json({ok:true});
  }catch(e){if(e instanceof SyntaxError)return json({error:'입력 형식을 확인해 주세요.'},400);if(/입력|표현/.test(e.message))return json({error:e.message},400);throw e;}
 }

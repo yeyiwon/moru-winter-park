@@ -1,3 +1,5 @@
+import {createRealtimeClient} from './realtime-client.js';
+import {finishOwnerLogin,continueOwnerLogin,bindOwnerLogin} from './owner-login.js';
 import {observeServerTime} from './server-clock.js';
 import {nicknameLimit,nicknameParts,validateNickname} from './nickname.js';
 import {presenceDelay,createPresenceCache} from './presence-policy.js';
@@ -8,7 +10,7 @@ import {publicRoom,spaceURL} from './space-links.js';
 const $=s=>document.querySelector(s),form=$('#join-form'),status=$('#social-status'),people=$('#social-people'),nameInput=$('#visitor-name'),studio=$('#studio');
 const entryURL=new URL(location.href),adminEntry=/^\/admin\/?$/.test(entryURL.pathname);
 let room=publicRoom,joined=false,admin=false,busy=false,gesture='',failures=0;const inviteURL=spaceURL();
-if(entryURL.hash||entryURL.searchParams.has('room'))history.replaceState(null,'',entryURL.pathname);
+if(entryURL.hash&&!new URLSearchParams(entryURL.hash.slice(1)).has('owner_code')||entryURL.searchParams.has('room'))history.replaceState(null,'',entryURL.pathname);
 $('#owner-signin').href='/signin-with-chatgpt?return_to=%2Fadmin';
 try{nameInput.value=nicknameParts(localStorage.getItem('winter-visitor-name')||'').slice(0,nicknameLimit).join('');}catch{}
 if(isNumberedGuest(nameInput.value))nameInput.value=createGuestName();
@@ -21,7 +23,7 @@ function openInvite(){ window.openWinterSettings?.('social'); }
 function endGate(){document.body.classList.remove('invite-gate');if(studio.open)closeDialog(studio);$('.studio-head>span').textContent='설정';}
 
 function gate(message,canJoin=false){
- joined=false;window.labSocialJoined=false;showPeople([]);document.body.classList.add('invite-gate');
+ joined=false;window.labSocialJoined=false;realtime?.stop();showPeople([]);document.body.classList.add('invite-gate');
  if(window.labRideReservation)window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));
  for(const dialog of document.querySelectorAll('dialog[open]'))if(dialog!==studio)dialog.close();
  openInvite();$('.studio-head>span').textContent=adminEntry?'관리자 입장':'겨울 광장 입장';$('#invite-description').textContent=message;form.hidden=!canJoin;
@@ -32,11 +34,13 @@ function updateRoomLinks(){
 }
 function entered(data){presenceCache.reset();nextSync=0;if(data.color)window.dispatchEvent(new CustomEvent('lab:restore-appearance',{detail:{fur:data.color,furTop:data.colorTop||null,accessory:data.accessory,fluff:data.fluff??100,roundness:data.roundness??50}}));
  if(window.labGuestId&&window.labGuestId!==data.id){showPeople([]);recentChats.length=0;seenChats.clear();chatLog.replaceChildren();selfBubble.hidden=true;window.labRideSeats=[];if(window.labRideReservation)window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));window.labRideReservation=null;}
- room=publicRoom;joined=true;window.labSocialJoined=true;window.labGuestId=data.id;failures=0;setName(data.name);form.hidden=true;$('#profile-form').hidden=true;$('#profile-display').hidden=false;status.textContent='접속 중 · 1명';chatStatus.textContent='';updateRoomLinks();endGate();window.dispatchEvent(new CustomEvent('lab:room',{detail:room}));
+ room=publicRoom;joined=true;window.labSocialJoined=true;window.labGuestId=data.id;failures=0;setName(data.name);form.hidden=true;$('#profile-form').hidden=true;$('#profile-display').hidden=false;status.textContent='접속 중 · 1명';chatStatus.textContent='';updateRoomLinks();endGate();window.dispatchEvent(new CustomEvent('lab:room',{detail:room}));void realtime.restart();
 }
 let joining=null;function join(){if(joining)return joining;joining=(async()=>{try{await syncing;const data=await request('join',{name:nameInput.value,color:window.labAppearance?.fur||'#f4eee5'});entered(data);}finally{joining=null;}})();return joining.then(()=>sync());}
 form.addEventListener('submit',async e=>{e.preventDefault();const button=form.querySelector('button');button.disabled=true;status.textContent='입장 중…';try{await join();closeDialog(studio);}catch(e){status.textContent=e.message;}finally{button.disabled=false;}});
 let syncing=null,nextSync=0,lastSent=0,lastMoving=false,remoteMoving=false,appearanceSaving=false;const presenceCache=createPresenceCache();
+function acceptPresence(data){window.labServerOffset=data.serverTime-Date.now();window.labFireworks=data.fireworks||null;window.dispatchEvent(new CustomEvent('lab:fireworks',{detail:window.labFireworks}));window.labRideSeats=data.rideSeats||[];if(window.labRideReservation&&!window.labRideSeats.some(s=>s.id===window.labGuestId))window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));const list=presenceCache.merge(data.people,data.farBucket);remoteMoving=list.some(p=>!p.distant&&p.speed>.1);showPeople(list);status.textContent='접속 중 · '+data.count+'명';}
+const realtime=createRealtimeClient({request,pose:()=>window.labPlayerState?{...window.labPlayerState,gesture:gesture||encodeActivity(window.labPlayerState)}:null,onSnapshot:acceptPresence,onStatus:message=>{if(message)status.textContent=message;},onCheckpoint:()=>{if(Date.now()-lastSent>600)void sync(true);}});
 function sync(force=false){if(syncing)return force?syncing.then(()=>sync(true)):syncing;if(appearanceSaving||!joined||joining||!window.labPlayerState)return Promise.resolve();syncing=performSync().finally(()=>{syncing=null;});return syncing;}
 window.saveWinterAppearance=async look=>{
  if(!joined||joining)throw Error('공간에 연결한 뒤 다시 저장해 주세요.');
@@ -44,10 +48,10 @@ window.saveWinterAppearance=async look=>{
  appearanceSaving=true;
  try{await syncing;return await request('appearance',look);}finally{appearanceSaving=false;nextSync=Date.now()+500;}
 };
-async function performSync(){busy=true;lastSent=Date.now();lastMoving=(window.labPlayerState?.speed||0)>.1;try{const a=window.labAppearance||{},data=await request('presence',{...window.labPlayerState,...presenceCache.request(),color:a.fur,colorTop:a.furTop,accessory:a.accessory,fluff:a.fluff,roundness:a.roundness,gesture:gesture||encodeActivity(window.labPlayerState)});gesture='';failures=0;window.labServerOffset=data.serverTime-Date.now();window.labFireworks=data.fireworks||null;window.dispatchEvent(new CustomEvent('lab:fireworks',{detail:window.labFireworks}));window.labRideSeats=data.rideSeats||[];if(window.labRideReservation&&!window.labRideSeats.some(s=>s.id===window.labGuestId))window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));const people=presenceCache.merge(data.people,data.farBucket);remoteMoving=people.some(p=>!p.distant&&p.speed>.1);showPeople(people);status.textContent='접속 중 · '+data.count+'명';}catch(e){failures++;if(e.status===401||e.status===403){gate(e.message,e.status===401);}status.textContent=e.message;if(failures>2)showPeople([]);}finally{busy=false;nextSync=Date.now()+presenceDelay({hidden:document.hidden,moving:remoteMoving||(window.labPlayerState?.speed||0)>.1,chat:!chatForm.hidden,failures});}}
+async function performSync(){busy=true;lastSent=Date.now();lastMoving=(window.labPlayerState?.speed||0)>.1;try{const a=window.labAppearance||{},data=await request('presence',{...window.labPlayerState,...presenceCache.request(),color:a.fur,colorTop:a.furTop,accessory:a.accessory,fluff:a.fluff,roundness:a.roundness,gesture:gesture||encodeActivity(window.labPlayerState)});gesture='';failures=0;if(!realtime.active)acceptPresence(data);}catch(e){failures++;if(e.status===401||e.status===403){gate(e.message,e.status===401);}status.textContent=e.message;if(failures>2)showPeople([]);}finally{busy=false;nextSync=Date.now()+(realtime.active?10000:presenceDelay({hidden:document.hidden,moving:remoteMoving||(window.labPlayerState?.speed||0)>.1,chat:!chatForm.hidden,failures}));}}
 window.addEventListener('lab:wave',()=>{if(joined){gesture='wave';sync();}});
 $('#copy-room').onclick=async()=>{try{await navigator.clipboard.writeText(inviteURL);$('#copy-result').textContent='복사됨';setTimeout(()=>$('#copy-result').textContent='',2200);}catch{$('#invite-url').select();$('#copy-result').textContent='선택된 링크를 복사하세요.';}};
-const presenceTimer=setInterval(()=>{const now=Date.now(),changed=lastMoving!==((window.labPlayerState?.speed||0)>.1);if(now>=nextSync||(!failures&&changed&&now-lastSent>=550))void sync();},250);document.addEventListener('visibilitychange',()=>{nextSync=0;void sync();});// Inactive presence expires after 20 seconds; retain the cookie identity across reloads.
+const presenceTimer=setInterval(()=>{const now=Date.now(),changed=lastMoving!==((window.labPlayerState?.speed||0)>.1);if(now>=nextSync||(!realtime.active&&!failures&&changed&&now-lastSent>=550))void sync();},250);document.addEventListener('visibilitychange',()=>{nextSync=0;void sync();});// Inactive presence expires after 20 seconds; retain the cookie identity across reloads.
 const chatForm=$('#chat-form'),chatInput=$('#chat-input'),chatStatus=$('#chat-status'),chatToggle=$('#chat-toggle'),chatLog=$('#chat-log'),selfBubble=$('#self-bubble');
 const seenChats=new Set(),blocked=new Set(),hiddenChats=new Set(),recentChats=[];
 let chatMotion=null;
@@ -68,7 +72,7 @@ window.isVisitorBlocked=id=>blocked.has(id);window.isChatHidden=id=>blocked.has(
 const chatFadeTimer=setInterval(()=>{if(!chatForm.hidden)return;for(const row of chatLog.children){const remaining=Number(row.dataset.expires)-Date.now();row.style.opacity=String(Math.max(0,Math.min(1,remaining/700)));if(remaining<=0)row.remove();}},150);
 window.joinSharedActivity=ensureChatSession;window.sharedRoom=()=>room;
 async function initialize(){try{
- const access=await request('access');admin=access.admin;window.labAdmin=admin;$('#owner-signin').hidden=!(adminEntry&&!admin);$('#tab-social').hidden=!admin;document.body.classList.toggle('world-owner',admin);
+ await finishOwnerLogin(request);const access=await request('access');if(await continueOwnerLogin(request,access))return;admin=access.admin;window.labAdmin=admin;$('#owner-signin').hidden=!(adminEntry&&!admin);$('#tab-social').hidden=!admin;document.body.classList.toggle('world-owner',admin);
  window.dispatchEvent(new CustomEvent('lab:access',{detail:{admin}}));
  if(access.blocked){gate('이 게스트의 이용이 제한되었습니다. 관리자에게 문의해 주세요.');return;}
  if(adminEntry&&!admin){gate(access.signedIn?'이 계정에는 관리 권한이 없습니다. 소유자 계정으로 로그인해 주세요.':'소유자 계정으로 로그인해 주세요.');return;}
@@ -76,7 +80,7 @@ async function initialize(){try{
  if(!nameInput.value)nameInput.value=admin?'YIWON':createGuestName();
  await join();window.labLoading?.complete('connection');
 }catch(e){status.textContent=e.message;gate(e.message||'연결을 확인한 뒤 다시 입장해 주세요.',e.status!==403);}}
-initialize();
+bindOwnerLogin(request);initialize();
 // Old invite URLs now lead to the same public world; no tokens are persisted.
 window.addEventListener('hashchange',()=>{history.replaceState(null,'',location.pathname);if(!joined)void initialize();});
 
@@ -91,7 +95,7 @@ window.reserveRide=async (kind,benchId)=>{await ensureChatSession();await releas
 let releasingRide=Promise.resolve();
 window.releaseRide=()=>{window.labRideReservation=null;releasingRide=fetch('/api/ride',{method:'DELETE',headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(8000)}).catch(()=>{});return releasingRide;};
 
-window.addEventListener('pagehide',event=>{if(!event.persisted){clearInterval(presenceTimer);clearInterval(chatFadeTimer);}});
+window.addEventListener('pagehide',event=>{if(!event.persisted){clearInterval(presenceTimer);clearInterval(chatFadeTimer);realtime.dispose();}});
 
 window.changeWinterRegion=async region=>{await window.joinSharedActivity();await sync(true);let data;try{data=await request('region',{region});}catch(e){if(e.status!==409)throw e;await new Promise(r=>setTimeout(r,550));await sync(true);data=await request('region',{region});}nextSync=0;return data;};
 

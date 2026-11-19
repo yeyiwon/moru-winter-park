@@ -9,13 +9,18 @@
     "build:vercel": "node scripts/bake-paths.mjs && node scripts/build-vercel.mjs",
     "test:budget": "node scripts/check-performance-budget.mjs",
     "profile:browser": "node scripts/profile-browser.mjs",
-    "build:map": "node scripts/render-world-map.mjs"
+    "build:map": "node scripts/render-world-map.mjs",
+    "check": "node scripts/check-source.mjs",
+    "build:realtime": "node scripts/build-realtime.mjs",
+    "test:load": "node scripts/load-realtime.mjs"
   },
   "devDependencies": {
-    "jsdom": "26.1.0",
-    "esbuild": "^0.25.0",
     "drizzle-kit": "^0.31.0",
-    "drizzle-orm": "^0.44.0"
+    "drizzle-orm": "^0.44.0",
+    "esbuild": "^0.25.0",
+    "jsdom": "26.1.0",
+    "miniflare": "4.20260730.0",
+    "ws": "8.23.0"
   },
   "type": "module"
 }

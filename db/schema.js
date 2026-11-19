@@ -21,9 +21,13 @@ export const worldEvents=sqliteTable('world_events',{id:text('id').primaryKey(),
 export const rideSeats=sqliteTable('ride_seats',{room:text('room').notNull(),kind:text('kind').notNull(),cabin:integer('cabin').notNull(),seat:integer('seat').notNull(),visitor:text('visitor').notNull().unique(),startedAt:integer('started_at').notNull(),expiresAt:integer('expires_at').notNull()},t=>[primaryKey({columns:[t.room,t.kind,t.cabin,t.seat]})]);
 
 export const worldSettings=sqliteTable('world_settings',{id:text('id').primaryKey(),payload:text('payload').notNull(),updatedAt:integer('updated_at').notNull()});
-export const operationalErrors=sqliteTable('operational_errors',{id:text('id').primaryKey(),route:text('route').notNull(),code:text('code').notNull(),createdAt:integer('created_at').notNull()});
+export const operationalErrors=sqliteTable('operational_errors',{id:text('id').primaryKey(),route:text('route').notNull(),code:text('code').notNull(),createdAt:integer('created_at').notNull(),revision:text('revision').notNull().default('legacy')},t=>[index('operational_errors_created').on(t.createdAt)]);
 
 export const decorationBackups=sqliteTable('decoration_backups',{id:text('id').primaryKey(),room:text('room').notNull(),actor:text('actor').notNull(),payload:text('payload').notNull(),createdAt:integer('created_at').notNull()});
 
 export const quizCandidates=sqliteTable('quiz_candidates',{id:text('id').primaryKey(),payload:text('payload').notNull(),status:text('status').notNull(),createdAt:integer('created_at').notNull()});
 export const quizGenerationRuns=sqliteTable('quiz_generation_runs',{day:text('day').primaryKey(),status:text('status').notNull(),createdAt:integer('created_at').notNull(),count:integer('count').notNull().default(0),usage:text('usage')});
+
+export const ownerLoginCodes=sqliteTable('owner_login_codes',{codeHash:text('code_hash').primaryKey(),stateHash:text('state_hash').notNull(),expiresAt:integer('expires_at').notNull()});
+export const ownerSessions=sqliteTable('owner_sessions',{sessionId:text('session_id').primaryKey(),expiresAt:integer('expires_at').notNull()});
+export const moderationAudit=sqliteTable('moderation_audit',{id:text('id').primaryKey(),actor:text('actor').notNull(),action:text('action').notNull(),target:text('target').notNull(),createdAt:integer('created_at').notNull()},t=>[index('moderation_audit_created').on(t.createdAt)]);

@@ -1,5 +1,5 @@
 export const backendOrigin='https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site';
-const routes=new Set(['quiz-refresh','appearance','health','access','invite','invite-check','join','tree','name','leave','chat','presence','ride','wishes','reports','admin','events','quiz','assist','region','operations','world-state','experience','fireworks']);
+const routes=new Set(['owner-auth','realtime','quiz-refresh','appearance','health','access','invite','invite-check','join','tree','name','leave','chat','presence','ride','wishes','reports','admin','events','quiz','assist','region','operations','world-state','experience','fireworks']);
 export async function proxyRequest(request,fetcher=fetch,{cronSecret}={}){
  const url=new URL(request.url),route=url.searchParams.get('route')||url.pathname.slice(5),write=!['GET','HEAD'].includes(request.method);
  const error=(message,status)=>Response.json({error:message},{status,headers:{'Cache-Control':'no-store'}});
@@ -13,7 +13,8 @@ export async function proxyRequest(request,fetcher=fetch,{cronSecret}={}){
  const headers=new Headers({'Accept':'application/json','Origin':backendOrigin});
  if(route==='quiz-refresh')headers.set('Authorization','Bearer '+cronSecret);
  const session=/(?:^|;\s*)winter_session=([a-f0-9]{64})(?:;|$)/.exec(request.headers.get('cookie')||'');
- if(session)headers.set('Cookie','winter_session='+session[1]);if(write)headers.set('Content-Type','application/json');
+ const login=/(?:^|;\s*)winter_login=([a-f0-9]{64})(?:;|$)/.exec(request.headers.get('cookie')||'');
+ if(session||login)headers.set('Cookie',[session&&'winter_session='+session[1],login&&'winter_login='+login[1]].filter(Boolean).join('; '));if(write)headers.set('Content-Type','application/json');
  try{
   const target=new URL(backendOrigin+'/api/'+route),revision=url.searchParams.get('revision');
   if(route==='tree'&&/^[a-f0-9]{24}$/.test(revision||''))target.searchParams.set('revision',revision);
@@ -21,7 +22,7 @@ export async function proxyRequest(request,fetcher=fetch,{cronSecret}={}){
   if(upstream.status>=300&&upstream.status<400||!upstream.headers.get('content-type')?.includes('application/json'))return error('공간 연결을 확인해 주세요.',502);
   const responseHeaders=new Headers({'Content-Type':'application/json','Cache-Control':'no-store'});
   const cookies=upstream.headers.getSetCookie?.()||[upstream.headers.get('set-cookie')||''];
-  const cookie=cookies.flatMap(value=>value.split(/,(?=\s*[^;,=]+=)/)).find(value=>/^\s*winter_session=[a-f0-9]{64};/.test(value));
+  const cookie=cookies.flatMap(value=>value.split(/,(?=\s*[^;,=]+=)/)).find(value=>/^\s*winter_(?:session|login)=(?:[a-f0-9]{64})?;/.test(value));
   if(cookie)responseHeaders.set('Set-Cookie',cookie.trim());
   return new Response(upstream.body,{status:upstream.status,headers:responseHeaders});
  }catch{return error('공간 연결을 확인해 주세요.',502);}
