@@ -1,3 +1,11 @@
+# v46 운영 반영 완료 — 2026-11-19
+
+실행 소스 `0fe286b8e25ddab2315c5b3a2df0d55b6f78d663`: GitHub main, Sites 61, Vercel production, 무료 Cloudflare 실시간 서버에 반영했다. 전체 489개 자동 검사·17개 원격 브라우저 검사·20개 실제 운영 검사 PASS. 사용자가 공식 `/admin` 로그인 후 관리 화면을 확인했다. 기존 소원·장식·소유자 데이터 보존. 실물 Windows/iOS/Android와 운영 장시간 성능은 UNKNOWN이다.
+
+[최종 배포·검증 기록](docs/release-v46-production.md). 이 문서는 운영 후 증거 브랜치에 보관하며, 아래는 이전 작업 이력이다.
+
+---
+
 # WINTERLIGHT
 
 - 하차 시 전송 중인 탑승 위치보다 좌석 해제가 먼저 처리되던 경쟁 조건을 직렬화하고, 재현 회귀 검사를 추가했다.

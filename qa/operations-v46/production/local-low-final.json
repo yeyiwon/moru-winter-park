@@ -1,0 +1,161 @@
+{
+  "at": "2026-11-19T11:30:00.413Z",
+  "browser": "157.0.8103.79",
+  "physicalMobile": false,
+  "renderMode": "low",
+  "errors": [],
+  "consoleErrors": [],
+  "httpErrors": [],
+  "expectedNetworkFaults": [
+    {
+      "text": "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "url": "http://127.0.0.1:4189/api/tree?room=winter-plaza&revision=f747c7184dfda280ac4d7009"
+    },
+    {
+      "text": "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "url": "http://127.0.0.1:4189/api/presence"
+    },
+    {
+      "text": "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "url": "http://127.0.0.1:4189/api/realtime"
+    }
+  ],
+  "checks": [
+    {
+      "name": "public guest entry and two rendered peers",
+      "ok": true
+    },
+    {
+      "name": "walking updates through WebSocket",
+      "ok": true,
+      "details": {
+        "x": 0.10875486842238001,
+        "y": 0.95,
+        "z": 23.962748753100378,
+        "yaw": 0.8478823849692384,
+        "mode": "",
+        "speed": 2.4924933466126844,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      }
+    },
+    {
+      "name": "mobile joystick beyond rim keeps full walking input",
+      "ok": true,
+      "details": {
+        "pose": {
+          "x": 0.3719024158098888,
+          "y": 0.95,
+          "z": 23.463065720448625,
+          "yaw": 2.228138277012372,
+          "mode": "",
+          "speed": 4.042838669002793,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        },
+        "hidden": false,
+        "body": "world-ready has-walked",
+        "active": true,
+        "knob": "translate(calc(-50% + 20.9315px), calc(-50% - 15.4232px))"
+      }
+    },
+    {
+      "name": "mobile touch release stops movement",
+      "ok": true
+    },
+    {
+      "name": "ferris reservation and motion survive live validation",
+      "ok": true
+    },
+    {
+      "name": "ski reservation and motion survive live validation",
+      "ok": true
+    },
+    {
+      "name": "chat persisted",
+      "ok": true
+    },
+    {
+      "name": "chat visible on other device",
+      "ok": true
+    },
+    {
+      "name": "guest admin API denied",
+      "ok": true
+    },
+    {
+      "name": "same server countdown and seed",
+      "ok": true
+    },
+    {
+      "name": "mobile panel inside viewport",
+      "ok": true,
+      "details": {
+        "page": false,
+        "dialog": false
+      }
+    },
+    {
+      "name": "landscape panel inside viewport",
+      "ok": true
+    },
+    {
+      "name": "offline reconnection",
+      "ok": true
+    },
+    {
+      "name": "admin metrics with authenticated sockets",
+      "ok": true,
+      "details": {
+        "connections": 3,
+        "service": "healthy"
+      }
+    },
+    {
+      "name": "owner controls same show",
+      "ok": true
+    },
+    {
+      "name": "no browser exceptions",
+      "ok": true,
+      "details": []
+    },
+    {
+      "name": "no unexpected console or shader errors",
+      "ok": true,
+      "details": []
+    }
+  ],
+  "startup": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "worldReadyMs": 3386,
+      "firstFrameReadyMs": 3828
+    },
+    {
+      "viewport": {
+        "width": 390,
+        "height": 844
+      },
+      "worldReadyMs": 3310,
+      "firstFrameReadyMs": 3751
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 800
+      },
+      "worldReadyMs": 3513,
+      "firstFrameReadyMs": 3973
+    }
+  ]
+}

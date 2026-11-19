@@ -1,0 +1,94 @@
+{
+  "at": "2026-11-19T11:41:48.518Z",
+  "source": "0fe286b8e25ddab2315c5b3a2df0d55b6f78d663",
+  "physicalMobile": false,
+  "checks": [
+    {
+      "name": "backend source and WebSocket configuration",
+      "ok": true
+    },
+    {
+      "name": "frontend source matches backend",
+      "ok": true
+    },
+    {
+      "name": "PC and mobile share the live world over WSS",
+      "ok": true
+    },
+    {
+      "name": "movement reaches the other client",
+      "ok": true
+    },
+    {
+      "name": "appearance saves in the live server",
+      "ok": true
+    },
+    {
+      "name": "chat save succeeds",
+      "ok": true
+    },
+    {
+      "name": "chat appears on the second device",
+      "ok": true
+    },
+    {
+      "name": "existing wishes remain readable",
+      "ok": true,
+      "details": {
+        "count": 4
+      }
+    },
+    {
+      "name": "guest management API is denied",
+      "ok": true
+    },
+    {
+      "name": "forged owner grant is denied",
+      "ok": true
+    },
+    {
+      "name": "ferris boards with a real server reservation",
+      "ok": true
+    },
+    {
+      "name": "ferris exits to normal movement",
+      "ok": true
+    },
+    {
+      "name": "ski boards with a real server reservation",
+      "ok": true
+    },
+    {
+      "name": "ski exits to normal movement",
+      "ok": true
+    },
+    {
+      "name": "mobile joystick stays fixed and reaches maximum walking input",
+      "ok": true
+    },
+    {
+      "name": "touch release stops movement",
+      "ok": true
+    },
+    {
+      "name": "mobile settings fit the viewport",
+      "ok": true
+    },
+    {
+      "name": "published map opens",
+      "ok": true
+    },
+    {
+      "name": "/admin/ offers owner sign-in using root assets",
+      "ok": true
+    },
+    {
+      "name": "no browser, shader or server errors",
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "consoleErrors": [],
+  "serverErrors": [],
+  "websockets": 2
+}

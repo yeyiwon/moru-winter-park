@@ -1,0 +1,178 @@
+{
+  "at": "2026-11-19T11:43:52.638Z",
+  "revision": "0fe286b8e25ddab2315c5b3a2df0d55b6f78d663",
+  "github": {
+    "repository": "yeyiwon/moru-winter-park",
+    "branch": "main",
+    "ciRun": 44515499225,
+    "ci": "success"
+  },
+  "sites": {
+    "id": "appgdep_6afee00c226c8191ba491f243c4ab7d8",
+    "project_id": "appgprj_6af6f606ab648191855ab9bd44c334fd",
+    "title": "WINTERLIGHT",
+    "version_id": "appgprj_6af6f606ab648191855ab9bd44c334fd~appgver_de05bba19804819184821386c0c9cf27",
+    "type": "publish",
+    "status": "succeeded",
+    "url": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+    "has_mcp": false,
+    "screenshot_asset_pointer": null,
+    "provider_deployment_id": "release---6af7be931a2081919f70b88434d8a181",
+    "failure_message": null,
+    "env_set_revision": 4,
+    "updated_at": "2026-11-19T11:40:17.380148+00:00"
+  },
+  "vercel": {
+    "id": "dpl_554AhJ5AVVCu8HLQoJyYzLnDJ7YW",
+    "state": "READY",
+    "target": "production",
+    "alias": "moru-winter-park.vercel.app"
+  },
+  "cloudflare": {
+    "worker": "winterlight-realtime",
+    "deployment": "3b0667f3-95c7-4f0d-b5c3-29d90ab0a366",
+    "planChanged": false,
+    "paidRenderCreated": false
+  },
+  "dataPreservation": [
+    {
+      "table": "space_owner",
+      "before": 1,
+      "after": 1,
+      "unchanged": true
+    },
+    {
+      "table": "wishes",
+      "before": 6,
+      "after": 6,
+      "unchanged": true
+    },
+    {
+      "table": "quiz_journal",
+      "before": 5,
+      "after": 5,
+      "unchanged": true
+    },
+    {
+      "table": "tree_decorations",
+      "before": 102,
+      "after": 102,
+      "unchanged": true
+    }
+  ],
+  "ownerLogin": {
+    "status": "USER_CONFIRMED",
+    "confirmed": "로그인 후 관리 화면이 열려요",
+    "url": "https://moru-winter-park.vercel.app/admin"
+  },
+  "observability": {
+    "sitesEvents": [
+      {
+        "at": 1795088534254,
+        "path": "/api/presence",
+        "status": 401,
+        "outcome": "ok",
+        "level": "info"
+      },
+      {
+        "at": 1795088534182,
+        "path": "/api/leave",
+        "status": 401,
+        "outcome": "ok",
+        "level": "info"
+      },
+      {
+        "at": 1795088533839,
+        "path": "/api/presence",
+        "status": 401,
+        "outcome": "ok",
+        "level": "info"
+      },
+      {
+        "at": 1795088523732,
+        "path": "/api/owner-auth",
+        "status": 403,
+        "outcome": "ok",
+        "level": "info"
+      },
+      {
+        "at": 1795088523540,
+        "path": "/api/operations",
+        "status": 403,
+        "outcome": "ok",
+        "level": "info"
+      },
+      {
+        "at": 1795088508113,
+        "path": "/api/world-state",
+        "status": null,
+        "outcome": "canceled",
+        "level": "info"
+      },
+      {
+        "at": 1795088508113,
+        "path": "/api/realtime",
+        "status": null,
+        "outcome": "canceled",
+        "level": "info"
+      },
+      {
+        "at": 1795088508083,
+        "path": "/api/fireworks",
+        "status": null,
+        "outcome": "canceled",
+        "level": "info"
+      },
+      {
+        "at": 1795088492610,
+        "path": "/sitemap.xml",
+        "status": 404,
+        "outcome": "ok",
+        "level": "info"
+      },
+      {
+        "at": 1795088492064,
+        "path": "/robots.txt",
+        "status": 404,
+        "outcome": "ok",
+        "level": "info"
+      },
+      {
+        "at": 1795088489779,
+        "path": "/api/realtime",
+        "status": null,
+        "outcome": "canceled",
+        "level": "info"
+      },
+      {
+        "at": 1795088489777,
+        "path": "/api/quiz",
+        "status": null,
+        "outcome": "canceled",
+        "level": "info"
+      },
+      {
+        "at": 1795088489772,
+        "path": "/api/world-state",
+        "status": null,
+        "outcome": "canceled",
+        "level": "info"
+      },
+      {
+        "at": 1795088489770,
+        "path": "/api/fireworks",
+        "status": null,
+        "outcome": "canceled",
+        "level": "info"
+      }
+    ],
+    "vercelErrorFatalLogs": 0,
+    "window": "2026-11-19T11:41:00Z–11:42:16Z"
+  },
+  "unknown": [
+    "physical Windows/iPhone/Android",
+    "production sustained 100-player capacity",
+    "physical GPU memory",
+    "24-hour external alerting"
+  ]
+}

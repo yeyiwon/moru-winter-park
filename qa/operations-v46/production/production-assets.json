@@ -1,0 +1,86 @@
+[
+  {
+    "path": "/social.js",
+    "status": 200,
+    "match": true,
+    "sha256": "48d598ce247a942af14494305ca7657c9316542d147685bb4116d0919ef01a06"
+  },
+  {
+    "path": "/index.html",
+    "status": 200,
+    "match": true,
+    "sha256": "a6be6cdcd09c7c88a2fc83b929583cedbf8733b9d02842a30e59b642a4e924fd"
+  },
+  {
+    "path": "/park.js",
+    "status": 200,
+    "match": true,
+    "sha256": "20d82e0f4c094bb8a4d639dd91629ead27f1d4ed51b9369e9ec0e8c6dbed118e"
+  },
+  {
+    "path": "/game-input.js",
+    "status": 200,
+    "match": true,
+    "sha256": "e0152d51dfecced4c777d869e5c4b59df604ac2c5a9fcb8946e0c932ae32d811"
+  },
+  {
+    "path": "/panels.js",
+    "status": 200,
+    "match": true,
+    "sha256": "e415a3cd42dcc271033e0da0a8bc453a888bceac1dcb53d76ae4d6bc39f579da"
+  },
+  {
+    "path": "/studio.js",
+    "status": 200,
+    "match": true,
+    "sha256": "94e8c47522d3317b57f8e1b04bfbc42ba639a6400f7c657c2346931fb14ce076"
+  },
+  {
+    "path": "/luminous-loading.js",
+    "status": 200,
+    "match": true,
+    "sha256": "4edec15e2ddffb0f6692b9e3e5ed57a3d50386e4ab1bff19b9e09860e7ab7f9c"
+  },
+  {
+    "path": "/realtime-client.js",
+    "status": 200,
+    "match": true,
+    "sha256": "de55ccb371e4bf29d1add00eb8d0c2f682bc441108ba178d3eea153de2e2c880"
+  },
+  {
+    "path": "/loading-state.js",
+    "status": 200,
+    "match": true,
+    "sha256": "bf2bb17fc69ada0095f045820546a6020b2ee5930c008dd4ae0c807f0f5f8da1"
+  },
+  {
+    "path": "/brand-config.js",
+    "status": 200,
+    "match": true,
+    "sha256": "2221c801a4209196bc2062789f2bc2678310470cb10b9f0fc21e261dd965645e"
+  },
+  {
+    "path": "/sw.js",
+    "status": 200,
+    "match": true,
+    "sha256": "80cd87e0a4d02a8cfe1f66d8b94c37f40935388c2982c5ff794bc06c8ae0e199"
+  },
+  {
+    "path": "/customization.css",
+    "status": 200,
+    "match": true,
+    "sha256": "d3eb3659722c944b8ec3badca4f8d2858015ab14c98ac08a37a6266d3727786b"
+  },
+  {
+    "path": "/owner-login.js",
+    "status": 200,
+    "match": true,
+    "sha256": "670371eda8fd6be29da78edc7ee9119f1dc4f6db8290dc61f953905db4308701"
+  },
+  {
+    "path": "/glass.css",
+    "status": 200,
+    "match": true,
+    "sha256": "d752fd0d68339bd5f35919fe2fff35fe6347a89632ef967abc02a7edfa58227f"
+  }
+]
