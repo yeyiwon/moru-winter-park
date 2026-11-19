@@ -1,0 +1,26 @@
+{
+  "id": "/",
+  "name": "WINTERLIGHT",
+  "short_name": "WINTERLIGHT",
+  "description": "함께 트리를 꾸미고, 눈 내리는 밤을 걷는 겨울 공간.",
+  "lang": "ko-KR",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f6f9fc",
+  "theme_color": "#f6f9fc",
+  "icons": [
+    {
+      "src": "/brand/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/brand/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

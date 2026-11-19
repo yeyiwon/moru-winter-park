@@ -50,7 +50,52 @@ export function createCustomizationUI(initial,commit){
  options.addEventListener('input',e=>{if(e.target.id==='fur-length'||e.target.id==='roundness'){success=false;editor.edit({[e.target.id==='fur-length'?'fluff':'roundness']:Number(e.target.value)});}});
  save.onclick=async()=>{success=await editor.save();renderState(editor.state());};cancel.onclick=()=>{success=false;editor.cancel();renderOptions();};
  root.querySelector('#wardrobe-reset').onclick=()=>{success=false;editor.edit({fur:'#f4eee5',furTop:null,accessory:'none',fluff:100,roundness:50});renderOptions();};
-
+ // Name editing replaces its own row, never the preview or a floating panel.
+ // social.js owns validation and persistence; only its confirmed result ends a save.
+ const previewName=root.querySelector('#preview-name'),profile=root.querySelector('.wardrobe-profile'),profileForm=root.querySelector('#profile-form'),profileInput=root.querySelector('#profile-name'),profileEdit=root.querySelector('#profile-edit'),profileCancel=root.querySelector('#profile-cancel'),profileStatus=root.querySelector('#profile-status'),selfName=document.querySelector('#self-name');
+ let profileEditing=false,profileComposing=false;
+ const confirmedName=()=>selfName?.textContent||'게스트';
+ const syncName=()=>{previewName.textContent=confirmedName();if(!profileEditing)profileInput.value=confirmedName();};
+ function renderProfile(){
+  const state=profileForm.dataset.state||'',saving=state==='saving';
+  profile.dataset.editing=String(profileEditing);profile.dataset.state=state;profile.setAttribute('aria-busy',String(saving));
+  profileEdit.hidden=profileEditing;profileEdit.setAttribute('aria-expanded',String(profileEditing));profileForm.hidden=!profileEditing;
+  profileCancel.disabled=saving;profileInput.setAttribute('aria-invalid',String(state==='error'));
+ }
+ function finishProfile({saved=false,focus=true}={}){
+  if(!saved&&profileForm.dataset.state==='saving')return;
+  const heldFocus=profile.contains(document.activeElement);
+  profileEditing=false;profileComposing=false;profileInput.value=confirmedName();profileInput.setCustomValidity('');
+  if(!saved){profileForm.removeAttribute('data-state');profileStatus.textContent='';profileInput.dispatchEvent(new Event('input',{bubbles:true}));}
+  renderProfile();
+  if(heldFocus){document.activeElement.blur();if(focus&&active)profileEdit.focus({preventScroll:true});}
+ }
+ profileEdit.addEventListener('click',()=>{
+  if(profileEditing||profileForm.dataset.state==='saving')return;
+  profileEditing=true;profileInput.value=confirmedName();profileForm.removeAttribute('data-state');profileStatus.textContent='';renderProfile();
+  profileInput.dispatchEvent(new Event('input',{bubbles:true}));profileInput.focus({preventScroll:true});profileInput.select();
+ });
+ profileCancel.addEventListener('click',()=>finishProfile());
+ profileInput.addEventListener('compositionstart',()=>{profileComposing=true;});
+ profileInput.addEventListener('compositionend',()=>{profileComposing=false;});
+ profileForm.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&(profileComposing||e.isComposing||e.keyCode===229)){e.preventDefault();e.stopPropagation();return;}
+  if(e.key!=='Escape')return;
+  e.stopPropagation();if(profileComposing||e.isComposing||e.keyCode===229)return;
+  e.preventDefault();finishProfile();
+ });
+ profileForm.addEventListener('submit',e=>{if(profileComposing){e.preventDefault();e.stopImmediatePropagation();}},{capture:true});
+ root.closest('dialog')?.addEventListener('cancel',e=>{
+  if(!active||!profileEditing)return;e.preventDefault();e.stopImmediatePropagation();if(!profileComposing)finishProfile();
+ },{capture:true});
+ syncName();renderProfile();
+ const nameObserver=new MutationObserver(changes=>{
+  syncName();
+  if(changes.some(change=>change.target===profileForm&&change.attributeName==='data-state')&&profileForm.dataset.state==='saved'&&profileEditing)finishProfile({saved:true});
+  else renderProfile();
+ });
+ if(selfName)nameObserver.observe(selfName,{childList:true,characterData:true,subtree:true});
+ nameObserver.observe(profileForm,{attributes:true,attributeFilter:['data-state']});
  renderOptions();
- return {open(){if(active)return;active=true;success=false;editor.restore(window.labAppearance);renderOptions();},close(){active=false;window.labDraftAppearance=null;editor.cancel();window.dispatchEvent(new CustomEvent('lab:preview-appearance',{detail:window.labAppearance}));},restore(look){editor.restore(look);renderOptions();}};
+ return {open(){if(active)return;active=true;success=false;editor.restore(window.labAppearance);renderOptions();},close(){active=false;if(profileEditing)finishProfile({focus:false});window.labDraftAppearance=null;editor.cancel();window.dispatchEvent(new CustomEvent('lab:preview-appearance',{detail:window.labAppearance}));},restore(look){editor.restore(look);renderOptions();}};
 }

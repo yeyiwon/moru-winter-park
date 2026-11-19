@@ -1,0 +1,1414 @@
+{
+  "sourceCommit": "ad81ba549e0cd13761c1f9289d4ef14efbccc949",
+  "baselineCommit": "46dc3223bed447ed0eba80aa1a6b83fd09975769",
+  "baselineOrigin": "https://raw.githubusercontent.com/yeyiwon/moru-winter-park/46dc3223bed447ed0eba80aa1a6b83fd09975769",
+  "expectedVercelConfig": {
+    "$schema": "https://openapi.vercel.sh/vercel.json",
+    "framework": null,
+    "buildCommand": "npm run build:vercel",
+    "outputDirectory": "web-dist",
+    "regions": [
+      "icn1"
+    ],
+    "rewrites": [
+      {
+        "source": "/api/:path*",
+        "destination": "/api/proxy?route=:path*"
+      }
+    ],
+    "redirects": [
+      {
+        "source": "/signin-with-chatgpt",
+        "destination": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site/signin-with-chatgpt",
+        "permanent": false
+      }
+    ],
+    "headers": [
+      {
+        "source": "/sw.js",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      }
+    ],
+    "crons": [
+      {
+        "path": "/api/quiz-refresh",
+        "schedule": "0 21 * * *"
+      }
+    ]
+  },
+  "files": [
+    {
+      "file": "dist/activity-camera.js",
+      "size": 778,
+      "sha256": "14beb4a556257296731952c849a1e8733bb90ed46dbc3646a301bcdb24e73b80",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/activity-reactions.js",
+      "size": 4698,
+      "sha256": "9809b66be75426cc863b4448a6bb2523c140a7caaf29c076ada78146c65f5a96",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/activity-state.js",
+      "size": 2700,
+      "sha256": "388bbff57f218fcfad25e1c0db4a7000b647ba2dbb205a60e31d984e90b5f3ed",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/alpine-forest-layout.js",
+      "size": 3613,
+      "sha256": "73cea5aaf0cebee5ba8ddf4deedb8e335c9f46e04cb79b8f319da0e72d1074af",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/alpine-resort.js",
+      "size": 40095,
+      "sha256": "02258560ae4f146a298a4fadca28b4eafc1e0718c9019c7a52e46dec8631acb3",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/app.js",
+      "size": 28913,
+      "sha256": "ec5756ecf350a24e8c2172cc9c148d3b89121aa5577e50f716dd970cce021af7",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/appearance-draft.js",
+      "size": 1049,
+      "sha256": "d18ef1c11cada84293f6e777b6d6ec4d51387277ed61a8657b87214b424b25c9",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/architecture-kit.js",
+      "size": 3308,
+      "sha256": "fb99ea4e50c7c789364011a7b7ac554aa76e275b0aa65e6ec9319fdaa9408718",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/audio-engine.js",
+      "size": 12681,
+      "sha256": "a3a2e822fd72d2e62ee9c77b88724dbed8a8217bffe4314622a10e7ec84e1b50",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/audio-world.js",
+      "size": 2192,
+      "sha256": "b9302c8c845f5d08f332b748c8128235242cd20d5c354cd4b82dc584f7c27ae6",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/audio/LICENSE.txt",
+      "size": 1544,
+      "sha256": "a375e3a41d75795d53cfaff2e2f70f241dcd325ff4e50662083c914e8a31810a",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/audio/christmas-cinematic-dream-piano.m4a",
+      "size": 1062268,
+      "sha256": "1237bb9ee60811b7574443a0e94341666c08b0a84d8ff44e303b64ac2e841e69",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/audio/cinematic-christmas-piano-strings-bells.m4a",
+      "size": 3274060,
+      "sha256": "152db3856c92fc036848576780bd638b096d095a601083321f47deafefe41009",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/audio/ethereal-winter-ballet-02.m4a",
+      "size": 1815149,
+      "sha256": "193be288bde68f8842fdba946d343173238dab29f3132f1f819c652db9804cd9",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/audio/first-snow.m4a",
+      "size": 1754877,
+      "sha256": "ef7048bbc999974649d360c8d454b1111e3a4a1810068f9128342158a549dc34",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/audio/moonlight.m4a",
+      "size": 2093421,
+      "sha256": "97ab51fa9df0051a8c9ac180b3039e4d117c19c79d6391ff68d9583901cff40f",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/audio/snow-fall-winter.m4a",
+      "size": 803141,
+      "sha256": "b94e10728e47859472354a6f4b046504ac3dda7e6deedd622ae8bed9988a906e",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/audio/snow-globe.m4a",
+      "size": 1330587,
+      "sha256": "c0f916f67ffe87a0882323620a0c7629e0df3e648297810899de87e02db7c7b6",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/audio/warm-winter.m4a",
+      "size": 1027446,
+      "sha256": "22abd54bd35552af7b855ec19b1feb656edebc14393000c740c7f2c8565a7188",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/audio/winter-jazz.m4a",
+      "size": 537879,
+      "sha256": "a900bf465c52fded97d7f5a556d4d5aec8c5edd26253fdfc94fe14d49c6f1ccf",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/audio/winter-waltz.m4a",
+      "size": 924876,
+      "sha256": "f13547c11ac90741edb6dc5f41726b15429a4e6ff4b862f34f87ff5c356cd760",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/audio/wonderful-night.m4a",
+      "size": 1704625,
+      "sha256": "3459e599123284a005a23be4149de7cc215f187d9ec095c17fe46867b1da2d71",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/aurora-landmarks.js",
+      "size": 12678,
+      "sha256": "156f75186554afbf7549f919ad5c6741ba9327797e040239cb84f35b8cb5bcc3",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/aurora.css",
+      "size": 25630,
+      "sha256": "1e3b316e328d383e06586a8012968b2de507587078fc00943567eebe95e616aa",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/balloon-booth.js",
+      "size": 3131,
+      "sha256": "7d4fd8495f09af266f6c6a0da215d99504a010d1104f1fb8d20a1167f4eed37f",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/balloon-design.js",
+      "size": 473,
+      "sha256": "eafa33f7335063b1bae52c67d4f5c0e2ca0221917b6c294a57aa39824876df60",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/bench-layout.js",
+      "size": 2994,
+      "sha256": "35cc55c081d949669e6764ab3874e30426c8176093695962b71dcfabc1e950d8",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/brand-config.js",
+      "size": 981,
+      "sha256": "b0c8b323ed28c3502560f69b081a7507e6b086ae94ff71a0d1f37aba92298476",
+      "source": "inline"
+    },
+    {
+      "file": "dist/brand.css",
+      "size": 892,
+      "sha256": "49f7e39d5e5c7b6001fd71e07c6c84c31180c5ae094990fbba48460123fed220",
+      "source": "inline"
+    },
+    {
+      "file": "dist/brand/README.md",
+      "size": 1320,
+      "sha256": "900e6f805166b2d74757cfa1401fe87463c8aff145ca69c9386549fffa516ba9",
+      "source": "inline"
+    },
+    {
+      "file": "dist/brand/apple-touch-icon.png",
+      "size": 4304,
+      "sha256": "11048341882f1cbe60a164302496a671e0118ca031b473c1dbcb619aa9b6dd8a",
+      "source": "inline"
+    },
+    {
+      "file": "dist/brand/favicon-32.png",
+      "size": 950,
+      "sha256": "883b014011217973010780e3303f3cf0ab79bd37e52fedc6d4ffb21ac107b012",
+      "source": "inline"
+    },
+    {
+      "file": "dist/brand/favicon.svg",
+      "size": 601,
+      "sha256": "0869b3b663ee1c8f4317a48c0e2cec1d52a0b7b0e7152f6690ca87b496152176",
+      "source": "inline"
+    },
+    {
+      "file": "dist/brand/header-preview.html",
+      "size": 1397,
+      "sha256": "7af9701081ea4e8cedc538e1767af521fa922a2efc8a57c22af7453eae8d4cec",
+      "source": "inline"
+    },
+    {
+      "file": "dist/brand/icon-192.png",
+      "size": 5585,
+      "sha256": "0d8af476b49f4451a103901cdc08a5c85889c380ce751857c1fb3363c6d8416c",
+      "source": "inline"
+    },
+    {
+      "file": "dist/brand/icon-512.png",
+      "size": 17245,
+      "sha256": "a95fdfb252995a823905b4bcde951fee698d7f3ec8f11838c0259c4aede54f63",
+      "source": "inline"
+    },
+    {
+      "file": "dist/brand/icon.svg",
+      "size": 601,
+      "sha256": "a904e2ca112d192771e193559151bdda8e5d8e8dc31739a3ceff4bc2561942c9",
+      "source": "inline"
+    },
+    {
+      "file": "dist/brand/logo-compact.svg",
+      "size": 512,
+      "sha256": "49daea134fea997999307849e27f4dd17784c636b82f2a24a01d81ca1ca932a8",
+      "source": "inline"
+    },
+    {
+      "file": "dist/brand/logo-monochrome.svg",
+      "size": 511,
+      "sha256": "1d7e18d64d2e7249366676820b70b6302710c58d6d11b527168d9bd2b2590b42",
+      "source": "inline"
+    },
+    {
+      "file": "dist/brand/logo-primary.svg",
+      "size": 750,
+      "sha256": "b81affe9cf12d9be9441ac845998cfab9565045c8138579b96c39ec7f8a76940",
+      "source": "inline"
+    },
+    {
+      "file": "dist/brand/og-image.png",
+      "size": 18513,
+      "sha256": "aa9d89d08fac0750f411c6cbf1ad6633a94dee43383c747fca2adb45428cd846",
+      "source": "inline"
+    },
+    {
+      "file": "dist/brand/og-image.svg",
+      "size": 11037,
+      "sha256": "86a92d5e3028d5eab8fbc8a5cb1caf796d96ce00e0253da6663bef80c75526c0",
+      "source": "inline"
+    },
+    {
+      "file": "dist/brand/preview.html",
+      "size": 2942,
+      "sha256": "fcfea86dff5dba274a0b10e2798f188d3adedb5fce609e99798faa296facd94f",
+      "source": "inline"
+    },
+    {
+      "file": "dist/camera-clearance.js",
+      "size": 3758,
+      "sha256": "2fffd82cd7cf8e5fa7decbeb68a302d87a32d50f7b6c8f38e4e699b989b6099b",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/camera-raycast.js",
+      "size": 4757,
+      "sha256": "55f432ad3c1ddf82ab34c2659e8dd7c6b2324b81832538fb7dd4e12466a6cc2a",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/carousel-horse-geometry.js",
+      "size": 1054888,
+      "sha256": "050f63d66c149a02ac26b0457957fa870bdb82619f1491abdbdba1da8163249f",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/carousel-model.js",
+      "size": 21013,
+      "sha256": "5f04e5d86f41c0c0cb823ddade613b0fe45bc0c333f227f8d06aa7f5202c533d",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/castle-atmosphere.js",
+      "size": 8669,
+      "sha256": "aa964fe72766d6274577e7e214ee4bb1fd1cbb3f0914d42bc746af2638bbd0b2",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/castle-layout.js",
+      "size": 1132,
+      "sha256": "012a65b772b64350be9fb7e34ac5b4e5160d282cd581b77986900f00429d2169",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/castle-model.js",
+      "size": 16423,
+      "sha256": "7177a412785bf2708d2b6bae5b06fb96aece15ff23b084700a6a202e613f03c4",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/character-accessories.js",
+      "size": 19440,
+      "sha256": "69c176f6d3b7d42b06cc5e20c75cbb84bbe7831b4461b1b9f43bd9b740bebe78",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/character-ears.js",
+      "size": 5237,
+      "sha256": "539c3346d9f7ad018c35917a369857ec4bfbbe8dede01d6e68472d93f6753a1c",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/character-tail.js",
+      "size": 6909,
+      "sha256": "86e4b155a47c40b0bf5be56fef81f2b6077c932d25f52dd2f9f8656b8e6cfaeb",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/clay-eyes.js",
+      "size": 2521,
+      "sha256": "44d94deee29edf5eb27bab82f802ec7d5e99e97d6aa5d2f4d6b9decade5a56e8",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/collision-grid.js",
+      "size": 1246,
+      "sha256": "6074c07ae0179dad78b7ea36d8fbf61d4a62de5cc52355919d0c74810d340345",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/community-ui.js",
+      "size": 18907,
+      "sha256": "057755ca82ae5daa8a2fce80a68eff3826711039c32671618b5d273101654476",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/companion.js",
+      "size": 44882,
+      "sha256": "360eb64d0bb7c580fd6c07d967450e1f7743d8f672a02c6a65c2754c3fbe8106",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/connected-terrain.js",
+      "size": 3278,
+      "sha256": "f37217468273b683092261793080887d908aac02d7ec951d4c17b4b9533c32a9",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/content/daily-trivia.json",
+      "size": 22989,
+      "sha256": "23267e1f0ddceefeccec98fc2e942b915e634f95462a4b3b5edbe2678e7ca600",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/content/everyday.json",
+      "size": 44533,
+      "sha256": "f3e383003997a514acab457101d1ca1f063111fd6f124b576fb990218c5f1e88",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/content/humanities.json",
+      "size": 109652,
+      "sha256": "f9ab50ecea07358247ec99c678d1203f384dcb13b13b6ab067cf6750bc084188",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/content/perspectives.json",
+      "size": 66754,
+      "sha256": "42af1f52bd77d0079db0d1e8b394b24ab0afe02ba0c5ed9a85ca1a04f94152b5",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/content/reasoning.json",
+      "size": 103786,
+      "sha256": "a6b0ba4d42a37d8800fbed69f2c2b2917bd86cff8b8c847e95ce4662d52e1fe2",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/content/science.json",
+      "size": 111543,
+      "sha256": "7c95654f0e4cb5af7fca87d5c419a733ce7463762531879f3c362ddeaaecd1f8",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/customization-ui.js",
+      "size": 8388,
+      "sha256": "c272d831c537713ec9f2c6183e2b2777644d16cf29c507a3af3b9fd0d2bbb715",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/customization.css",
+      "size": 9051,
+      "sha256": "17f1288a1c0fe84c6f175bff926372e272e3d71129d70f4587f510229696c3ae",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/decorations.js",
+      "size": 1614,
+      "sha256": "8918fde286db8cfc25d9d6697e43c5da0d1348eb69e1e9d095e0c257a5c57e17",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/discovery.js",
+      "size": 359,
+      "sha256": "0514cd723e00925774a581910d4092b12014def84bbf83b2ef60765e1718804f",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/district-layout.js",
+      "size": 1226,
+      "sha256": "35dc2b57aeab6c0dcb6a536f54869d0aa1e262c2c78f39db2245bb3dd0015e2b",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/effects.js",
+      "size": 855,
+      "sha256": "d2bfdd83f96ea664c44c758d41b47688025e577d247c64b449e7ead56908f6b8",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/emotes.js",
+      "size": 1828,
+      "sha256": "a8170d8437f535d28b7a44e1df6d4e50249a77e2a494d19d3871fbbdbf4ebbe6",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/exhibit-cards.js",
+      "size": 2974,
+      "sha256": "8e2be7ad22eee75fa0a8dbbfc80a5bdecbf8a067b6c0999c23f754ff56946a68",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/experience-cards.js",
+      "size": 1839,
+      "sha256": "a8744de6198de00d3278c6842e6dd83d3e3418b44fa0c2294abc47e35ded76b7",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/experience-preferences.js",
+      "size": 1562,
+      "sha256": "2ba5f62e6c9ffbc5590afb3b0b742422d1b9fd60e2bba365d6f082490861904c",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/fantasy-vfx.js",
+      "size": 22836,
+      "sha256": "e6cd6807c794025a97c611e661a8e8165608743214d7243262e195205bd709be",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/ferris-layout.js",
+      "size": 802,
+      "sha256": "16a66917e19d0fa5e2f222aeea5270ce23d602b4bdd20d5f1440bb4072d25c7c",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/ferris-model.js",
+      "size": 17225,
+      "sha256": "f2b97c0533395bea45c49db8ba6960d4fcee49a84810fe5c891c414dc3918bfa",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/festival-layout.js",
+      "size": 1417,
+      "sha256": "c0ba796d8965f5cd2abae5f557c9036e8c840aabcbc6d57eb07e768ad7798f32",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/festival-plaza.js",
+      "size": 2876,
+      "sha256": "293d8d1eee64705a61f0f36d9d4430347396c284d8141ee64500b25bf919bab9",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/festival-rides.js",
+      "size": 7390,
+      "sha256": "4befd821269d65c72dedf2fd442d369ec00705e2abc4b71a07b9af2c46bc33df",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/firework-score.js",
+      "size": 1522,
+      "sha256": "72c4829301bdbd4515fb732fcda9654d4ccbd8f1f6b7208c2e29e57d445bd3df",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/fixture-glow.js",
+      "size": 4038,
+      "sha256": "76105548635b6b81e968f8ae719cd48465ffec61e3de40b3cc90989d4c908991",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/fonts/Pretendard-LICENSE.txt",
+      "size": 4816,
+      "sha256": "82e9c8a4b203261f10ddba1296422d64914ff3d4b7bd8a12896d03f0f088d70a",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/fonts/PretendardVariable.woff2",
+      "size": 2057688,
+      "sha256": "9599f12fd42fc0bce1cd50b47a0c022e108d7aa64dd0d1bb0ed44f3282d900b4",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/footprints.js",
+      "size": 2214,
+      "sha256": "c4695e65839564415e61a9dfe7ec093d73c9400e2936cdbe2730134ff04e4c0b",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/frame-metrics.js",
+      "size": 2680,
+      "sha256": "626bee0b47aafd53057f43c4ff6675a9014b9e501d8dbe719af1381396a1df8d",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/fur-gradient.js",
+      "size": 1559,
+      "sha256": "79084f6b108f547ecf6fe0772e307e6668961bff6795a48e4859d92258616055",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/game-input.js",
+      "size": 6535,
+      "sha256": "574789167b5187d631175dbeec2c2e863128631b200ed8692794c8098b216e29",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/glass-controls.js",
+      "size": 6640,
+      "sha256": "409ae10e795fbec5a0da52212086a8103463302e8663818c2a93d704d74e1773",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/glass.css",
+      "size": 47195,
+      "sha256": "473c055de04f4e2975f8d29061c437b9ef78a80dae92be78b99e696dfcb00246",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/glow-pass.js",
+      "size": 4130,
+      "sha256": "02107a1c1896368e6380a445cf77a4f6b62fef845a7f5aea711ea9a99fb1804e",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/googly-glasses.js",
+      "size": 2678,
+      "sha256": "d77fbf327008ba8e3d93aab3f2a16274ab2cd5091d8b819e83bf224caace09d0",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/guest-names.js",
+      "size": 562,
+      "sha256": "0ae704d530ea3550f7bbe422b268d7dbc6dcfae4d1387fca23d91db436897e39",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/hand-sparkler.js",
+      "size": 2300,
+      "sha256": "9661c2dc8686f9ec46f2f465bcb317c18a44721f964616fd4d1b75a9698431f6",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/held-balloon.js",
+      "size": 5477,
+      "sha256": "ec9d431b937ec4836600c5731ad7ee77d19357ed19b892747fcd545c97eb3ecc",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/held-popcorn.js",
+      "size": 1780,
+      "sha256": "b3bf597592f12a9f7b06052ea15b0495f4b6dba335a1eef0e35ff1a2dbc0a9ef",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/index.html",
+      "size": 21775,
+      "sha256": "cb5055d3835cf35c1af9a83ede997a01e38748143d140ee6c3c1f40b70f90a43",
+      "source": "inline"
+    },
+    {
+      "file": "dist/interaction-exit-control.js",
+      "size": 1723,
+      "sha256": "6d55f3069eb6f60e753d776975019ba98524fd116217156482c3259389a3f01d",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/interaction-lifecycle.js",
+      "size": 1029,
+      "sha256": "397d352e5b51f5437a8d7a03768fb7882af2ede8a01c1b4a0aeb6c5ceeb3917f",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/interior-layout.js",
+      "size": 5010,
+      "sha256": "372f1f0828a15a45c0542324a1e8629be1bef219a818c0858a5ff998410d2bd4",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/interior-world.js",
+      "size": 17527,
+      "sha256": "3a7f2e6801e1d41cbd6373a5bd3efe5cf8d32512d3995c01af17eb8b10f4c671",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/landmark-lighting.js",
+      "size": 722,
+      "sha256": "e918d6c8df4b568ae717c63134fed98a3d2b3bd1bcdb233cd44ebe943aac54e6",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/learning-core.js",
+      "size": 3422,
+      "sha256": "e748a408a4f479fbed71907d19507f73d460b628af54e6ee66b4188a29bbca5a",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/lighting-theme.js",
+      "size": 2060,
+      "sha256": "a1621ca1c08005e1a4cf61f20b354ab7e7c6de5fde94180e200997593509236f",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/loading-backdrop.js",
+      "size": 827,
+      "sha256": "0efdf352b4013674c58aaf8f826c8a5f11b4d3c523459f6d39e6c15c8da20541",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/loading-state.js",
+      "size": 2103,
+      "sha256": "63862ffa342c51e833bc7b2f07d621574ce655bcbbec68fd6b89791c30ae98cb",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/local-lights.js",
+      "size": 4030,
+      "sha256": "96f8bc5a539810fd20f53487b1a0a96157de04a13ba976e3903ee2242506ec86",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/luminous-loading.css",
+      "size": 3045,
+      "sha256": "5ff34fded47f739618a5c7b20d47de83fe633c867036519bf5c1906a7fca6c2c",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/luminous-loading.js",
+      "size": 4270,
+      "sha256": "21cef86f65b14dc661a1b0a5a47a7b1b59cbab138b48e720223f8bc2a6d89f7f",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/lunar-phase.js",
+      "size": 1416,
+      "sha256": "075590ae428f5d817bc6111f27488bdce000df48e7831400897a7ec5269e4da4",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/map-atlas.js",
+      "size": 593,
+      "sha256": "d325d756f26f198894d888339548def735a43f2a0ea943c08e9406f79aa06766",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/map-icons.js",
+      "size": 1855,
+      "sha256": "9319203205ae015a0ca28f8e70a9b6b5aa60090f6928326b2d8cef479eecc2f3",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/mesh-batch.js",
+      "size": 3741,
+      "sha256": "b7eb5a5dbf19953cc5e17cee5464263d814014819efd7b511534fd5f620f45ff",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/metaverse.css",
+      "size": 33102,
+      "sha256": "a440b280cf128a0ce3e632fd1180e9204c527035a2062aeaa76a89a68e35067e",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/mobile-ui.css",
+      "size": 7249,
+      "sha256": "4b1520227324ac12fc461cb74043432c3d394fa6327cd814c6fe194c7668e3d2",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/move-marker.js",
+      "size": 1560,
+      "sha256": "604bf225e238719300dfcf39de13a4267ce2803d06ad64b9c6927a9c7b4e173c",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/movement.js",
+      "size": 2762,
+      "sha256": "1596ab93e69ede7f96826ed135f051315cf80c5716b44ece1884bf079342f45e",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/museum-puzzle.js",
+      "size": 2477,
+      "sha256": "41ba710f0d839bcc46bf37ad5ea392c126f6cd0e83e7017e51d9d341d9c22904",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/museum-world.js",
+      "size": 14086,
+      "sha256": "1f888a0468a7c7b6ba0ceeb9ce3674eb7ce5734b3175921842b77e92c0f546cf",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/music-catalog.js",
+      "size": 3563,
+      "sha256": "e2ff43d81478a2e677bc539b19f1874092bf0b62d480537b16df4a459789e382",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/navigation-client.js",
+      "size": 1574,
+      "sha256": "a8fac15f4dae264a5f8cf28e836672bbf4c487fe5fb560b295a1b974095a61e5",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/navigation-worker.js",
+      "size": 197,
+      "sha256": "56dc84ec7dc73aa94deee02453333473d227382bf6fd7a293a14f2b9b49d9370",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/navigation.js",
+      "size": 4680,
+      "sha256": "e0c7dd59222bfbb95e3ec6aece01e14205f172fd40783994bb9560456314fa70",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/nickname.js",
+      "size": 603,
+      "sha256": "a2e9371287d391fc0af33aeae099c3affb7ead771bc6e10bd6536600d8278658",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/onsen-layout.js",
+      "size": 1309,
+      "sha256": "1a3bca05dd2f246409feefb3355fc521d885f271442cd798f4737a90f4259eeb",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/onsen-response.js",
+      "size": 2668,
+      "sha256": "591baeb6e4c512730bfd68e999c09bf40aeb528344013acbfdfdd5663c34018f",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/onsen-water.js",
+      "size": 4941,
+      "sha256": "bcdf02ab83c4605b5c87c834895eb5463ac4871fd4b52e6ae475fcf7cb0cefbe",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/onsen-waterfall.js",
+      "size": 4968,
+      "sha256": "ecdd41efb52b8c8036a4ea9b522330efa452183bc0b0648e03e0331a9b4426dc",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/panels.js",
+      "size": 1931,
+      "sha256": "51484715ba016e650d8f16a47e42fcb65cccba044de0499d67a457aa58f32cfc",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/park-details.js",
+      "size": 20407,
+      "sha256": "554c0b970b833bbdb74604edb84bd1b954260e9fa1e9f438c687c7faf7ae8e9b",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/park-lamps.js",
+      "size": 5694,
+      "sha256": "a5d0911bdffa103495413728c34c95f85fe278b9573bdd507f992e1233c93775",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/park-layout.js",
+      "size": 2621,
+      "sha256": "b3a3e562be8ef50f4cea6db18db94ae78140a67fe4a6b3dbc7a73ae384d727f0",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/park.js",
+      "size": 42761,
+      "sha256": "1687f15fb694c90639baf33c6904ecb0d733838073c951d9526da47a3e7ed7ab",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/path-routes.js",
+      "size": 18978,
+      "sha256": "70d8ce2f3bf1c120ddaa305f1bd8fb9f7c4f2b5b8d67830ad6418f5147b10066",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/personalization.js",
+      "size": 6302,
+      "sha256": "d25b8111be8e31eb28d1e99730521a4f8cc4a0f044fb29e57bbeeab52d23af8e",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/player-state.js",
+      "size": 917,
+      "sha256": "3370ff645ea94a322afd54ff763a5799dd06880ba36c04152eb321dc5580fa4a",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/plaza-paving.js",
+      "size": 420,
+      "sha256": "d5ec805051713ad43e8530748350c64bdb3d00ea3bf14caadb7b4a7ed378644c",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/plaza-snowman.js",
+      "size": 10704,
+      "sha256": "f1a9b96fb7330ac8bd6f372bde0ca11ae520a45b00b9cdbe381667c471ba54f1",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/plaza-uplights.js",
+      "size": 3726,
+      "sha256": "0242f4834c46e2b3f4393c3369213034369c37d2453350bba919cebe2c563c61",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/presence-policy.js",
+      "size": 1373,
+      "sha256": "7656422d98522ee5bdad819d3d5a47ac277598190f87dd51ffe257224ae1cba8",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/preview-orbit.js",
+      "size": 1366,
+      "sha256": "71d3caca2c7762227e700b2c1abfdb1132ebaef920ef03a5f6d8e903033a9b23",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/quick-quiz.js",
+      "size": 5846,
+      "sha256": "82a65cac0d5f508bde1e654a6dd11cfa58fa2eb778e079c75960f913ecb57514",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/region-layout.js",
+      "size": 2986,
+      "sha256": "3d160077010d4e730994fc5b7e5f2a9e6101b6d1f39fc001233a4149dbb3fb84",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/remote-motion.js",
+      "size": 1798,
+      "sha256": "3c5ee59c2a4b1f7fffe048dc535dc69c09aeb52b09c33b832809f162fff9bfbc",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/render-budget.js",
+      "size": 1998,
+      "sha256": "d00a4e7bbc79b97c123e0dfe79ee9ec24292c689ae266a49744a8b7987574ffb",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/resort-blueprint.js",
+      "size": 11835,
+      "sha256": "781852074928ed8cdea1b2d18c62e51ad960bffd053de17301995508d5fdebaf",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/resort-layout.js",
+      "size": 4784,
+      "sha256": "24da8c98df70abdb348c3476c29cf8173c072634ba9e357d8b4a39b61e860979",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/resort-scenery.js",
+      "size": 14961,
+      "sha256": "4ce59a159490004c39370258aa60d210864fd99720b217ca97482da561ba1903",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/retreat-atmosphere.js",
+      "size": 10419,
+      "sha256": "e33d3c21f98450f5f515d0b8318bff1693b139a08c980a6714192fc886670094",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/retreat-layout.js",
+      "size": 1281,
+      "sha256": "cf06874922da6cddb2c1ce5a1d917826d4c05ae7bb99839122a592bcfa7c4ec5",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/ride-seats.js",
+      "size": 1635,
+      "sha256": "3a5b2adb83d1c4d78f55b8804ab64468e91840236f63d5b17614789d35d5faf9",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/ryokan-aquarium.js",
+      "size": 12258,
+      "sha256": "9346b5e0f586279538bb89c6035c3a6bda7cbfffae1638de20ded94ac7521b98",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/ryokan-chef.js",
+      "size": 2536,
+      "sha256": "8603879b73749f697936357c7c447aa11c82bb6dda9cfca0eb0f1fe8aa0f4ee0",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/ryokan-exterior-layout.js",
+      "size": 514,
+      "sha256": "0c037fcaa738c7cb47224de8805edbf4f4ec7e92e114fed5b6883dc7d5680486",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/ryokan-finish.js",
+      "size": 1378,
+      "sha256": "31b1488b598426228e989ac60d58a3b386814fea0f2ec31848a96be31e5f1781",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/ryokan-garden.js",
+      "size": 1485,
+      "sha256": "59c242821bcfb363383ee902c676ea8a9690000e0214446cc6af463b2fc28212",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/ryokan-meal.js",
+      "size": 2426,
+      "sha256": "61cb4248c0c4392c4a9da5205e35012245979dd6fc7954ffde2ecfc3e955ea3b",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/ryokan-window.js",
+      "size": 1948,
+      "sha256": "fac5c304bab6522b04e6b1cd54b01c066c5687377f753a332dd5f4487f7ae96d",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/scene-resources.js",
+      "size": 922,
+      "sha256": "fe48974e1860bd5edf97bfa2aac60d9337dccd167c6ae66c54b42ac1f2b0ccf9",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/server-clock.js",
+      "size": 771,
+      "sha256": "326cf5f558a395e31aaa26bc95b11ba91b51b82fb5f607c861b4a63539781ff7",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/shared-tree.js",
+      "size": 14819,
+      "sha256": "d7a7be0324709a1d596eadf743a0784719f7b0a6f2372b89486a856d39c6ce8e",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/simulation-clock.js",
+      "size": 526,
+      "sha256": "f50da1b7f233c2f73cb622a588500d73944f84df335c98dbc416413eeeb535d0",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/simulations.js",
+      "size": 1277,
+      "sha256": "a87fbd623b9313c350702e062d3fc472d51af5646668f34d2d175d21bcd8a1ed",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/site.webmanifest",
+      "size": 573,
+      "sha256": "74589c511438f682c08651ff1e9f6adc60e98631ddd71487f9dace923bc4ec36",
+      "source": "inline"
+    },
+    {
+      "file": "dist/ski-map.js",
+      "size": 2552,
+      "sha256": "414ad18b8da54338decbd3028f0c15d88425f411809a5ff1797c7676d3ef16bc",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/ski-trails.js",
+      "size": 8611,
+      "sha256": "bf1a77646eccb31e8371dff63ae40b1a83534fcdca9feade7c5c466e04f6a6f2",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/snow-path.js",
+      "size": 4172,
+      "sha256": "d7e8fab7edb55393bad2da92b96182c87c14df777dd278ecfea7d634b8f9671a",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/social.js",
+      "size": 19833,
+      "sha256": "48244ba4a1c5e3fe5621c1dac9573d9798c0f795241c01eba49dad45d843255c",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/soft.css",
+      "size": 13575,
+      "sha256": "258e3e894dac48f949a179360e328909d0352d87f74f777e91727e33e6728985",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/spa-experience.js",
+      "size": 2626,
+      "sha256": "914adc5934715ea1b8b147fb08b1e1e581d9e1170e53f5320bff3ab1ae155169",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/spa-resort.js",
+      "size": 35747,
+      "sha256": "b08fa0cf174e898b1280642f230ed712e8ba29475b58cc8d99fb9063c038e887",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/spa-transform.js",
+      "size": 606,
+      "sha256": "8e9435eb95d2f5ed62cf6b1a568b57b9a4b086ed70cfe24574da5025f3316b6d",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/space-links.js",
+      "size": 439,
+      "sha256": "589cdda60cdfff76782279cc5efbc06c27f67acbf813d4f73c64571cc6a92f6b",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/studio.js",
+      "size": 7934,
+      "sha256": "8c5813286b6c79830b95f3ad9779e88a30a7bdedcc2c85ccf568ade56bbecbd0",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/style.css",
+      "size": 25487,
+      "sha256": "6b8702fbed4297bdb0d513c5a570dfcd34b93d8d67682e340380f311fd7f6f03",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/sw.js",
+      "size": 4599,
+      "sha256": "61b4a62919e913c7e1c84b4fabea9c06aef7bf80c19cdb743fbaa6f59de348b4",
+      "source": "inline"
+    },
+    {
+      "file": "dist/textures/ATTRIBUTION.txt",
+      "size": 1944,
+      "sha256": "bf1fe72bdbcb138679c74eb41d871f7bb4e61d83adfab6f9ffeaa7fdff1e227f",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/textures/loading-world.webp",
+      "size": 41668,
+      "sha256": "e68995142931c3afc624b2930e4df9da113b041108712c4266484794385bfa43",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/textures/moon-lroc.jpg",
+      "size": 139068,
+      "sha256": "b246064f217f8d479df78c49c7c8595a8f5fbda008a72fd539978d2e121e0109",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/textures/winter-world-map.webp",
+      "size": 255128,
+      "sha256": "80491bdae419d04009c15f7e91a6543a34e0cf7ecf84ecfd8662f3fb8f5cbbf3",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/themepark-world.js",
+      "size": 16164,
+      "sha256": "c7785443e8bdc6bdb5f597fdcb7fb639bbd14c6051c1f9bc5e4a7a8ea7e08f57",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/tree-atmosphere.js",
+      "size": 6695,
+      "sha256": "892983414ba5101d3dd15c082d7e57b3d29dfb1daaeb99a0f690ba03e11180fd",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/tree-layout.js",
+      "size": 530,
+      "sha256": "d0f1ab314919f68d5a190b57638b3d1b89bacf8d041e4a43f933cd98766c2baf",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/tree-ornaments.js",
+      "size": 15468,
+      "sha256": "76eefbc8066167e0087fcfa91a8af75ddc9c9bcd8efaae77e3fdb67a1323e1cc",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/tree-topper.js",
+      "size": 3565,
+      "sha256": "bc7e969ebde30fb7371a8217fb41824381bf316f10675352fa9b07f4cc09d6a8",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/trivia-fallback.js",
+      "size": 3762,
+      "sha256": "17b5420e7cd2b644d0716f917706e2e59c09ecf54c96446c76ca68aebc0fd35a",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/trivia-loader.js",
+      "size": 2559,
+      "sha256": "958dbbc25993e6618e6a5c6442a12318e7405e62662673b9ab33a17457cf963e",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/ui-motion.js",
+      "size": 546,
+      "sha256": "d75774200fe530743fb744da2433fdf06eb6cab2634b96f6266022cde8fe67e0",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/ui-system.css",
+      "size": 19509,
+      "sha256": "9f749f1b2dccc91e3017ba112e1e95cdb6e01f505f1120cfd2c70f3258772342",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/vendor/THREE-LICENSE.txt",
+      "size": 1081,
+      "sha256": "4c40a1ef62450b857c3b2aaf294936304cd552d965fbcd9d32d4c5bcf4ba4454",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/vendor/three.module.js",
+      "size": 1314681,
+      "sha256": "ce1fa418de16a19495a9f72495580e3015d7745c296d3ce0485897f902ddedfb",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/vfx-shaders.js",
+      "size": 4268,
+      "sha256": "a45bb3a00ca101245aa0ce078ccea4aad489b6ca80e6e92fffaca7978a745a93",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/visitors.js",
+      "size": 6841,
+      "sha256": "e81fc6e341f06fdba03df11710d7dd215508c023f6993ff25b298fb671d7c49f",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/voice-controls.js",
+      "size": 4605,
+      "sha256": "d7646316b9317707a88c1e0d558802eb76c1c627ca3d1422481bfdd8f93d99b0",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/wardrobe-icons.js",
+      "size": 7528,
+      "sha256": "2dade720c1a88d28b16f6e881dcbe22010e137f3f955a8d66c1f1dba20326de4",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/wardrobe.js",
+      "size": 4527,
+      "sha256": "4554692e60c11b11b14abefe24e466ab9ea274cf7df891dcfc1cdeb960486360",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/weather-clock.js",
+      "size": 2746,
+      "sha256": "81e00e51cabfac922a2d3248a1933387e7d8347f61c8d1a3c2dad05a0b9180ab",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/winter-architecture-details.js",
+      "size": 7815,
+      "sha256": "fcae8243fdf7a19173ea2e5d40b523d539cca1fd9ed232faf715defe64510379",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/winter-bench.js",
+      "size": 1236,
+      "sha256": "3de3ab0ff9014c76704676b7c195eb3ee1f37c090e420d526da001eec148ffbc",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/winter-costumes.js",
+      "size": 10108,
+      "sha256": "d85ad8cff85a27c3dfc371b9839c365f472979c26e1f27af8cbc877f53844674",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/winter-experience.js",
+      "size": 23592,
+      "sha256": "35f768827184f60377b84eedd9db06cb98d5ba2ba5b11a4124d9e4f56bab39fc",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/winter-fireworks.js",
+      "size": 6885,
+      "sha256": "dc13f905c616c680850b29aa5b7710cb3847b70e2ed7d7c802a884d0e5f14dd0",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/winter-music.js",
+      "size": 7202,
+      "sha256": "177bf4e82d07c01328d2ac3de4d525175ce59461d93cb1370ce3aa3ffce60558",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/winter-retreat.js",
+      "size": 7560,
+      "sha256": "3225346988076d085155d683eb473e9564b07de465d1d3ab93fa3c66815b6610",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/winter-rides.js",
+      "size": 5660,
+      "sha256": "af8e61f0b4da179b51f42a0f3fe6c86d0fb5477db8afce548be519839f30dc62",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/winter-sky.js",
+      "size": 13665,
+      "sha256": "4d75d392bc9c93ab751b71a448d24acf373a2dab5c4c681d31c5cc955fb78baa",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/winter-world.js",
+      "size": 11619,
+      "sha256": "de93f0e9627d76e2e73ffac54a0969933e558ab63f49f158783901b5afa5e4f1",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/winter.css",
+      "size": 17620,
+      "sha256": "4cffbb9ed04f8f413c340fc2ce995b2e4a5791e12055ea7374aba2c2f6841aba",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/world-art.js",
+      "size": 13612,
+      "sha256": "4873e81dd8d979035f873c5c0111ae44b198838b312449704e4c62856089b57f",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/world-guide-data.js",
+      "size": 1050,
+      "sha256": "40f724620c962997f79eaf51aaffbec69ccfac559246d6da302942c523aa9f7d",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/world-interactions.js",
+      "size": 2639,
+      "sha256": "343d351d59001658f50d1814437c80ff3124432f8ee9d6a59be67c62b04f1c6d",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/world-labels.js",
+      "size": 2375,
+      "sha256": "683f870c3de9886193047b7da12954a8d95248dc9e4f5e8282eb81c6a67fe82d",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/world-layout.js",
+      "size": 4965,
+      "sha256": "df9c2af2dd6df264e2e33c111ecd342f97a0db98b0beb759a533411fae785ac3",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/world-map.js",
+      "size": 10231,
+      "sha256": "b2c182dc06b1143c2186329e7566da36c1dc92be769bd2cc782a183ab37a3379",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/world-paths.js",
+      "size": 2007,
+      "sha256": "98e1098f39b94808cfad66f83c4eeee54c2b780c9ca4ca0212314c63429dec23",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/world-settings.js",
+      "size": 928,
+      "sha256": "d98d8d4fba6510444d14003cef2aded78eb56a389837a09c4f89854b772a207b",
+      "source": "baseline"
+    },
+    {
+      "file": "dist/world-time.js",
+      "size": 1845,
+      "sha256": "67478bd05128fc8bf7b31559d420bfa3f9b2f2edf117fc10b8d40970a4f53f02",
+      "source": "baseline"
+    },
+    {
+      "file": ".vercelignore",
+      "size": 75,
+      "sha256": "9f1b961e137369e0c056801670fdb493adccd47f532dca123e081488efbae21c",
+      "source": "inline"
+    },
+    {
+      "file": "package.json",
+      "size": 859,
+      "sha256": "f899a2bef2d48654e30a7b48660aebf20757512e107cd6339e90f34a3575b8bc",
+      "source": "inline"
+    },
+    {
+      "file": "package-lock.json",
+      "size": 68778,
+      "sha256": "9f4640500d0e7f83ce378d860383f53d84ea0b04b67311b64f249abd5f9c7c9b",
+      "source": "inline"
+    },
+    {
+      "file": "vercel.json",
+      "size": 763,
+      "sha256": "ccc6e13895ae7e46fad551ce4f7a90990c0946a74744bdf74399e246079444de",
+      "source": "inline"
+    },
+    {
+      "file": "api/proxy.js",
+      "size": 163,
+      "sha256": "dc396660936fd7665f9f410e0b31e9353e27e4b8148424953b96a6304749a8cf",
+      "source": "inline"
+    },
+    {
+      "file": "server/vercel-proxy.js",
+      "size": 2994,
+      "sha256": "e1a9aa7b1a407b9313914e3cd002ac3bddfdcb6d1c362fb78acb1f0b88b0c179",
+      "source": "inline"
+    },
+    {
+      "file": "scripts/apply-brand.mjs",
+      "size": 3992,
+      "sha256": "22245b2d64cb1204a664e4f12825ddbbd05cb3bfb413dda74d699bd85fa51055",
+      "source": "inline"
+    },
+    {
+      "file": "scripts/build-brand-preview.mjs",
+      "size": 3985,
+      "sha256": "7dee5fc60e841b83176567916117c6488e7ce10ddbf93a131144b66855f9fc3f",
+      "source": "inline"
+    },
+    {
+      "file": "scripts/bake-paths.mjs",
+      "size": 2925,
+      "sha256": "590b2dd029344de28990be89e18d1609586902a720a85e8ed2d8bcacd56f88db",
+      "source": "baseline"
+    },
+    {
+      "file": "scripts/build-vercel.mjs",
+      "size": 751,
+      "sha256": "34e59429f4ac712955a0c49e2876dfc4985178024626c540b6788aa90ae994ea",
+      "source": "baseline"
+    },
+    {
+      "file": "scripts/production-assets.mjs",
+      "size": 481,
+      "sha256": "7797d258e0838f8669c1c0d95ac30fe54da9febebd8933bf51e35992ab81e12b",
+      "source": "baseline"
+    }
+  ]
+}

@@ -1,5 +1,6 @@
 @font-face{font-family:Winter Sans;src:url('./fonts/PretendardVariable.woff2') format('woff2');font-weight:100 900;font-style:normal;font-display:swap}
-:root{--ui-font:'Winter Sans','Apple SD Gothic Neo',sans-serif;--ui-glass:linear-gradient(135deg,#c6e9ff20,#c4bce412 48%,#d8f1e51a);--ui-edge:#e0f3ff3d;--ui-ink:#f3f8ff;--ui-muted:#d0e2eb;--ui-accent:#c4eee8;font-family:var(--ui-font)}
+/* Surface colors are owned by ui-system.css. */
+:root{font-family:var(--ui-font)}
 *{scrollbar-width:thin;scrollbar-color:#fff8e917 transparent}
 ::-webkit-scrollbar{width:4px;height:4px}
 ::-webkit-scrollbar-track{background:transparent}
@@ -188,8 +189,8 @@ body.emote-open .touch-actions,body.emote-open #joystick{pointer-events:none;opa
 #museum-puzzle{width:min(430px,calc(100vw - 32px));padding:22px;border-radius:24px;margin:auto}
 #museum-puzzle p{font-size:12px;line-height:1.7;color:var(--ui-muted)}.orbit-controls{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin:20px 0}
 .orbit-controls button{background:#d3f3ef12;border:1px solid var(--ui-edge);border-radius:16px;padding:10px 6px;font-size:11px;color:var(--ui-ink)}.orbit-controls svg{width:100%;max-width:76px;height:76px;stroke:#c1d9ee;stroke-width:1;fill:none}.orbit-controls .orbit-target{fill:#fff1ba;stroke:none}.orbit-controls .orbit-star{fill:#cbefff;stroke:white}.orbit-controls g{transition:transform .18s}
-body.inside-room #quick-quiz{inset:auto 24px 24px auto;width:min(460px,calc(100vw - 32px));height:auto;max-height:70dvh;margin:0;padding:22px;overflow:auto}body.inside-room #quick-quiz::backdrop,body.inside-room #museum-puzzle::backdrop{background:#08162918;backdrop-filter:none}
-@media(max-width:650px){body.inside-room #quick-quiz{inset:auto 12px calc(12px + var(--safe-bottom)) 12px;max-height:52dvh;width:auto}}
+body.inside-room #museum-puzzle::backdrop{background:#08162918;backdrop-filter:none}
+
 
 /* Invitation content stays compact inside the same stable settings frame. */
 #pane-social{display:flex;flex-direction:column;justify-content:center;max-width:560px;margin-inline:auto;gap:14px;padding:24px 8px}#pane-social[hidden]{display:none}#pane-social .social-head{margin:0}#pane-social #room-share{margin:0}#pane-social #social-people:empty{display:none}#pane-social #invite-description{line-height:1.6;max-width:42ch}#pane-social #social-status{margin:0;font-size:12px;color:#e8f3efb8}

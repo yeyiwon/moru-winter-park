@@ -1,5 +1,5 @@
 export const backendOrigin='https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site';
-const routes=new Set(['owner-auth','realtime','quiz-refresh','appearance','health','access','invite','invite-check','join','tree','name','leave','chat','presence','ride','wishes','reports','admin','events','quiz','assist','region','operations','world-state','experience','fireworks']);
+const routes=new Set(['owner-auth','realtime','quiz-journal','quiz-refresh','appearance','health','access','invite','invite-check','join','tree','name','leave','chat','presence','ride','wishes','reports','admin','events','quiz','assist','region','operations','world-state','experience','fireworks']);
 export async function proxyRequest(request,fetcher=fetch,{cronSecret}={}){
  const url=new URL(request.url),route=url.searchParams.get('route')||url.pathname.slice(5),write=!['GET','HEAD'].includes(request.method);
  const error=(message,status)=>Response.json({error:message},{status,headers:{'Cache-Control':'no-store'}});
@@ -18,6 +18,7 @@ export async function proxyRequest(request,fetcher=fetch,{cronSecret}={}){
  try{
   const target=new URL(backendOrigin+'/api/'+route),revision=url.searchParams.get('revision');
   if(route==='tree'&&/^[a-f0-9]{24}$/.test(revision||''))target.searchParams.set('revision',revision);
+  if(route==='quiz-journal'&&url.searchParams.has('cursor'))target.searchParams.set('cursor',url.searchParams.get('cursor'));
   const upstream=await fetcher(target.href,{method:request.method,headers,body,redirect:'manual',signal:AbortSignal.timeout(route==='quiz-refresh'?25000:8000)});
   if(upstream.status>=300&&upstream.status<400||!upstream.headers.get('content-type')?.includes('application/json'))return error('공간 연결을 확인해 주세요.',502);
   const responseHeaders=new Headers({'Content-Type':'application/json','Cache-Control':'no-store'});

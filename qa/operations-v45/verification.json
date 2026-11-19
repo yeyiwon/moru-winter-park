@@ -1,0 +1,203 @@
+{
+  "at": "2026-11-19T08:30:10.652Z",
+  "status": "LOCAL_VERIFIED_NOT_DEPLOYED",
+  "branch": "codex/public-world-v43-release",
+  "sourceParents": {
+    "local": "a468df2",
+    "auditedSites": "59e7ec4ac0333455cda3d98fa3ae0a0b623fc8cc"
+  },
+  "runtimeSource": {
+    "files": 467,
+    "sha256": "8164846ede5cf65c9f4a4befd86b6a4fe433f6687a29633f24a1420269ff02e3"
+  },
+  "automatic": {
+    "syntax": {
+      "status": "PASS",
+      "modules": 263
+    },
+    "tests": {
+      "status": "PASS",
+      "count": 479,
+      "passed": 479,
+      "failed": 0,
+      "cancelled": 0,
+      "skipped": 0,
+      "durationMs": 122645.623417,
+      "fileConcurrency": 4,
+      "fixtureWatchdogSeconds": 60
+    },
+    "workerBuild": "PASS",
+    "vercelBuild": "PASS",
+    "realtimeBuild": "PASS",
+    "budget": {
+      "status": "PASS",
+      "files": 234,
+      "allBytes": 22664425,
+      "codeBytes": 3180659,
+      "codeGzipBytes": 1019762,
+      "audioBytes": 16329873,
+      "limits": {
+        "allBytes": 25165824,
+        "codeGzipBytes": 1280000
+      }
+    },
+    "migration": "Published 0000–0016 then 0017; seeded visitor/wish/ornament/quiz-journal rows unchanged",
+    "typescript": "N/A: JavaScript repository",
+    "eslint": "N/A: not configured"
+  },
+  "browser": {
+    "status": "PASS",
+    "browser": "157.0.8103.79",
+    "checks": 17,
+    "unexpectedConsoleErrors": 0,
+    "pageErrors": 0,
+    "httpErrors": [],
+    "expectedInjectedOfflineErrors": 4,
+    "physicalMobile": false,
+    "result": "browser.json"
+  },
+  "load": {
+    "stages": [
+      {
+        "clients": 10,
+        "seconds": 15,
+        "sent": 1500,
+        "received": 1500,
+        "rejected": 0,
+        "rttMs": {
+          "p50": 3.49,
+          "p95": 5.47,
+          "p99": 9.94,
+          "max": 15.851000000000113
+        },
+        "reconnected": true,
+        "showIds": 1,
+        "storedWishes": 5,
+        "seatClaims": [
+          409,
+          409,
+          200
+        ],
+        "poseDbWrites": 10
+      },
+      {
+        "clients": 25,
+        "seconds": 15,
+        "sent": 3750,
+        "received": 3750,
+        "rejected": 0,
+        "rttMs": {
+          "p50": 7.79,
+          "p95": 14.25,
+          "p99": 16.73,
+          "max": 24.940207999999984
+        },
+        "reconnected": true,
+        "showIds": 1,
+        "storedWishes": 5,
+        "seatClaims": [
+          409,
+          409,
+          200
+        ],
+        "poseDbWrites": 25
+      },
+      {
+        "clients": 50,
+        "seconds": 15,
+        "sent": 7450,
+        "received": 7450,
+        "rejected": 0,
+        "rttMs": {
+          "p50": 12.9,
+          "p95": 21.01,
+          "p99": 23.44,
+          "max": 26.661750000006577
+        },
+        "reconnected": true,
+        "showIds": 1,
+        "storedWishes": 5,
+        "seatClaims": [
+          409,
+          409,
+          200
+        ],
+        "poseDbWrites": 50
+      },
+      {
+        "clients": 100,
+        "seconds": 15,
+        "sent": 15000,
+        "received": 15000,
+        "rejected": 0,
+        "rttMs": {
+          "p50": 15.39,
+          "p95": 27.19,
+          "p99": 32.97,
+          "max": 39.35620900000504
+        },
+        "reconnected": true,
+        "showIds": 1,
+        "storedWishes": 5,
+        "seatClaims": [
+          409,
+          200,
+          409
+        ],
+        "poseDbWrites": 100
+      }
+    ],
+    "leaseStability": [
+      {
+        "clients": 100,
+        "seconds": 140,
+        "sent": 139000,
+        "received": 139000,
+        "rejected": 0,
+        "rttMs": {
+          "p50": 13.25,
+          "p95": 27.79,
+          "p99": 33.52,
+          "max": 140.86291600000004
+        },
+        "reconnected": true,
+        "leaseRenewals": 3,
+        "showIds": 1,
+        "storedWishes": 5,
+        "seatClaims": [
+          409,
+          409,
+          200
+        ],
+        "poseDbWrites": 1300
+      }
+    ],
+    "scope": "Local workerd WebSocket; HTTP in-process; isolated SQLite; synthetic activity, not 100 rendered browsers"
+  },
+  "rendering": {
+    "scope": "Apple M2 Chrome; one 8-second sample per scene; mobile viewport emulation on same GPU",
+    "files": [
+      "before-desktop.json",
+      "after-desktop.json",
+      "before-mobile.json",
+      "after-mobile.json"
+    ],
+    "note": "Profiles precede the final quiz admission-only I/O fix. Geometry and render code are unchanged after profiles."
+  },
+  "publication": {
+    "githubPush": "NOT RUN: user hold",
+    "sitesUpload": "NOT RUN: user hold",
+    "vercelDeploy": "NOT RUN: user hold",
+    "productionDbWrites": "NOT RUN",
+    "cloudWorkerProvisioning": "NOT RUN",
+    "hostedCi": "NOT RUN"
+  },
+  "unknown": [
+    "Actual provider owner-login cross-domain roundtrip",
+    "Physical Windows/Edge/macOS Safari/iOS Safari/Android Chrome",
+    "Hosted Worker CPU/RAM, Internet RTT, real D1 billed rows and total operating cost",
+    "30+ minute gameplay, heat, battery and memory growth",
+    "Full production D1 backup/restore and server-deploy reconnect",
+    "External operator alert delivery"
+  ]
+}

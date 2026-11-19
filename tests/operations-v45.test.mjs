@@ -6,16 +6,16 @@ import {proxyRequest,backendOrigin} from '../server/vercel-proxy.js';
 import {handleAPI} from '../server/api.js';
 const showRequest=action=>new Request('https://test/api/fireworks',{method:'POST',body:JSON.stringify({action})});
 test('concurrent guest show requests have one winner; cooldown starts at completion; owner bypass never duplicates',async t=>{
- const f=await apiFixture(t),now=Date.now(),requests=await Promise.all(Array.from({length:25},(_,i)=>fireworksAPI(showRequest('start'),f.DB,{id:'guest-'+i},false,now)));
- assert.equal(requests.filter(r=>r.status===200).length,1);assert.equal(requests.filter(r=>r.status===409).length,24);
- const show=await readFireworkShow(f.DB,now);assert.equal(show.startsAt,now+10000);assert.equal(show.nextAvailableAt,show.startsAt+74000+900000);
- assert.equal((await fireworksAPI(showRequest('start'),f.DB,{id:'owner'},true,now+10)).status,409);
+ const f=await apiFixture(t),now=Date.now(),requests=await Promise.all(Array.from({length:25},(_,i)=>fireworksAPI(showRequest('request'),f.DB,{id:'guest-'+i,room:'winter-plaza'},false,now)));
+ assert.equal(requests.filter(r=>r.status===200).length,25);assert.equal(new Set(await Promise.all(requests.map(async r=>(await r.clone().json()).show.id))).size,1);
+ const show=await readFireworkShow(f.DB,now);assert.equal(show.startsAt,now+10000);assert.equal(show.nextRequestAt,show.startsAt+74000+900000);
+ assert.equal((await fireworksAPI(showRequest('start'),f.DB,{id:'owner',room:'winter-plaza'},true,now+10)).status,409);
  const finish=show.endsAt;
- assert.equal((await fireworksAPI(showRequest('start'),f.DB,{id:'late'},false,finish+899999)).status,409);
- assert.equal((await fireworksAPI(showRequest('start'),f.DB,{id:'owner'},true,finish+1)).status,200);
- const ownerShow=await readFireworkShow(f.DB,finish+1);assert.notEqual(ownerShow.id,show.id);assert.equal(ownerShow.nextAvailableAt,ownerShow.endsAt+900000);
- assert.equal((await fireworksAPI(showRequest('stop'),f.DB,{id:'late'},false,finish+1)).status,403);
- assert.equal((await fireworksAPI(showRequest('start'),f.DB,{id:'after'},false,ownerShow.nextAvailableAt)).status,200);
+ assert.equal((await fireworksAPI(showRequest('request'),f.DB,{id:'late',room:'winter-plaza'},false,finish+899999)).status,429);
+ assert.equal((await fireworksAPI(showRequest('start'),f.DB,{id:'owner',room:'winter-plaza'},true,finish+1)).status,200);
+ const ownerShow=await readFireworkShow(f.DB,finish+1);assert.notEqual(ownerShow.id,show.id);assert.equal(ownerShow.nextRequestAt,ownerShow.endsAt+900000);
+ assert.equal((await fireworksAPI(showRequest('stop'),f.DB,{id:'late',room:'winter-plaza'},false,finish+1)).status,403);
+ assert.equal((await fireworksAPI(showRequest('request'),f.DB,{id:'after',room:'winter-plaza'},false,ownerShow.nextRequestAt)).status,200);
 });
 test('owner callback is bound to browser state, single use, expiring, CSRF checked and unavailable to guests',async t=>{
  const f=await apiFixture(t),browser=f.guest();
@@ -35,4 +35,12 @@ test('callback cookie survives Vercel proxy without forwarding provider identity
 });
 test('unconfigured realtime is explicitly polling; operations remains owner-only and persistent content is retained',async t=>{
  const f=await apiFixture(t),guest=f.guest();await f.call(guest,'join',{});assert.equal((await f.call(guest,'realtime',{})).data.enabled,false);assert.equal((await f.call(guest,'operations')).status,403);await f.call(f.owner,'join',{});const op=await f.call(f.owner,'operations');assert.equal(op.data.transport,'HTTP polling');assert.equal(op.data.realtime,null);assert.equal(op.data.backup.fullDatabase,'UNKNOWN');
+ Object.assign(f.env,{REALTIME_URL:'https://realtime.invalid',REALTIME_SECRET:'local-test-secret'.repeat(3),REALTIME_FETCH:async()=>{throw Error('simulated outage');}});
+ assert.equal((await f.call(f.guest(),'join',{})).status,503);assert.equal((await f.call(f.owner,'operations')).data.service,'degraded');
+});
+
+test('public profile edits are rate limited without losing the last accepted name',async t=>{
+ const f=await apiFixture(t),guest=f.guest();await f.call(guest,'join',{});
+ for(let i=0;i<30;i++)assert.equal((await f.call(guest,'name',{name:'눈꽃'+i})).status,200);
+ assert.equal((await f.call(guest,'name',{name:'too many'})).status,429);assert.equal((await f.call(guest,'access')).data.session.name,'눈꽃29');
 });

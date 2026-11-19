@@ -1,0 +1,78 @@
+{
+  "date": "2026-11-19",
+  "brand": "SNOWHERE",
+  "nameKo": "스노웨어",
+  "status": "draft_ready_awaiting_vercel_team_access",
+  "staticMetadata": "PASS",
+  "originalLoadingCurve": "unchanged",
+  "staticLogo": "PASS",
+  "png": {
+    "width": 1200,
+    "height": 630,
+    "bytes": 138325
+  },
+  "staticResponses": {
+    "environment": "in-process production Worker, no DB or login",
+    "results": [
+      {
+        "path": "/",
+        "status": 200,
+        "type": "text/html; charset=utf-8"
+      },
+      {
+        "path": "/site.webmanifest",
+        "status": 200,
+        "type": "application/manifest+json"
+      },
+      {
+        "path": "/brand/logo-compact.svg",
+        "status": 200,
+        "type": "image/svg+xml"
+      },
+      {
+        "path": "/brand/favicon.svg",
+        "status": 200,
+        "type": "image/svg+xml"
+      },
+      {
+        "path": "/brand/og-image.png?v=snowhere-v1",
+        "status": 200,
+        "type": "image/png"
+      },
+      {
+        "path": "/brand/preview.html",
+        "status": 200,
+        "type": "text/html; charset=utf-8"
+      }
+    ]
+  },
+  "automatedTests": {
+    "suite": "loading-controls, performance-delivery, social-ui, vercel-proxy",
+    "passed": 22
+  },
+  "builds": [
+    "Sites Worker PASS",
+    "Vercel web assets PASS",
+    "existing asset budget PASS"
+  ],
+  "browser": {
+    "review": "PASS",
+    "viewport": {
+      "width": 1363,
+      "height": 936
+    },
+    "headerFrames": [
+      714,
+      340
+    ],
+    "compactLogo": "loaded; animation none",
+    "horizontalOverflow": false,
+    "fullWorld": "UNVERIFIED: cloud browser WebGL renderer is disabled"
+  },
+  "limits": {
+    "executorHttp": "Preview served to cloud browser, but separate command process cannot connect to localhost:4173. Worker responses checked in process instead.",
+    "liveSharingCache": "UNKNOWN until deployment and platform refresh",
+    "domainAvailability": "UNKNOWN",
+    "newNameUserSelection": "recommended default; no explicit selection received"
+  }
+}

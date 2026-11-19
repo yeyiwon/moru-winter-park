@@ -1,6 +1,6 @@
 {
   "environment": "local macOS Cloudflare workerd + isolated SQLite; actual WebSocket network; HTTP handlers in-process",
-  "createdAt": "2026-11-19T07:33:17.471Z",
+  "createdAt": "2026-11-19T07:52:11.987Z",
   "results": [
     {
       "clients": 10,
@@ -10,127 +10,147 @@
       "rejected": 0,
       "successRatio": 1,
       "roundTripMs": {
-        "p50": 1.15,
-        "p95": 5.08,
-        "p99": 9.7,
-        "max": 22.09387500000048
+        "p50": 3.49,
+        "p95": 5.47,
+        "p99": 9.94,
+        "max": 15.851000000000113
       },
       "apiInProcessMs": {
-        "p95": 44.89
+        "p95": 28.03
       },
       "serverHandlerP95Ms": 1,
       "connections": 10,
       "showIds": 1,
+      "seatClaims": [
+        409,
+        409,
+        200
+      ],
       "reconnected": true,
       "storedWishes": 5,
       "db": {
         "queries": 203,
-        "writes": 72,
+        "writes": 64,
         "poseWrites": 10
       },
-      "bytesOut": 2194921,
-      "nodeRssBefore": 178077696,
-      "nodeRssAfter": 106020864,
-      "nodeCpuMs": 371.929,
+      "bytesOut": 2243954,
+      "nodeRssBefore": 181698560,
+      "nodeRssAfter": 161382400,
+      "nodeCpuMs": 975.972,
       "workerCpu": "UNKNOWN",
       "errors": []
     },
     {
       "clients": 25,
       "durationSeconds": 15,
-      "sent": 3700,
-      "received": 3700,
+      "sent": 3750,
+      "received": 3750,
       "rejected": 0,
       "successRatio": 1,
       "roundTripMs": {
-        "p50": 6.63,
-        "p95": 43,
-        "p99": 84.45,
-        "max": 216.0205419999984
+        "p50": 7.79,
+        "p95": 14.25,
+        "p99": 16.73,
+        "max": 24.940207999999984
       },
       "apiInProcessMs": {
-        "p95": 261.21
+        "p95": 56.93
       },
       "serverHandlerP95Ms": 1,
       "connections": 25,
       "showIds": 1,
+      "seatClaims": [
+        409,
+        409,
+        200
+      ],
       "reconnected": true,
       "storedWishes": 5,
       "db": {
-        "queries": 344,
-        "writes": 119,
+        "queries": 345,
+        "writes": 111,
         "poseWrites": 25
       },
-      "bytesOut": 13256606,
-      "nodeRssBefore": 127795200,
-      "nodeRssAfter": 113754112,
-      "nodeCpuMs": 1109.606,
+      "bytesOut": 13482026,
+      "nodeRssBefore": 174342144,
+      "nodeRssAfter": 186040320,
+      "nodeCpuMs": 1573.61,
       "workerCpu": "UNKNOWN",
       "errors": []
     },
     {
       "clients": 50,
       "durationSeconds": 15,
-      "sent": 7400,
-      "received": 7400,
+      "sent": 7450,
+      "received": 7450,
       "rejected": 0,
       "successRatio": 1,
       "roundTripMs": {
-        "p50": 8.84,
-        "p95": 18.75,
-        "p99": 150.13,
-        "max": 435.7230830000044
+        "p50": 12.9,
+        "p95": 21.01,
+        "p99": 23.44,
+        "max": 26.661750000006577
       },
       "apiInProcessMs": {
-        "p95": 176.39
+        "p95": 66.6
       },
       "serverHandlerP95Ms": 1,
       "connections": 50,
       "showIds": 1,
+      "seatClaims": [
+        409,
+        409,
+        200
+      ],
       "reconnected": true,
       "storedWishes": 5,
       "db": {
-        "queries": 569,
-        "writes": 194,
+        "queries": 570,
+        "writes": 186,
         "poseWrites": 50
       },
-      "bytesOut": 34916710,
-      "nodeRssBefore": 125026304,
-      "nodeRssAfter": 132268032,
-      "nodeCpuMs": 1972.988,
+      "bytesOut": 35357280,
+      "nodeRssBefore": 195182592,
+      "nodeRssAfter": 208044032,
+      "nodeCpuMs": 2313.125,
       "workerCpu": "UNKNOWN",
       "errors": []
     },
     {
       "clients": 100,
       "durationSeconds": 15,
-      "sent": 14800,
-      "received": 14800,
+      "sent": 15000,
+      "received": 15000,
       "rejected": 0,
       "successRatio": 1,
       "roundTripMs": {
-        "p50": 21.37,
-        "p95": 55.75,
-        "p99": 212.96,
-        "max": 366.64933400000155
+        "p50": 15.39,
+        "p95": 27.19,
+        "p99": 32.97,
+        "max": 39.35620900000504
       },
       "apiInProcessMs": {
-        "p95": 556.85
+        "p95": 182.78
       },
       "serverHandlerP95Ms": 1,
       "connections": 100,
       "showIds": 1,
+      "seatClaims": [
+        409,
+        200,
+        409
+      ],
       "reconnected": true,
       "storedWishes": 5,
       "db": {
-        "queries": 1019,
-        "writes": 344,
+        "queries": 1020,
+        "writes": 336,
         "poseWrites": 100
       },
-      "bytesOut": 70755419,
-      "nodeRssBefore": 145571840,
-      "nodeRssAfter": 164102144,
-      "nodeCpuMs": 3900.617,
+      "bytesOut": 72213303,
+      "nodeRssBefore": 214679552,
+      "nodeRssAfter": 238256128,
+      "nodeCpuMs": 3064.335,
       "workerCpu": "UNKNOWN",
       "errors": []
     }

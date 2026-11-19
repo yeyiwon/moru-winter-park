@@ -1,0 +1,28 @@
+import fs from 'node:fs';
+import {BRAND} from '../dist/brand-config.js';
+
+const escape=value=>String(value).replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+const colors={white:'#f6f9fc',silver:'#c4d2df',ice:'#8bbde5',blue:'#5e87ab',ink:'#344d65',night:'#101c2a',...BRAND.colors};
+const revision=encodeURIComponent(BRAND.revision??'silver-tree-v1');
+const asset=href=>`${href}${href.includes('?')?'&':'?'}v=${revision}`;
+const page=fs.readFileSync('dist/index.html','utf8');
+const styles=[...page.matchAll(/<link rel="stylesheet" href="([^"]+)">/g)].map(([,href])=>`<link rel="stylesheet" href="${/^(?:https?:)?\/\//.test(href)?href:'/'+href.replace(/^\/+/, '')}">`).join('');
+const brand=page.match(/<a class="brand"[\s\S]*?<\/a>/)?.[0];
+if(!brand)throw new Error('The current page must contain its real brand header before building previews.');
+
+// Reuse the actual header markup and styles so the review reflects the live UI.
+fs.writeFileSync('dist/brand/header-preview.html',`<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>${escape(BRAND.nameKo)} 상단 로고 미리보기</title>${styles}<style>html,body{height:100%;overflow:hidden}body{background:${colors.night} url('/textures/loading-world.webp') center 45%/cover}body:before{content:'';position:fixed;inset:0;background:linear-gradient(${colors.night}55,${colors.night}12)}header{top:20px}header .brand{pointer-events:none}</style></head><body><header>${brand}</header></body></html>`);
+
+const swatches=[['쿨화이트',colors.white],['실버',colors.silver],['아이스 블루',colors.ice]].map(([label,color])=>`<span class="swatch" style="background:${color}" role="img" aria-label="${label}" title="${label}"></span>`).join('');
+
+fs.writeFileSync('dist/brand/preview.html',`<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>${escape(BRAND.name)} · 실버·아이스 블루 미리보기</title><link rel="icon" href="${asset(BRAND.assets.favicon)}" type="image/svg+xml"><style>
+@font-face{font-family:Winter;src:url('/fonts/PretendardVariable.woff2');font-display:swap}
+*{box-sizing:border-box}html{color-scheme:light}body{margin:0;min-height:100%;overflow-x:hidden;overflow-y:auto;background:${colors.white};color:${colors.ink};font:16px/1.65 Winter,system-ui,sans-serif}
+main{width:min(1080px,calc(100% - 48px));margin:48px auto 64px}h1,h2,h3,p,figure{margin:0}h1{font-size:clamp(24px,4vw,30px);font-weight:550;letter-spacing:-.025em;line-height:1.3}.intro{margin-top:12px;max-width:680px;color:${colors.ink};opacity:.85}img{max-width:100%;display:block}a{color:${colors.blue};text-decoration:none}a:focus-visible{outline:2px solid ${colors.blue};outline-offset:5px;border-radius:4px}
+.hero{margin-top:26px;border:1px solid ${colors.silver};border-radius:14px;overflow:hidden}.hero>img{width:100%;height:auto}h2{font-size:20px;font-weight:550;letter-spacing:-.02em;line-height:1.4}.section{margin-top:40px}.section-intro{margin-top:10px;max-width:720px;color:${colors.ink};opacity:.8}
+.headers{display:grid;grid-template-columns:minmax(0,1fr) 342px;gap:22px;margin-top:20px}.sample{min-width:0}.sample small{display:block;color:${colors.ink};font-size:14px;margin-bottom:10px;opacity:.8}iframe{display:block;width:100%;height:180px;border:1px solid ${colors.silver};border-radius:12px;background:${colors.night}}
+.assets{display:flex;gap:28px;align-items:center;margin-top:20px;padding:26px;border:1px solid ${colors.silver};border-radius:12px}.app-icon{width:76px;height:76px;border-radius:17px}.favicon{width:32px;height:32px}.asset-label{font-size:15px;color:${colors.ink};opacity:.8}.swatches{margin-left:auto;display:flex;gap:10px}.swatch{display:block;width:34px;height:34px;border-radius:50%;border:1px solid ${colors.silver}}
+footer{margin-top:32px;padding-top:22px;border-top:1px solid ${colors.silver};font-size:14px;color:${colors.ink};opacity:.8}
+@media(max-width:760px){main{width:calc(100% - 32px);margin:30px auto 44px}.section{margin-top:32px}.headers{grid-template-columns:1fr}.sample.mobile{width:min(100%,342px)}.assets{padding:20px;gap:20px;flex-wrap:wrap}.swatches{margin-left:0}.asset-label{flex-basis:calc(100% - 148px)}}
+</style></head><body><main><h1>실버·아이스 블루</h1><p class="intro">차가운 화이트와 실버, 옅은 파랑으로 맞춘 ${escape(BRAND.name)}의 로고와 공유 이미지입니다.</p><figure class="hero"><img src="${asset(BRAND.assets.socialImage)}" width="1200" height="630" alt="${escape(BRAND.assets.socialImageAlt)}"></figure><section class="section" aria-labelledby="header-title"><h2 id="header-title">화면 위에서는 작고 선명하게</h2><div class="headers"><div class="sample"><small>넓은 화면</small><iframe title="넓은 화면의 실제 상단 로고" src="${asset('/brand/header-preview.html')}" loading="lazy"></iframe></div><div class="sample mobile"><small>휴대폰 너비</small><iframe title="휴대폰 너비의 실제 상단 로고" src="${asset('/brand/header-preview.html')}" loading="lazy"></iframe></div></div></section><section class="section" aria-labelledby="icons-title"><h2 id="icons-title">작은 아이콘까지 같은 로딩 트리</h2><div class="assets"><img class="app-icon" src="${asset(BRAND.assets.icon192)}" width="76" height="76" alt="실버·블루 홈 화면 아이콘"><img class="favicon" src="${asset(BRAND.assets.favicon32)}" width="32" height="32" alt="실제 32픽셀 로딩 트리 파비콘"><span class="asset-label">홈 화면 · 브라우저 탭</span><div class="swatches" aria-label="쿨화이트, 실버, 아이스 블루">${swatches}</div></div></section><footer>정적인 로딩 트리 심볼과 작은 대문자 워드마크를 사용합니다. 로고 이미지 안에는 한글 부제나 슬로건을 넣지 않았습니다.</footer></main></body></html>`);
+console.log('Built the silver-blue brand review and actual header previews.');

@@ -1,0 +1,108 @@
+{
+  "source_base": "4b4d12014f5edc0cbeee98035cfbda8673f49831",
+  "live_name": "WINTERLIGHT",
+  "name_status": "confirmed by user",
+  "revision": "silver-tree-v1",
+  "build_worker": "PASS",
+  "build_vercel": "PASS",
+  "loading_controls_tests": {
+    "passed": 3,
+    "failed": 0
+  },
+  "budget": {
+    "status": "PASS",
+    "all_bytes": 22646442,
+    "limit_all_bytes": 25165824,
+    "code_gzip_bytes": 1012787,
+    "limit_code_gzip_bytes": 1280000
+  },
+  "worker_assets": 226,
+  "vercel_files": 227,
+  "visual_review": "Actual 1200x630 OG PNG inspected: original continuous loading-tree silhouette, silver and blue light, small uppercase WINTERLIGHT, no subtitle",
+  "original_loading_path_sha256": "6b0b300e34e1053b5a0895abb784fea968cede6bea7a52545338e8049bbfe90a",
+  "geometry": [
+    {
+      "file": "brand/logo-primary.svg",
+      "exact_original_path": true,
+      "path_instances": 3,
+      "root_viewBox": "0 0 600 540"
+    },
+    {
+      "file": "brand/logo-compact.svg",
+      "exact_original_path": true,
+      "path_instances": 3,
+      "root_viewBox": "0 0 600 540"
+    },
+    {
+      "file": "brand/logo-monochrome.svg",
+      "exact_original_path": true,
+      "path_instances": 1,
+      "root_viewBox": "0 0 600 540"
+    },
+    {
+      "file": "brand/favicon.svg",
+      "exact_original_path": true,
+      "path_instances": 3,
+      "root_viewBox": "0 0 600 600"
+    },
+    {
+      "file": "brand/icon.svg",
+      "exact_original_path": true,
+      "path_instances": 3,
+      "root_viewBox": "0 0 600 600"
+    },
+    {
+      "file": "brand/og-image.svg",
+      "exact_original_path": true,
+      "path_instances": 3,
+      "root_viewBox": "0 0 1200 630"
+    }
+  ],
+  "assets": [
+    {
+      "file": "brand/og-image.png",
+      "bytes": 45581,
+      "dimensions": [
+        1200,
+        630
+      ],
+      "sha256": "6b488e9f6437351cb7826667786f259dd56c00dc509dc26d202d7f6ab256c55c"
+    },
+    {
+      "file": "brand/favicon-32.png",
+      "bytes": 1011,
+      "dimensions": [
+        32,
+        32
+      ],
+      "sha256": "92b72ede256b20f9701d981fba33378955cf4680e525f6ac65384e451390e67c"
+    },
+    {
+      "file": "brand/icon-192.png",
+      "bytes": 13754,
+      "dimensions": [
+        192,
+        192
+      ],
+      "sha256": "9c48aef6e34a94921a821422b175176dfdd50a25e2aae103a1bae7187baadf73"
+    },
+    {
+      "file": "brand/icon-512.png",
+      "bytes": 75718,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sha256": "d143f1db7f53ce72ec5af14a97a9b2346bf90b4ad71c747cdca3dba043e22241"
+    },
+    {
+      "file": "brand/apple-touch-icon.png",
+      "bytes": 11216,
+      "dimensions": [
+        180,
+        180
+      ],
+      "sha256": "551f2b447410c886aa3ec2be4c765e8c4393c788cecd237c50d6c8ca196eb6d0"
+    }
+  ]
+}

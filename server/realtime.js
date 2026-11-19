@@ -1,3 +1,4 @@
+import {recordServerError} from './operations.js';
 import {signTicket,signRPC} from '../realtime/auth.js';
 import {rateLimit} from './community-api.js';
 import {readFireworkShow} from './fireworks.js';
@@ -23,4 +24,5 @@ export async function realtimeAPI(request,env,self,now){
  return reply({enabled:true,url:env.REALTIME_URL.replace(/^http/,'ws')+'/connect',ticket:await signTicket({aud:'winter-realtime',id:self.id,exp,profile},env.REALTIME_SECRET),serverTime:now});
 }
 // A transient transport failure must not roll back an already committed wish/chat/show.
-export async function publishRealtime(env,message){try{return await realtimeRPC(env,message);}catch{return null;}}
+let lastTransportError=0;
+export async function publishRealtime(env,message){try{return await realtimeRPC(env,message);}catch(error){if(Date.now()-lastTransportError>60000){lastTransportError=Date.now();await recordServerError(env.DB,'/api/realtime',error,Date.now());}return null;}}

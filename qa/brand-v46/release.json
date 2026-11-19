@@ -1,0 +1,29 @@
+{
+  "brand": "WINTERLIGHT",
+  "runtime_source_commit": "ad81ba549e0cd13761c1f9289d4ef14efbccc949",
+  "sites": {
+    "version": 46,
+    "deployment_id": "appgdep_6afe7ff192708191937e65967143eead",
+    "status": "succeeded",
+    "url": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+    "verification": "9/9 PASS with Sites owner verification header"
+  },
+  "vercel": {
+    "deployment_id": "dpl_3DW4QuujFGswHeqNfQtQzcm5rqKq",
+    "status": "READY",
+    "target": "production",
+    "url": "https://moru-winter-park.vercel.app",
+    "deployment_url": "https://moru-winter-park-2wkd9mxg2-yeyiwons-projects.vercel.app",
+    "alias_error": null,
+    "verification": "9/9 PASS with anonymous public HTTP",
+    "packaging": "29 inline files and 201 restored files from a pinned public GitHub commit; 227 exact source hashes and strict runtime configuration comparison",
+    "output_comparison": "217/217 files identical SHA256 to the original approved build"
+  },
+  "github_sync": {
+    "status": "blocked",
+    "reason": "403 Resource not accessible by integration",
+    "main_unchanged": "46dc3223bed447ed0eba80aa1a6b83fd09975769",
+    "next_action": "Reconnect GitHub with repository write permission before the next automatic Git deployment"
+  },
+  "social_platform_cache": "Not verified; origin serves the exact new PNG"
+}

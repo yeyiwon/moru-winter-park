@@ -1,0 +1,226 @@
+{
+  "date": "2026-11-19",
+  "environment": "Chrome UI, isolated local QA SQLite, same-origin iframe layout viewports",
+  "productionDataTouched": false,
+  "checks": [
+    {
+      "name": "guest-invite-entry",
+      "result": "pass",
+      "detail": "Seeded local fixture admitted through real invitation API; browser received regular guest session."
+    },
+    {
+      "name": "knowledge-journal",
+      "result": "pass",
+      "detail": "Mona Lisa question answered correctly; server-confirmed save, saved knowledge and explanation/source observed through real UI."
+    },
+    {
+      "name": "390x844-customization",
+      "result": "pass",
+      "preview": [
+        23,
+        169,
+        334,
+        156
+      ],
+      "options": [
+        23,
+        389,
+        324,
+        346.5
+      ],
+      "footer": [
+        23,
+        745.5,
+        334,
+        73.5
+      ],
+      "save": [
+        245,
+        775,
+        112,
+        44
+      ]
+    },
+    {
+      "name": "320x640-customization",
+      "result": "pass",
+      "preview": [
+        23,
+        169,
+        264,
+        116
+      ],
+      "options": [
+        23,
+        349,
+        254,
+        182.5
+      ],
+      "footer": [
+        23,
+        541.5,
+        264,
+        73.5
+      ],
+      "save": [
+        200,
+        571,
+        87,
+        44
+      ]
+    },
+    {
+      "name": "844x390-customization",
+      "result": "pass",
+      "preview": [
+        339.796875,
+        163,
+        457.203125,
+        153
+      ],
+      "options": [
+        37,
+        181,
+        278.796875,
+        135
+      ],
+      "footer": [
+        37,
+        324,
+        760,
+        49
+      ],
+      "save": [
+        724.28125,
+        329,
+        72.71875,
+        44
+      ]
+    },
+    {
+      "name": "webgl-error-settings-pointer",
+      "result": "pass",
+      "detail": "Normal Playwright pointer click opens settings after preventing loading overlay from intercepting underlying UI."
+    },
+    {
+      "name": "guest-firework-request",
+      "result": "pass",
+      "detail": "Guest pressed request; disabled button changed to 곧 시작해요 with 10초 후 시작 then 불꽃놀이 진행 중; 3D show itself not rendered in this browser."
+    },
+    {
+      "name": "bright-glass-consistency",
+      "result": "pass",
+      "detail": "Actual settings/customization/music/chat/map/journal UI uses light panels; text rgb(38,59,80). Map icons and tooltip rendered; 3D travel unverified."
+    },
+    {
+      "name": "small-mobile-music-actions",
+      "result": "pass",
+      "detail": "320x640: shuffle/repeat/mute font 11px, button height44px, widths82.66/82.67/82.66px."
+    },
+    {
+      "name": "small-mobile-chat",
+      "result": "pass",
+      "form": [
+        14,
+        574,
+        292,
+        54
+      ],
+      "input": [
+        27,
+        579,
+        224,
+        44
+      ],
+      "detail": "320x640 layout; physical software keyboard not tested."
+    },
+    {
+      "name": "inside-room-quiz-centering",
+      "result": "pass",
+      "detail": "Isolated UI fixture imports actual quick-quiz.js and full current CSS with body.inside-room. Does not simulate the 3D room.",
+      "viewports": [
+        {
+          "viewport": [
+            390,
+            844
+          ],
+          "dialog": [
+            10,
+            181.28125,
+            370,
+            481.4375
+          ]
+        },
+        {
+          "viewport": [
+            320,
+            640
+          ],
+          "dialog": [
+            10,
+            79.28125,
+            300,
+            481.4375
+          ]
+        },
+        {
+          "viewport": [
+            844,
+            390
+          ],
+          "dialog": [
+            142,
+            6,
+            560,
+            378
+          ],
+          "scrollClientHeight": 260,
+          "scrollHeight": 371
+        }
+      ]
+    },
+    {
+      "name": "final-live-quiz-after-server-restart",
+      "result": "pass",
+      "detail": "Actual guest session: settings -> own journal (saved record retained) -> quiz. Current built source served after preview restart.",
+      "viewport": [
+        1363,
+        936
+      ],
+      "dialog": [
+        401.5,
+        197.171875,
+        560,
+        541.640625
+      ],
+      "centerOffset": [
+        0,
+        -0.0078125
+      ],
+      "screenshot": "quiz-centered-final.jpg",
+      "limitation": "WebGL renderer disabled; surrounding 3D world unavailable in validation browser."
+    }
+  ],
+  "unknown": [
+    "Actual 3D camera comfort",
+    "Aquarium GPU shader compilation and appearance",
+    "Chef rendered handoff appearance",
+    "Physical Windows/iOS/Android touch/audio/thermal performance",
+    "Production deployment of these changes"
+  ],
+  "webglBlocker": "GL_VENDOR = Disabled, GL_RENDERER = Disabled; WebGLRenderer creation fails.",
+  "finalVerification": {
+    "automatedTests": 448,
+    "passed": 448,
+    "failed": 0,
+    "durationMs": 63006.03736,
+    "workerBuild": "pass",
+    "vercelBuild": "pass",
+    "assetBudget": "pass",
+    "diffCheck": "pass",
+    "productionDeployed": false,
+    "previewRunning": true,
+    "assetsBytes": 22543964,
+    "codeGzipBytes": 1014070
+  }
+}

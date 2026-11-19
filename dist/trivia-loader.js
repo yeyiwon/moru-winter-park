@@ -7,10 +7,11 @@ export function dailyQuestions(items,date=new Date()){
 }
 function hash(s){let n=2166136261;for(const c of s)n=Math.imul(n^c.charCodeAt(0),16777619);return n>>>0;}
 export async function loadTrivia(win=typeof window==='undefined'?null:window){
+ const admitted=!!win?.labSocialJoined;
  let cached=[];try{cached=JSON.parse(win?.localStorage.getItem('winter-trivia-cache'))||[];}catch{}let items=(Array.isArray(cached)?cached:[]).filter(validTrivia);if(!items.length)items=fallbackTrivia;
  try{const r=await (win?.fetch||fetch)('/content/daily-trivia.json',{signal:AbortSignal.timeout(3500)});if(!r.ok)throw Error();const data=await r.json();if(!Array.isArray(data)||data.length<7||!data.every(validTrivia))throw Error();items=data;try{win?.localStorage.setItem('winter-trivia-cache',JSON.stringify(data));}catch{}}catch{}
  // Only administrator-reviewed edits are admitted; raw external API output is never shown.
- try{const r=await (win?.fetch||fetch)('/api/quiz',{signal:AbortSignal.timeout(2000)});if(r.ok){const data=await r.json(),map=new Map(items.map(q=>[q.id,q]));for(const q of data.overrides||[])if(validTrivia(q))map.set(q.id,q);items=[...map.values()];}}catch{}
+ if(admitted&&win?.labSocialJoined)try{const r=await (win?.fetch||fetch)('/api/quiz',{signal:AbortSignal.timeout(2000)});if(r.ok){const data=await r.json(),map=new Map(items.map(q=>[q.id,q]));for(const q of data.overrides||[])if(validTrivia(q))map.set(q.id,q);items=[...map.values()];}}catch{}
  return items.filter(q=>!q.disabled).length?items:fallbackTrivia;
 }
 

@@ -1,0 +1,204 @@
+{
+  "at": "2026-11-19T07:55:15.633Z",
+  "browser": "157.0.8103.79",
+  "mobileEmulation": true,
+  "physicalMobile": false,
+  "productionAssets": true,
+  "sourceRevision": "59e7ec4ac0333455cda3d98fa3ae0a0b623fc8cc",
+  "requestedQuality": "medium",
+  "gpuTimingProbe": false,
+  "fixedDpr": null,
+  "accessory": "none",
+  "seconds": 8,
+  "scenarios": [
+    {
+      "name": "plaza",
+      "frames": 480,
+      "fps": 60.003000150007495,
+      "minFps": 59.523809523799216,
+      "p95": 16.799999999999272,
+      "p99": 16.80000000000291,
+      "gameCpuMs": 3.0143750004780787,
+      "mainThreadMs": 1520.632,
+      "calls": 292.01458333333335,
+      "triangles": 2229653.175,
+      "before": {
+        "memory": {
+          "geometries": 492,
+          "textures": 12
+        },
+        "programs": 197,
+        "geometryBytes": 188132124,
+        "textureBytesEstimate": 34193408.00000001,
+        "heap": 337005198,
+        "dpr": 1,
+        "quality": {
+          "quality": "medium",
+          "pixelRatio": 1,
+          "samples": 2,
+          "shadowSize": 512,
+          "shadowInterval": 0.1
+        },
+        "peers": 0,
+        "mode": "",
+        "state": {
+          "x": 0,
+          "y": 0.95,
+          "z": 24,
+          "yaw": 3.141592653589793,
+          "mode": "",
+          "speed": 0,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        }
+      },
+      "after": {
+        "memory": {
+          "geometries": 495,
+          "textures": 12
+        },
+        "programs": 197,
+        "geometryBytes": 188132124,
+        "textureBytesEstimate": 34193408.00000001,
+        "heap": 340260246,
+        "dpr": 1,
+        "quality": {
+          "quality": "medium",
+          "pixelRatio": 1,
+          "samples": 2,
+          "shadowSize": 512,
+          "shadowInterval": 0.1
+        },
+        "peers": 0,
+        "mode": "",
+        "state": {
+          "x": 0,
+          "y": 0.95,
+          "z": 24,
+          "yaw": 3.141592653589793,
+          "mode": "",
+          "speed": 0,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        }
+      },
+      "network": {
+        "bytes": 2247,
+        "requests": 5
+      },
+      "gpuMs": null,
+      "gpuSamples": 0
+    },
+    {
+      "name": "tree",
+      "frames": 480,
+      "fps": 60.002250084378154,
+      "minFps": 59.523809523799216,
+      "p95": 16.700000000004366,
+      "p99": 16.799999999999272,
+      "gameCpuMs": 3.3366666664679845,
+      "mainThreadMs": 1726.425,
+      "calls": 339.00625,
+      "triangles": 2994607.129166667,
+      "before": {
+        "memory": {
+          "geometries": 532,
+          "textures": 15
+        },
+        "programs": 197,
+        "geometryBytes": 188132124,
+        "textureBytesEstimate": 34193408.00000001,
+        "heap": 331378204,
+        "dpr": 1,
+        "quality": {
+          "quality": "medium",
+          "pixelRatio": 1,
+          "samples": 2,
+          "shadowSize": 512,
+          "shadowInterval": 0.1
+        },
+        "peers": 0,
+        "mode": "",
+        "state": {
+          "x": -12,
+          "y": 0.95,
+          "z": 74,
+          "yaw": 3.141592653589793,
+          "mode": "",
+          "speed": 0,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        }
+      },
+      "after": {
+        "memory": {
+          "geometries": 535,
+          "textures": 15
+        },
+        "programs": 197,
+        "geometryBytes": 188132124,
+        "textureBytesEstimate": 34193408.00000001,
+        "heap": 332919247,
+        "dpr": 1,
+        "quality": {
+          "quality": "medium",
+          "pixelRatio": 1,
+          "samples": 2,
+          "shadowSize": 512,
+          "shadowInterval": 0.1
+        },
+        "peers": 0,
+        "mode": "",
+        "state": {
+          "x": -12,
+          "y": 0.95,
+          "z": 74,
+          "yaw": 3.141592653589793,
+          "mode": "",
+          "speed": 0,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        }
+      },
+      "network": {
+        "bytes": 3495,
+        "requests": 9
+      },
+      "gpuMs": null,
+      "gpuSamples": 0
+    }
+  ],
+  "errors": [],
+  "readyMs": 2701,
+  "startupTasks": [
+    {
+      "start": 310.6000000089407,
+      "duration": 2048
+    }
+  ],
+  "maxStartupTaskMs": 2048,
+  "environment": {
+    "viewport": [
+      390,
+      844
+    ],
+    "dpr": 3,
+    "gpu": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+    "gpuTimerAvailable": true
+  },
+  "startupBytes": 6197343,
+  "totalBytes": 6205077,
+  "totalRequests": 226
+}

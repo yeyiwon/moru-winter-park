@@ -1,0 +1,45 @@
+{
+  "environment": "local macOS Cloudflare workerd + isolated SQLite; actual WebSocket network; HTTP handlers in-process",
+  "createdAt": "2026-11-19T08:06:14.358Z",
+  "results": [
+    {
+      "clients": 100,
+      "durationSeconds": 140,
+      "sent": 139000,
+      "received": 139000,
+      "rejected": 0,
+      "successRatio": 1,
+      "roundTripMs": {
+        "p50": 13.25,
+        "p95": 27.79,
+        "p99": 33.52,
+        "max": 140.86291600000004
+      },
+      "apiInProcessMs": {
+        "p95": 179.39
+      },
+      "serverHandlerP95Ms": 1,
+      "connections": 100,
+      "showIds": 1,
+      "seatClaims": [
+        409,
+        409,
+        200
+      ],
+      "reconnected": true,
+      "leaseRenewals": 3,
+      "storedWishes": 5,
+      "db": {
+        "queries": 13351,
+        "writes": 4252,
+        "poseWrites": 1300
+      },
+      "bytesOut": 664388726,
+      "nodeRssBefore": 185188352,
+      "nodeRssAfter": 211468288,
+      "nodeCpuMs": 24333.986,
+      "workerCpu": "UNKNOWN",
+      "errors": []
+    }
+  ]
+}

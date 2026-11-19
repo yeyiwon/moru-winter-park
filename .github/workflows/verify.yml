@@ -25,5 +25,21 @@ jobs:
       - run: npm run build:realtime
       - run: npm run test:budget
       - run: LOAD_SECONDS=15 npm run test:load
+      - name: Browser dependencies (QA only)
+        run: |
+          npm install --prefix "$RUNNER_TEMP/winter-browser" --no-save --package-lock=false playwright@1.62.1
+          "$RUNNER_TEMP/winter-browser/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Public multiplayer and responsive browser checks
+        run: |
+          export PLAYWRIGHT_PATH="$RUNNER_TEMP/winter-browser/node_modules/playwright-core/index.mjs"
+          export CHROME_PATH="$(node -e 'console.log(require(process.env.RUNNER_TEMP+"/winter-browser/node_modules/playwright").chromium.executablePath())')"
+          node scripts/dev-realtime.mjs > "$RUNNER_TEMP/winter-preview.log" 2>&1 &
+          preview_pid=$!
+          trap 'kill "$preview_pid" 2>/dev/null || true' EXIT
+          for attempt in $(seq 1 45); do
+            if curl --fail --silent http://127.0.0.1:4190/api/health > /dev/null; then break; fi
+            sleep 1
+          done
+          node scripts/verify-operations-browser.mjs
       # Publication stays separate: owner approval, database backup, matching source
       # artifacts and staging smoke checks are required before production activation.

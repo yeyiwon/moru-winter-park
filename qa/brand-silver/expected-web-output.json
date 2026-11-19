@@ -1,0 +1,1140 @@
+{
+  "sourceCommit": "01f00c60d9cb180704fde97ed27dbb6a6fe22fcf",
+  "files": [
+    {
+      "file": "activity-camera.js",
+      "size": 285,
+      "sha256": "a567263a5461d2c28a037b382f05fe48afe1af0c7e16be6c36b44c1bfcc9507d"
+    },
+    {
+      "file": "activity-reactions.js",
+      "size": 4440,
+      "sha256": "54536e82957b0bbc0068bef0bcc25fe4724d32a45db98bb9f1860a128cd71ac6"
+    },
+    {
+      "file": "activity-state.js",
+      "size": 2521,
+      "sha256": "a94c4bbd50b067bf00a23befe8d32d29db249b2c3cb5cf5e85dbccf3bdcca116"
+    },
+    {
+      "file": "alpine-forest-layout.js",
+      "size": 2968,
+      "sha256": "ef0ea1410e8cf6afb1ce9c8389b1e9f1a2f03d4718db70c5c399527045a16242"
+    },
+    {
+      "file": "alpine-resort.js",
+      "size": 36438,
+      "sha256": "326edaf05554f0a5e87a6414aaef4a120b2406e13170fbad0706acf7daf1c3c7"
+    },
+    {
+      "file": "app.js",
+      "size": 32761,
+      "sha256": "ad2b15cd44c076dffab8ae667aab095ba47494e1188df40da87b794b5bb06f56"
+    },
+    {
+      "file": "appearance-draft.js",
+      "size": 949,
+      "sha256": "16606fad6eb0ff65d6fc7dcd01bceb784123b80b165d2da82299e0784badba25"
+    },
+    {
+      "file": "architecture-kit.js",
+      "size": 3165,
+      "sha256": "e687e137850dc83ac8eb6dd7b2221a896018ada5a139e9f62501821d2e0770a4"
+    },
+    {
+      "file": "audio-engine.js",
+      "size": 12313,
+      "sha256": "ac3ec73cfe464b99f421ad42592d0f1dcb8598d117322a9441ad7328d2d3846f"
+    },
+    {
+      "file": "audio-world.js",
+      "size": 2089,
+      "sha256": "30823ce578d5f0b8ae84aeda7a87828404b8209d47dd4df267a01faceb6e2ebb"
+    },
+    {
+      "file": "audio/christmas-cinematic-dream-piano.m4a",
+      "size": 1062268,
+      "sha256": "1237bb9ee60811b7574443a0e94341666c08b0a84d8ff44e303b64ac2e841e69"
+    },
+    {
+      "file": "audio/cinematic-christmas-piano-strings-bells.m4a",
+      "size": 3274060,
+      "sha256": "152db3856c92fc036848576780bd638b096d095a601083321f47deafefe41009"
+    },
+    {
+      "file": "audio/ethereal-winter-ballet-02.m4a",
+      "size": 1815149,
+      "sha256": "193be288bde68f8842fdba946d343173238dab29f3132f1f819c652db9804cd9"
+    },
+    {
+      "file": "audio/first-snow.m4a",
+      "size": 1754877,
+      "sha256": "ef7048bbc999974649d360c8d454b1111e3a4a1810068f9128342158a549dc34"
+    },
+    {
+      "file": "audio/LICENSE.txt",
+      "size": 1544,
+      "sha256": "a375e3a41d75795d53cfaff2e2f70f241dcd325ff4e50662083c914e8a31810a"
+    },
+    {
+      "file": "audio/moonlight.m4a",
+      "size": 2093421,
+      "sha256": "97ab51fa9df0051a8c9ac180b3039e4d117c19c79d6391ff68d9583901cff40f"
+    },
+    {
+      "file": "audio/snow-fall-winter.m4a",
+      "size": 803141,
+      "sha256": "b94e10728e47859472354a6f4b046504ac3dda7e6deedd622ae8bed9988a906e"
+    },
+    {
+      "file": "audio/snow-globe.m4a",
+      "size": 1330587,
+      "sha256": "c0f916f67ffe87a0882323620a0c7629e0df3e648297810899de87e02db7c7b6"
+    },
+    {
+      "file": "audio/warm-winter.m4a",
+      "size": 1027446,
+      "sha256": "22abd54bd35552af7b855ec19b1feb656edebc14393000c740c7f2c8565a7188"
+    },
+    {
+      "file": "audio/winter-jazz.m4a",
+      "size": 537879,
+      "sha256": "a900bf465c52fded97d7f5a556d4d5aec8c5edd26253fdfc94fe14d49c6f1ccf"
+    },
+    {
+      "file": "audio/winter-waltz.m4a",
+      "size": 924876,
+      "sha256": "f13547c11ac90741edb6dc5f41726b15429a4e6ff4b862f34f87ff5c356cd760"
+    },
+    {
+      "file": "audio/wonderful-night.m4a",
+      "size": 1704625,
+      "sha256": "3459e599123284a005a23be4149de7cc215f187d9ec095c17fe46867b1da2d71"
+    },
+    {
+      "file": "aurora-landmarks.js",
+      "size": 11217,
+      "sha256": "52fe99b514d1e747e30ae2e2fdc7dbf569bb632cc718dc5933aa88c6ecaa3e5b"
+    },
+    {
+      "file": "aurora.css",
+      "size": 25171,
+      "sha256": "8a4d9f495b72f89ae0d77015f729e9e211e97cf2e48b80460b125f0bca0ae2f7"
+    },
+    {
+      "file": "balloon-booth.js",
+      "size": 3036,
+      "sha256": "25da95b02b3e3d08d6304d0592d387b0dcd4fa397684b2a8ed89939a42b94f18"
+    },
+    {
+      "file": "balloon-design.js",
+      "size": 446,
+      "sha256": "4fe4417cb00e0d4e870e7fa7579b07082d3118607d19ed241d914ca8bc135965"
+    },
+    {
+      "file": "bench-layout.js",
+      "size": 2706,
+      "sha256": "52d7b6e2033de36980d363348fd1231886e6b2fed425e310bfbcf65f7c0a2bfb"
+    },
+    {
+      "file": "brand-config.js",
+      "size": 1001,
+      "sha256": "2221c801a4209196bc2062789f2bc2678310470cb10b9f0fc21e261dd965645e"
+    },
+    {
+      "file": "brand.css",
+      "size": 806,
+      "sha256": "e21ea886c73fb2da0cef1486f0bd2c3c3a163882a13fe177fff84a23d4ddf6bb"
+    },
+    {
+      "file": "brand/apple-touch-icon.png",
+      "size": 11216,
+      "sha256": "551f2b447410c886aa3ec2be4c765e8c4393c788cecd237c50d6c8ca196eb6d0"
+    },
+    {
+      "file": "brand/favicon-32.png",
+      "size": 1011,
+      "sha256": "92b72ede256b20f9701d981fba33378955cf4680e525f6ac65384e451390e67c"
+    },
+    {
+      "file": "brand/favicon.svg",
+      "size": 1999,
+      "sha256": "d1afd78cb48469b3aa38c28d7cfae8bc10566e516b7cb8da145e9c3154ac8081"
+    },
+    {
+      "file": "brand/header-preview.html",
+      "size": 1624,
+      "sha256": "929f1adf80df0ef456cb79c10b304a2cb4f12743bb36cdd4ed6fa51ffd34347e"
+    },
+    {
+      "file": "brand/icon-192.png",
+      "size": 13754,
+      "sha256": "9c48aef6e34a94921a821422b175176dfdd50a25e2aae103a1bae7187baadf73"
+    },
+    {
+      "file": "brand/icon-512.png",
+      "size": 75718,
+      "sha256": "d143f1db7f53ce72ec5af14a97a9b2346bf90b4ad71c747cdca3dba043e22241"
+    },
+    {
+      "file": "brand/icon.svg",
+      "size": 2031,
+      "sha256": "170b0aa7f82ccf409e403d26e383400d364c458919db7a54e272f27686c4cff1"
+    },
+    {
+      "file": "brand/logo-compact.svg",
+      "size": 1866,
+      "sha256": "7419f7ca5c041034604e44ff5e54d41fa1cb1df05fe4b70101adc1bf50205498"
+    },
+    {
+      "file": "brand/logo-monochrome.svg",
+      "size": 581,
+      "sha256": "791f1b4bbeae4b4ab7ebdcea53632f217e5b4099a78f352b4fff8f4dfc4d108b"
+    },
+    {
+      "file": "brand/logo-primary.svg",
+      "size": 1870,
+      "sha256": "406d57b869df34aff4f11b7df265b658d9cb3644bcac6b15f8194b30a000385c"
+    },
+    {
+      "file": "brand/og-image.png",
+      "size": 45581,
+      "sha256": "6b488e9f6437351cb7826667786f259dd56c00dc509dc26d202d7f6ab256c55c"
+    },
+    {
+      "file": "brand/og-image.svg",
+      "size": 7646,
+      "sha256": "a8aae06c53bbdc947823439e07e1fa9207b627ecd88d6dbd64b7a4ac6c959090"
+    },
+    {
+      "file": "brand/preview.html",
+      "size": 4426,
+      "sha256": "3a32f821aaad9d4f451d97b0971a0d9a5582a4a4dd55a3050625c07290744f89"
+    },
+    {
+      "file": "brand/README.md",
+      "size": 726,
+      "sha256": "a673c1704d541a1ba28be106aa073a598795ea491ac4cbcb2bb66a446bb4f85f"
+    },
+    {
+      "file": "camera-clearance.js",
+      "size": 3173,
+      "sha256": "dd93b2aaa9fb4309f3034e1374a6527c4051fd2029457c3656f1272d372d0d9f"
+    },
+    {
+      "file": "camera-policy.js",
+      "size": 5843,
+      "sha256": "8888aa20d8e6469243ef7a784a811d0a0c98d1ceecb26954ff1fa48867780c01"
+    },
+    {
+      "file": "camera-raycast.js",
+      "size": 4244,
+      "sha256": "7a64293920863308d62cdbb10fd0b3d68ae278de7e8d1bd0998ff26a94b1a068"
+    },
+    {
+      "file": "carousel-horse-geometry.js",
+      "size": 984279,
+      "sha256": "3a8f8e1df91ee1a0967dd6c1f7799bb383aa747a58ab588cc35f9aa7abf81f59"
+    },
+    {
+      "file": "carousel-model.js",
+      "size": 19187,
+      "sha256": "b4f43337a98e1ec9db29ac8a0129ea9e4767b1fc79a278d450db85c52e521ec1"
+    },
+    {
+      "file": "castle-atmosphere.js",
+      "size": 8024,
+      "sha256": "3274d2c0339597fda86db215d8e7c036de1da9f8b8d8b468f4905602e448cc57"
+    },
+    {
+      "file": "castle-layout.js",
+      "size": 895,
+      "sha256": "eeedd3350c75ef9bb636b5c06298095419a7630cd34b21e7057b5b1c8fdece01"
+    },
+    {
+      "file": "castle-model.js",
+      "size": 14564,
+      "sha256": "5a60bccceb10675a756d5bc3818d4195e18653343af791b986ddb3cbcf2dcb88"
+    },
+    {
+      "file": "character-accessories.js",
+      "size": 18246,
+      "sha256": "bd1a171c500e9277b1f663fd97d270270e40ea74aff5a3103fb2ef80f451fe08"
+    },
+    {
+      "file": "character-ears.js",
+      "size": 4815,
+      "sha256": "477a8c776ead5496ef31e430c6c6ddf716be3031785f4982eb5ff85ad296c2d5"
+    },
+    {
+      "file": "character-tail.js",
+      "size": 6283,
+      "sha256": "8f7a03b5690f6a3fb88a7c5ad58aa63a018cfb4e4a18064dbf75882a5bd8739c"
+    },
+    {
+      "file": "clay-eyes.js",
+      "size": 2174,
+      "sha256": "53ba3fef1a6b854ba0d69147bb0d0a50590940866a48cd159fa49e461cd39d68"
+    },
+    {
+      "file": "collision-grid.js",
+      "size": 1040,
+      "sha256": "dda1a622505380f41706f118a30924be2d6949178e5a83cd6c8efc0b99457392"
+    },
+    {
+      "file": "community-ui.js",
+      "size": 22967,
+      "sha256": "5215a92152132262537b14979656080308dacd04987c2fd5bd1b32635f154e5b"
+    },
+    {
+      "file": "companion.js",
+      "size": 42281,
+      "sha256": "dfc9f2f33d0dddfbf010b141d646cb5354e25ccc59fa4a41733464e1471b2953"
+    },
+    {
+      "file": "connected-terrain.js",
+      "size": 2874,
+      "sha256": "3fb14fc1785fbd0fecfdfa50e576f79281127c735caae533905dd7e591e184f9"
+    },
+    {
+      "file": "content/daily-trivia.json",
+      "size": 22989,
+      "sha256": "23267e1f0ddceefeccec98fc2e942b915e634f95462a4b3b5edbe2678e7ca600"
+    },
+    {
+      "file": "content/everyday.json",
+      "size": 44533,
+      "sha256": "f3e383003997a514acab457101d1ca1f063111fd6f124b576fb990218c5f1e88"
+    },
+    {
+      "file": "content/humanities.json",
+      "size": 109652,
+      "sha256": "f9ab50ecea07358247ec99c678d1203f384dcb13b13b6ab067cf6750bc084188"
+    },
+    {
+      "file": "content/perspectives.json",
+      "size": 66754,
+      "sha256": "42af1f52bd77d0079db0d1e8b394b24ab0afe02ba0c5ed9a85ca1a04f94152b5"
+    },
+    {
+      "file": "content/reasoning.json",
+      "size": 103786,
+      "sha256": "a6b0ba4d42a37d8800fbed69f2c2b2917bd86cff8b8c847e95ce4662d52e1fe2"
+    },
+    {
+      "file": "content/science.json",
+      "size": 111543,
+      "sha256": "7c95654f0e4cb5af7fca87d5c419a733ce7463762531879f3c362ddeaaecd1f8"
+    },
+    {
+      "file": "customization-ui.js",
+      "size": 11690,
+      "sha256": "8ca79e8b8ecc08786955f727113cca82bbf03968e48aace86fc3bb2cb9d8a292"
+    },
+    {
+      "file": "customization.css",
+      "size": 9985,
+      "sha256": "00cf5b65e10752421d6d77a4e3e4a9fa569dd485378488accf92a85c8a1cf5f7"
+    },
+    {
+      "file": "decorations.js",
+      "size": 1604,
+      "sha256": "815cf7881c24e0b38b386c354ce1cea4a42ccb749cc479f26aa274807aae1a64"
+    },
+    {
+      "file": "discovery.js",
+      "size": 286,
+      "sha256": "60d88085871eb6b8f77b540095978835cb826d827f7d3d8925dc96aad9f7e1c6"
+    },
+    {
+      "file": "district-layout.js",
+      "size": 1213,
+      "sha256": "34a6011ce51b8df3176125c4ca29c3348ff252436f1cfe02eed9b1237a9178fc"
+    },
+    {
+      "file": "effects.js",
+      "size": 840,
+      "sha256": "641805c53f82912120d7f56753fe55e68269199baca7ffe8be259b77bdfaede3"
+    },
+    {
+      "file": "emotes.js",
+      "size": 1874,
+      "sha256": "f0368b69ef0a896821bed8c091fed48ccfe3808fb9134927d314fa56408a8836"
+    },
+    {
+      "file": "exhibit-cards.js",
+      "size": 3142,
+      "sha256": "34fb02f196d60998d911bfc7dcad9a5b851b89f702d7e65ac7ce86f252ac2b36"
+    },
+    {
+      "file": "experience-cards.js",
+      "size": 1815,
+      "sha256": "702e67dbb5561caa9cc219c2f472a64737e838c0ad6ed0a0f71951300d0d8d70"
+    },
+    {
+      "file": "experience-preferences.js",
+      "size": 1560,
+      "sha256": "a225951135e95d7a8bbc1d312d909b68955ae55876b1be3295316a67d5d3ecc4"
+    },
+    {
+      "file": "fantasy-vfx.js",
+      "size": 22140,
+      "sha256": "a3975b51a29da1c0b776200f033217d25231ce1198b134e4258d025379e504d8"
+    },
+    {
+      "file": "ferris-layout.js",
+      "size": 699,
+      "sha256": "3c74eb71dc132494c0d98c8e71115f6ad634b4af81dc367dcfb0d793ce15fc26"
+    },
+    {
+      "file": "ferris-model.js",
+      "size": 15302,
+      "sha256": "ddb221b0ab098ee6dc3475aaacd1e52ce5c8c5703598a76ba9b3a0c395cce60d"
+    },
+    {
+      "file": "festival-layout.js",
+      "size": 1256,
+      "sha256": "891c74125087efb438b8e9d3282fce57f222fc61bc71f39977a336f4f65b4d45"
+    },
+    {
+      "file": "festival-plaza.js",
+      "size": 2558,
+      "sha256": "c60184668c64c95535c3d6637f807d49df73b6badeeae51e081d3e9fd56c4d74"
+    },
+    {
+      "file": "festival-rides.js",
+      "size": 6814,
+      "sha256": "3ec0a5f9f0e2ce26799039e862395395ef20b73cfb4e263bd8e64ba5e3867d31"
+    },
+    {
+      "file": "firework-score.js",
+      "size": 1275,
+      "sha256": "52d92af72d95161ead73e9789b839f9b0aabe5cf29a5bcfb943454454028d88f"
+    },
+    {
+      "file": "fireworks-request.js",
+      "size": 5909,
+      "sha256": "5353a2972280e6ff463c8de1f18c95f3f53b7755396c7ef81b890c4785d530ef"
+    },
+    {
+      "file": "fixture-glow.js",
+      "size": 3792,
+      "sha256": "eea83c0f106884c4351081efe71d87346654802bea158762a33cc71bed80a089"
+    },
+    {
+      "file": "fonts/Pretendard-LICENSE.txt",
+      "size": 4816,
+      "sha256": "82e9c8a4b203261f10ddba1296422d64914ff3d4b7bd8a12896d03f0f088d70a"
+    },
+    {
+      "file": "fonts/PretendardVariable.woff2",
+      "size": 2057688,
+      "sha256": "9599f12fd42fc0bce1cd50b47a0c022e108d7aa64dd0d1bb0ed44f3282d900b4"
+    },
+    {
+      "file": "footprints.js",
+      "size": 2123,
+      "sha256": "b2079ed3c703bbebd148d37823f44448b55390ce90825a414a0ff05a9adf79b9"
+    },
+    {
+      "file": "frame-metrics.js",
+      "size": 2442,
+      "sha256": "e22b7d72693f2e8e3d94573da2b0dcf32f2a33f4a6645c425484a65f48b3a31d"
+    },
+    {
+      "file": "fur-gradient.js",
+      "size": 1346,
+      "sha256": "b049a6bc01bd2017a9d100f0315655bf0d34d712b59460fbb2cf77b4a6fd1e0a"
+    },
+    {
+      "file": "game-input.js",
+      "size": 7666,
+      "sha256": "2663472cea353bb72233bca2a431c1ffe672035f25eba2f312eba5f203625b25"
+    },
+    {
+      "file": "glass-controls.js",
+      "size": 6215,
+      "sha256": "c8221815f3bfea9fee761ab11f31ef90e82c20cd5ccbadf45c838f255dc36981"
+    },
+    {
+      "file": "glass.css",
+      "size": 44979,
+      "sha256": "d752fd0d68339bd5f35919fe2fff35fe6347a89632ef967abc02a7edfa58227f"
+    },
+    {
+      "file": "glow-pass.js",
+      "size": 3524,
+      "sha256": "4a632dbe554b33aedb0a987cced43566d59bb798dfd4bed26766c71cc02114d1"
+    },
+    {
+      "file": "googly-glasses.js",
+      "size": 2581,
+      "sha256": "3407c14be336edf390107cd55fabf82388b710ac2347665e26bf498268286fdb"
+    },
+    {
+      "file": "guest-names.js",
+      "size": 717,
+      "sha256": "e6590559f7a3340eda4fa62d17599f278f5801107a5950cd85e6b2617c76fa9f"
+    },
+    {
+      "file": "hand-sparkler.js",
+      "size": 2230,
+      "sha256": "c5721e7fc5f52f690ead569c64df4f6424c8c28a3fd5c9cd14e42bd9e1c541f0"
+    },
+    {
+      "file": "held-balloon.js",
+      "size": 5207,
+      "sha256": "81e4ca4550f816e82ae4314f769532e48069cf5780d61ddb27b5a484be3f319e"
+    },
+    {
+      "file": "held-popcorn.js",
+      "size": 1634,
+      "sha256": "40af43386fa12fc3dc12361e25973d66332d3ccc7a3b9d699d874f862d5f5e2c"
+    },
+    {
+      "file": "index.html",
+      "size": 22486,
+      "sha256": "e90fe37d0dbcec97ebc1a840e714f5a7b5ec3ee43d39820b2dd07d4b8db89af5"
+    },
+    {
+      "file": "interaction-exit-control.js",
+      "size": 1828,
+      "sha256": "dfc773eef90099baf425f0271d84f9eb32849c385b0824ae1d94ac5fabfc868c"
+    },
+    {
+      "file": "interaction-lifecycle.js",
+      "size": 784,
+      "sha256": "eb5d4ca75e149ca7fa9629c5d08bbaeb35d6efa5063a28cb94e63288b5903b32"
+    },
+    {
+      "file": "interior-layout.js",
+      "size": 4514,
+      "sha256": "997ec2aa0c996df19348d1b9072ac786fa523d4f662b2fcf8697a8be27e993ea"
+    },
+    {
+      "file": "interior-world.js",
+      "size": 17450,
+      "sha256": "a92ba7d7909ee0d73d4c765eacdd04ebcc9ef27c625b973fc3deaa96e6d910ea"
+    },
+    {
+      "file": "landmark-lighting.js",
+      "size": 517,
+      "sha256": "ab8ddde5fa967fd1a270f2ad92ca1acd3062989cb7d8f173232370cb65335eac"
+    },
+    {
+      "file": "learning-core.js",
+      "size": 3879,
+      "sha256": "994bd0cf0d2843092eec5bd224c29ef2cda33482902d9c642ee98aada751dac6"
+    },
+    {
+      "file": "lighting-theme.js",
+      "size": 1814,
+      "sha256": "06c9ff828096bfa1355cb6af6f9119b165ad45b75affd90021909e90d8759cda"
+    },
+    {
+      "file": "loading-backdrop.js",
+      "size": 646,
+      "sha256": "53a8ce8b575b1060d981eeaa78cf95e7441d635e1da5bcbfe05368f75a6fa4c7"
+    },
+    {
+      "file": "loading-state.js",
+      "size": 2161,
+      "sha256": "3c638c87cbb63ca163a7ff6840529f26754cd43950e7c5f4465f8799cfe961a8"
+    },
+    {
+      "file": "local-lights.js",
+      "size": 3515,
+      "sha256": "6e2c39a26763be541e6ba0451db0e468120fb748e28d8386785c97e1493035b9"
+    },
+    {
+      "file": "luminous-loading.css",
+      "size": 2878,
+      "sha256": "c0de6ebaba53323e92c26dcec07c0a8e47eaef73c60167875cbba92346d1c1e8"
+    },
+    {
+      "file": "luminous-loading.js",
+      "size": 4078,
+      "sha256": "4edec15e2ddffb0f6692b9e3e5ed57a3d50386e4ab1bff19b9e09860e7ab7f9c"
+    },
+    {
+      "file": "lunar-phase.js",
+      "size": 1194,
+      "sha256": "c96e91902492594dcb1bc126a96ad3434f353a360abc71957b568723b86b2ac5"
+    },
+    {
+      "file": "map-atlas.js",
+      "size": 476,
+      "sha256": "23a151bb75cfa6c5aa91c5c90881aa6fe7aae69b35a0bee63c2ba0588d9b17ee"
+    },
+    {
+      "file": "map-icons.js",
+      "size": 1760,
+      "sha256": "ea870cd15cada70bde62c105d7f3859e7cd4b5c895a47906d278c37cc0976b64"
+    },
+    {
+      "file": "mesh-batch.js",
+      "size": 3154,
+      "sha256": "8b6ec968fda4933cd5ce1683ea86d67d6332ce7789573cc210cc76f3fe30a2f5"
+    },
+    {
+      "file": "metaverse.css",
+      "size": 32215,
+      "sha256": "1ac3c78dfef4871f1d9fde423f24394e071a1da834a4aa29e430d7a3b019a6c9"
+    },
+    {
+      "file": "mobile-ui.css",
+      "size": 7178,
+      "sha256": "4aca689dfa59e00b835a11fb3db4c34df4847205585f087a97130fa064c0df83"
+    },
+    {
+      "file": "move-marker.js",
+      "size": 1423,
+      "sha256": "a5e222736dac871e373f08fa51ebd0a186d69edc1dc1f5e56480cb91f38ba13b"
+    },
+    {
+      "file": "movement.js",
+      "size": 2459,
+      "sha256": "4bc3baaa394d95c93da71988947e4832ea6375a1054136f7c858f61503d89466"
+    },
+    {
+      "file": "museum-interior-details.js",
+      "size": 9842,
+      "sha256": "7f7f96cc111124e1fc0df80ee696d080e98c364fdad5395d97eabc7d4e32bfb4"
+    },
+    {
+      "file": "museum-puzzle.js",
+      "size": 2547,
+      "sha256": "ba18130268faa29761dc5231e0ceede4845784c4f52ae7064b962ef9fbafce1c"
+    },
+    {
+      "file": "museum-world.js",
+      "size": 11541,
+      "sha256": "852438e21b7ad7ab91a49d4b213aba1a4308bcb92f989f437195ff5be1d11ee6"
+    },
+    {
+      "file": "music-catalog.js",
+      "size": 3292,
+      "sha256": "ff6dd93d6e80cd76de047932bf137bd7de30ba3e2f0d3cc430f941136b49ccde"
+    },
+    {
+      "file": "navigation-client.js",
+      "size": 1342,
+      "sha256": "b9faaf40a57771098460a1d695967f4e1ca90707e9062f9ee8ef2337610f3f55"
+    },
+    {
+      "file": "navigation-worker.js",
+      "size": 184,
+      "sha256": "a82e993f56ca3571f40f670c3f23475f1a5bf02ddac8256975ebda79d0dfa9a8"
+    },
+    {
+      "file": "navigation.js",
+      "size": 4219,
+      "sha256": "d6a11ae350c2e672dee90c05ad00ea9f95f78a48062ccbcc434324cfdcdaa7b4"
+    },
+    {
+      "file": "nickname.js",
+      "size": 517,
+      "sha256": "81d03ba204c7f652c377c420225de5f0d7b59cc9b32143e1534c1ebbf6904b79"
+    },
+    {
+      "file": "onsen-layout.js",
+      "size": 1181,
+      "sha256": "de9656bf474065758c36d414ea1af68e268d6caccdbb2673cad254ec720f965a"
+    },
+    {
+      "file": "onsen-response.js",
+      "size": 2471,
+      "sha256": "5ce8cc91b03c6a626fdc2b05e3a97dbfb79899fa3267345108dc295928a4173f"
+    },
+    {
+      "file": "onsen-water.js",
+      "size": 4796,
+      "sha256": "112539c4564084383ff0f3a3d46cf095de6c5a0d176ef2527acf883e671f5dc7"
+    },
+    {
+      "file": "onsen-waterfall.js",
+      "size": 4708,
+      "sha256": "74e9e74aaf4c4f55b485d203421bfa1ef7517847881fe3d03b6d2c186c9452bb"
+    },
+    {
+      "file": "panels.js",
+      "size": 3630,
+      "sha256": "e415a3cd42dcc271033e0da0a8bc453a888bceac1dcb53d76ae4d6bc39f579da"
+    },
+    {
+      "file": "park-details.js",
+      "size": 18952,
+      "sha256": "050797f2ee4a9c3f60c4b1af9030babe6df2b41d2b570c626b2e00e332586ddf"
+    },
+    {
+      "file": "park-lamps.js",
+      "size": 5080,
+      "sha256": "2d4434fa2db8445b96860a6c6823ef4aedc8a052b7f993f8082ff3e44fd7b700"
+    },
+    {
+      "file": "park-layout.js",
+      "size": 2107,
+      "sha256": "44033073731bb89ed9435a096ec1330ec5fe607677b803dbf4f9bc65c10b22e2"
+    },
+    {
+      "file": "park.js",
+      "size": 37218,
+      "sha256": "f2110072715173ba018de8ce8fbd6f8cb7132f9ccc339bc572aee2d2114258ee"
+    },
+    {
+      "file": "path-routes.js",
+      "size": 18733,
+      "sha256": "729279cdc13ab7a84fb43e9adbd5e6b5fb33187db5d4a696a55dfd1b3171c166"
+    },
+    {
+      "file": "personalization.js",
+      "size": 7124,
+      "sha256": "495b9159a5ba1a2fd0e5592450bd4eb918749492423322d3ab87a8e69f7043a1"
+    },
+    {
+      "file": "player-state.js",
+      "size": 851,
+      "sha256": "c88c457bcd4636f95e99a329b7b88ce7bc53b7313e547e5e6c10767bed6320db"
+    },
+    {
+      "file": "plaza-paving.js",
+      "size": 332,
+      "sha256": "e5e1ab3215019e493fb9e18136458d40125f28d67753df5c5f701aaddffd3fb7"
+    },
+    {
+      "file": "plaza-snowman.js",
+      "size": 10283,
+      "sha256": "0eb3fc015a870b806e0d7d7b34834a07f38ca2cfcdc6aee6c56d984ca50886f7"
+    },
+    {
+      "file": "plaza-uplights.js",
+      "size": 3523,
+      "sha256": "6d8ed498e1040fcf5e8571150446dd472ed7e910b52e849ee63bac38ab0795cf"
+    },
+    {
+      "file": "presence-policy.js",
+      "size": 1138,
+      "sha256": "195f1938a382a77a0125f963dc47196c489c784ffbf5005114396f8ce9890231"
+    },
+    {
+      "file": "preview-orbit.js",
+      "size": 1301,
+      "sha256": "82c15fddb16a93d9007bd9068830914b158aea4666e359c2babe589e3bea49bb"
+    },
+    {
+      "file": "quick-quiz.js",
+      "size": 9243,
+      "sha256": "55f2ed5fc717d7ae7efb56df5572b9b5e02bfaa0f55696a3d0bdac535a7ab5bf"
+    },
+    {
+      "file": "quiz-journal-data.js",
+      "size": 1526,
+      "sha256": "15c0f7b086720185134239ec7de393869af5b523bfbb2f50487f49b07bef2243"
+    },
+    {
+      "file": "quiz-journal.css",
+      "size": 9118,
+      "sha256": "f2a9d6b84336d2aadf67a3431cdf46e8d45a68a1e75ae81adbe9761debc2603d"
+    },
+    {
+      "file": "quiz-journal.js",
+      "size": 12884,
+      "sha256": "bf83ef4e7255d31fd3c26895043611f7d8aa301ff8353c55571b9f1e5d626c6d"
+    },
+    {
+      "file": "region-layout.js",
+      "size": 2599,
+      "sha256": "cd5c41779813cff3bf1311807a6b91deda19d3b47e4844ae811867882a73f1e7"
+    },
+    {
+      "file": "remote-motion.js",
+      "size": 1412,
+      "sha256": "e37f51f24f219c69b66310c86403f203c30d68b934e2defb685891c4168771be"
+    },
+    {
+      "file": "render-budget.js",
+      "size": 1717,
+      "sha256": "ddf5a2ac77fae9089b13997388f3f2ec00cb21d821a41091c77d3669786414a6"
+    },
+    {
+      "file": "resort-blueprint.js",
+      "size": 11279,
+      "sha256": "bd07ce7092363a31ec70911741f97c0e8c4801c62195446e970bdcb881d1c3b9"
+    },
+    {
+      "file": "resort-layout.js",
+      "size": 4189,
+      "sha256": "ee3732a465f8e8ec837c11919e8a32b813aa25c6fdf8edf4120e2bcb0ad1c60d"
+    },
+    {
+      "file": "resort-scenery.js",
+      "size": 14326,
+      "sha256": "4efb84aa9c2db80acdf76d69ebc4fbc6483a764d47d799a7702b78373ab07daa"
+    },
+    {
+      "file": "resort-ui-v43.css",
+      "size": 12364,
+      "sha256": "8bea73572f5a8b68dcf4ae38c8e5bf908602850500633c3afe2a1b35b09bc455"
+    },
+    {
+      "file": "retreat-atmosphere.js",
+      "size": 9994,
+      "sha256": "23fb278d2d56f58cd1ee9e5bad8b648379c54459b32bb71153715533a60ec936"
+    },
+    {
+      "file": "retreat-layout.js",
+      "size": 1012,
+      "sha256": "7ee3d03f7b220dede1120eb9299211f31db716b8d5322b28b29142808af718a2"
+    },
+    {
+      "file": "ride-seats.js",
+      "size": 3232,
+      "sha256": "16de21d56b6d7b527b50b49a0228e5f7dabf123da2f05454d9fda383eee87918"
+    },
+    {
+      "file": "ryokan-aquarium.js",
+      "size": 17049,
+      "sha256": "82b38ef046e6852fc1927fda73c9a366b28f41191c86d69f1e1953407aa47d20"
+    },
+    {
+      "file": "ryokan-chef.js",
+      "size": 4850,
+      "sha256": "6223d81f72381611a2be67eb20f2521ae90b328c263c9c0ea3c15425a5f9d496"
+    },
+    {
+      "file": "ryokan-craft.js",
+      "size": 4714,
+      "sha256": "7b4d1cc2aef64e4d42f3fee0069bf1947ec995f6e83920414c113fafc534fa89"
+    },
+    {
+      "file": "ryokan-exterior-layout.js",
+      "size": 400,
+      "sha256": "88534ee9bc6af48e2eb3f53de48da9e7792d4e860d3d197448bc45d6bd78ba34"
+    },
+    {
+      "file": "ryokan-finish.js",
+      "size": 1275,
+      "sha256": "a5582815bf338b43f5110b17152ec82790bc3f3f372cc5d14ab1430d835460e5"
+    },
+    {
+      "file": "ryokan-garden.js",
+      "size": 1256,
+      "sha256": "f4c2fb0a04bd778154e093bbb218f60132ad01f60abe7ca763ddec9782206eb5"
+    },
+    {
+      "file": "ryokan-meal.js",
+      "size": 2322,
+      "sha256": "e675b7b9d4f815f2c20805597bbd6d1685efcac4a4d4c3cab60434f19d2d911b"
+    },
+    {
+      "file": "ryokan-service.js",
+      "size": 2194,
+      "sha256": "3be39833992064f60a6975753aedc6be056eea105d2e7a08a25a005ce4dd45a0"
+    },
+    {
+      "file": "ryokan-window.js",
+      "size": 1747,
+      "sha256": "6f507a424c3b74215308cfadc67183df70e3936960a465f15587223829842d74"
+    },
+    {
+      "file": "scene-resources.js",
+      "size": 735,
+      "sha256": "24e030905cd54cef7d94a520a036bf1e1bfb4701a56f185634b156eb08b0660c"
+    },
+    {
+      "file": "seat-selection.css",
+      "size": 923,
+      "sha256": "10e9ac42a3e150672af8e712d11c2f4a35994a96ea3106b8a9c26ae314bf920a"
+    },
+    {
+      "file": "server-clock.js",
+      "size": 594,
+      "sha256": "db61af485dee9669397fb0f6daf4481a4888029ebed8df6810cf4cead76f8e90"
+    },
+    {
+      "file": "shared-tree.js",
+      "size": 14743,
+      "sha256": "5369b1387e601dcaaf5cfdf9fcc8620d9df1282e83b5abf36430ef0f3597ba8f"
+    },
+    {
+      "file": "simulation-clock.js",
+      "size": 351,
+      "sha256": "014aa9d67a2ae441ace3c93b4706656dffb4fa9e23b698ed14b96a1818629fe0"
+    },
+    {
+      "file": "simulations.js",
+      "size": 1254,
+      "sha256": "5a02280c00ba84dbb9781377ea3d8209ecad7279e4ecac5a12a7a69aa071a141"
+    },
+    {
+      "file": "site.webmanifest",
+      "size": 573,
+      "sha256": "2a7e59c19b836274d83b291a9b000c7b800fb63b9e8685eb998d21cfb201adaa"
+    },
+    {
+      "file": "ski-map.js",
+      "size": 2604,
+      "sha256": "bf8738d8adec2ca1fe93a47ad3c49a88008f648be8542bf935b1da73c1df22e0"
+    },
+    {
+      "file": "ski-trails.js",
+      "size": 7979,
+      "sha256": "903b186ff4e621a444d0cc65f25a127c1055fc6fd9c34cd91e7d35094242118e"
+    },
+    {
+      "file": "snow-path.js",
+      "size": 3885,
+      "sha256": "d4566d77031a2af9b868d6b5231bebf0987026bc39544c17387eb98297c4b9b2"
+    },
+    {
+      "file": "social.js",
+      "size": 20793,
+      "sha256": "bea6421e34e4039d6c60fb41bb41062d27ab50cdfc9a0657b132ee20b7e37e9a"
+    },
+    {
+      "file": "soft.css",
+      "size": 13417,
+      "sha256": "4565bdc2046e10a667cf2ce9906d19ad8101459b28c4f1dfca29f73b7bde8d9f"
+    },
+    {
+      "file": "spa-experience.js",
+      "size": 2466,
+      "sha256": "a05f56ebca8de90e3208fc8faca68f2db1ca044b3711cc847a3d66453c1ab6f3"
+    },
+    {
+      "file": "spa-resort.js",
+      "size": 32040,
+      "sha256": "492353b5f4bb73d7c8bb5987ec997c77ff3ebb678312662d7ea866834907041d"
+    },
+    {
+      "file": "spa-transform.js",
+      "size": 406,
+      "sha256": "d76beedf597412ef91a9ed1247ded672555bf34a6e987f0b745a74cf63a4d23e"
+    },
+    {
+      "file": "space-links.js",
+      "size": 325,
+      "sha256": "ec1e4f149c0766cbe8eaa5c7093a3b4d317228eedfeb52aa0493b4c8ee900486"
+    },
+    {
+      "file": "studio.js",
+      "size": 7917,
+      "sha256": "74e76951fb141d5cb783d1209aeccf9fb404a8bcc0633807b8bd4d5c77969f70"
+    },
+    {
+      "file": "style.css",
+      "size": 25395,
+      "sha256": "23c5edfae173885410a3551505d1a0add8501a6d1ec742aac585ccf41fe5315e"
+    },
+    {
+      "file": "sw.js",
+      "size": 4656,
+      "sha256": "8380c4618d659f21bfd0aa6959a051e1827024a37c9b2b2e10c50a407f6f5ecf"
+    },
+    {
+      "file": "textures/ATTRIBUTION.txt",
+      "size": 1944,
+      "sha256": "bf1fe72bdbcb138679c74eb41d871f7bb4e61d83adfab6f9ffeaa7fdff1e227f"
+    },
+    {
+      "file": "textures/loading-world.webp",
+      "size": 41668,
+      "sha256": "e68995142931c3afc624b2930e4df9da113b041108712c4266484794385bfa43"
+    },
+    {
+      "file": "textures/moon-lroc.jpg",
+      "size": 139068,
+      "sha256": "b246064f217f8d479df78c49c7c8595a8f5fbda008a72fd539978d2e121e0109"
+    },
+    {
+      "file": "textures/winter-world-map.webp",
+      "size": 255128,
+      "sha256": "80491bdae419d04009c15f7e91a6543a34e0cf7ecf84ecfd8662f3fb8f5cbbf3"
+    },
+    {
+      "file": "themepark-world.js",
+      "size": 15014,
+      "sha256": "4db304b6902b73ba0a91aa192b9d456827d297529302bf6a146708c4f9ab057c"
+    },
+    {
+      "file": "tree-atmosphere.js",
+      "size": 6343,
+      "sha256": "4b0aec8a8a4702c1f7916eccc2291e26899ddfb88c199d4e0b5f27f79458d90c"
+    },
+    {
+      "file": "tree-layout.js",
+      "size": 422,
+      "sha256": "67f20722a883be02fc59fecd51e83abc4cecefcb68cab683d37d130568ca3ff8"
+    },
+    {
+      "file": "tree-ornaments.js",
+      "size": 14562,
+      "sha256": "837f53049387cc00fde204b90e29afd5a80c10ad1020ec4256ca55ef2480bf89"
+    },
+    {
+      "file": "tree-topper.js",
+      "size": 3397,
+      "sha256": "ff5b2e5db8917f1eff905f3d0f2dec831c2ea6df5dc5e545743844345ce17172"
+    },
+    {
+      "file": "trivia-fallback.js",
+      "size": 5304,
+      "sha256": "a9fedde92925918c356a0cd32278310f1c61f1003878f9612ded179e14387605"
+    },
+    {
+      "file": "trivia-loader.js",
+      "size": 2362,
+      "sha256": "1e471d7f0a136fb416b377a30f6743d50bfb0fa5f2b6e84a6eb3670d56726dbd"
+    },
+    {
+      "file": "ui-motion.js",
+      "size": 736,
+      "sha256": "6868cbf99630367d5e510b79546375813568b04522b7b279ea0d30740480aeee"
+    },
+    {
+      "file": "ui-system.css",
+      "size": 22696,
+      "sha256": "f0bf952bfcf600b9b46f6027157c92dd27d9a5f8c096adbc439698515934de0d"
+    },
+    {
+      "file": "vendor/THREE-LICENSE.txt",
+      "size": 1081,
+      "sha256": "4c40a1ef62450b857c3b2aaf294936304cd552d965fbcd9d32d4c5bcf4ba4454"
+    },
+    {
+      "file": "vendor/three.module.js",
+      "size": 934285,
+      "sha256": "31751d6b1b4d7762cca08083efb222ae555f34ecc3dbfa558f45572180721133"
+    },
+    {
+      "file": "vfx-shaders.js",
+      "size": 4091,
+      "sha256": "51261f3458738fc138c9131b3c1b57559e583c08368c14dc860c23727b0dbcf2"
+    },
+    {
+      "file": "visitors.js",
+      "size": 6770,
+      "sha256": "41aba675fb2ea90d07be04c066ecfae4830b9a336ecafde7366df136e4587910"
+    },
+    {
+      "file": "voice-controls.js",
+      "size": 5546,
+      "sha256": "2e4f75b2f27c8cff2d3881c265dd4f4bf0c074037212d6c5e0987e0ca3d8eb22"
+    },
+    {
+      "file": "wardrobe-icons.js",
+      "size": 7070,
+      "sha256": "e1cb652a002bf6c909e892bc59f308fae31f9032b0445d2eb54f10814baef869"
+    },
+    {
+      "file": "wardrobe.js",
+      "size": 5067,
+      "sha256": "a50ddde5bbdbdc02ddd25202facd876050b2f3b4f8ad2aad1e3cf44fb99638fe"
+    },
+    {
+      "file": "weather-clock.js",
+      "size": 2808,
+      "sha256": "63e543cd605803c9b12c3dd9055ae7c0a661a70cfd788585d4abc66f80d19fd9"
+    },
+    {
+      "file": "winter-architecture-details.js",
+      "size": 6634,
+      "sha256": "72f992455542ae3bb19acd176a0badf7f78147bc58a650e9cd292f15e776cc27"
+    },
+    {
+      "file": "winter-bench.js",
+      "size": 1111,
+      "sha256": "dc14d94505bcd384545b426619639fe63abd557b9d8a2d9e2310929217ef75bc"
+    },
+    {
+      "file": "winter-costumes.js",
+      "size": 9036,
+      "sha256": "40499fa6c787db45b16c64149a74f74b9ecd745370af5d3cd271752774d23ddc"
+    },
+    {
+      "file": "winter-experience.js",
+      "size": 26168,
+      "sha256": "9fb77a4c14a5fc1ccc2b2ca86ccfeb8ca964c8af9d48674778616559b341109a"
+    },
+    {
+      "file": "winter-fireworks.js",
+      "size": 6833,
+      "sha256": "bbcf26d86aad55ce2841805aefeed1da57bf8f7ad16032592e605747baa1b9ed"
+    },
+    {
+      "file": "winter-music.js",
+      "size": 6955,
+      "sha256": "82b985abe37ba1e3cdafbbf2a356da30e64df90e28c2d79f452bd94369897a08"
+    },
+    {
+      "file": "winter-retreat.js",
+      "size": 7101,
+      "sha256": "bdd896685147b589fd7467d92fd1868cf7511927c4e2da317d4c9aac286e8bb0"
+    },
+    {
+      "file": "winter-rides.js",
+      "size": 4989,
+      "sha256": "6171c569eb34b7112a1ea0aa7cd756bd30d2151d103f1037a03d8a59ca376a41"
+    },
+    {
+      "file": "winter-sky.js",
+      "size": 13030,
+      "sha256": "1260b0ff73e7ec9a6cd397e3acc0b2e25c17964a8540a95f682475d7d8b5e7d2"
+    },
+    {
+      "file": "winter-world.js",
+      "size": 10514,
+      "sha256": "b03ab18f2d9d1e3eaf44d3a91cbaab8372737b2ccbc5394a0e466c57c9af9021"
+    },
+    {
+      "file": "winter.css",
+      "size": 17182,
+      "sha256": "0539298a229d80980b7b0920833e1f6537127a34b1f2319159616b05018efcee"
+    },
+    {
+      "file": "world-art.js",
+      "size": 12440,
+      "sha256": "0fd5250bfe7d4ec41aaf8bff6c9d20c95505f3a7bf1865948ec1aad7bd7aa187"
+    },
+    {
+      "file": "world-guide-data.js",
+      "size": 1124,
+      "sha256": "d984ba44b010bb2b942a70dd1dfb7d612b1185c7beea9e6d42c8249cd0fb006a"
+    },
+    {
+      "file": "world-interactions.js",
+      "size": 2195,
+      "sha256": "87554f72aaa65dc9a48696e075071ccfec4e1ab2a1807bac6b3bbf6993b95381"
+    },
+    {
+      "file": "world-labels.js",
+      "size": 2028,
+      "sha256": "6dc1b93735022c4feccbbb4125ce2840b53df8ab60869ce4fedf0096dcd80275"
+    },
+    {
+      "file": "world-layout.js",
+      "size": 4866,
+      "sha256": "d635742263f55a18c4d001d797a939dc3a95ea6be947860b341b2124d21ee139"
+    },
+    {
+      "file": "world-map.js",
+      "size": 10059,
+      "sha256": "f515066a639a943ef446cde74184c46f5517b631e3938b1e86a142b073fa54e0"
+    },
+    {
+      "file": "world-paths.js",
+      "size": 1878,
+      "sha256": "c51fe58d1758187ef809a1f3e381da9ba85bfe1e93eb741d2245b3c23e9c0625"
+    },
+    {
+      "file": "world-settings.js",
+      "size": 674,
+      "sha256": "a5e9db574dbc6b4db798462037396be8bc4d34e5aa6d7b6b850ab2e15627b287"
+    },
+    {
+      "file": "world-time.js",
+      "size": 1882,
+      "sha256": "cdf3848f2d76540993985112e4ba7585c12723f4e208addb4456d8b2441ad6bd"
+    }
+  ]
+}

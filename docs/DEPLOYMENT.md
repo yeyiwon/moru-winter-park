@@ -1,3 +1,28 @@
+# 공개 운영 수정본의 배포 상태와 실행 절차 — 2026-11-19
+
+**이번 작업은 로컬 보관 상태다.** 이후의 과거 배포 기록과 구분한다. 원격 GitHub/Sites/Vercel 변경은 없고 운영 DB migration도 없다. 현재 공식 주소 https://moru-winter-park.vercel.app/ 와 backend 도메인은 유지한다. 읽기 전용으로 확인한 실제 SHA/배포 ID는 [소스 감사](public-operations-v45.md#실제-운영-구조와-소스-불일치)에 있다.
+
+## 승인 후 적용 순서
+
+1. 현재 Sites 54/소스 `01f00c60d9cb180704fde97ed27dbb6a6fe22fcf`와 Vercel `dpl_141ESF8WAfkspfe1XKsQMGRRD67D`를 rollback 기준으로 보존한다. GitHub main이 뒤처져 있으므로 검증한 로컬 merge를 먼저 review한다. 기존 GitHub 쓰기 권한 문제의 해결 여부는 미확인이다.
+2. D1 전체 export 또는 Time Travel bookmark를 확보하고, **별도 DB에서 restore 및 소원·장식·quiz_journal 행 검증**을 수행한다. 장식 backup만으로 전체 DB 복구가 가능하다고 가정하지 않는다. 운영 0000–0016은 재실행/수정하지 않고 새 0017만 적용한다.
+3. `realtime/wrangler.jsonc`의 staging Worker/SQLite DO를 별도 계정 환경에 준비한다. 아직 생성하지 않았다. 실제 staging 도메인을 정확하게 `ALLOWED_ORIGINS`에 넣는다. `REALTIME_SECRET`은 32자 이상의 안전한 난수이며 Worker와 Sites 서버 secret 저장소에만 같은 값으로 설정한다. `REALTIME_URL`도 서버 설정이다. 브라우저 번들·README·커밋에 secret 값을 넣지 않는다.
+4. 격리 staging에서 `npm ci`, `npm run check`, `npm test`, `npm run build`, `npm run build:vercel`, `npm run build:realtime`, `npm run test:budget`, `npm run test:load`와 브라우저 회귀를 통과시킨다. CI workflow는 PR/수동 실행용으로 작성했지만 원격 실행은 아직 NOT RUN이다.
+5. 같은 commit의 서버·정적 파일·WebSocket Worker를 준비한다. `release.json`과 Worker revision으로 동일 소스를 확인한다. `dirty: true` 산출물을 운영에 사용하지 않는다. Sites/D1을 먼저 준비하고 Vercel 프런트 API proxy 경로와 `/admin` fallback을 확인한다. 그 후 `REALTIME_URL`·secret을 연결한다. Vercel은 인증 헤더를 위조 전달하지 않는다.
+6. 실제 소유자가 공식 `/admin` → Sites 로그인 → 공식 `/admin`으로 돌아오는지 확인한다. 게스트의 403, state/code 재사용 차단, 소유자 로그아웃/재인증을 검사한다. 공개 입장·두 기기 이동·저장·불꽃 동시 신청·좌석 경쟁과 물리 Windows/iPhone/Android smoke test도 필요하다.
+7. 초기에는 정원과 오류율을 관찰한다. 로컬 100명은 인터넷/D1/호스팅 수용량 보장이 아니다. 인증된 `/api/operations`의 오류·응답·연결 상태와 provider 지표를 함께 본다. 외부 장애 알림과 비용 경보는 별도로 연결해야 한다.
+
+## 장애 시
+
+- 코드 오류: 두 프런트/서버를 같은 이전 release로 rollback한다. DO 배포 교체 시 재연결·lease 갱신이 동작하는지 staging에서 먼저 확인한다.
+- 실시간 서버가 구성됐으나 장애인 경우 새 입장은 503으로 제한된다. 이미 저장한 데이터는 통신 실패로 취소하지 않는다. 무작정 100명을 polling으로 전환하지 않는다. 운영 중 해제는 트래픽을 낮추고 12명 fallback 정책을 확인한 뒤 수행한다.
+- 데이터: 0017은 추가형이므로 코드 rollback 시 테이블을 삭제하지 않는다. 손상이 확인되면 검증한 backup을 별도 DB에 복원하고 데이터 차이를 확인한 뒤 전환한다. 운영 전체 복원은 이번 작업에서 수행하지 않았다.
+- 관리자 알림: 현재 관리자 UI 오류 기록은 구현됐으나 이메일/외부 push는 미연결이다. 이를 24시간 무인 운영 완료로 표시하지 않는다.
+
+로컬 QA는 `node scripts/dev-realtime.mjs`로 새 임시 SQLite를 만들며 종료 후 지운다. 4189는 게스트, 4190은 개발 전용 소유자 fixture다. 이 fixture를 공개 호스트에 올리거나 운영 인증으로 사용하지 않는다.
+
+---
+
 # v44 · 배포 보류 유지
 
 **로컬 수정본만 보관한다는 사용자 지시를 유지한다.** GitHub main push, Vercel 및 Sites 배포 모두 NOT RUN. 393개 검사와 두 production build·예산 검사 PASS. 전체 22,384,423 bytes / code gzip 984,954 bytes. 기존 라이브 미리보기 http://127.0.0.1:4183 에서 확인하며 서버 API 변경도 로컬 서버 재시작으로 반영한다. 운영 DB·환경 변수·저장소 업로드를 수행하지 않았고 DB migration도 없다. [변경·검증 범위](camera-interactions-v44.md).
@@ -27,6 +52,49 @@
 [운영 검사](../qa/browser-v42/production/report.json), [배포 정보](../qa/browser-v42/production/deployment.json), [제공 파일 비교](../qa/browser-v42/production/assets.json), [수정 원인과 로컬 검증](platform-motion-v42.md).
 
 실제 Windows·갤럭시·iPhone 기기와 모니터 색 프로필 비교는 UNKNOWN. OS 모션 설정 에뮬레이션을 물리 기기 검사로 표현하지 않는다. 앱 소스가 같은 후속 문서/QA 커밋은 Vercel에서 다시 빌드되며 Sites 실행 소스는 위 SHA를 유지한다. 앱 rollback 시 이전 Sites 41/Vercel 앱 `4af6a06`을 기준으로 삼을 수 있으며 데이터 변경은 없다.
+
+# v44 운영 배포 완료 — 2026-11-19
+
+## 2026-11-19 · v45 직접 시야·활동 탭·닉네임
+
+앱 commit `4b4d12014f5edc0cbeee98035cfbda8673f49831`를 Sites 50(succeeded)과 Vercel production(`dpl_GxAUTntqV82aPkmL4wUDtzj5un1P`, READY)에 배포했다. Vercel 핵심 자산12/12 해시 및 health/access/anonymous quiz-journal 검사 통과. Sites는 실행기 직접HTTP403이었으나 실제 브라우저에서 새 UI 자산 참조와 초대 화면을 확인했다. DB 마이그레이션·데이터 변경 없음. GitHub 쓰기403은 이전부터 남아 있어 검증 소스를 직접 배포했다. [구체적인 변경·검증·제약](direct-input-ui-v45.md).
+
+최신 투명 글래스 UI·중앙 퀴즈·카메라·좌석·료칸/천문대 개선과 WINTERLIGHT 브랜드를 기존 운영 주소에 반영했다.
+
+- [운영 주소](https://moru-winter-park.vercel.app/).
+- 실행 소스 `21c05e5c3061520f202e984e6c39e2c6fdde0751`.
+- Sites **48**, `appgdep_6afe8762453081918cd3c30abcf611ec`, **succeeded**.
+- Vercel `dpl_2GrxUwBN3UqhG369598KP4VsbmKo`, **READY / production**, 기존 alias 유지.
+- 기존 D1에 0015/0016 반영. quiz_journal 신규 생성, 확인한 소원4행·장식25행 변화 없음. 실제 운영3인 좌석 경쟁은 새로 검증하지 않았다.
+- 최종 Worker/Vercel 빌드·용량 PASS, 기존 전체448개 기능 검사 재사용. 운영16개 핵심 파일 해시 일치, health/access/quiz-journal 권한 검사 PASS.
+- GitHub 쓰기는403으로 거절됐다. Sites 소스 저장과 Vercel 직접 소스 배포는 성공했으며 GitHub main 동기화는 미완료다.
+- 실물 Windows/iOS/Android·GPU/FPS·장시간 다인 플레이 성능은 UNKNOWN.
+
+[전체 배포·보존·검증 기록](release-v44-2026-11-19.md).
+
+---
+
+# 배포 전 v44 개발 미리보기 기록 — 2026-11-19
+
+**아래는 운영 배포 전 개발 단계 당시의 기록이다. 당시에는 로컬 미리보기까지만 반영했다. 현재 운영 결과는 위 완료 기록을 따른다.** 아래의 v41/v39/v38 배포 ID, 실행 SHA와 운영 검증은 과거 이력이며 v44가 같은 운영 주소에 올라갔다는 근거가 아니다.
+
+- 기존 체크아웃과 개발 미리보기를 유지했다. 새로운 운영 서버나 저장소를 만들지 않았고 실제 운영 데이터를 수정하지 않았다.
+- 최종 빌드 후 현재 라이브 로컬 미리보기를 재시작했다. `sites-preview`는 **RUNNING**, 개발 서버 4173과 relay 3000을 유지한다. 기존 실제 게스트로 설정 → 지식집 → 퀴즈에 다시 들어가 저장 기록 유지와 최종 코드 제공을 확인했다. 1363×936에서 중앙 정렬된 밝은 퀴즈 UI를 확인했다. [재시작 후 화면](../qa/resort-v44/quiz-centered-final.jpg).
+- 최종 전체 자동 검사 **448/448 PASS, 63.006초**. 좌석·퀴즈·불꽃·권한·마이그레이션 회귀는 격리 테스트 데이터베이스에서 확인했다. 이 검사를 운영 DB migration 실행으로 표시하지 않는다.
+- 실제 브라우저에서도 격리 로컬 QA SQLite의 일반 게스트 세션으로 퀴즈 저장·개인지식집과 불꽃 신청을 확인했다. 운영 소유자 로그인이나 실제 운영 게스트를 사용한 재검증이 아니다.
+- 390×844·320×640·844×390의 CSS 배치 검사는 실제 Chrome UI/iframe viewport에서 수행했다. 3D 입퇴장·실물 모바일·Windows 확인을 대신하지 않는다.
+- GL_VENDOR/GL_RENDERER가 `Disabled`라 실제 3D 육안·GPU/FPS·실물 기기 검증은 **UNKNOWN**이다. CPU 형상 스틸도 런타임 완성 화면이 아니다.
+
+근거: [실제 브라우저 검사](../qa/resort-v44/browser-checks.json), [전체 검증 범위](TESTING.md), [성능 한계](PERFORMANCE.md). 변경 상세: [카메라](stable-camera-v44.md), [실내·좌석](seating-and-indoor-view-v44.md), [료칸](ryokan-craft-v44.md), [천문대](museum-interior-v44.md).
+
+## 공개하지 않은 로컬 배포물 검증
+
+- `npm run build`: PASS, Worker static assets 228개.
+- `npm run build:vercel`: PASS, Vercel용 web assets 생성.
+- `npm run test:budget`: PASS, 파일 229개. 전체 22,543,964 / 25,165,824 bytes, code gzip 1,014,070 / 1,280,000 bytes, 오디오 16,329,873 bytes.
+- `git diff --check`: PASS. 빌드 후 신규 CSS/JS와 SW 자산 등록을 재확인했다.
+
+위 결과는 로컬 배포물 생성·용량 검사다. 공개 업로드나 프로덕션 배포 성공을 의미하지 않으며 CPU/GPU·물리 기기 성능 수치도 아니다. 현재는 라이브 로컬 개발 미리보기만 유지한다.
 
 ---
 

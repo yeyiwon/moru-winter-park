@@ -1,3 +1,66 @@
+# 공개 운영 수정본 실측 — 2026-11-19
+
+이 절이 이번 변경의 측정이다. 아래 과거 기록은 각각의 당시 결과다. 실제 운영 서버·물리 스마트폰·Windows의 성능을 대신하지 않는다.
+
+## 렌더링과 초기 진입
+
+Mac Apple M2, Chrome 157, production 변환된 전체 모듈 그래프, 동일 격리 API, medium 고정. PC 1280×800 DPR 1, 모바일 에뮬레이션 390×844 기기 DPR 3/실제 렌더 DPR 1. 각각 광장/트리를 8초 측정했다. 이전은 Sites `59e7ec4` 전체 클라이언트, 이후는 이번 통합본이다. 새 익명 세션을 사전 발급했으므로 `readyMs`는 최초 서버 세션 발급 비용을 포함하지 않는다. 표본은 각 1회이며 통계적 일반화를 하지 않는다.
+
+| 조건·장면 | FPS 전→후 | 최저 단일 프레임 FPS 전→후 | p95 ms 전→후 | draw calls 전→후 | triangles 전→후 |
+|---|---:|---:|---:|---:|---:|
+| PC 광장 | 60.00→60.00 | 59.52→59.52 | 16.7→16.8 | 527→529 | 3.521M→3.535M |
+| PC 트리 | 60.00→60.00 | 59.52→59.52 | 16.7→16.7 | 581→580 | 4.358M→4.358M |
+| 모바일 화면 광장 | 60.00→60.00 | 59.52→59.52 | 16.8→16.8 | 292→293 | 2.230M→2.236M |
+| 모바일 화면 트리 | 60.00→60.00 | 59.52→59.52 | 16.7→16.7 | 339→339 | 2.995M→2.998M |
+
+최저 FPS는 표본에서 가장 긴 단일 frame interval의 역수이며 지속적인 최저 성능/1% low와 다르다. 애니메이션 시점에 따른 calls/triangle 차이가 있고 주요 장면/품질을 삭제하지 않았다. PC 게임 callback CPU는 광장 2.73→3.55ms, 트리 2.89→3.62ms로 증가한 단기 표본도 숨기지 않는다. 같은 Mac GPU를 사용한 모바일 에뮬레이션 60fps는 iPhone/Android 30fps 목표 달성을 뜻하지 않는다.
+
+| 초기 진입 | 이전 | 이후 |
+|---|---:|---:|
+| PC 최대 Long Task | 2,029ms | 370ms |
+| PC 준비 완료 | 2,610ms | 3,683ms |
+| 모바일 화면 최대 Long Task | 2,048ms | 358ms |
+| 모바일 화면 준비 완료 | 2,701ms | 3,562ms |
+
+geometry 생성과 병합을 나눠 브라우저가 로딩 화면을 그릴 기회를 준다. 개별 모델 생성·shader 준비의 300ms 이상 멈춤은 남아 있다. 전체 초기화가 빨라졌다고 주장하지 않는다.
+
+PC 트리 표본 JS heap 340.5→357.0MB, 모바일 화면 332.9→365.3MB. GC 시점과 모듈 구성이 다른 단기 표본이므로 메모리 절감/누수 없음의 근거가 아니다. GPU elapsed/실제 GPU 메모리/발열·배터리/30분 플레이는 UNKNOWN. 기존 품질 예산·DPR·LOD·파티클 및 실내 해제 정책을 유지했다.
+
+원시값: [PC 이전](../qa/operations-v45/before-desktop.json), [PC 이후](../qa/operations-v45/after-desktop.json), [모바일 화면 이전](../qa/operations-v45/before-mobile.json), [이후](../qa/operations-v45/after-mobile.json). 같은 카메라의 PNG도 같은 디렉터리에 저장했다.
+
+## 실제 WebSocket 부하
+
+로컬 Cloudflare workerd + 격리 SQLite, 네트워크 WebSocket, HTTP handler는 같은 Node 프로세스 호출. 15초씩 10Hz 이동·점프, 5건씩 채팅/장식/퀴즈 읽기, 3명의 동일 좌석 경쟁, 1회 재접속, 최대 10명의 동시 불꽃 요청을 실행했다. 모든 플레이어가 같은 관심 구역에 모인 조건이다. 실제 사람 100명의 WebGL 렌더링 또는 인터넷/D1 지연 시험은 아니다.
+
+| 연결 | 응답/송신 | p50 / p95 / p99 ms | 최대 ms | 출력 JSON bytes | pose DB 쓰기 |
+|---|---:|---:|---:|---:|---:|
+| 10 | 1,500/1,500 | 3.49 / 5.47 / 9.94 | 15.85 | 2,243,954 | 10 |
+| 25 | 3,750/3,750 | 7.79 / 14.25 / 16.73 | 24.94 | 13,482,026 | 25 |
+| 50 | 7,450/7,450 | 12.90 / 21.01 / 23.44 | 26.66 | 35,357,280 | 50 |
+| 100 | 15,000/15,000 | 15.39 / 27.19 / 32.97 | 39.36 | 72,213,303 | 100 |
+
+네 단계 모두 연결·응답 성공 100%, 거부 0, 데이터 저장 오류 0, 공연 ID 1개, 재접속 성공. 동일 좌석은 200 한 건/409 두 건. 100명에서 15,000 이동 패킷 동안 pose DB 쓰기는 100회 checkpoint뿐이었다. 총 DB 호출 1,020/변경 statement 336이며 D1의 billable rows가 아니다. [원시 load.json](../qa/operations-v45/load.json).
+
+초기 full profile 구현의 100명/15초 출력 182.19MB에서 변경 필드 전송 후 72.21MB로 약 60% 감소했다. 초기 비교는 좌석 시나리오 추가 전이며 동일 코드·동일 부하의 엄밀한 A/B가 아니므로 RTT 개선율은 계산하지 않는다. [초기 기록](../qa/operations-v45/load-before-delta.json). 현재 100명 군집에서 약 4.81MB/s 전체 송신(1인 평균 약 48KB/s)이므로 모바일 데이터 사용과 혼잡 지역 최적화는 여전히 중요하다.
+
+Node test harness RSS 214.7→238.3MB, Node CPU 3.06초/15초. **이는 Worker CPU/RAM이 아니다.** Worker handler p95 1ms는 workerd 시계 해상도에 제한된다. 실제 Worker CPU·메모리·provider 청구 지표는 UNKNOWN이다. 장시간/운영 100명 SLA를 선언하지 않는다.
+
+## 세션 갱신 지속 검사
+
+같은 workerd/격리 SQLite에서 100명을 140초 유지했다. 120초 lease보다 길게 실행하며 40초 간격 갱신 3회, 10초 DB checkpoint, 한 클라이언트 재접속을 포함한다. 이동 응답 139,000/139,000, 거부·저장 오류 0, 활성 연결 100, 공연 ID 1개, 좌석 경쟁 200 한 건/409 두 건. p50/p95/p99 13.25/27.79/33.52ms, 최대 140.86ms. 출력 664,388,726bytes, pose DB 쓰기 1,300회. [원시 자료](../qa/operations-v45/lease-stability.json).
+
+Node harness RSS 185.2→211.5MB, Node CPU 24.33초/140초. Worker CPU/RAM은 UNKNOWN이며 이 표본으로 30분·수시간 누수 없음이나 배포 중 복구를 선언하지 않는다.
+
+## 운영 비용 추정의 범위
+
+2026-11-19 확인한 공식 요금: [Workers](https://developers.cloudflare.com/workers/platform/pricing/), [Durable Objects](https://developers.cloudflare.com/durable-objects/platform/pricing/), [D1](https://developers.cloudflare.com/d1/platform/pricing/). Workers Paid 최소 $5/월, DO는 월 1M 요청 포함 후 $0.15/M, incoming WS message는 20:1 계수, outgoing은 별도 요청 과금 없음. DO duration은 월 400k GB-s 포함 후 $12.50/M GB-s다. 포함량은 계정 전체 사용과 공유하며 과금 단위 반올림도 적용된다.
+
+가정: 100명이 계속 10Hz 이동, 30일간 매일 1시간이면 108M incoming message → 5.4M DO 요청 상당. **WS 메시지 부분만 약 $0.75/월 추가**다. 매일 24시간이면 129.6M 요청 상당으로 이 부분만 약 $19.35/월 추가다. Paid 기본료를 합치면 각각 약 $5.75/$24.35이지만 **총 운영 비용 견적이 아니다**. handshake·signed RPC·DO 저장·다른 계정 사용·Sites/D1·Vercel·외부 모니터링·세금이 제외됐다. CPU/저장량이 실측되지 않아 합계는 UNKNOWN이다.
+
+D1 Paid에는 25B read rows/50M write rows/5GB가 포함되고 초과는 $0.001/M reads, $1/M writes, $0.75/GB-month다. 이 프로젝트 DB는 Sites 관리이므로 해당 가격을 실제 Sites 청구액으로 간주하지 않는다. 이번 작업에서 유료 리소스를 생성하지 않았다.
+
+---
+
 # v44 · 초기화 Long Task 비교
 
 | 조건 | 항목 (ms) | 이전 | 이후 |
@@ -18,6 +81,39 @@
 # v43 · 공개 입장과 입력 안정화의 성능 측정
 
 2026-11-19. Mac M2/Chrome 157, 1280×800 DPR 1, medium 고정, 12초씩 비교. 광장 FPS 60.00→60.00, CPU 6.00→5.05ms, GPU 11.52→11.25ms. 트리 FPS 60.00→60.00, CPU 3.41→3.35ms, GPU 8.93→10.51ms. 트리 GPU 증가도 포함한 단기 표본이며 모든 기기 성능 향상은 주장하지 않는다. 실제 Windows/스마트폰 GPU·장시간 안정성 UNKNOWN. 정지 pose DB 쓰기만 8초 heartbeat로 줄이고 기존 렌더/VFX 품질 정책을 유지했다. [조건·원시값](public-world-v43.md#동기화와-성능).
+
+# v44 개발 미리보기의 성능 범위 — 2026-11-19
+
+**v44의 실제 FPS·GPU 시간·실물 모바일 및 Windows 성능은 UNKNOWN이다.** 현재 Chrome은 GL_VENDOR/GL_RENDERER가 `Disabled`여서 WebGLRenderer를 생성하지 못했다. 아래 v42/v41/v38 수치를 이번 버전의 실측으로 사용하지 않는다. 전체 자동 검사 448개가 63.006초에 통과한 결과도 게임 프레임 성능을 뜻하지 않는다.
+
+## 확인한 비용과 구조
+
+- 불꽃은 기존 고정 입자 용량·공유 score·품질별 draw range를 사용하고, 요청을 서버의 한 공연 일정으로 합친다. 신청 기능 때문에 렌더러나 매 프레임 네트워크 호출을 추가하지 않는다.
+- 수족관은 기존 물고기 low/medium/high 12/24/32와 기포 20/40/64의 예산을 유지한다. 기존 shader와 instance에 모션·물빛을 보강하고 별도 reflection 렌더 패스를 추가하지 않았다. shader 변경의 실제 GPU 비용은 미측정이다.
+- 료칸 마감은 저장된 mesh 삼각형 **92,153 → 96,149**, mesh 객체 **88 → 96**이며 광원 객체 3개는 유지한다. 이 계산은 InstancedMesh의 원형 geometry를 한 번만 세므로 실제 draw call 또는 화면에 그린 삼각형 수가 아니다. [료칸 측정 방법](ryokan-craft-v44.md).
+- 천문대는 mesh 삼각형 **143,355 → 142,735**, geometry가 있는 renderable 객체 **63 → 88**, 투명 renderable 객체 **5 → 13**, 광원 2개 유지다. 삼각형 감소만으로 성능 향상을 주장하지 않는다. [천문대 구성·수명 관리](museum-interior-v44.md).
+- 좌석 표면 picking은 사용자가 탭할 때만 수행하며 실제 mesh 가림에는 기존 triangle BVH를 재사용한다. 새로운 상시 picking 루프나 렌더 패스는 없다. 서버 예약은 기존 좌석 테이블과 유일성 제약을 사용한다.
+- 실내 lazy 생성·해제, 품질별 입자/모션 제한, reduced motion과 비활성 장면 갱신 제한을 유지한다. 실제 장시간 누수 없음이나 모든 기기의 무끊김을 보장하지 않는다.
+
+## 시야 수치와 UI 검증의 의미
+
+완성된 료칸 mesh의 room 제한·cameraClearance·setCamera를 통과한 카메라 거리는 입장 **15.000m**, 오마카세 세 자리 각각 **14.921m**, pitch 모두 **0.650rad**다. 이는 형상과 충돌 수치이며 FPS나 체감 멀미 측정은 아니다. [시야·좌석 근거](seating-and-indoor-view-v44.md), [카메라 정책](stable-camera-v44.md).
+
+390×844·320×640·844×390에서 실제 CSS 배치와 게스트 퀴즈 저장·불꽃 신청 UI를 검사했다. 물리 스마트폰의 렌더·키보드·오디오 성능 검사가 아니다. [브라우저 원시 근거와 WebGL 차단 원인](../qa/resort-v44/browser-checks.json). 최종 빌드 후 로컬 서버를 재시작한 뒤에도 기존 게스트의 저장 기록과 퀴즈 재진입을 확인했다. 1363×936 퀴즈 중심 오차 `[0, -0.0078125]`px는 CSS 배치 수치이며 프레임 성능이 아니다. [최종 UI 화면](../qa/resort-v44/quiz-centered-final.jpg).
+
+CPU 형상 스틸은 모델 겹침과 구조를 보기 위한 자료다. 브라우저 런타임 완성 화면이나 물·유리 shader 성능의 증거로 사용하지 않는다. 이번 변경은 활성 로컬 미리보기만 유지하며 공개 업로드·커밋·프로덕션 배포는 수행하지 않았다.
+
+## 최종 로컬 빌드 용량
+
+`npm run build`, `npm run build:vercel`, `npm run test:budget`, `git diff --check`가 모두 PASS했다. Worker build는 static assets 228개를 생성했고, 용량 검사는 파일 229개를 집계했다. 빌드 후 신규 CSS/JS와 SW 자산 등록도 보존됐다.
+
+| 용량 검사 항목 | 실제 값 | 한도 |
+| --- | ---: | ---: |
+| 전체 파일 | 22,543,964 bytes | 25,165,824 bytes |
+| Code gzip | 1,014,070 bytes | 1,280,000 bytes |
+| 오디오 | 16,329,873 bytes | 별도 한도 미기재 |
+
+용량 예산 통과는 실제 다운로드 시간, 프레임 시간, CPU/GPU 비용이나 실물 기기의 무끊김 보장이 아니다. 기존 성능 수치와 다른 종류의 검사로 구분한다.
 
 ---
 

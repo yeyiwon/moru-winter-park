@@ -1,0 +1,38 @@
+{
+  "date": "2026-11-19",
+  "kind": "real browser UI with width-constrained same-origin iframe",
+  "widths": [
+    320,
+    390
+  ],
+  "nickname": {
+    "profileHeight": 68,
+    "previewCanvasTopBeforeAndAfter": 193,
+    "horizontalOverflow": false,
+    "inputFontSize": 16,
+    "saveCancelTarget": [
+      44,
+      44
+    ]
+  },
+  "activities": [
+    "내 지식집",
+    "불꽃놀이 신청"
+  ],
+  "weatherContainsActivities": false,
+  "removedCameraHelpDuplicateMuteCount": 0,
+  "fullTests": {
+    "passed": 457,
+    "failed": 0,
+    "durationMs": 49286.265043
+  },
+  "gpuRendering": "unavailable",
+  "physicalDevices": "not tested",
+  "builds": {
+    "worker": "PASS",
+    "vercel": "PASS",
+    "budget": "PASS",
+    "totalBytes": 22542718,
+    "codeGzipBytes": 1012736
+  }
+}

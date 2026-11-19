@@ -11,3 +11,10 @@ test('upstream hosting cookies cannot replace the guest session on Vercel',async
  const onlyHosting=await proxyRequest(request,async()=>Response.json({ok:true},{headers:{'Set-Cookie':'hosting_cookie=ignore; Path=/'}}));assert.equal(onlyHosting.headers.has('set-cookie'),false);
 });
 test('room transitions and show/operations endpoints reach the shared server without owner escalation',async()=>{for(const route of ['region','fireworks','operations','experience','world-state']){let called=false;const method=route==='world-state'?'GET':'POST',r=await proxyRequest(new Request('https://park.vercel.app/api/'+route,{method,headers:{Origin:'https://park.vercel.app','OAI-Authenticated-User-Email':'owner@example.test'},body:method==='POST'?'{}':undefined}),async(url,options)=>{called=true;assert.equal(url,backendOrigin+'/api/'+route);assert.equal(options.headers.has('OAI-Authenticated-User-Email'),false);return Response.json({error:'server policy'}, {status:403});});assert.ok(called);assert.equal(r.status,403);}});
+test('personal knowledge reads, pagination and answers reach the backend without forwarding another owner',async()=>{
+ const cookie='winter_session='+'b'.repeat(64),answer={action:'answer',questionId:'test-question',revision:'revision',choice:1,attemptId:'attempt-123'};
+ for(const method of ['GET','POST']){
+  let received;const response=await proxyRequest(new Request('https://park.vercel.app/api/proxy?route=quiz-journal&cursor=50&visitor=someone-else',{method,headers:{Origin:'https://park.vercel.app',Cookie:cookie,'OAI-Authenticated-User-Id':'forged'},body:method==='POST'?JSON.stringify(answer):undefined}),async(url,options)=>{received={url,...options};return Response.json({records:[],nextCursor:null});});
+  assert.equal(response.status,200);assert.equal(received.url,backendOrigin+'/api/quiz-journal?cursor=50');assert.equal(received.headers.get('cookie'),cookie);assert.equal(received.headers.has('OAI-Authenticated-User-Id'),false);if(method==='POST')assert.deepEqual(JSON.parse(received.body),answer);
+ }
+});

@@ -1,3 +1,52 @@
+# 공개 운영 수정본 검증 — 2026-11-19
+
+이번 수정본의 결과를 먼저 기록한다. 아래의 v43/v44/v45 과거 배포 기록은 당시 근거이며 현재 배포 상태를 뜻하지 않는다.
+
+## 자동 검사
+
+최종 전체 **479/479 PASS**, 실패·취소·건너뜀 0, 122.646초. 실제 Mac Chrome 브라우저 **17/17 PASS**, page/예상 외 console/shader 오류 0. Worker·Vercel·WebSocket 빌드와 자산 예산 모두 PASS.
+
+- JavaScript 구문 검사: `npm run check`. 프로젝트에 TypeScript/ESLint 설정이 없어 이를 별도 typecheck/lint 통과로 표시하지 않는다.
+- 기존 전체 회귀 + 소유자 인증·공동 공연·실제 workerd WebSocket·migration 데이터 보존 검사: 최종 결과는 [검증 manifest](../qa/operations-v45/verification.json).
+- Worker/Vercel/WebSocket build와 정적 자산 budget 실행. 정확한 크기·횟수는 manifest를 따른다.
+- 가입 없는 공용 입장/최대 수용량/세션 위조·재사용·CSRF/관리자 403/닉네임·외형 저장 rate limit/허용 Origin/악성 payload·빈도 제한을 검사한다.
+- 원격 이동 sequence·정지·근접32명·Hibernation 복원·강퇴 후 ticket 거부, 존재하지 않는 관람차 탑승 pose 거부를 확인한다.
+- 25명의 동시 공연 요청을 같은 ID로 합치고, 10초 예고·종료 후 900초·관리자 cooldown 우회·활성 공연 중복 금지를 실제 SQL로 검사한다.
+- Published migrations 0000–0016으로 만든 DB에 방문자·장식·소원·지식집을 저장한 뒤 0017 적용 전후 행이 동일하다. 운영 DB에는 쓰지 않았다.
+- 새 실시간 서버 장애를 주입했을 때 신규 입장 503과 관리자 degraded 상태가 나온다. 구성하지 않았을 때는 기존 polling이다.
+
+초기 전체 회귀 재실행에서 runtime fixture가 두 번만 가짜 RAF를 제공해 작업 분할 도중 기다렸다. 실제 브라우저는 정상 완료했다. fixture를 프레임 pump로 바꿨다. 이후 전체/단독 실행의 20초 watchdog 실패도 기록했으며, CPU 기반 vm/jsdom에서 실제 geometry를 구성하는 검사는 60초 완료 제한·16ms 프레임 pump·최대 4개 동시 실행으로 다시 검사했다. 이 watchdog은 성능 목표가 아니며 실제 초기화 시간은 브라우저에서 따로 측정한다. 장기 부하 도구도 큰 latency 배열을 `Math.max(...array)`로 펼쳐 집계가 실패한 첫 실행을 폐기하고 reduce 집계로 수정해 재실행했다. 두 실패를 서비스 성공 결과에 섞지 않는다.
+
+최종 브라우저 검사에서 입장 전 `/api/quiz` 401을 재현했다. 정적 문항은 먼저 읽되 서버 검토 문항은 입장 완료 이벤트 뒤에 읽도록 고쳤다. 이전 요청의 늦은 응답이 최신 문항을 덮어쓰지 않는 회귀 검사도 추가했다.
+
+## 실제 브라우저
+
+[scripts/verify-operations-browser.mjs](../scripts/verify-operations-browser.mjs), Mac Chrome 157. 매 실행 전 `dev-realtime.mjs`를 새 임시 DB로 시작한다. 이전 공연의 15분 대기 상태가 있는 DB를 재사용하면 신청 버튼이 비활성인 것이 정상이며 테스트 성공으로 간주하지 않는다. 게스트와 관리자용 **격리 로컬 DB** 사용. [브라우저 원시 결과](../qa/operations-v45/browser.json).
+
+- 서로 다른 두 브라우저 context의 공개 입장·원격 캐릭터·채팅·공통 공연 ID/seed/시각.
+- PC 키보드 이동, 모바일 CDP touch의 원 밖 조이스틱 입력·손 떼기 정지.
+- 실제 화면의 관람차/리프트 탑승 버튼 → 서버 예약 → 이동 유지 → 종료.
+- 390×844 세로·844×390 가로 설정/지도/커마 패널 경계.
+- 13초 offline 후 online 자동 복구.
+- 게스트 관리 API 403, 개발용 소유자 fixture의 `/admin` 자동 열기·연결 지표·같은 공연 중단.
+- page exception 및 예상하지 않은 console/shader error 검사. 의도적으로 offline으로 만든 페이지에서 해당 시간에 발생한 `ERR_INTERNET_DISCONNECTED`만 별도 기록한다. 그 외 console error는 모두 실패로 처리한다.
+
+스크린샷: [PC 활동](../qa/operations-v45/desktop-activities.png), [모바일 커마](../qa/operations-v45/mobile-customization.png), [모바일 지도](../qa/operations-v45/mobile-map.png), [가로 화면](../qa/operations-v45/mobile-landscape.png), [관리](../qa/operations-v45/admin.png).
+
+이 검사는 실제 스마트폰·Windows/Edge/Safari, 운영 소유자 provider 로그인 또는 운영 100인 플레이 검사가 아니다. 물리 기기·배터리·앱 잠금·네트워크 NAT·멀티터치 카메라의 실물 조작감은 UNKNOWN이다.
+
+## 부하·렌더링
+
+[PERFORMANCE](PERFORMANCE.md)에 조건·FPS·p95·최저 단일 프레임·초기화·CPU/메모리 한계를 기록했다. 실제 workerd에 10/25/50/100개 WebSocket으로 이동·점프·채팅·퀴즈 조회·소원 장식·좌석 경쟁·공연 신청·재접속을 수행한다. 브라우저 100개 또는 사람 100명의 시험이 아니다.
+
+100명 지속 검사에서도 lease 기간을 넘겨 갱신·재접속한다. 30분 이상 플레이·호스팅 Worker CPU/RAM·전체 DB 복원·실물 기기 성능은 UNKNOWN이다.
+
+## 운영 적용 전 미완료
+
+별도 staging/production WS Worker 준비, 실제 전체 D1 backup/restore, 같은 SHA의 GitHub·Sites·Vercel 배포, 공식 `/admin`의 실제 소유자 인증 왕복, 배포 중 연결 복구, 물리 기기 smoke test, 외부 장애/비용 알림. **배포 보류를 유지하며 이 항목들을 완료 처리하지 않았다.** CI 파일은 작성했으나 GitHub hosted workflow 실행은 NOT RUN이다.
+
+---
+
 # v44 카메라·좌석·트리·공연·퀴즈
 
 전체 **393/393 PASS**(149.95초), build·build:vercel·test:budget PASS. Mac Chrome 상대 마우스/터치, 멀티터치+점프, 양쪽 리프트 시선 유지, 트리 click/tap·닫기 복원, 두 게스트 오마카세 서로 다른 좌석/공유/일어나기, 동기화 공연·선택 감상·수동 해제, 퀴즈 결과 확인. 브라우저 pageerror 0. 실물 Windows/휴대폰·장시간·운영 배포 후 결과 UNKNOWN / NOT RUN. 별도 lint/typecheck N/A. [재현과 화면](camera-interactions-v44.md#검증).
@@ -11,6 +60,56 @@
 전체 **385/385 PASS**, 두 production build·용량 검사 PASS. 별도 TypeScript/lint 명령 없음. Mac Chrome에서 실제 Pointer Lock·WASD·방향키·한글 물리 키·텍스트 입력 차단·커마 저장 복귀를 검증했다. 390/320/844px 반응형과 독립 게스트 2개 흐름 20개 PASS, 관리자 API 거절 403, page/WebGL 오류 0. 물리 Windows/Edge/iPhone/Android 결과는 UNKNOWN이다. 음악은 무음 sink 디코딩·재생 시간·전환·재접속을 확인했으며 실제 스피커 청취 UNKNOWN.
 
 공개 QA는 더 이상 초대 토큰이 필요하지 않다. `QA_URL`/`QA_OWNER_URL`을 같은 격리 DB 서버로 지정하여 `QA_FLOW=1 QA_MOBILE=1 node scripts/verify-multiplayer.mjs`로 재현한다. 기존 v41/v42의 초대 기반 검증은 당시 정책 기록이며 현재 정책은 아니다. [전후 화면·원시 결과](public-world-v43.md).
+
+## 2026-11-19 · v44 운영 반영 확인
+
+## 2026-11-19 · v45 직접 시야·UI 검증
+
+전체 457/457 PASS(49.286초), Worker·Vercel 빌드와 정적 용량 예산 통과. 실제 브라우저 320/390px에서 닉네임 편집 전후 미리보기 y=193px·프로필 높이68px 동일, 가로 넘침 없음. 활동 탭·중복 음악 음소거/시야 버튼/왼쪽 조작법 제거 확인. GPU 렌더링 및 실물 기기 조작감은 UNKNOWN. [상세 및 로그](direct-input-ui-v45.md).
+
+Sites48 succeeded, Vercel READY 및 기존 alias 확인. adapter의 실제 Vercel 빌드에서239개 정확한 소스+설정 검증과 baseline170개 복원 성공. 운영 핵심16파일 해시 일치, health200/access200/비승인 quiz-journal401 확인. 실제 브라우저의 초대 화면에서 새로운 투명 글래스 CSS를 확인했다. 기존448개 기능 검사와 모바일 배치 검사를 재사용했다. 새 운영 게스트 쓰기·3D/GPU·실물 기기·장시간 다인 동시 접속을 수행한 것으로 표시하지 않는다. [검증 결과](../qa/release-v44/production-verification.json), [전체 기록](release-v44-2026-11-19.md).
+
+# v44 개발 미리보기 검증 — 2026-11-19
+
+후속 CSS 조정: 흰색 알파를 낮춘 투명 글래스·밝은 전경으로 변경한 뒤 데스크톱 설정·드롭다운·퀴즈와390×844 실제 앱 iframe의 중앙 정렬·투과를 확인했다. 아래448개 검사는 그 전 기능 구현의 결과이며 이번 CSS 조정 때문에 전체 기능 검사를 다시 실행하지는 않았다. [후속 UI 근거](../qa/resort-v44/clear-glass-checks.json), [실제 화면·한계](clear-glass-v44.md).
+
+이번 기록은 현재 활성 로컬 개발 미리보기와 격리된 QA 데이터베이스의 결과다. 공개 업로드·커밋·프로덕션 배포는 수행하지 않았다. 아래의 v42/v41 운영 검증은 해당 버전의 과거 기록으로 보존하며 v44의 실행 결과로 사용하지 않는다.
+
+## 자동 검사
+
+최종 전체 `npm test`는 **448/448 PASS**, 실패·취소·건너뜀 0개, **63.006초**였다. 카메라 요청값 보존, 실내 입장과 실제 좌석 선택, 좌석 동시 경쟁, 게스트 불꽃 신청, 개인 퀴즈 기록, 식사 좌석 만료 복구, 료칸·천문대 geometry/동선과 자원 해제 회귀를 포함한다. `park.js`와 관련 모듈의 구문 검사 및 `git diff --check`도 통과했다.
+
+카메라·좌석의 앱 통합 테스트는 실제 DOM과 Three scene을 사용하되 GPU renderer는 stub으로 대체한다. 실제 의자를 화면 좌표로 투영한 pointer 입력 → 정확한 좌석 번호 요청 → 해당 좌표 착석까지 검사하지만 실제 화면 렌더나 체감 조작을 검증한 것은 아니다.
+
+## 실제 브라우저에서 확인한 범위
+
+실제 Chrome UI와 격리 SQLite에 연결된 일반 게스트 세션을 사용했다. 같은 origin의 iframe으로 **390×844, 320×640, 844×390** CSS viewport를 검사했다. 이 크기 검사를 실물 휴대폰 테스트로 표시하지 않는다.
+
+- 커스터마이징 미리보기·선택지·저장 영역의 분리, 작은 화면의 음악 버튼과 채팅 입력, 밝은 유리 패널·텍스트·지도 아이콘/툴팁 표시를 확인했다.
+- 실제 게스트가 퀴즈에 답하고 서버의 저장 완료 응답을 받은 뒤 개인 지식집의 문항·해설·출처를 확인했다.
+- 실제 게스트가 불꽃을 신청하여 버튼의 `10초 후 시작` → `불꽃놀이 진행 중` 상태 전환을 확인했다. 3D 불꽃 자체를 이 브라우저에서 렌더한 것은 아니다.
+- 실제 `quick-quiz.js`와 전체 CSS를 사용하는 `body.inside-room` UI fixture에서 세 화면 크기의 중앙 정렬을 확인했다. 가로 화면은 내부 스크롤을 유지했다. 이 fixture는 3D 실내 입장을 재현하지 않는다.
+- WebGL 오류 이후 로딩 레이어가 아래 UI의 포인터를 가로채지 않고 설정을 열 수 있음을 확인했다.
+- 최종 빌드 후 라이브 미리보기 서버를 재시작하고 기존 실제 게스트로 설정 → 내 지식집 → 퀴즈 재진입을 확인했다. 저장한 기록이 유지됐다. 1363×936에서 퀴즈 dialog는 `[401.5, 197.171875, 560, 541.640625]`, 화면 중심 오차는 `[0, -0.0078125]`px였으며 밝은 팔레트를 유지했다. [재시작 후 최종 화면](../qa/resort-v44/quiz-centered-final.jpg).
+
+원시 근거: [브라우저 검사 JSON](../qa/resort-v44/browser-checks.json). 관련 캡처: [모바일 유리 UI](../qa/resort-v44/mobile-glass-after.jpg), [지식집](../qa/resort-v44/journal-glass-after.jpg), [퀴즈 중앙 정렬](../qa/resort-v44/quiz-centered-mobile.jpg).
+
+## 3D 검증 한계
+
+이 실행 환경은 **GL_VENDOR = Disabled, GL_RENDERER = Disabled**이며 WebGLRenderer 생성이 실패했다. 따라서 실제 카메라 구도의 편안함, 수족관 shader의 GPU 컴파일·물빛, 셰프의 렌더된 전달 동작, 실물 Windows/iOS/Android의 입력·오디오·FPS·발열은 **UNKNOWN**이다. 이 실패를 앱 전체 3D 성공이나 특정 OS의 오류 해결로 보고하지 않는다.
+
+CPU로 만든 료칸·천문대 형상 스틸은 mesh 구성과 겹침을 검토하는 참고 자료다. 실제 WebGL shader·후처리·조명 예산·게임 카메라를 재현한 런타임 완성 화면이 아니다.
+
+## 로컬 빌드와 용량 검사
+
+- `npm run build`: PASS, Worker static assets 228개 생성.
+- `npm run build:vercel`: PASS, Vercel용 web assets 생성.
+- `npm run test:budget`: PASS, 검사 파일 229개, 전체 22,543,964 bytes / 한도 25,165,824 bytes, code gzip 1,014,070 bytes / 한도 1,280,000 bytes, 오디오 16,329,873 bytes.
+- `git diff --check`: PASS. 빌드 후 신규 CSS/JS와 SW 자산 등록이 보존됨을 확인했다.
+
+이 값은 빌드·배포물 용량 검사이며 실제 CPU/GPU/FPS·네트워크·물리 기기 성능이나 프로덕션 배포 성공을 뜻하지 않는다.
+
+구현과 개별 근거: [고정 시야 정책](stable-camera-v44.md), [실내 시야·직접 좌석 선택](seating-and-indoor-view-v44.md), [료칸 마감](ryokan-craft-v44.md), [천문대 실내](museum-interior-v44.md).
 
 ---
 

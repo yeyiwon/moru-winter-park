@@ -1,0 +1,128 @@
+/* Compact controls and one bright, frosted-ice surface across the resort. */
+#chat-toggle,#emote-toggle{color:var(--ui-ink);background:var(--ui-hud);border-color:var(--ui-rim);box-shadow:var(--ui-shadow);backdrop-filter:none;-webkit-backdrop-filter:none;opacity:1}
+#chat-toggle[aria-expanded=true],#emote-toggle[aria-expanded=true]{background:var(--ui-selected);border-color:var(--ui-selected-edge)}
+#emote-panel button{background:var(--ui-field);color:var(--ui-ink)}
+#emote-panel button:hover{background:var(--ui-selected)}
+.touch-actions button{color:var(--ui-ink);background:var(--ui-hud);border-color:var(--ui-rim);backdrop-filter:none;-webkit-backdrop-filter:none}
+.touch-actions #run-button[aria-pressed=true],.touch-actions #bubble-hold[aria-pressed=true],.touch-actions .active{color:var(--ui-accent);background:var(--ui-selected);border-color:var(--ui-selected-edge)}
+/* Nicknames and the completed-activity exit remain text over the night world.
+   Message bubbles and action pills receive the readable glass surface. */
+#self-label b,#visitor-labels .visitor-label>b{color:var(--ui-world-label);background:transparent;border-color:transparent;text-shadow:0 1px 4px #0b2034c7;backdrop-filter:none;-webkit-backdrop-filter:none}
+.speech-bubble,#self-bubble,#visitor-labels .speech-bubble{color:var(--ui-ink);background:var(--ui-hud);border-color:var(--ui-rim);box-shadow:var(--ui-shadow);text-shadow:var(--ui-text-shadow);backdrop-filter:none;-webkit-backdrop-filter:none}
+#chat-log{color:var(--ui-world-label);text-shadow:0 1px 5px #0b2034e6}
+#chat-log b{color:var(--ui-world-label)}
+body.chat-typing #chat-log{color:var(--ui-ink);background:var(--ui-hud);border:1px solid var(--ui-rim);border-radius:14px;padding:9px 13px;box-shadow:var(--ui-shadow);text-shadow:var(--ui-text-shadow)}
+body.chat-typing #chat-log b{color:var(--ui-accent)}
+#chat-status:not(:empty){display:table;max-width:100%;padding:5px 10px;border-radius:10px;background:var(--ui-hud);color:var(--ui-danger);text-shadow:var(--ui-text-shadow)}
+#place-card h2,#ride-label{color:var(--ui-world-label);text-shadow:0 1px 5px #0b2034e6}
+#place-actions button,#ski-controls button{color:var(--ui-ink);background:var(--ui-hud);border:1px solid var(--ui-rim);box-shadow:var(--ui-shadow);text-shadow:var(--ui-text-shadow);backdrop-filter:none;-webkit-backdrop-filter:none}
+#place-actions button:hover,#ski-controls button:active{background:var(--ui-hover);border-color:var(--ui-selected-edge)}
+#place-actions kbd{color:var(--ui-accent);background:var(--ui-field);border-color:var(--ui-edge)}
+#admin-panel :is(.admin-row button,[data-refresh],.admin-show-actions button,[data-generate-quizzes]){background:var(--ui-field);border-color:var(--ui-edge);color:var(--ui-ink)}
+#admin-panel [data-show-error]{color:var(--ui-danger)}
+#admin-panel .admin-state[data-state=cooldown]{color:var(--ui-accent);background:var(--ui-selected)}
+.studio-public-actions{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0 0 14px;border-bottom:1px solid var(--ui-edge)}
+.studio-public-actions button{display:inline-flex;align-items:center;justify-content:center;gap:8px;flex:1 1 130px;min-width:0;min-height:44px;padding:9px 12px;border:1px solid var(--ui-edge);border-radius:12px;background:var(--ui-field);color:var(--ui-ink);font-size:12px;line-height:1.4;white-space:normal}
+.studio-public-actions button svg{width:17px;height:17px;flex:none;fill:none;stroke:currentColor;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round}
+#firework-request-status{flex:1 1 100%;font-size:11px;line-height:1.5;color:var(--ui-muted);overflow-wrap:anywhere}
+#firework-request-status:empty{display:none}
+#pane-audio .music-modes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+#pane-audio .music-modes button{min-width:0;min-height:44px;padding:8px 5px;font-size:11px;line-height:1.4;white-space:normal}
+#pane-audio #master-mute{font-size:12px;min-height:44px}
+
+/* The general status belongs to the toolbar, fireworks status to its own row. */
+#admin-panel{width:min(560px,calc(100vw - 24px))}
+#admin-panel .panel-heading{margin:0;min-height:44px}
+#admin-panel .panel-heading h2{font-size:16px;line-height:1.4;font-weight:550}
+#admin-panel .panel-scroll{display:flex;flex-direction:column;gap:0;font-size:13px;line-height:1.5}
+#admin-panel .admin-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-bottom:8px}
+#admin-panel .admin-toolbar output{flex:1;min-width:0;margin:0;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+#admin-panel .admin-toolbar output:empty{display:none}
+#admin-panel button{min-height:44px;padding:8px 11px;font-size:12px;line-height:1.35}
+#admin-panel .admin-section{border:0;border-bottom:1px solid var(--ui-edge);margin:0;padding:0;background:transparent}
+#admin-panel .admin-section>summary{display:flex;align-items:center;gap:10px;min-height:48px;padding:8px 0;font-size:13px;font-weight:500;line-height:1.4}
+#admin-panel .admin-section>summary>span:first-child{flex:1;min-width:0}
+#admin-panel .admin-count{flex:none;font-size:11px;font-weight:400;color:var(--ui-muted)}
+#admin-panel .admin-state{display:inline-flex;align-items:center;flex:none;width:auto;max-width:110px;min-height:24px;margin:0;padding:3px 8px;border-radius:8px;background:var(--ui-field);color:var(--ui-muted);font-size:11px;font-weight:400;line-height:1.4}
+#admin-panel .admin-state[data-state=scheduled],#admin-panel .admin-state[data-state=playing]{background:var(--ui-selected);color:var(--ui-accent)}
+#admin-panel .admin-show-actions{display:flex;gap:8px;padding:0 0 12px}
+#admin-panel .admin-show-actions button{flex:1;min-width:0}
+#admin-panel [data-show-error]{margin:0 0 12px;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+#admin-panel [data-show-error][hidden]{display:none}
+#admin-panel .admin-section-tools{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;font-size:11px;color:var(--ui-muted)}
+#admin-panel .admin-row{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:start;gap:8px 12px;padding:12px 0;border-bottom:1px solid var(--ui-divider)}
+#admin-panel .admin-row-copy{min-width:0}
+#admin-panel .admin-row-title{margin:0;font-size:13px;font-weight:450;line-height:1.55;overflow-wrap:anywhere}
+#admin-panel .admin-row-detail{margin:4px 0 0;font-size:12px;line-height:1.5;color:var(--ui-muted);overflow-wrap:anywhere}
+#admin-panel .admin-row-state{display:inline-block;margin-top:5px;font-size:11px;line-height:1.5;color:var(--ui-accent)}
+#admin-panel .admin-row-actions{display:flex;flex-wrap:wrap;align-items:center;gap:6px;justify-content:flex-end;max-width:220px}
+#admin-panel .admin-row-actions button{flex:none;margin:0}
+#admin-panel .admin-empty,#admin-panel .admin-generation{margin:0;padding:8px 0 14px;font-size:12px;line-height:1.55;color:var(--ui-muted)}
+#admin-panel .admin-generation:empty{display:none}
+#admin-panel [data-quiz-form]{padding:12px 0 16px;border-top:1px solid var(--ui-edge)}
+#admin-panel [data-quiz-form] label{font-size:12px;gap:6px;margin:10px 0}
+#admin-panel [data-quiz-form] input,#admin-panel [data-quiz-form] textarea,#admin-panel [data-quiz-form] select{min-width:0;font-size:14px;line-height:1.5}
+#admin-panel [data-quiz-form] .check-label input{min-height:initial}
+#admin-panel .fine-print{font-size:11px;line-height:1.55;margin:4px 0 10px}
+
+/* Entering a panel suppresses the complete gameplay HUD, including live rides. */
+body:is(.studio-open,.quiz-open) :is(#joystick,.touch-actions,#hud-map,#chat-toggle,#chat-form,#chat-log,#emote-toggle,#emote-panel,#place-card,#ride-hud){visibility:hidden!important;pointer-events:none!important}
+body:is(.studio-open,.quiz-open) #chat-form{display:none!important}
+dialog[data-nonmodal][data-panel-suspended],body:is(.studio-open,.quiz-open) dialog[data-nonmodal][open]{visibility:hidden!important;pointer-events:none!important}
+body[data-controls=ride] :is(#joystick,.touch-actions),body[data-controls=lift] :is(#joystick,.touch-actions){display:none!important}
+body.chat-typing :is(#place-card,#ride-hud,#emote-panel){visibility:hidden!important;pointer-events:none!important}
+#place-actions{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px}
+#place-actions button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;min-width:0;text-align:center;line-height:1.4}
+#place-actions .action-label{min-width:0;text-align:center;overflow-wrap:anywhere}
+#chat-form[hidden]{display:none!important}
+
+/* The sole world notice is the brief, server-timed fireworks lead-in. */
+#firework-notice{position:fixed;z-index:25;left:50%;top:calc(76px + env(safe-area-inset-top));transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:10px;max-width:min(360px,calc(100vw - 32px));box-sizing:border-box;padding:10px 16px;border:1px solid var(--ui-rim);border-radius:16px;background:var(--ui-hud);box-shadow:var(--ui-shadow);color:var(--ui-ink);pointer-events:none;font-size:12px;line-height:1.5;text-align:center}
+#firework-notice .firework-notice-countdown{font-variant-numeric:tabular-nums;white-space:nowrap;font-size:12px;color:var(--ui-accent)}
+#firework-notice[hidden],body:is(.studio-open,.quiz-open,.chat-typing) #firework-notice{display:none!important}
+@media(pointer:coarse),(max-width:650px){
+ body:not(.invite-gate) #studio{max-height:calc(100dvh - var(--keyboard,0px) - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
+ #studio .studio-header{grid-template-rows:44px auto;gap:2px 8px}
+ #studio .studio-head>span{font-size:16px}
+ #studio .studio-tabs{justify-content:flex-start;gap:2px;overflow-x:auto}
+ #studio .studio-tabs button{flex:0 0 auto;min-height:44px;font-size:11px;padding:8px 10px}
+ #studio .studio-section-title{display:none}
+ #admin-panel{padding:12px 16px;max-height:calc(var(--dialog-viewport,100dvh) - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
+ #admin-panel .admin-row{grid-template-columns:minmax(0,1fr);gap:5px}
+ #admin-panel .admin-row-actions{justify-content:flex-start;max-width:none}
+ #admin-panel [data-quiz-form] input,#admin-panel [data-quiz-form] textarea,#admin-panel [data-quiz-form] select{font-size:16px}
+ #place-card{bottom:calc(154px + env(safe-area-inset-bottom));max-width:calc(100vw - 28px);padding-inline:10px}
+ #place-card h2{font-size:14px;line-height:1.4}
+ #place-actions button{gap:0;min-height:44px;padding:10px 12px;font-size:12px}
+ #place-actions kbd{display:none}
+ #ride-hud{bottom:calc(154px + env(safe-area-inset-bottom));width:max-content;max-width:calc(100vw - 32px)}
+ #ride-label{font-size:11px;max-width:100%;overflow-wrap:anywhere}
+ #stop-ride.interaction-exit-control{min-width:136px;min-height:48px;font-size:12px}
+ body[data-controls=ride] #ride-hud,body[data-controls=lift] #ride-hud{bottom:calc(24px + env(safe-area-inset-bottom))}
+ #chat-form{left:max(14px,env(safe-area-inset-left));right:max(14px,env(safe-area-inset-right));width:auto;max-width:none}
+ #chat-form .chat-entry{display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;gap:4px;padding:4px 6px 4px 12px;border-radius:16px}
+ #chat-input{min-width:0;min-height:44px;font-size:16px;line-height:1.4}
+ #chat-form .chat-entry button{width:44px;min-height:44px;margin:0}
+ #chat-status{font-size:11px;line-height:1.4;margin:4px 4px 0}
+ body.chat-typing #chat-log{left:max(14px,env(safe-area-inset-left));right:max(14px,env(safe-area-inset-right));width:auto;max-height:min(180px,28dvh);font-size:12px}
+ body.chat-typing #chat-toggle{bottom:calc(80px + env(safe-area-inset-bottom) + var(--keyboard,0px));z-index:10}
+ body.chat-typing #chat-log{padding-right:50px}
+ .touch-actions #bubble-hold{right:0;bottom:152px}
+ #emote-panel{bottom:calc(150px + env(safe-area-inset-bottom));right:max(14px,env(safe-area-inset-right));left:auto;flex-wrap:wrap;max-width:calc(100vw - 28px)}
+}
+@media(max-height:500px) and (orientation:landscape){
+ #studio .studio-header{grid-template-rows:36px auto}
+ #studio .studio-tabs button{min-height:36px}
+ #place-card,#ride-hud{bottom:calc(106px + env(safe-area-inset-bottom))}
+ #chat-log{max-height:58px;bottom:calc(172px + env(safe-area-inset-bottom))}
+}
+
+/* Activities have their own location; weather remains about weather and light. */
+#studio #pane-activities{padding:12px max(2px,calc((100% - 560px)/2)) 16px}
+#pane-activities .studio-public-actions{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;margin:0;padding:4px 0 8px;border:0}
+#pane-activities .studio-public-actions button{justify-content:flex-start;gap:12px;min-height:58px;padding:12px 16px;font-size:13px;border-radius:14px}
+#pane-activities .studio-public-actions button svg{width:21px;height:21px}
+#pane-activities #firework-request-status{margin:-4px 0 4px;padding-left:49px;font-size:11px;line-height:1.5;text-align:left}
+#studio .studio-tabs{justify-content:flex-start;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+#studio .studio-tabs button{flex-shrink:0}
+#studio:has(#pane-activities:not([hidden])) .studio-saved{visibility:hidden}

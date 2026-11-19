@@ -1,0 +1,119 @@
+{
+  "at": "2026-11-19T08:25:36.811Z",
+  "browser": "157.0.8103.79",
+  "physicalMobile": false,
+  "errors": [],
+  "consoleErrors": [],
+  "httpErrors": [],
+  "expectedNetworkFaults": [
+    {
+      "text": "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "url": "http://127.0.0.1:4189/api/world-state"
+    },
+    {
+      "text": "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "url": "http://127.0.0.1:4189/api/presence"
+    },
+    {
+      "text": "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "url": "http://127.0.0.1:4189/api/tree?room=winter-plaza&revision=4f53cda18c2baa0c0354bb5f"
+    },
+    {
+      "text": "Failed to load resource: net::ERR_INTERNET_DISCONNECTED",
+      "url": "http://127.0.0.1:4189/api/realtime"
+    }
+  ],
+  "checks": [
+    {
+      "name": "public guest entry and two rendered peers",
+      "ok": true
+    },
+    {
+      "name": "walking updates through WebSocket",
+      "ok": true,
+      "details": {
+        "x": 5.143731059058687,
+        "y": 0.95,
+        "z": 22.238144200385793,
+        "yaw": 1.9007930053317441,
+        "mode": "",
+        "speed": 4.299999872445046,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      }
+    },
+    {
+      "name": "mobile joystick beyond rim keeps full walking input",
+      "ok": true
+    },
+    {
+      "name": "mobile touch release stops movement",
+      "ok": true
+    },
+    {
+      "name": "ferris reservation and motion survive live validation",
+      "ok": true
+    },
+    {
+      "name": "ski reservation and motion survive live validation",
+      "ok": true
+    },
+    {
+      "name": "chat persisted",
+      "ok": true
+    },
+    {
+      "name": "chat visible on other device",
+      "ok": true
+    },
+    {
+      "name": "guest admin API denied",
+      "ok": true
+    },
+    {
+      "name": "same server countdown and seed",
+      "ok": true
+    },
+    {
+      "name": "mobile panel inside viewport",
+      "ok": true,
+      "details": {
+        "page": false,
+        "dialog": false
+      }
+    },
+    {
+      "name": "landscape panel inside viewport",
+      "ok": true
+    },
+    {
+      "name": "offline reconnection",
+      "ok": true
+    },
+    {
+      "name": "admin metrics with authenticated sockets",
+      "ok": true,
+      "details": {
+        "connections": 3,
+        "service": "healthy"
+      }
+    },
+    {
+      "name": "owner controls same show",
+      "ok": true
+    },
+    {
+      "name": "no browser exceptions",
+      "ok": true,
+      "details": []
+    },
+    {
+      "name": "no unexpected console or shader errors",
+      "ok": true,
+      "details": []
+    }
+  ]
+}

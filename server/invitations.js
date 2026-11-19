@@ -1,4 +1,4 @@
-import {worldCapacity} from './realtime.js';
+import {worldCapacity,realtimeConfigured,realtimeRPC} from './realtime.js';
 import {ownerSession} from './owner-auth.js';
 import {rateLimit,json} from './community-api.js';
 import {invitationToken,publicRoom,spaceURL} from '../dist/space-links.js';
@@ -75,6 +75,7 @@ export async function joinWorld(request,env,now){
  let name;try{name=validateNickname(body.name||session.self?.name||'크림토끼');}catch(e){return json({error:e.message},400);}
  // Keep one of the twelve slots available so the owner can enter and moderate a full guest world.
  const authType=admin?'owner':'public',inviteId=null,capacity=worldCapacity(env);
+ if(realtimeConfigured(env)){try{await realtimeRPC(env,{action:'metrics'});}catch{return json({error:'공유 서버를 복구하고 있어요. 잠시 뒤 다시 입장해 주세요.'},503);}}
  const capacitySQL=sql=>sql.replaceAll('<12','<'+capacity).replaceAll('<11','<'+(capacity-1));
  if(session.self){
   const changed=await env.DB.prepare(capacitySQL("UPDATE visitors SET room=?,name=?,seen=?,invite_id=?,admitted_at=?,kicked_at=0,auth_type=? WHERE id=? AND (SELECT COUNT(*) FROM visitors WHERE room=? AND seen>? AND admitted_at>0 AND id<>?)<12 AND (?=1 OR (SELECT COUNT(*) FROM visitors WHERE room=? AND seen>? AND admitted_at>0 AND auth_type<>'owner' AND id<>?)<11) AND (? IS NULL OR EXISTS(SELECT id FROM world_invites WHERE id=? AND revoked_at IS NULL AND expires_at>?))")).bind(publicRoom,name,now,inviteId,now,authType,session.id,publicRoom,now-20000,session.id,admin?1:0,publicRoom,now-20000,session.id,inviteId,inviteId,now).run();

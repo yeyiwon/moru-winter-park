@@ -9,12 +9,13 @@ import * as T from '../dist/vendor/three.module.js';
 import {ferrisDimensions} from '../dist/ferris-layout.js';
 import {benches,benchInteractions} from '../dist/bench-layout.js';
 import {treeLayout} from '../dist/tree-layout.js';
+import {sharedSeatChoices,pickSharedSeat} from '../dist/ride-seats.js';
 function setup(t){const dom=new JSDOM(fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8'),{url:'https://winter.test'}),w=dom.window;t.after(()=>w.close());Object.assign(globalThis,{window:w,document:w.document,Event:w.Event,CustomEvent:w.CustomEvent,localStorage:w.localStorage});let trips=0;const winter={rides:resortRides,destinations:resortDestinations,rideChair:{visible:false,position:{set(){}},rotation:{set(){}}}},companion={gear:'ski',winterReady:true,equip(){}};return{e:createWinterExperience(winter,companion,()=>trips++),get trips(){return trips;},click(){document.querySelector('#place-actions button').click();}};}
-test('tree decoration is available around the inner walkable ring, with its prompt near the visitor',t=>{
+test('tree decoration is available around the entire plaza, with its prompt near the visitor',t=>{
  setup(t);let opened=0;window.addEventListener('lab:tree-open',()=>opened++);
  const winter={rides:resortRides,destinations:[{id:'tree',name:'소원 트리',...treeLayout.arrival}],rideChair:{visible:false}},e=createWinterExperience(winter,{equip(){}},()=>{});
- for(let i=0;i<12;i++){const angle=i*Math.PI/6,x=treeLayout.x+Math.cos(angle)*13,z=treeLayout.z+Math.sin(angle)*13;e.proximity(x,z);assert.equal(document.querySelector('#place-card').hidden,false);const nearBench=benchInteractions.some(b=>!b.room&&Math.hypot(b.x-x,b.z-z)<b.r);assert.equal(document.querySelector('#place-actions button').getAttribute('aria-label'),nearBench?'앉기':'트리 꾸미기');assert.ok(Math.hypot(e.anchor.x-x,e.anchor.z-z)<3);if(!nearBench)document.querySelector('#place-actions button').click();}
- assert.ok(opened>0&&opened<=12);e.proximity(treeLayout.x+15,treeLayout.z);assert.equal(document.querySelector('#place-card').hidden,true);const bench=benchInteractions.find(b=>b.id.startsWith('tree-'));if(bench){e.proximity(bench.x,bench.z);assert.equal(document.querySelector('#place-actions button').getAttribute('aria-label'),'앉기');}e.proximity(treeLayout.x+40,treeLayout.z);assert.equal(document.querySelector('#place-card').hidden,true);
+ for(let i=0;i<12;i++){const angle=i*Math.PI/6,x=treeLayout.x+Math.cos(angle)*20,z=treeLayout.z+Math.sin(angle)*20;e.proximity(x,z);assert.equal(document.querySelector('#place-card').hidden,false);const nearBench=benchInteractions.some(b=>!b.room&&Math.hypot(b.x-x,b.z-z)<b.r);assert.equal(document.querySelector('#place-actions button').getAttribute('aria-label'),nearBench?'왼쪽 자리 앉기':'트리 꾸미기');assert.ok(Math.hypot(e.anchor.x-x,e.anchor.z-z)<3);if(!nearBench)document.querySelector('#place-actions button').click();}
+ assert.ok(opened>0&&opened<=12);e.proximity(treeLayout.x+40,treeLayout.z);assert.equal(document.querySelector('#place-card').hidden,true);
 });
 test('marshmallow stays in hand, toasts at the fire, survives walking and can be eaten',t=>{
  const {e,click}=setup(t);e.rides.start('lift');e.update(45);e.proximity(-68,-160+alpineShift);click();assert.equal(e.heldItem,'marshmallow');e.update(.1,{x:1});assert.equal(e.heldItem,'marshmallow');assert.equal(e.roast,0);
@@ -93,6 +94,36 @@ test('sparkler comes from the existing kiosk, stays carried while walking and is
  const {e,click}=setup(t);e.show('sparkler');click();assert.equal(e.heldItem,'sparkler');e.update(.1,{x:1,z:1});assert.equal(e.heldItem,'sparkler');assert.equal(e.active,false);assert.equal(document.querySelector('#place-card').hidden,true);e.show('coffee');click();assert.equal(e.heldItem,'coffee');
 });
 
-test('tree benches show only the primary sit action, never decoration or the second F action',t=>{
- const {e}=setup(t);for(const b of benchInteractions.filter(b=>b.id.startsWith('tree-bench-'))){e.proximity(b.x,b.z);const actions=[...document.querySelectorAll('#place-actions button')];assert.equal(actions.length,1);assert.equal(actions[0].getAttribute('aria-label'),'앉기');assert.ok(!actions[0].textContent.includes('F'));}
+test('tree benches offer exact left and right seats without decoration actions',t=>{
+ const {e}=setup(t);for(const b of benchInteractions.filter(b=>b.id.startsWith('tree-bench-'))){e.proximity(b.x,b.z);const actions=[...document.querySelectorAll('#place-actions button')];assert.equal(actions.length,2);assert.equal(actions[0].getAttribute('aria-label'),'왼쪽 자리 앉기');assert.equal(actions[1].getAttribute('aria-label'),'오른쪽 자리 앉기');assert.deepEqual(actions.map(button=>button.dataset.seat),['0','1']);}
+});
+
+test('dining choice uses the clicked physical seat, marks occupied places and never reserves from disabled keys',async t=>{
+ const {e}=setup(t),calls=[];window.labGuestId='self';window.labRideSeats=[{id:'other',kind:'dining',cabin:0,seat:1}];
+ window.reserveRide=async(kind,benchId,seat)=>{calls.push({kind,benchId,seat});return{kind,cabin:0,seat,startedAt:Date.now()};};
+ e.show('interior-dining');const occupied=document.querySelector('#place-actions [data-seat="1"]');assert.equal(occupied.disabled,true);assert.match(occupied.textContent,/이용 중/);
+ window.dispatchEvent(new window.KeyboardEvent('keydown',{code:'KeyF'}));assert.equal(calls.length,0);
+ document.querySelector('#place-actions [data-seat="2"]').click();await new Promise(resolve=>setTimeout(resolve,0));
+ assert.deepEqual(calls,[{kind:'dining',benchId:undefined,seat:2}]);assert.equal(e.active,true);const pose=e.update(0,{});assert.equal(pose.x,414);assert.equal(pose.z,2.1);
+});
+
+test('a raced seat reports another-place selection and never silently sits elsewhere',async t=>{
+ const {e}=setup(t),calls=[];window.labGuestId='self';window.labRideSeats=[];
+ window.reserveRide=async(kind,benchId,seat)=>{calls.push(seat);if(seat===0){const error=Error('선택한 자리에 다른 손님이 앉아 있어요. 다른 자리를 선택해 주세요.');error.code='seat_occupied';throw error;}return{kind,cabin:0,seat,startedAt:Date.now()};};
+ e.show('interior-dining');document.querySelector('#place-actions [data-seat="0"]').click();await new Promise(resolve=>setTimeout(resolve,0));
+ assert.deepEqual(calls,[0]);assert.equal(e.active,false);assert.equal(document.querySelector('#place-card').hidden,false);assert.match(document.querySelector('#place-description').textContent,/다른 자리/);assert.equal(document.querySelector('#place-actions [data-seat="0"]').disabled,true);
+ document.querySelector('#place-actions [data-seat="2"]').click();await new Promise(resolve=>setTimeout(resolve,0));assert.deepEqual(calls,[0,2]);assert.equal(e.update(0,{}).x,414);
+});
+
+test('seat hit planes distinguish chairs and reject other rooms, distant visitors and parallel rays',()=>{
+ for(const choices of [sharedSeatChoices('dining'),sharedSeatChoices('bench','ryokan-tea-bench'),sharedSeatChoices('bench','park-bench-0')])for(const seat of choices){
+  const ray={origin:{x:seat.x,y:12,z:seat.z},direction:{x:0,y:-1,z:0}},hit=pickSharedSeat(ray,seat.access,seat.region);assert.equal(hit?.seat,seat.seat);assert.equal(hit?.placeId,seat.placeId);
+  assert.equal(pickSharedSeat(ray,{x:1000,z:1000},seat.region),null);assert.equal(pickSharedSeat(ray,seat.access,'nonexistent-room'),null);
+ }
+ assert.equal(pickSharedSeat({origin:{x:412,y:1,z:3},direction:{x:1,y:0,z:0}},{x:412,z:3},'ryokan'),null);
+});
+
+test('leaving while a selected chair is pending never places the guest in that chair',async t=>{
+ const {e}=setup(t);let resolveClaim,releases=0;window.reserveRide=()=>new Promise(resolve=>resolveClaim=resolve);window.releaseRide=()=>releases++;
+ const selection=e.selectSeat('interior-dining',2);e.cancel();resolveClaim({kind:'dining',cabin:0,seat:2,startedAt:Date.now()});assert.equal(await selection,false);assert.equal(e.active,false);assert.equal(releases,1);
 });

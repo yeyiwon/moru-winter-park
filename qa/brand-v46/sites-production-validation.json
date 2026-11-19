@@ -1,0 +1,99 @@
+{
+  "origin": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+  "checked_at_utc": "2026-11-19T04:51:18Z",
+  "authentication": "Sites owner verification",
+  "source_commit": "ad81ba549e0cd13761c1f9289d4ef14efbccc949",
+  "passed": true,
+  "checks": [
+    {
+      "path": "/",
+      "status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "bytes": 21775,
+      "ok": true,
+      "title": "WINTERLIGHT",
+      "og_title": "WINTERLIGHT",
+      "twitter_title": "WINTERLIGHT",
+      "og_image": "https://moru-winter-park.vercel.app/brand/og-image.png?v=winterlight-v1",
+      "canonical": "https://moru-winter-park.vercel.app/"
+    },
+    {
+      "path": "/brand/og-image.png?v=winterlight-v1",
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 18513,
+      "ok": true,
+      "sha256": "aa9d89d08fac0750f411c6cbf1ad6633a94dee43383c747fca2adb45428cd846",
+      "dimensions": [
+        1200,
+        630
+      ]
+    },
+    {
+      "path": "/brand/favicon.svg?v=winterlight-v1",
+      "status": 200,
+      "content_type": "image/svg+xml",
+      "bytes": 601,
+      "ok": true,
+      "has_original_tree": true
+    },
+    {
+      "path": "/brand/logo-compact.svg",
+      "status": 200,
+      "content_type": "image/svg+xml",
+      "bytes": 512,
+      "ok": true,
+      "has_original_tree": true
+    },
+    {
+      "path": "/site.webmanifest?v=winterlight-v1",
+      "status": 200,
+      "content_type": "application/manifest+json",
+      "bytes": 573,
+      "ok": true,
+      "name": "WINTERLIGHT",
+      "short_name": "WINTERLIGHT",
+      "theme_color": "#fffefa"
+    },
+    {
+      "path": "/brand.css?v=winterlight-v1",
+      "status": 200,
+      "content_type": "text/css; charset=utf-8",
+      "bytes": 806,
+      "ok": true,
+      "desktop_15px": true,
+      "mobile_13px": true
+    },
+    {
+      "path": "/sw.js",
+      "status": 200,
+      "content_type": "text/javascript; charset=utf-8",
+      "bytes": 4463,
+      "ok": true,
+      "winterlight_cache": true
+    },
+    {
+      "path": "/api/health",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 30,
+      "ok": true,
+      "health": {
+        "ok": true,
+        "multiplayer": true
+      }
+    },
+    {
+      "path": "/api/access",
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 110,
+      "ok": true,
+      "access": {
+        "worldId": "winter-plaza",
+        "inviteRequired": true
+      },
+      "anonymous_session": true
+    }
+  ]
+}
