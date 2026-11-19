@@ -77,11 +77,12 @@ test('customization boots without the removed front button and reflects confirme
  const appearance={fur:'#f4eee5',furTop:null,accessory:'none',fluff:100,roundness:50};w.labAppearance=appearance;
  async function mod(file){if(modules.has(file))return modules.get(file);const m=new vm.SourceTextModule(fs.readFileSync(file,'utf8'),{context,identifier:file});modules.set(file,m);await m.link(s=>mod(path.resolve(path.dirname(file),s)));return m;}
  const module=await mod(path.resolve('dist/customization-ui.js'));await module.evaluate();const ui=module.namespace.createCustomizationUI(appearance,()=>{});ui.open();
- const root=w.document.querySelector('#pane-fluff'),profile=root.querySelector('.wardrobe-profile'),name=root.querySelector('#preview-name'),form=root.querySelector('#profile-form'),input=root.querySelector('#profile-name');
+ const root=w.document.querySelector('#pane-fluff'),profile=root.querySelector('.wardrobe-profile'),name=root.querySelector('#preview-name'),form=root.querySelector('#profile-form'),input=root.querySelector('#profile-name'),edit=root.querySelector('#profile-edit');
  assert.equal(root.querySelector('#preview-front'),null);assert.equal(root.querySelector('.wardrobe-actions').parentElement,root);assert.equal(profile.parentElement,root.querySelector('.fluff-stage'));
  w.document.querySelector('#self-name').textContent='겨울 친구';await new Promise(resolve=>setTimeout(resolve,0));assert.equal(name.textContent,'겨울 친구');
- profile.open=true;form.hidden=false;input.focus();form.dataset.state='saved';await new Promise(resolve=>setTimeout(resolve,0));assert.equal(profile.open,false);assert.notEqual(w.document.activeElement,input);
- profile.open=true;w.document.querySelector('#self-name').textContent='겨울 친구';await new Promise(resolve=>setTimeout(resolve,0));assert.equal(profile.open,true,'a later name refresh must not collapse a reopened editor');
+ assert.equal(profile.tagName,'DIV');assert.equal(form.hidden,true);edit.click();assert.equal(form.hidden,false);assert.equal(edit.hidden,true);assert.equal(w.document.activeElement,input);
+ form.dataset.state='saved';await new Promise(resolve=>setTimeout(resolve,0));assert.equal(form.hidden,true);assert.equal(edit.hidden,false);assert.notEqual(w.document.activeElement,input);
+ edit.click();input.value='작성 중인 이름';w.document.querySelector('#self-name').textContent='겨울 친구';await new Promise(resolve=>setTimeout(resolve,0));assert.equal(form.hidden,false,'a later name refresh must not collapse a reopened editor');assert.equal(input.value,'작성 중인 이름');
  root.querySelector('[data-category="head"]').click();root.querySelector('[data-accessory="cat-ears"]').click();assert.match(w.labDraftAppearance.accessory,/cat-ears/);root.querySelector('#wardrobe-cancel').click();assert.equal(w.labDraftAppearance.accessory,'none');ui.close();
 });
 

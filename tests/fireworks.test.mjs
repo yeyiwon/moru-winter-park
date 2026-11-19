@@ -148,7 +148,7 @@ test('the client derives phases from server time and rejects stale snapshots aft
 });
 
 test('guest controls request a show, avoid interrupting editors and never replay a countdown after tab return',async t=>{
- const dom=new JSDOM('<body><section id="pane-light"><div id="studio-public-actions"></div></section></body>',{url:'https://winter.test',pretendToBeVisual:true});
+ const dom=new JSDOM('<body><section id="pane-light"></section><section id="pane-activities"><div id="studio-public-actions"></div></section></body>',{url:'https://winter.test',pretendToBeVisual:true});
  const w=dom.window,d=w.document;let now=1800000000000,show=null,requests=0;
  w.labSocialJoined=true;
  w.fetch=async(url,options={})=>{
@@ -162,7 +162,7 @@ test('guest controls request a show, avoid interrupting editors and never replay
  const view=installFireworkRequests({win:w,doc:d,now:()=>now});
  t.after(()=>{view.dispose();w.close();});
  const flush=()=>new Promise(resolve=>setImmediate(resolve));await flush();
- assert.equal(view.button.parentElement.id,'studio-public-actions');assert.equal(view.button.disabled,false);
+ assert.equal(view.button.parentElement.id,'studio-public-actions');assert.equal(view.button.closest('section').id,'pane-activities');assert.equal(d.querySelector('#pane-light #firework-request'),null);assert.equal(view.button.disabled,false);
  d.body.classList.add('studio-open');view.button.click();await flush();
  assert.equal(requests,1);assert.equal(view.button.disabled,true);assert.equal(view.notice.hidden,true);
  d.body.classList.remove('studio-open');w.dispatchEvent(new w.Event('lab:close'));
@@ -175,7 +175,7 @@ test('guest controls request a show, avoid interrupting editors and never replay
 });
 
 test('a failed guest request leaves the control retryable and never announces an unconfirmed show',async t=>{
- const dom=new JSDOM('<body><div id="studio-public-actions"></div></body>',{url:'https://winter.test',pretendToBeVisual:true});
+ const dom=new JSDOM('<body><section id="pane-activities"><div id="studio-public-actions"></div></section></body>',{url:'https://winter.test',pretendToBeVisual:true});
  const w=dom.window,d=w.document;let fail=true,now=1800000000000,requests=0;
  w.labSocialJoined=true;w.fetch=async(url,options={})=>{
   if(options.method!=='POST')return {ok:true,json:async()=>({show:null,serverTime:now})};
@@ -188,4 +188,11 @@ test('a failed guest request leaves the control retryable and never announces an
  assert.match(d.querySelector('#firework-request-status').textContent,/연결이 끊겼어요/);
  fail=false;view.button.click();await flush();assert.equal(requests,2);assert.equal(view.button.disabled,true);
  assert.equal(view.notice.hidden,false);assert.equal(w.labFireworks.id,'confirmed');
+});
+
+test('fireworks never fall back to weather controls or an action group outside the activities tab',t=>{
+ for(const body of ['<section id="pane-light"><div id="studio-public-actions"></div></section>','<section id="pane-activities"></section><div id="studio-public-actions"></div>']){
+  const dom=new JSDOM('<body>'+body+'</body>',{url:'https://winter.test'});t.after(()=>dom.window.close());const w=dom.window;w.labSocialJoined=true;let requests=0;w.fetch=async()=>{requests++;return{ok:true,json:async()=>({show:null})};};
+  assert.equal(installFireworkRequests({win:w,doc:w.document}),null);assert.equal(w.document.querySelector('#firework-request'),null);assert.equal(w.document.querySelector('#firework-notice'),null);assert.equal(requests,0);
+ }
 });

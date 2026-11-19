@@ -26,7 +26,7 @@ export function mergeFireworkShow(current,incoming){
 }
 
 export function installFireworkRequests({win=window,doc=document,now=serverNow}={}){
- const actions=doc.querySelector('#studio-public-actions')||doc.querySelector('#pane-light');
+ const actions=doc.querySelector('#pane-activities #studio-public-actions');
  if(!actions||doc.querySelector('#firework-request'))return null;
  const button=doc.createElement('button');button.id='firework-request';button.type='button';button.className='quiet-action';
  button.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2v5m0 10v5M2 12h5m10 0h5M5 5l3.5 3.5m7 7L19 19M5 19l3.5-3.5m7-7L19 5"/></svg><span>불꽃놀이 신청</span>';

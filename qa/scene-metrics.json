@@ -1,7 +1,7 @@
 {
   "environment": "Node v24.22.3 linux x64",
   "measurement": "CPU scene geometry construction; no browser, WebGL or GPU rendering",
-  "sceneConstructionMs": 33765.35,
+  "sceneConstructionMs": 24230.11,
   "meshObjects": 714,
   "materials": 209,
   "triangles": 4271490,
