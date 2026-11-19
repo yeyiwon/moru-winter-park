@@ -2,10 +2,7 @@
   "source_base": "4b4d12014f5edc0cbeee98035cfbda8673f49831",
   "live_name": "WINTERLIGHT",
   "name_status": "replacement name not selected",
-  "recommendations": [
-    "HIBERNA",
-    "NIVIS"
-  ],
+  "recommendations": [],
   "build_worker": "PASS",
   "build_vercel": "PASS",
   "loading_controls_tests": {
@@ -14,12 +11,12 @@
   },
   "budget": {
     "status": "PASS",
-    "all_bytes": 22636517,
+    "all_bytes": 22559657,
     "limit_all_bytes": 25165824,
     "code_gzip_bytes": 1012800,
     "limit_code_gzip_bytes": 1280000
   },
-  "visual_review": "Generated comparison PNG inspected; static faceted crystal, uppercase, silver and blue; no Korean subtitle",
+  "visual_review": "Actual 1200x630 OG PNG inspected: static faceted crystal, uppercase, silver and blue, no subtitle",
   "assets": [
     {
       "file": "brand/og-image.png",
@@ -65,33 +62,12 @@
         180
       ],
       "sha256": "cb405856b3b54b5fe28767cfa0a7418c9039e78a7c554e920ebfdf14292ee1e5"
-    },
-    {
-      "file": "brand/candidates/hiberna.png",
-      "bytes": 15606,
-      "dimensions": [
-        1200,
-        630
-      ],
-      "sha256": "6fdcd1c0aaf056e387cf6e389e0e2d06fb5e1d5d8493f28973757fd71e90fce4"
-    },
-    {
-      "file": "brand/candidates/nivis.png",
-      "bytes": 15235,
-      "dimensions": [
-        1200,
-        630
-      ],
-      "sha256": "ea6f93c3b7e5ec8c05e2eebd75ba22304920db52aa2966b446a581370833638c"
-    },
-    {
-      "file": "brand/candidates/comparison.png",
-      "bytes": 18928,
-      "dimensions": [
-        1440,
-        630
-      ],
-      "sha256": "2c8fc00924d075d2806fbfb4e814ca2f8ed0a39a7ee582a369f2aa536c6c96a6"
     }
-  ]
+  ],
+  "rejected_recommendations": [
+    "HIBERNA",
+    "NIVIS"
+  ],
+  "worker_assets": 226,
+  "vercel_files": 227
 }

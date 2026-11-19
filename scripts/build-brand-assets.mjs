@@ -7,11 +7,10 @@ import {fileURLToPath} from 'node:url';
 import {BRAND} from '../dist/brand-config.js';
 const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
 const output=join(root,'dist','brand');
-await mkdir(join(output,'candidates'),{recursive:true});
+await mkdir(output,{recursive:true});
 const escape=value=>String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[ch]));
 const {white,silver,silverLight,ice,blue}=BRAND.colors;
-const candidates=['HIBERNA','NIVIS'];
-const words=[...new Set([BRAND.wordmark,...candidates])];
+const words=[BRAND.wordmark];
 if(words.some(word=>word!==word.toUpperCase()))throw Error('Use uppercase wordmarks.');
 const python=String.raw`
 import sys,json,types,subprocess
@@ -60,17 +59,12 @@ const primary=start(144,144,`${BRAND.name} silver blue crystal`)+crystal(72,72,1
 const compact=start(144,144,`${BRAND.name} compact crystal`)+crystal(72,72,144,{dark:true,small:true})+'</svg>';
 const monochrome=start(144,144,`${BRAND.name} monochrome crystal`)+crystal(72,72,144,{mono:true})+'</svg>';
 const files=new Map([['logo-primary.svg',primary],['logo-compact.svg',compact],['logo-monochrome.svg',monochrome],['favicon.svg',icon(true)],['icon.svg',icon()],['og-image.svg',social(BRAND.wordmark)]]);
-for(const name of candidates)files.set(`candidates/${name.toLowerCase()}.svg`,social(name));
-let comparison=start(1440,630,'HIBERNA and NIVIS — uppercase silver blue name studies')+background(1440,630,'study-sky');
-comparison+='<path d="M720 108V514" stroke="#a9cde9" stroke-opacity=".12"/>';
-for(let i=0;i<candidates.length;i++)comparison+=crystal(360+i*720,250,148,{dark:true,id:`candidate-${i}`})+wordmark(candidates[i],360+i*720,384,31,2.5);
-comparison+='</svg>';files.set('candidates/comparison.svg',comparison);
 for(const [name,body]of files)await writeFile(join(output,name),body+'\n');
 if(!process.argv.includes('--svg-only')){
  const require=createRequire(import.meta.url);let sharp;
  try{sharp=require('sharp');}catch{sharp=require(require.resolve('sharp',{paths:[process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES]}));}
- const exports=[['favicon-32.png',icon(true),32,32],['icon-192.png',icon(),192,192],['icon-512.png',icon(),512,512],['apple-touch-icon.png',icon(false,true),180,180],['og-image.png',social(BRAND.wordmark),1200,630],...candidates.map(name=>[`candidates/${name.toLowerCase()}.png`,social(name),1200,630]),['candidates/comparison.png',comparison,1440,630]];
+ const exports=[['favicon-32.png',icon(true),32,32],['icon-192.png',icon(),192,192],['icon-512.png',icon(),512,512],['apple-touch-icon.png',icon(false,true),180,180],['og-image.png',social(BRAND.wordmark),1200,630]];
  for(const [name,body,w,h]of exports)await sharp(Buffer.from(body),{density:192}).resize(w,h).png({compressionLevel:9}).toFile(join(output,name));
 }
-await writeFile(join(output,'README.md'),`# Silver / ice-blue identity\n\n- Live wordmark: ${BRAND.wordmark}. The replacement name is still being reviewed.\n- Palette: cool white ${white}, silver ${silver}, ice blue ${ice}, steel blue ${blue}. No gold in brand assets.\n- Static symbol: six separated crystal rays, optimized for 24–32px. The loading tree keeps its original curve and animation.\n- Share image: 1200×630, winter-blue background, silver crystal and small uppercase text. No subtitle.\n- Wordmarks use outlined bundled Pretendard 500, so SVG and PNG are identical without external fonts.\n- candidates/: HIBERNA and NIVIS are review-only name proposals, not the selected public name.\n- Manual regeneration: node scripts/build-brand-assets.mjs. Committed assets are consumed by normal builds.\n`);
-console.log(`Wrote silver/ice-blue assets and two name studies to ${output}`);
+await writeFile(join(output,'README.md'),`# Silver / ice-blue identity\n\n- Live wordmark: ${BRAND.wordmark}. The replacement name is still being reviewed.\n- Palette: cool white ${white}, silver ${silver}, ice blue ${ice}, steel blue ${blue}. No gold in brand assets.\n- Static symbol: six separated crystal rays, optimized for 24–32px. The loading tree keeps its original curve and animation.\n- Share image: 1200×630, winter-blue background, silver crystal and small uppercase text. No subtitle.\n- Wordmarks use outlined bundled Pretendard 500, so SVG and PNG are identical without external fonts.\n- Manual regeneration: node scripts/build-brand-assets.mjs. Committed assets are consumed by normal builds.\n`);
+console.log(`Wrote silver/ice-blue assets to ${output}`);

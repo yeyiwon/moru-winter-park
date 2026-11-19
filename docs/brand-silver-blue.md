@@ -18,10 +18,7 @@
 
 ## 이름 추천과 사실 구분
 
-1. **HIBERNA — 히베르나**: 라틴어 hīberna는 중성 복수 명사로 겨울 숙영지를 뜻한다. ‘내가 머물고 싶은 겨울 세계’는 이 프로젝트에 붙이는 브랜드 해석이다. [Lewis & Short / Logeion](https://logeion.org/hibernus).
-2. **NIVIS — 니비스**: 라틴어 nix(눈)의 속격 형태로 ‘눈의’라는 뜻이다. 니비스는 제안하는 한국어 호칭이며 고전 라틴어 발음은 니위스에 가깝다. [Logeion](https://logeion.org/nivis), [Open University 발음 안내](https://www.open.edu/openlearn/mod/oucontent/view.php?id=25780&section=3).
-
-두 후보는 `dist/brand/candidates/`의 비교 이미지와 `/brand/preview.html`에서 볼 수 있다. 후보 이름은 실제 운영 메타데이터에 적용하지 않았다. HIBERNA에는 과거 Tibia 월드명 사용례가 있으며 독점성·상표 사용 가능성을 확인한 결과가 아니다.
+후속 피드백으로 HIBERNA / NIVIS도 거절되었다. 추천 표시와 비교 자산을 제거했고 새 이름을 다시 검토한다. 후보를 운영 이름으로 적용하지 않았다.
 
 ## 변경 파일과 검증
 
@@ -29,7 +26,7 @@
 - 변경: `dist/brand-config.js`, `dist/brand.css`, `dist/brand/*`, `dist/index.html`, `dist/site.webmanifest`, `dist/sw.js`, 로딩 JS/CSS의 색상, 브랜드 생성 스크립트, 기존 로딩 검사, 문서.
 - `npm run build`, `npm run build:vercel`: PASS.
 - `node --test tests/loading-controls.test.mjs`: 3/3 PASS. 원본 로딩 경로 유지, 실제 준비 단계, 정적 대문자 로고, 기존 입력 동작을 확인했다.
-- `npm run test:budget`: PASS. 전체 자산 22,636,517 B / 제한 25,165,824 B. 코드 gzip 1,012,800 B / 제한 1,280,000 B.
+- `npm run test:budget`: PASS. 전체 자산 22,559,657 B / 제한 25,165,824 B. 코드 gzip 1,012,800 B / 제한 1,280,000 B.
 - 생성 PNG를 직접 열어 색상·각면·대문자·부제 부재를 확인했다. 자산 크기·해시는 `qa/brand-silver/local-validation.json`에 기록했다.
 - 이번 작업에서 전체 게임·실물 모바일·외부 메신저 캐시 결과를 새로 검증했다고 주장하지 않는다.
 

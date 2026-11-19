@@ -5,5 +5,4 @@
 - Static symbol: six separated crystal rays, optimized for 24–32px. The loading tree keeps its original curve and animation.
 - Share image: 1200×630, winter-blue background, silver crystal and small uppercase text. No subtitle.
 - Wordmarks use outlined bundled Pretendard 500, so SVG and PNG are identical without external fonts.
-- candidates/: HIBERNA and NIVIS are review-only name proposals, not the selected public name.
 - Manual regeneration: node scripts/build-brand-assets.mjs. Committed assets are consumed by normal builds.
