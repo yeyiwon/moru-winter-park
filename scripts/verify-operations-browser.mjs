@@ -4,10 +4,20 @@ const origin='http://127.0.0.1:4189',owner='http://127.0.0.1:4190',out=process.e
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true,args:['--disable-background-timer-throttling','--disable-renderer-backgrounding']});
 const report={at:new Date().toISOString(),browser:browser.version(),physicalMobile:false,renderMode:process.env.QA_RENDER_MODE||'auto',errors:[],consoleErrors:[],httpErrors:[],expectedNetworkFaults:[],checks:[]};
 const check=(name,ok,details)=>{report.checks.push({name,ok,...(details?{details}:{})});if(!ok){console.error('Failed check',name,details);throw Error(name);}};
-const offlinePages=new WeakSet();
-async function pageFor(options={}){const context=await browser.newContext({viewport:{width:1280,height:800},serviceWorkers:'block',...options}),page=await context.newPage();if(process.env.QA_RENDER_MODE)await page.addInitScript(mode=>localStorage.setItem('winter-render-mode',mode),process.env.QA_RENDER_MODE);page.on('pageerror',error=>report.errors.push(error.message));page.on('console',message=>{if(message.type()!=='error')return;const error={text:message.text(),url:message.location().url};if(offlinePages.has(page)&&/ERR_INTERNET_DISCONNECTED/.test(error.text))report.expectedNetworkFaults.push(error);else report.consoleErrors.push(error);});page.on('response',response=>{if(response.status()<400)return;const error={path:new URL(response.url()).pathname,status:response.status()};report.httpErrors.push(error);void response.json().then(data=>{error.code=data.code;error.message=data.error;}).catch(()=>{});});return page;}
+const offlinePages=new WeakSet(),pages=[],parkedPages=new WeakSet();
+// Separate headless contexts all report document.hidden=false, even after
+// bringToFront. Park inactive clients in the real settings UI so they retain
+// WebSocket traffic without competing for the software GPU on hosted runners.
+async function focus(page){
+ if(process.env.QA_RENDER_MODE){
+  for(const other of pages){if(other===page)continue;const parked=await other.evaluate(()=>{if(!document.body.classList.contains('world-ready')||document.querySelector('#studio')?.open)return false;window.openWinterSettings('map');return true;});if(parked)parkedPages.add(other);}
+  if(parkedPages.has(page)){await page.evaluate(()=>document.querySelector('#close-studio').click());await page.waitForFunction(()=>!document.querySelector('#studio').open&&!document.body.classList.contains('studio-open'),null,{polling:100});parkedPages.delete(page);}
+ }
+ await page.bringToFront();
+}
+async function pageFor(options={}){const context=await browser.newContext({viewport:{width:1280,height:800},serviceWorkers:'block',...options}),page=await context.newPage();if(process.env.QA_RENDER_MODE)await page.addInitScript(mode=>localStorage.setItem('winter-render-mode',mode),process.env.QA_RENDER_MODE);page.on('pageerror',error=>report.errors.push(error.message));page.on('console',message=>{if(message.type()!=='error')return;const error={text:message.text(),url:message.location().url};if(offlinePages.has(page)&&/ERR_INTERNET_DISCONNECTED/.test(error.text))report.expectedNetworkFaults.push(error);else report.consoleErrors.push(error);});page.on('response',response=>{if(response.status()<400)return;const error={path:new URL(response.url()).pathname,status:response.status()};report.httpErrors.push(error);void response.json().then(data=>{error.code=data.code;error.message=data.error;}).catch(()=>{});});pages.push(page);return page;}
 async function enter(page,url){
- await page.bringToFront();const started=Date.now();
+ await focus(page);const started=Date.now();
  await page.goto(url,{waitUntil:'domcontentloaded',timeout:120000});
  await page.waitForFunction(()=>window.labSocialJoined&&document.body.classList.contains('world-ready'),null,{timeout:120000});
  const worldReadyMs=Date.now()-started;
@@ -20,18 +30,17 @@ async function enter(page,url){
 }
 try{
  const a=await pageFor(),b=await pageFor({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true});
- // The game deliberately pauses rendering in hidden tabs. Linux headless
- // Chromium marks the first page hidden when the second context is opened.
- await enter(a,origin);await enter(b,origin);await a.bringToFront();await a.waitForFunction(()=>document.querySelectorAll('#visitor-labels > .visitor-label').length>=1,null,{timeout:20000});
- await b.bringToFront();await b.waitForFunction(()=>document.querySelectorAll('#visitor-labels > .visitor-label').length>=1,null,{timeout:20000});
+ // Both clients stay connected while each real rendered view is exercised.
+ await enter(a,origin);await enter(b,origin);await focus(a);await a.waitForFunction(()=>document.querySelectorAll('#visitor-labels > .visitor-label').length>=1,null,{timeout:20000});
+ await focus(b);await b.waitForFunction(()=>document.querySelectorAll('#visitor-labels > .visitor-label').length>=1,null,{timeout:20000});
  check('public guest entry and two rendered peers',await b.evaluate(()=>!!labGuestId&&document.querySelectorAll('#visitor-labels > .visitor-label').length>=1));
- await a.bringToFront();
- await a.keyboard.down('KeyD');await a.waitForTimeout(1300);await a.keyboard.up('KeyD');
+ await focus(a);
+ await a.keyboard.down('KeyD');await a.waitForFunction(()=>Math.abs(labPlayerState.x)>.1,null,{timeout:30000});await a.keyboard.up('KeyD');
  const pos=await a.evaluate(()=>({...labPlayerState}));await b.waitForTimeout(1000);
  check('walking updates through WebSocket',Math.abs(pos.x)>.1,pos);
  // CDP touch dispatch does not focus a background page as mouse/keyboard do.
  // A real phone remains visible; background tabs intentionally release input.
- await b.bringToFront();
+ await focus(b);
  const joy=await b.locator('#joystick').boundingBox(),touch=await b.context().newCDPSession(b);
  const center={x:joy.x+joy.width/2,y:joy.y+joy.height/2,id:1};
  await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[center]});
@@ -44,7 +53,7 @@ try{
  await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
  await b.waitForFunction(()=>window.labPlayerState?.speed<.1,null,{timeout:30000});
  check('mobile touch release stops movement',await b.evaluate(()=>labPlayerState.speed<.1));
- await a.bringToFront();
+ await focus(a);
  for(const [place,mode]of [['ferris','ferris'],['ski','lift']]){
   await a.evaluate(id=>travelToPlace(id),place);await a.locator('#place-actions button').first().click();
   await a.waitForFunction(m=>labPlayerState.mode===m,mode,{timeout:15000});await a.waitForTimeout(2500);
@@ -54,15 +63,15 @@ try{
  await a.evaluate(()=>travelToIsland('park'));
  // Inspect persistent chat history, not the 6.5s transient bubble. Network state
  // polling must also work while the receiver's render loop is in a hidden tab.
- await b.bringToFront();await b.locator('#chat-toggle').click();
+ await focus(b);await b.locator('#chat-toggle').click();
  const response=await a.request.post(origin+'/api/chat',{headers:{Origin:origin},data:{message:'실시간 공유 확인'}});check('chat persisted',response.ok());
  await b.waitForFunction(()=>document.querySelector('#chat-log').textContent.includes('실시간 공유 확인'),null,{timeout:12000,polling:100});check('chat visible on other device',true);
  await b.evaluate(()=>closeWinterChat());await b.waitForFunction(()=>!document.body.classList.contains('chat-typing'),null,{polling:100});
  check('guest admin API denied',(await a.request.get(origin+'/api/operations')).status()===403);
- await a.evaluate(()=>openWinterSettings('activities'));await a.locator('#firework-request').click();await a.waitForFunction(()=>!!labFireworks?.id);
+ await focus(a);await a.evaluate(()=>openWinterSettings('activities'));await a.locator('#firework-request').click();await a.waitForFunction(()=>!!labFireworks?.id);
  const show=await a.evaluate(()=>labFireworks);await b.waitForFunction(id=>labFireworks?.id===id,show.id,{timeout:15000,polling:100});check('same server countdown and seed',await b.evaluate(s=>labFireworks.seed===s.seed&&labFireworks.startsAt===s.startsAt,show));
  await a.screenshot({path:out+'/desktop-activities.png'});
- await b.bringToFront();await b.evaluate(()=>openWinterSettings('fluff'));await b.screenshot({path:out+'/mobile-customization.png'});
+ await focus(b);await b.evaluate(()=>openWinterSettings('fluff'));await b.screenshot({path:out+'/mobile-customization.png'});
  const overflow=await b.evaluate(()=>({page:document.documentElement.scrollWidth>innerWidth,dialog:(()=>{const r=document.querySelector('#studio').getBoundingClientRect();return r.left<0||r.right>innerWidth||r.top<0||r.bottom>innerHeight+1;})()}));check('mobile panel inside viewport',!overflow.page&&!overflow.dialog,overflow);
  await b.evaluate(()=>openWinterSettings('map'));await b.screenshot({path:out+'/mobile-map.png'});
  await b.setViewportSize({width:844,height:390});await b.waitForTimeout(800);await b.screenshot({path:out+'/mobile-landscape.png'});check('landscape panel inside viewport',await b.evaluate(()=>{const r=document.querySelector('#studio').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight+1;}));
