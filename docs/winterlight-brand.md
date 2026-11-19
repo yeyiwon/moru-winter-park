@@ -31,6 +31,41 @@
 
 ## 저장과 운영 반영
 
-공개 GitHub 저장소의 소스 업로드는 앞선 자동 승인 검토에서 공개 업로드의 명시 동의 부족으로 거절되었다. 이번 디자인 선택이 그 별도 업로드 동의까지 뜻한다고 해석하지 않으며, 거절된 작업을 재시도하거나 우회하지 않는다. 검토 가능한 코드·자산을 기존 Sites 소스 저장본에 준비하고, 공개 GitHub 반영에 대한 명시 동의를 최종 단계에서 요청한다.
+사용자는 공개 GitHub 소스 업로드와 기존 사이트 운영 반영에 명시적으로 동의했고, 이후 재시도를 요청했다. 별도의 배포 승인을 다시 요구하지 않는다.
 
-운영에 미반영인 동안 Sites와 Vercel의 실제 화면은 이 저장본과 다르다. 운영 반영 뒤에는 두 호스트의 HTML·공유 이미지·아이콘 및 canonical을 확인해야 한다. 공유 플랫폼의 캐시 갱신 시점은 UNKNOWN이다.
+GitHub 연결은 실제 쓰기 요청에서 `403 Resource not accessible by integration`을 반환하고 설치 목록도 비어 있어 아직 동기화할 수 없다. 이는 사용자 동의가 아닌 연결 권한 문제다. 기존 GitHub main을 변경하거나 권한 제한을 우회하지 않는다.
+
+검증한 소스 `ad81ba549e0cd13761c1f9289d4ef14efbccc949`와 기존 프로젝트 설정을 사용해 Vercel 직접 배포를 완료했다. 환경 변수·도메인·Git 연결은 변경하지 않았다.
+
+### Sites 운영 반영 완료
+
+- 저장 버전: 46, 소스 `ad81ba549e0cd13761c1f9289d4ef14efbccc949`.
+- 배포: `appgdep_6afe7ff192708191937e65967143eead`, `succeeded`, 2026-11-19 13:50 KST.
+- 운영 주소: https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site
+- 사이트 표시 이름도 `WINTERLIGHT`로 변경했다. 공개 범위는 유지했다.
+- Sites 소유자 검증 헤더를 사용한 HTTP 읽기 검사 9/9 PASS. HTML title/OG/Twitter, 공유 PNG, 파비콘, 정적 트리 로고, manifest, 헤더 CSS, 서비스 워커, health, 초대 필요 상태를 확인했다. 일반 외부 방문자의 인증 없는 Sites 접근을 검증한 결과로 주장하지 않는다.
+- 공유 PNG: 1200×630, 18,513바이트, SHA256 `aa9d89d08fac0750f411c6cbf1ad6633a94dee43383c747fca2adb45428cd846`, 로컬 준비본과 일치.
+- 결과: `qa/brand-v46/sites-production-validation.json`. 인증 토큰과 게스트 데이터는 기록하지 않았다.
+
+### Vercel 운영 반영 완료
+
+- 배포: `dpl_3DW4QuujFGswHeqNfQtQzcm5rqKq`, production, `READY`, 2026-11-19 13:58 KST.
+- 운영 주소: https://moru-winter-park.vercel.app
+- 빌드 주소: https://moru-winter-park-2wkd9mxg2-yeyiwons-projects.vercel.app
+- 공식 배포 상태에서 기존 운영 별칭 연결과 `aliasError: null`을 확인했다.
+- 인증 없는 공개 HTTP 검사 9/9 PASS. HTML·OG/Twitter 이름, 1200×630 PNG의 정확한 SHA256, 원본 트리 SVG, manifest, 15px/13px 헤더 CSS, 새 service worker, health, 익명 접속의 초대 필요 상태를 확인했다.
+- 결과: `qa/brand-v46/vercel-production-validation.json`.
+
+### 대용량 전송 문제와 배포 입력 동일성
+
+연결 도구의 대용량 파일 전송이 응답 없이 대기하여 중단했다. 작은 파일 업로드는 성공했지만 큰 파일 16개는 성공 여부를 확인할 수 없었다. 실패한 전송을 계속 기다리는 대신, 기존 공개 저장소의 고정 commit `46dc3223bed447ed0eba80aa1a6b83fd09975769`에서 변경 없는 소스 201개를 빌드 시 가져오는 패키지를 만들었다. 새 브랜드·의존성 목록·API 진입점 등 29개 파일은 직접 전달했다.
+
+`scripts/restore-release-source.mjs`는 정해진 공개 origin과 commit만 허용하고 redirect를 거부한다. 각 파일의 크기와 SHA256을 검사한 뒤 전체 입력을 다시 검사한다. 다운로드 실패나 불일치는 원래 빌드 전에 중단된다. 확인되지 않은 원격 코드는 실행하지 않는다. 비교 기준은 `qa/brand-v46/vercel-source-manifest.json`이다.
+
+애플리케이션·빌드 입력 227개는 승인 소스와 바이트 단위로 같다. 임시 배포용 `vercel.json`은 `buildCommand` 앞에 복원 단계만 추가하며, outputDirectory·regions·rewrites·redirects·headers·crons를 포함한 나머지 설정은 원본과 정확히 비교한다. 호스팅이 추가하는 `name`은 기존 프로젝트 값 `moru-winter-park`일 때만 허용한다. 원본 저장소의 `vercel.json`은 바꾸지 않았다.
+
+로컬 복원과 production build를 완료한 뒤 최종 웹 자산 217개를 기존 승인 빌드와 비교했고 누락·추가·해시 차이가 모두 0이었다. `qa/brand-v46/vercel-package-validation.json`에 기록했다. 운영 빌드에서도 201개 복원과 전체 입력 검증, 기존 빌드 성공을 확인했다. 이 방식의 외부 소스 접근은 빌드에만 필요하며 운영 페이지는 새 배포에 포함된 파일을 제공한다.
+
+첫 두 직접 배포는 호스팅이 추가한 `name` 필드로 설정 검사가 실패했고, 기존 운영 별칭을 변경하지 않았다. 관찰한 차이만 엄격하게 처리한 세 번째 배포가 성공했다. 기존 전체 게임·모바일 실제 기기·메신저 자체 캐시 화면 검증을 이번 정적 브랜드 배포의 결과로 주장하지 않는다.
+
+GitHub의 다음 자동 배포 전에 이 수정본을 저장소에 동기화해야 한다. 실제 공유 플랫폼의 캐시 갱신 시점은 UNKNOWN이다.
