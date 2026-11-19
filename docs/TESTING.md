@@ -1,3 +1,9 @@
+# v44 카메라·좌석·트리·공연·퀴즈
+
+전체 **393/393 PASS**(149.95초), build·build:vercel·test:budget PASS. Mac Chrome 상대 마우스/터치, 멀티터치+점프, 양쪽 리프트 시선 유지, 트리 click/tap·닫기 복원, 두 게스트 오마카세 서로 다른 좌석/공유/일어나기, 동기화 공연·선택 감상·수동 해제, 퀴즈 결과 확인. 브라우저 pageerror 0. 실물 Windows/휴대폰·장시간·운영 배포 후 결과 UNKNOWN / NOT RUN. 별도 lint/typecheck N/A. [재현과 화면](camera-interactions-v44.md#검증).
+
+---
+
 # v43 공개 월드 · 입력 · 모바일 UX
 
 사용자 요청으로 **배포 보류**, 최종 분리 수정본 385/385 PASS(37.88초), 운영 배포 후 검증 NOT RUN.

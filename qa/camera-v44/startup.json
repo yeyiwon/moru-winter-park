@@ -1,0 +1,128 @@
+{
+  "browser": "157.0.8103.79",
+  "baseline": "38544a2",
+  "physicalMobile": false,
+  "deviceScaleFactor": 1,
+  "runs": [
+    {
+      "run": 0,
+      "mobile": false,
+      "phase": "before",
+      "readyMs": 3414.5,
+      "maxFrameGap": 2233.2000000000003,
+      "longTaskMs": 2452,
+      "maxTask": 2235,
+      "errors": []
+    },
+    {
+      "run": 0,
+      "mobile": false,
+      "phase": "after",
+      "readyMs": 4182.899999991059,
+      "maxFrameGap": 183.29999999999973,
+      "longTaskMs": 1215,
+      "maxTask": 207,
+      "errors": []
+    },
+    {
+      "run": 0,
+      "mobile": true,
+      "phase": "before",
+      "readyMs": 3284.2000000029802,
+      "maxFrameGap": 2283.3,
+      "longTaskMs": 2432,
+      "maxTask": 2272,
+      "errors": []
+    },
+    {
+      "run": 0,
+      "mobile": true,
+      "phase": "after",
+      "readyMs": 3917.5,
+      "maxFrameGap": 166.69999999999982,
+      "longTaskMs": 1141,
+      "maxTask": 187,
+      "errors": []
+    },
+    {
+      "run": 1,
+      "mobile": false,
+      "phase": "before",
+      "readyMs": 3323.4000000059605,
+      "maxFrameGap": 2266.5,
+      "longTaskMs": 2456,
+      "maxTask": 2262,
+      "errors": []
+    },
+    {
+      "run": 1,
+      "mobile": false,
+      "phase": "after",
+      "readyMs": 4238.9000000059605,
+      "maxFrameGap": 183.29999999999973,
+      "longTaskMs": 1247,
+      "maxTask": 207,
+      "errors": []
+    },
+    {
+      "run": 1,
+      "mobile": true,
+      "phase": "before",
+      "readyMs": 3351.5,
+      "maxFrameGap": 2349.9,
+      "longTaskMs": 2556,
+      "maxTask": 2349,
+      "errors": []
+    },
+    {
+      "run": 1,
+      "mobile": true,
+      "phase": "after",
+      "readyMs": 4225.20000000298,
+      "maxFrameGap": 183.30000000000018,
+      "longTaskMs": 1252,
+      "maxTask": 212,
+      "errors": []
+    },
+    {
+      "run": 2,
+      "mobile": false,
+      "phase": "before",
+      "readyMs": 3555.0999999940395,
+      "maxFrameGap": 2433.3,
+      "longTaskMs": 2668,
+      "maxTask": 2431,
+      "errors": []
+    },
+    {
+      "run": 2,
+      "mobile": false,
+      "phase": "after",
+      "readyMs": 4867.699999988079,
+      "maxFrameGap": 200,
+      "longTaskMs": 1513,
+      "maxTask": 228,
+      "errors": []
+    },
+    {
+      "run": 2,
+      "mobile": true,
+      "phase": "before",
+      "readyMs": 4223.899999991059,
+      "maxFrameGap": 2966.6,
+      "longTaskMs": 3214,
+      "maxTask": 2955,
+      "errors": []
+    },
+    {
+      "run": 2,
+      "mobile": true,
+      "phase": "after",
+      "readyMs": 5020.300000011921,
+      "maxFrameGap": 233.30000000000018,
+      "longTaskMs": 1562,
+      "maxTask": 249,
+      "errors": []
+    }
+  ]
+}

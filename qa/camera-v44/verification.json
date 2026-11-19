@@ -1,0 +1,27 @@
+{
+  "at": "2026-11-19T07:10:20.046650+00:00",
+  "implementation": "968d804",
+  "tests": {
+    "command": "npm test",
+    "pass": 393,
+    "fail": 0,
+    "durationMs": 149949.554584
+  },
+  "build": "PASS",
+  "buildVercel": "PASS (local build only)",
+  "budget": {
+    "status": "PASS",
+    "files": 204,
+    "bytes": 22384423,
+    "codeGzipBytes": 984954
+  },
+  "browser": "Mac Chrome 157; 1280x800 + 390x844 touch + 844x390 touch emulation",
+  "physicalWindows": "UNKNOWN",
+  "physicalMobile": "UNKNOWN",
+  "production": "NOT DEPLOYED (user hold)",
+  "localPreview": "http://127.0.0.1:4183",
+  "localHealth": {
+    "ok": true,
+    "multiplayer": true
+  }
+}

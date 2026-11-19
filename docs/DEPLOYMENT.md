@@ -1,3 +1,9 @@
+# v44 · 배포 보류 유지
+
+**로컬 수정본만 보관한다는 사용자 지시를 유지한다.** GitHub main push, Vercel 및 Sites 배포 모두 NOT RUN. 393개 검사와 두 production build·예산 검사 PASS. 전체 22,384,423 bytes / code gzip 984,954 bytes. 기존 라이브 미리보기 http://127.0.0.1:4183 에서 확인하며 서버 API 변경도 로컬 서버 재시작으로 반영한다. 운영 DB·환경 변수·저장소 업로드를 수행하지 않았고 DB migration도 없다. [변경·검증 범위](camera-interactions-v44.md).
+
+---
+
 # v43 수정본 보관 · 운영 배포 보류
 
 **사용자 결정: 배포는 보류하고 수정본만 보관한다.** GitHub main push·Vercel 배포·Sites 배포를 수행하지 않았다. 아래 접속 정책과 `/admin`은 로컬 수정본에 구현된 예정 동작이며 현재 운영에 적용됐다는 뜻이 아니다.

@@ -1,0 +1,109 @@
+{
+  "errors": [],
+  "guests": [
+    {
+      "mobile": false,
+      "jump": {
+        "before": {
+          "y": 7.516655664369793,
+          "player": 0.95
+        },
+        "during": {
+          "y": 7.516655664369793,
+          "player": 1.7249999999999994
+        }
+      },
+      "dining": {
+        "seat": {
+          "kind": "dining",
+          "cabin": 1,
+          "seat": 0,
+          "startedAt": 1795071533646
+        },
+        "position": {
+          "x": 412,
+          "y": 1.57,
+          "z": 2.1,
+          "yaw": 3.141592653589793,
+          "mode": "dining",
+          "speed": 0,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        },
+        "bodyMode": "ride"
+      }
+    },
+    {
+      "mobile": true,
+      "jump": {
+        "before": {
+          "y": 8.361892187851192,
+          "player": 0.95
+        },
+        "during": {
+          "y": 8.361892187851192,
+          "player": 1.6666666666666665
+        }
+      },
+      "dining": {
+        "seat": {
+          "kind": "dining",
+          "cabin": 2,
+          "seat": 0,
+          "startedAt": 1795071577218
+        },
+        "position": {
+          "x": 414,
+          "y": 1.57,
+          "z": 2.1,
+          "yaw": 3.141592653589793,
+          "mode": "dining",
+          "speed": 0,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        },
+        "bodyMode": "ride"
+      }
+    }
+  ],
+  "remoteSeats": 2,
+  "lead": 9982,
+  "synchronized": [
+    {
+      "id": "36bc3c10-b3bd-4f28-a0fd-54a1b9a0ff0f",
+      "startsAt": 1795071598774,
+      "seed": 1738387819
+    },
+    {
+      "id": "36bc3c10-b3bd-4f28-a0fd-54a1b9a0ff0f",
+      "startsAt": 1795071598774,
+      "seed": 1738387819
+    }
+  ],
+  "countdown": "9초 뒤 불꽃놀이가 시작돼요\n불꽃놀이 보기",
+  "watch": {
+    "active": true,
+    "state": {
+      "yaw": 5.025942595291402e-10,
+      "pitch": -0.7667726323183683,
+      "distance": 13.999999999999996,
+      "fov": 54.97957635718247
+    },
+    "player": [
+      0,
+      0.95,
+      24
+    ]
+  },
+  "manualCancels": true,
+  "quiz": {
+    "emojis": 0,
+    "icon": 1
+  }
+}
