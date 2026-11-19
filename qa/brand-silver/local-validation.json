@@ -1,0 +1,97 @@
+{
+  "source_base": "4b4d12014f5edc0cbeee98035cfbda8673f49831",
+  "live_name": "WINTERLIGHT",
+  "name_status": "replacement name not selected",
+  "recommendations": [
+    "HIBERNA",
+    "NIVIS"
+  ],
+  "build_worker": "PASS",
+  "build_vercel": "PASS",
+  "loading_controls_tests": {
+    "passed": 3,
+    "failed": 0
+  },
+  "budget": {
+    "status": "PASS",
+    "all_bytes": 22636517,
+    "limit_all_bytes": 25165824,
+    "code_gzip_bytes": 1012800,
+    "limit_code_gzip_bytes": 1280000
+  },
+  "visual_review": "Generated comparison PNG inspected; static faceted crystal, uppercase, silver and blue; no Korean subtitle",
+  "assets": [
+    {
+      "file": "brand/og-image.png",
+      "bytes": 16245,
+      "dimensions": [
+        1200,
+        630
+      ],
+      "sha256": "1d1000065fca636d33f74ef7615b628cdf343d690cf90191fb59185911525148"
+    },
+    {
+      "file": "brand/favicon-32.png",
+      "bytes": 846,
+      "dimensions": [
+        32,
+        32
+      ],
+      "sha256": "5b7fc0a0c8e89f4873a667a4c091d5d658877d87ac0550578c2ea0bb6a398d7c"
+    },
+    {
+      "file": "brand/icon-192.png",
+      "bytes": 8674,
+      "dimensions": [
+        192,
+        192
+      ],
+      "sha256": "cdc64615a01209f69721cfd9dfead5ef4776a7b2a12a39df62272ba7514a9eb7"
+    },
+    {
+      "file": "brand/icon-512.png",
+      "bytes": 27343,
+      "dimensions": [
+        512,
+        512
+      ],
+      "sha256": "e8294f40a3d89fcae9264ca5b44bae299cef1bb9f46e8de3262b82796e37b2a5"
+    },
+    {
+      "file": "brand/apple-touch-icon.png",
+      "bytes": 6988,
+      "dimensions": [
+        180,
+        180
+      ],
+      "sha256": "cb405856b3b54b5fe28767cfa0a7418c9039e78a7c554e920ebfdf14292ee1e5"
+    },
+    {
+      "file": "brand/candidates/hiberna.png",
+      "bytes": 15606,
+      "dimensions": [
+        1200,
+        630
+      ],
+      "sha256": "6fdcd1c0aaf056e387cf6e389e0e2d06fb5e1d5d8493f28973757fd71e90fce4"
+    },
+    {
+      "file": "brand/candidates/nivis.png",
+      "bytes": 15235,
+      "dimensions": [
+        1200,
+        630
+      ],
+      "sha256": "ea6f93c3b7e5ec8c05e2eebd75ba22304920db52aa2966b446a581370833638c"
+    },
+    {
+      "file": "brand/candidates/comparison.png",
+      "bytes": 18928,
+      "dimensions": [
+        1440,
+        630
+      ],
+      "sha256": "2c8fc00924d075d2806fbfb4e814ca2f8ed0a39a7ee582a369f2aa536c6c96a6"
+    }
+  ]
+}

@@ -7,7 +7,9 @@ const origin = new URL(BRAND.url);
 if (origin.protocol !== 'https:' || origin.search || origin.hash || origin.pathname !== '/') throw Error('Use the verified public HTTPS origin, without an invitation.');
 const url = origin.origin + '/';
 const title = BRAND.name;
-const socialImage = new URL(BRAND.assets.socialImage, url).href + '?v=winterlight-v1';
+const revision = BRAND.revision;
+if (!/^[a-z0-9-]+$/.test(revision)) throw Error('Use a stable, URL-safe brand asset revision.');
+const socialImage = new URL(BRAND.assets.socialImage, url).href + '?v=' + revision;
 const metadata = `<meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <!-- brand:metadata:start -->
@@ -34,19 +36,19 @@ const metadata = `<meta charset="UTF-8">
 <meta name="twitter:description" content="${escape(BRAND.description)}">
 <meta name="twitter:image" content="${escape(socialImage)}">
 <meta name="twitter:image:alt" content="${escape(BRAND.assets.socialImageAlt)}">
-<link rel="icon" href="${BRAND.assets.favicon}?v=winterlight-v1" type="image/svg+xml">
-<link rel="icon" href="${BRAND.assets.favicon32}?v=winterlight-v1" sizes="32x32" type="image/png">
-<link rel="apple-touch-icon" href="${BRAND.assets.appleTouchIcon}?v=winterlight-v1" sizes="180x180">
-<link rel="mask-icon" href="${BRAND.assets.logoMonochrome}?v=winterlight-v1" color="${BRAND.colors.champagne}">
-<link rel="manifest" href="/site.webmanifest?v=winterlight-v1">
+<link rel="icon" href="${BRAND.assets.favicon}?v=${revision}" type="image/svg+xml">
+<link rel="icon" href="${BRAND.assets.favicon32}?v=${revision}" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="${BRAND.assets.appleTouchIcon}?v=${revision}" sizes="180x180">
+<link rel="mask-icon" href="${BRAND.assets.logoMonochrome}?v=${revision}" color="${BRAND.colors.blue}">
+<link rel="manifest" href="/site.webmanifest?v=${revision}">
 <!-- brand:metadata:end -->
 `;
 let html = fs.readFileSync('dist/index.html', 'utf8');
 html = html.replace(/(<head>)[\s\S]*?(?=<link rel="stylesheet")/, '$1\n' + metadata);
 html = html.replace(/<svg class="brand-definitions"[\s\S]*?<\/svg>\s*/, '');
-html = html.replace(/<a class="brand"[\s\S]*?<\/a>/, `<a class="brand" href="#" aria-label="${escape(BRAND.nameKo)} 홈"><span class="brand-mark" aria-hidden="true"><img src="${BRAND.assets.logoCompact}" width="32" height="29" alt="" decoding="async"></span><span class="brand-word">${escape(BRAND.wordmark)}</span></a>`);
+html = html.replace(/<a class="brand"[\s\S]*?<\/a>/, `<a class="brand" href="#" aria-label="${escape(BRAND.nameKo)} 홈"><span class="brand-mark" aria-hidden="true"><img src="${BRAND.assets.logoCompact}?v=${revision}" width="28" height="28" alt="" decoding="async"></span><span class="brand-word">${escape(BRAND.wordmark)}</span></a>`);
 html = html.replace(/<link rel="stylesheet" href="brand\.css[^\"]*">/g, '');
-html = html.replace('</head>', '<link rel="stylesheet" href="brand.css?v=winterlight-v1"></head>');
+html = html.replace('</head>', `<link rel="stylesheet" href="brand.css?v=${revision}"></head>`);
 fs.writeFileSync('dist/index.html', html);
 fs.writeFileSync('dist/site.webmanifest', JSON.stringify({
   id: '/', name: title, short_name: BRAND.name, description: BRAND.description,

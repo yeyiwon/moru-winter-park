@@ -1,8 +1,8 @@
-/* Static identity. The loader alone keeps its existing drawing animation. */
-header .brand{gap:8px;min-height:44px;color:#fffefa;letter-spacing:normal}
-header .brand-mark{display:grid;place-items:center;flex:none;width:32px;height:29px;filter:none}
+/* Static silver/ice-blue identity. Drawing animation belongs to the loader. */
+header .brand{gap:8px;min-height:44px;color:#edf4fa;letter-spacing:normal}
+header .brand-mark{display:grid;place-items:center;flex:none;width:28px;height:28px;filter:none}
 header .brand-mark img{display:block;width:100%;height:100%;object-fit:contain;animation:none;transform:none}
-header .brand-word{font-family:'Winter Sans',system-ui,sans-serif;font-size:15px;font-weight:350;line-height:1.3;letter-spacing:.055em;color:#fffefa;background:none;-webkit-text-fill-color:currentColor;animation:none;text-shadow:0 1px 8px #070d1970}
+header .brand-word{font-family:'Winter Sans',system-ui,sans-serif;font-size:14px;font-weight:500;line-height:1.3;letter-spacing:.09em;color:#edf4fa;background:none;-webkit-text-fill-color:currentColor;animation:none;text-shadow:0 1px 6px #070d1960}
 header .brand:hover .brand-mark{filter:none}
-header .brand:focus-visible{outline:2px solid #dfcea4;outline-offset:7px;border-radius:3px}
-@media(max-width:650px){header .brand{gap:6px}header .brand-mark{width:28px;height:25px}header .brand-word{font-size:13px;letter-spacing:.04em}}
+header .brand:focus-visible{outline:2px solid #8bbde5;outline-offset:7px;border-radius:3px}
+@media(max-width:650px){header .brand{gap:6px}header .brand-mark{width:24px;height:24px}header .brand-word{font-size:13px;letter-spacing:.065em}}

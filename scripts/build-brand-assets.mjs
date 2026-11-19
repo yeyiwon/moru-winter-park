@@ -1,91 +1,76 @@
-/**
- * Export the actual loading-tree curve as a static white/gold identity.
- * Run: node scripts/build-brand-assets.mjs [--svg-only]
- * Manual export uses Python/fontTools for bundled-font outlines and sharp for PNG.
- * Production builds consume committed assets; no extra runtime dependencies.
- */
-import { mkdir, writeFile } from 'node:fs/promises';
-import { spawnSync } from 'node:child_process';
-import { createRequire } from 'node:module';
-import { dirname, join, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
-import { loadingTreePath } from '../dist/luminous-loading.js';
-import { BRAND } from '../dist/brand-config.js';
-
-const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
-const output = join(root, 'dist', 'brand');
-await mkdir(output, { recursive: true });
-const escape = value => String(value).replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&apos;' }[char]));
-const path = loadingTreePath();
-const { white = '#fffefa', gold = '#a8844c', goldLight = '#dfcea4' } = BRAND.colors;
-const wordmark = BRAND.wordmark ?? BRAND.name.toLowerCase();
-const start = (width, height, label) => `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" role="img" aria-label="${escape(label)}"><title>${escape(label)}</title>`;
-const gradient = `<linearGradient id="ribbon" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${gold}"/><stop offset=".4" stop-color="#c7ad76"/><stop offset=".72" stop-color="${gold}"/><stop offset="1" stop-color="#967641"/></linearGradient>`;
-const curve = (stroke, width) => `<path d="${path}" fill="none" stroke="${stroke}" stroke-width="${width}" stroke-linecap="round" stroke-linejoin="round"/>`;
-
-// Outline the repository's own Pretendard font so SVG and PNG have identical type.
-// Node supplies WOFF2's Brotli decoding when the Python Brotli module is absent.
-function outlinedWordmark() {
-  const python = String.raw`
+/** Static silver/ice-blue identity. Production uses the committed exports. */
+import {mkdir,writeFile} from 'node:fs/promises';
+import {spawnSync} from 'node:child_process';
+import {createRequire} from 'node:module';
+import {dirname,join,resolve} from 'node:path';
+import {fileURLToPath} from 'node:url';
+import {BRAND} from '../dist/brand-config.js';
+const root=resolve(dirname(fileURLToPath(import.meta.url)),'..');
+const output=join(root,'dist','brand');
+await mkdir(join(output,'candidates'),{recursive:true});
+const escape=value=>String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[ch]));
+const {white,silver,silverLight,ice,blue}=BRAND.colors;
+const candidates=['HIBERNA','NIVIS'];
+const words=[...new Set([BRAND.wordmark,...candidates])];
+if(words.some(word=>word!==word.toUpperCase()))throw Error('Use uppercase wordmarks.');
+const python=String.raw`
 import sys,json,types,subprocess
-settings=json.load(sys.stdin)
+s=json.load(sys.stdin)
 try:
  import brotli
 except ImportError:
  brotli=types.ModuleType('brotli')
- brotli.decompress=lambda data:subprocess.run([settings['node'],'-e',"const z=require('node:zlib');let b=[];process.stdin.on('data',d=>b.push(d)).on('end',()=>process.stdout.write(z.brotliDecompressSync(Buffer.concat(b))));"],input=data,stdout=subprocess.PIPE,check=True).stdout
+ brotli.decompress=lambda data:subprocess.run([s['node'],'-e',"const z=require('node:zlib');let b=[];process.stdin.on('data',d=>b.push(d)).on('end',()=>process.stdout.write(z.brotliDecompressSync(Buffer.concat(b))));"],input=data,stdout=subprocess.PIPE,check=True).stdout
  sys.modules['brotli']=brotli
 from fontTools.ttLib import TTFont
 from fontTools.varLib.instancer import instantiateVariableFont
 from fontTools.pens.svgPathPen import SVGPathPen
-from html import escape
-font=TTFont(settings['font'])
-if 'fvar' in font:font=instantiateVariableFont(font,{'wght':350})
-glyphs=font.getGlyphSet();cmap=font.getBestCmap();word=settings['word']
-scale=30/font['head'].unitsPerEm;tracking=1.2
-advance=sum(font['hmtx'][cmap[ord(ch)]][0] for ch in word)
-cursor=600-(advance*scale+tracking*(len(word)-1))/2
-parts=[f'<g aria-label="{escape(word)}" fill="{escape(settings["color"])}">']
-for ch in word:
- name=cmap[ord(ch)];pen=SVGPathPen(glyphs);glyphs[name].draw(pen);outline=pen.getCommands()
- if outline:parts.append(f'<path d="{outline}" transform="translate({cursor:.3f} 441) scale({scale:.8f} {-scale:.8f})"/>')
- cursor+=font['hmtx'][name][0]*scale+tracking
-parts.append('</g>');print(''.join(parts))
+font=TTFont(s['font'])
+if 'fvar' in font:font=instantiateVariableFont(font,{'wght':500})
+glyphs=font.getGlyphSet();cmap=font.getBestCmap();result={}
+for word in s['words']:
+ data=[]
+ for ch in word:
+  name=cmap[ord(ch)];pen=SVGPathPen(glyphs);glyphs[name].draw(pen)
+  data.append({'path':pen.getCommands(),'advance':font['hmtx'][name][0]})
+ result[word]={'units':font['head'].unitsPerEm,'glyphs':data}
+print(json.dumps(result))
 `;
-  const result = spawnSync(process.env.CODEX_PRIMARY_RUNTIME_PYTHON || 'python3', ['-c', python], {
-    input: JSON.stringify({ font: join(root, 'dist/fonts/PretendardVariable.woff2'), word: wordmark, color: gold, node: process.execPath }),
-    encoding: 'utf8', maxBuffer: 1024 * 1024,
-  });
-  if (result.status !== 0) throw new Error(`Wordmark export needs Python and fontTools. ${result.stderr || result.error?.message || ''}`);
-  return result.stdout.trim();
+const exported=spawnSync(process.env.CODEX_PRIMARY_RUNTIME_PYTHON||'python3',['-c',python],{input:JSON.stringify({font:join(root,'dist/fonts/PretendardVariable.woff2'),words,node:process.execPath}),encoding:'utf8',maxBuffer:2*1024*1024});
+if(exported.status!==0)throw Error(`Font export failed: ${exported.stderr||exported.error?.message}`);
+const outlines=JSON.parse(exported.stdout);
+const start=(w,h,label)=>`<svg xmlns="http://www.w3.org/2000/svg" width="${w}" height="${h}" viewBox="0 0 ${w} ${h}" role="img" aria-label="${escape(label)}"><title>${escape(label)}</title>`;
+function wordmark(word,cx,y,size=28,tracking=2.5,color=silverLight){
+ const data=outlines[word],scale=size/data.units;
+ const width=data.glyphs.reduce((n,g)=>n+g.advance*scale,0)+tracking*(data.glyphs.length-1);let x=cx-width/2;
+ return `<g aria-label="${escape(word)}" fill="${color}">`+data.glyphs.map(g=>{const p=`<path d="${g.path}" transform="translate(${x.toFixed(3)} ${y}) scale(${scale} ${-scale})"/>`;x+=g.advance*scale+tracking;return p;}).join('')+'</g>';
 }
-
-const primary = start(600, 540, `${BRAND.nameKo} 골드 트리 로고`) + `<defs>${gradient}</defs>` + curve('url(#ribbon)', 5) + '</svg>';
-const monochrome = start(600, 540, `${BRAND.nameKo} 단색 트리 로고`) + curve(gold, 5) + '</svg>';
-// The world remains dark. This brighter compact mark retains contrast in its header.
-const compact = start(600, 540, `${BRAND.nameKo} 작은 트리 로고`) + curve(goldLight, 17) + '</svg>';
-const icon = (small = false) => start(600, 600, `${BRAND.nameKo} 앱 아이콘`) + `<rect width="600" height="600" rx="116" fill="${white}"/><g transform="translate(42 58) scale(.86)">` + curve(gold, small ? 30 : 14) + '</g></svg>';
-const appleIcon = start(600, 600, `${BRAND.nameKo} 홈 화면 아이콘`) + `<rect width="600" height="600" fill="${white}"/><g transform="translate(42 58) scale(.86)">` + curve(gold, 14) + '</g></svg>';
-const og = start(1200, 630, `${BRAND.name} white gold`) + `<defs>${gradient}</defs><rect width="1200" height="630" fill="${white}"/><g transform="translate(456 149) scale(.48)">` + curve('url(#ribbon)', 4.5) + '</g>' + outlinedWordmark() + '</svg>';
-const files = new Map([
-  ['logo-primary.svg', primary], ['logo-monochrome.svg', monochrome], ['logo-compact.svg', compact],
-  ['favicon.svg', icon(true)], ['icon.svg', icon()], ['og-image.svg', og],
-]);
-for (const [name, content] of files) await writeFile(join(output, name), content + '\n');
-if (!process.argv.includes('--svg-only')) {
-  const require = createRequire(import.meta.url);
-  let sharp;
-  try { sharp = require('sharp'); }
-  catch {
-    const runtimeModules = process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES;
-    if (!runtimeModules) throw new Error('PNG export needs sharp. Set CODEX_PRIMARY_RUNTIME_NODE_MODULES or install sharp, or use --svg-only.');
-    sharp = require(require.resolve('sharp', { paths: [runtimeModules] }));
-  }
-  for (const [name, source, width, height] of [
-    ['favicon-32.png', icon(true), 32, 32], ['icon-192.png', icon(), 192, 192],
-    ['icon-512.png', icon(), 512, 512], ['apple-touch-icon.png', appleIcon, 180, 180],
-    ['og-image.png', og, 1200, 630],
-  ]) await sharp(Buffer.from(source), { density: 192 }).resize(width, height).png({ compressionLevel: 9 }).toFile(join(output, name));
+// Six separated rays remain readable at favicon size; no stacked curves.
+function crystal(cx,cy,size,{dark=false,mono=false,small=false,id='crystal'}={}){
+ const light=dark?'#eef7ff':'#dce9f2',mid=dark?'#bedbf1':silver,shade=dark?'#86bce7':blue;
+ const outer=small?'M0 -62L10 -31 0 -10 -10 -31Z':'M0 -64L11 -31 0 -10 -11 -31Z';
+ const defs=mono?'':`<defs><linearGradient id="${id}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${light}"/><stop offset=".46" stop-color="${mid}"/><stop offset="1" stop-color="${shade}"/></linearGradient></defs>`;
+ return defs+`<g data-symbol="snow-crystal" transform="translate(${cx} ${cy}) scale(${size/144})">`+Array.from({length:6},(_,i)=>`<g transform="rotate(${i*60})"><path d="${outer}" fill="${mono?blue:`url(#${id})`}"/>${mono?'':`<path d="M0 -64L0 -10 11 -31Z" fill="${shade}" opacity=".5"/><path d="M0 -64L-11 -31 0 -10" fill="none" stroke="${light}" stroke-width="${small?1.8:.85}" opacity=".9"/>`}</g>`).join('')+'</g>';
 }
-await writeFile(join(output, 'README.md'), `# ${BRAND.name} 브랜드 자산\n\n사용자가 선택한 윈터라이트의 화이트·골드 자산. 이름과 팔레트는 \`dist/brand-config.js\`에서 관리한다.\n\n- 모든 트리는 기존 \`dist/luminous-loading.js\`의 \`loadingTreePath()\`를 그대로 사용한 정적 SVG다.\n- \`logo-primary.svg\`: 투명 배경의 은은한 골드 선. \`logo-monochrome.svg\`: 단색 골드.\n- \`logo-compact.svg\`: 어두운 월드 헤더에서 읽히는 밝은 골드. 28~32px에 맞춘 선 두께 17.\n- \`favicon.svg\`, 32px PNG와 앱 아이콘: 화이트 바탕의 골드 트리. 작은 파비콘에는 30 단위 선 사용.\n- \`og-image.png\`, SVG: 1200 × 630, 따뜻한 화이트 바탕. 약 220px 높이 트리와 30px의 작은 소문자 \`${wordmark}\`만 표시한다. 한글 부제·캐치프레이즈·블러 없음.\n- 워드마크는 프로젝트의 Pretendard 350을 벡터 윤곽으로 변환한다. SVG와 PNG의 글자 모양이 같고 외부 폰트 요청이 없다.\n- 재생성: \`node scripts/build-brand-assets.mjs\`. SVG만: \`--svg-only\`. 수동 생성에는 Python/fontTools와 Node가 필요하며, PNG에는 sharp가 추가로 필요하다. 배포 빌드는 커밋된 자산을 사용한다.\n\n원본 트리 경로는 변경하지 않는다. 방문자·초대 토큰·비공개 장면이 없는 공통 자산이다.\n`);
-console.log(`Brand assets written to ${output}`);
+const background=(w,h,id)=>`<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#18344e"/><stop offset=".48" stop-color="#142c43"/><stop offset="1" stop-color="#0c1c30"/></linearGradient></defs><rect width="${w}" height="${h}" fill="url(#${id})"/>`;
+const stars=()=>'<g fill="#c7e3fa" opacity=".28"><circle cx="254" cy="143" r="1"/><circle cx="943" cy="178" r="1.1"/><circle cx="1006" cy="434" r=".8"/><circle cx="199" cy="446" r=".7"/><circle cx="835" cy="101" r=".65"/><circle cx="371" cy="506" r=".75"/></g>';
+function social(word){return start(1200,630,`${word} silver and ice blue`)+background(1200,630,'sky')+stars()+crystal(600,264,152,{dark:true,id:'social-crystal'})+wordmark(word,600,396)+'</svg>';}
+function icon(small=false,square=false){return start(600,600,`${BRAND.name} silver blue crystal icon`)+`<rect width="600" height="600" rx="${square?0:116}" fill="${white}"/>`+crystal(300,300,440,{small,id:'icon-crystal'})+'</svg>';}
+const primary=start(144,144,`${BRAND.name} silver blue crystal`)+crystal(72,72,144)+'</svg>';
+const compact=start(144,144,`${BRAND.name} compact crystal`)+crystal(72,72,144,{dark:true,small:true})+'</svg>';
+const monochrome=start(144,144,`${BRAND.name} monochrome crystal`)+crystal(72,72,144,{mono:true})+'</svg>';
+const files=new Map([['logo-primary.svg',primary],['logo-compact.svg',compact],['logo-monochrome.svg',monochrome],['favicon.svg',icon(true)],['icon.svg',icon()],['og-image.svg',social(BRAND.wordmark)]]);
+for(const name of candidates)files.set(`candidates/${name.toLowerCase()}.svg`,social(name));
+let comparison=start(1440,630,'HIBERNA and NIVIS — uppercase silver blue name studies')+background(1440,630,'study-sky');
+comparison+='<path d="M720 108V514" stroke="#a9cde9" stroke-opacity=".12"/>';
+for(let i=0;i<candidates.length;i++)comparison+=crystal(360+i*720,250,148,{dark:true,id:`candidate-${i}`})+wordmark(candidates[i],360+i*720,384,31,2.5);
+comparison+='</svg>';files.set('candidates/comparison.svg',comparison);
+for(const [name,body]of files)await writeFile(join(output,name),body+'\n');
+if(!process.argv.includes('--svg-only')){
+ const require=createRequire(import.meta.url);let sharp;
+ try{sharp=require('sharp');}catch{sharp=require(require.resolve('sharp',{paths:[process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES]}));}
+ const exports=[['favicon-32.png',icon(true),32,32],['icon-192.png',icon(),192,192],['icon-512.png',icon(),512,512],['apple-touch-icon.png',icon(false,true),180,180],['og-image.png',social(BRAND.wordmark),1200,630],...candidates.map(name=>[`candidates/${name.toLowerCase()}.png`,social(name),1200,630]),['candidates/comparison.png',comparison,1440,630]];
+ for(const [name,body,w,h]of exports)await sharp(Buffer.from(body),{density:192}).resize(w,h).png({compressionLevel:9}).toFile(join(output,name));
+}
+await writeFile(join(output,'README.md'),`# Silver / ice-blue identity\n\n- Live wordmark: ${BRAND.wordmark}. The replacement name is still being reviewed.\n- Palette: cool white ${white}, silver ${silver}, ice blue ${ice}, steel blue ${blue}. No gold in brand assets.\n- Static symbol: six separated crystal rays, optimized for 24–32px. The loading tree keeps its original curve and animation.\n- Share image: 1200×630, winter-blue background, silver crystal and small uppercase text. No subtitle.\n- Wordmarks use outlined bundled Pretendard 500, so SVG and PNG are identical without external fonts.\n- candidates/: HIBERNA and NIVIS are review-only name proposals, not the selected public name.\n- Manual regeneration: node scripts/build-brand-assets.mjs. Committed assets are consumed by normal builds.\n`);
+console.log(`Wrote silver/ice-blue assets and two name studies to ${output}`);
