@@ -1,0 +1,530 @@
+{
+  "at": "2026-11-19T20:57:08.800Z",
+  "branch": "codex/alpine-resort-v48",
+  "deployment": "NOT_DEPLOYED",
+  "commit": "UNCOMMITTED",
+  "scope": "compact one-minute ski resort, straight continuous gondolas, level base, synchronized map, regional castle night show",
+  "tests": {
+    "full": {
+      "pass": 527,
+      "fail": 0
+    },
+    "subsequentTimeline": {
+      "pass": 35,
+      "fail": 0
+    },
+    "syntaxModules": 289,
+    "build": "PASS",
+    "realtimeBuild": "PASS",
+    "vercelBuild": "PASS",
+    "budget": "PASS",
+    "diffWhitespace": "PASS"
+  },
+  "descent": {
+    "environment": "macOS arm64 / headless Chrome / 1280x800; actual elapsed time; automated steering",
+    "stage": "compact 900m drop, approximately 60 second target, worker terrain and authoritative transport",
+    "elapsedSeconds": 58.20519999999777,
+    "frames": 3492,
+    "averageFPS": 59.99463965419386,
+    "frameMsMean": 16.668155784649272,
+    "frameMsP50": 16.69999999999709,
+    "frameMsP95": 16.700000000004366,
+    "callsRange": [
+      88,
+      1238
+    ],
+    "trianglesRange": [
+      358504,
+      5130171
+    ],
+    "terrainResidentMax": 28,
+    "final": {
+      "x": -5.770554520296825,
+      "y": 0.95,
+      "z": -71.6954574354735,
+      "yaw": -0.10736613292161377,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 0,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    "errors": []
+  },
+  "access": {
+    "walkSegments": 14,
+    "mapDestinations": 8,
+    "cameraRange": {
+      "min": 25.999999999999954,
+      "max": 26.000000000000053,
+      "frames": 1654
+    },
+    "errors": []
+  },
+  "sharedGondola": {
+    "sameCabin": true,
+    "seats": [
+      1,
+      0
+    ],
+    "chat": true,
+    "exits": [
+      {
+        "mode": "summit",
+        "reservation": null
+      },
+      {
+        "mode": "summit",
+        "reservation": null
+      }
+    ],
+    "errors": []
+  },
+  "touch": {
+    "liftDurations": [
+      28,
+      46,
+      38
+    ],
+    "outsideRing": {
+      "magnitude": 1,
+      "speed": 30.302340027138946
+    },
+    "multitouch": {
+      "magnitude": 1,
+      "yaw": -0.04999999999999999
+    },
+    "stop": {
+      "pose": {
+        "x": 194.18095740751258,
+        "y": 391.2957607345858,
+        "z": -1143.4782359366989,
+        "yaw": 0.36103100580619585,
+        "mode": "",
+        "lean": 0,
+        "tilt": 0,
+        "brake": false,
+        "air": 0,
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      },
+      "gear": "none",
+      "input": 0
+    },
+    "errors": []
+  },
+  "sharedShow": {
+    "idAndSeed": true,
+    "shaderClocks": [
+      {
+        "fireworks": 3.98960009765625,
+        "castle": 3.98960009765625
+      },
+      {
+        "fireworks": 3.99,
+        "castle": 3.99
+      }
+    ],
+    "lateJoin": true,
+    "adminDenied": 403,
+    "allInactiveAtEnd": true,
+    "errors": []
+  },
+  "show": {
+    "desktop": {
+      "environment": "macOS Chrome 1280x800 / high",
+      "off": {
+        "fps": 47.138047138038374,
+        "p95": 33.39999999999782,
+        "calls": [
+          1133,
+          1534
+        ],
+        "triangles": [
+          4821585,
+          7985069
+        ],
+        "memory": {
+          "geometries": 927,
+          "textures": 37
+        },
+        "cue": 0,
+        "regions": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "particles": 0
+      },
+      "finale": {
+        "fps": 50.32010562238128,
+        "p95": 33.400000000001455,
+        "calls": [
+          1137,
+          1538
+        ],
+        "triangles": [
+          4821681,
+          7985165
+        ],
+        "memory": {
+          "geometries": 931,
+          "textures": 37
+        },
+        "cue": 4,
+        "regions": [
+          0.800000011920929,
+          0.699999988079071,
+          0.699999988079071,
+          0.6000000238418579,
+          0.25999999046325684,
+          0.8500000238418579,
+          0.6499999761581421,
+          0.8999999761581421,
+          0.800000011920929,
+          0.75
+        ],
+        "particles": 720
+      },
+      "repeats": [
+        {
+          "memory": {
+            "geometries": 931,
+            "textures": 37
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        },
+        {
+          "memory": {
+            "geometries": 931,
+            "textures": 37
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        },
+        {
+          "memory": {
+            "geometries": 931,
+            "textures": 37
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        },
+        {
+          "memory": {
+            "geometries": 931,
+            "textures": 37
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        },
+        {
+          "memory": {
+            "geometries": 931,
+            "textures": 37
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        },
+        {
+          "memory": {
+            "geometries": 931,
+            "textures": 37
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        }
+      ],
+      "errors": []
+    },
+    "mobile": {
+      "environment": "macOS Chrome 390x844 touch emulation / medium",
+      "off": {
+        "fps": 60.008465924642145,
+        "p95": 16.799999999999272,
+        "calls": [
+          935,
+          1356
+        ],
+        "triangles": [
+          4245705,
+          7445289
+        ],
+        "memory": {
+          "geometries": 785,
+          "textures": 34
+        },
+        "cue": 0,
+        "regions": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "particles": 0
+      },
+      "finale": {
+        "fps": 57.01339441319584,
+        "p95": 33.299999999995634,
+        "calls": [
+          942,
+          1346
+        ],
+        "triangles": [
+          4246141,
+          7409965
+        ],
+        "memory": {
+          "geometries": 795,
+          "textures": 34
+        },
+        "cue": 4,
+        "regions": [
+          0.800000011920929,
+          0.699999988079071,
+          0.699999988079071,
+          0.6000000238418579,
+          0.25999999046325684,
+          0.8500000238418579,
+          0.6499999761581421,
+          0.8999999761581421,
+          0.800000011920929,
+          0.75
+        ],
+        "particles": 420
+      },
+      "repeats": [
+        {
+          "memory": {
+            "geometries": 834,
+            "textures": 34
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        },
+        {
+          "memory": {
+            "geometries": 834,
+            "textures": 34
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        },
+        {
+          "memory": {
+            "geometries": 834,
+            "textures": 34
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        },
+        {
+          "memory": {
+            "geometries": 834,
+            "textures": 34
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        },
+        {
+          "memory": {
+            "geometries": 834,
+            "textures": 34
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        },
+        {
+          "memory": {
+            "geometries": 834,
+            "textures": 34
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        }
+      ],
+      "errors": []
+    },
+    "mobile-low": {
+      "environment": "macOS Chrome 390x844 touch emulation / low",
+      "off": {
+        "fps": 60.23343580515361,
+        "p95": 16.700000000000728,
+        "calls": [
+          929,
+          1333
+        ],
+        "triangles": [
+          4224235,
+          7388059
+        ],
+        "memory": {
+          "geometries": 780,
+          "textures": 33
+        },
+        "cue": 0,
+        "regions": [
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "particles": 0
+      },
+      "finale": {
+        "fps": 60.248493787666504,
+        "p95": 16.700000000004366,
+        "calls": [
+          936,
+          1337
+        ],
+        "triangles": [
+          4224671,
+          7388155
+        ],
+        "memory": {
+          "geometries": 790,
+          "textures": 33
+        },
+        "cue": 4,
+        "regions": [
+          0.800000011920929,
+          0.699999988079071,
+          0.699999988079071,
+          0.6000000238418579,
+          0.25999999046325684,
+          0.8500000238418579,
+          0.6499999761581421,
+          0.8999999761581421,
+          0.800000011920929,
+          0.75
+        ],
+        "particles": 180
+      },
+      "repeats": [
+        {
+          "memory": {
+            "geometries": 827,
+            "textures": 33
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        },
+        {
+          "memory": {
+            "geometries": 827,
+            "textures": 33
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        },
+        {
+          "memory": {
+            "geometries": 827,
+            "textures": 33
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        },
+        {
+          "memory": {
+            "geometries": 827,
+            "textures": 33
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        },
+        {
+          "memory": {
+            "geometries": 827,
+            "textures": 33
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        },
+        {
+          "memory": {
+            "geometries": 827,
+            "textures": 33
+          },
+          "active": false,
+          "points": 0,
+          "visible": false
+        }
+      ],
+      "errors": []
+    }
+  },
+  "unknown": [
+    "Physical Windows GPU",
+    "Physical iOS Safari and Android/Galaxy",
+    "GPU memory bytes",
+    "Long-session thermal and memory stability",
+    "Production Cloudflare WebSocket validation for this local version"
+  ],
+  "sourceHashes": {
+    "dist/mountain-layout.js": "da00d7b3559744f774830468e835113ecd8e75644fe60ecbefefedb070af9ab9",
+    "dist/alpine-resort.js": "58ad5fb8df5303ac5087b0e8eff24ed3ca7930a241921a3e304724ca9ce5ddb0",
+    "dist/alpine-gondola.js": "df8983fc2bb7c8a2a34a3afda06dc9b7ac6b5ddbca49456aea8e2317fd3f33b8",
+    "dist/ride-seats.js": "2d8035165b4568630bc138c5dcfe2a8413d45da7029d588043865f66afe16d98",
+    "dist/resort-blueprint.js": "91e9302329a090b37989d7a1fabf21e888e811e20092def142fc8a8abf02f1fd",
+    "dist/winter-rides.js": "ac6c05a731c1526d0d3b0518308e3d309fd01813bd23449bde2ad1ab852f4cef",
+    "dist/camera-clearance.js": "6bbb123ae9dabef57e222e3f572b248682f518d08241123a539da2966ed5c442",
+    "dist/castle-model.js": "f603b2b41bc23dc5101e8de5fe7fef64da622aa10c230c7d93c3dc69a2aacca2",
+    "dist/castle-show-score.js": "6c34bd5d443cbdc3c560d22488ec8c975029bc68cd91982c782984a2cf8f3f03",
+    "dist/castle-show.js": "b32c6a282b6eb90571acaaf9b055b6fdc8bfdc59adac7b536f375f619659b3c5",
+    "dist/firework-score.js": "b42a5f9da40321d38a91929b1fdb944e84ffe66a743c2eeacfaff8ad3a692923",
+    "dist/firework-music.js": "6cba121276c664377e40a12226c612a81b14e874a81e405ab7c15642ffe86629",
+    "dist/winter-fireworks.js": "c61d91bcc56983c4ea7f9c920bdc5e1d0be78f329e22d4b6649b6f5eaaad43f9",
+    "dist/park.js": "0e2fac5f1ceffc53f1cca6bc93c734969950dd697cf1b1824281077f646116cb",
+    "dist/map-atlas.js": "98e3d5fa6a3683c60a44c4444d933f73ba718d4a48feedfc1b05b59afaca37b5",
+    "dist/textures/winter-world-map.webp": "2e8d10a0598b25587c18cb08af4630b62b3d1ef4cda65e028510d526680d16ea"
+  }
+}

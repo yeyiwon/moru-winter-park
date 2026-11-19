@@ -1,0 +1,59 @@
+{
+  "high": [
+    [
+      114,
+      138,
+      162
+    ],
+    [
+      34,
+      52,
+      80
+    ],
+    [
+      209,
+      199,
+      222
+    ]
+  ],
+  "low": [
+    [
+      114,
+      138,
+      162
+    ],
+    [
+      34,
+      52,
+      80
+    ],
+    [
+      209,
+      199,
+      222
+    ]
+  ],
+  "noFloat": [
+    [
+      115,
+      137,
+      162
+    ],
+    [
+      37,
+      52,
+      81
+    ],
+    [
+      210,
+      199,
+      222
+    ]
+  ],
+  "errors": [],
+  "environment": "Mac Chrome: actual HDR/low, simulated missing float-buffer capability, no Windows hardware",
+  "maxByteDifference": {
+    "low": 0,
+    "noFloat": 3
+  }
+}

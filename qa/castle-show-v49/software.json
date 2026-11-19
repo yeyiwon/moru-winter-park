@@ -1,0 +1,34 @@
+{
+  "environment": "macOS Chrome software; mobile/Windows hardware UNKNOWN",
+  "stages": {
+    "before": {
+      "fps": 0.3129155910192499,
+      "p50": 6399.6999999999825,
+      "p95": 6399.6999999999825,
+      "calls": [
+        464,
+        873
+      ],
+      "triangles": [
+        2859129,
+        6034155
+      ],
+      "memory": {
+        "geometries": 565,
+        "textures": 19
+      },
+      "viewDistance": 18.58436,
+      "quality": "low",
+      "particles": 0,
+      "lasers": false,
+      "smoke": false
+    }
+  },
+  "device": {
+    "renderer": "ANGLE (Google, Vulkan 1.3.0 (SwiftShader Device (LLVM 10.0.0) (0x0000C0DE)), SwiftShader driver)",
+    "output": "srgb",
+    "drawingBuffer": "srgb"
+  },
+  "failure": "page.screenshot: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - taking page screenshot\u001b[22m\n\u001b[2m  - waiting for fonts to load...\u001b[22m\n\u001b[2m  - fonts loaded\u001b[22m\n\n    at /Users/yeiwon/Documents/Codex/winter-alpine-v48/scripts/verify-castle-show.mjs:14:48",
+  "errors": []
+}

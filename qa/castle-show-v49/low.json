@@ -1,0 +1,364 @@
+{
+  "environment": "macOS Chrome low; mobile/Windows hardware UNKNOWN",
+  "stages": {
+    "15": {
+      "fps": 59.94754589731749,
+      "p50": 16.69999999999709,
+      "p95": 16.799999999999272,
+      "calls": [
+        1056,
+        1128
+      ],
+      "triangles": [
+        3911391,
+        4718757
+      ],
+      "memory": {
+        "geometries": 976,
+        "textures": 35
+      },
+      "viewDistance": 260,
+      "quality": "low",
+      "particles": 3200,
+      "lasers": true,
+      "smoke": true
+    },
+    "34": {
+      "fps": 59.2954307638427,
+      "p50": 16.700000000000728,
+      "p95": 16.799999999999272,
+      "calls": [
+        1056,
+        1128
+      ],
+      "triangles": [
+        3911391,
+        4718757
+      ],
+      "memory": {
+        "geometries": 976,
+        "textures": 35
+      },
+      "viewDistance": 260,
+      "quality": "low",
+      "particles": 4800,
+      "lasers": true,
+      "smoke": true
+    },
+    "52": {
+      "fps": 59.74999999997772,
+      "p50": 16.69999999999709,
+      "p95": 16.799999999995634,
+      "calls": [
+        1056,
+        1128
+      ],
+      "triangles": [
+        3911391,
+        4718757
+      ],
+      "memory": {
+        "geometries": 976,
+        "textures": 35
+      },
+      "viewDistance": 260,
+      "quality": "low",
+      "particles": 4800,
+      "lasers": true,
+      "smoke": true
+    },
+    "64": {
+      "fps": 60.024906600237976,
+      "p50": 16.69999999999709,
+      "p95": 16.700000000004366,
+      "calls": [
+        1056,
+        1128
+      ],
+      "triangles": [
+        3911391,
+        4718757
+      ],
+      "memory": {
+        "geometries": 976,
+        "textures": 35
+      },
+      "viewDistance": 260,
+      "quality": "low",
+      "particles": 12000,
+      "lasers": true,
+      "smoke": true
+    },
+    "before": {
+      "fps": 60.1492500062172,
+      "p50": 16.69999999999709,
+      "p95": 16.700000000000728,
+      "calls": [
+        729,
+        1124
+      ],
+      "triangles": [
+        2745761,
+        4707897
+      ],
+      "memory": {
+        "geometries": 973,
+        "textures": 35
+      },
+      "viewDistance": 260,
+      "quality": "low",
+      "particles": 0,
+      "lasers": false,
+      "smoke": false
+    },
+    "after": {
+      "fps": 59.069836997136754,
+      "p50": 16.69999999999709,
+      "p95": 16.80000000000291,
+      "calls": [
+        1053,
+        1125
+      ],
+      "triangles": [
+        3911331,
+        4718697
+      ],
+      "memory": {
+        "geometries": 976,
+        "textures": 35
+      },
+      "viewDistance": 260,
+      "quality": "low",
+      "particles": 0,
+      "lasers": false,
+      "smoke": false
+    }
+  },
+  "device": {
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+    "output": "srgb",
+    "drawingBuffer": "srgb"
+  },
+  "manualShow": {
+    "camera": {
+      "yaw": -0.02,
+      "pitch": 0.055999999999999994,
+      "distance": 260,
+      "fov": 50,
+      "context": null,
+      "manualYaw": true,
+      "revision": 3,
+      "treeOffset": 0,
+      "rendered": {
+        "yaw": -0.019262557917788106,
+        "pitch": 0.05577876737533642,
+        "distance": 260,
+        "fov": 50
+      },
+      "focus": {
+        "x": 0,
+        "y": 95,
+        "z": -42
+      },
+      "eye": {
+        "x": -5.000166814957414,
+        "y": 109.49496049697584,
+        "z": 217.54748014961268
+      },
+      "aim": {
+        "x": 0,
+        "y": 95,
+        "z": -42
+      }
+    },
+    "position": {
+      "x": 0,
+      "z": 24
+    }
+  },
+  "repeats": [
+    {
+      "geometries": 976,
+      "textures": 35
+    },
+    {
+      "geometries": 976,
+      "textures": 35
+    },
+    {
+      "geometries": 976,
+      "textures": 35
+    },
+    {
+      "geometries": 976,
+      "textures": 35
+    },
+    {
+      "geometries": 976,
+      "textures": 35
+    },
+    {
+      "geometries": 976,
+      "textures": 35
+    }
+  ],
+  "treeBefore": {
+    "yaw": 0.33,
+    "pitch": 0.48,
+    "distance": 16.5,
+    "fov": 50,
+    "context": null,
+    "manualYaw": false,
+    "revision": 5,
+    "treeOffset": 0,
+    "rendered": {
+      "yaw": 0.33,
+      "pitch": 0.48,
+      "distance": 16.5,
+      "fov": 50
+    },
+    "focus": {
+      "x": -12,
+      "y": 1.4,
+      "z": 74
+    },
+    "eye": {
+      "x": -7.257495404353517,
+      "y": 9.019356396434468,
+      "z": 87.84572346482426
+    },
+    "aim": {
+      "x": -12,
+      "y": 1.4,
+      "z": 74
+    }
+  },
+  "treeEditing": {
+    "camera": {
+      "yaw": 0.24200000000000002,
+      "pitch": 0.127,
+      "distance": 44.73925339572115,
+      "fov": 50,
+      "context": null,
+      "manualYaw": true,
+      "revision": 7,
+      "treeOffset": 0,
+      "rendered": {
+        "yaw": 0.24200154464188442,
+        "pitch": 0.12699952607578546,
+        "distance": 44.73965351301491,
+        "fov": 50
+      },
+      "focus": {
+        "x": 0,
+        "y": 15.2,
+        "z": 80
+      },
+      "eye": {
+        "x": 10.63534525966741,
+        "y": 20.86665328574442,
+        "z": 123.08613545227118
+      },
+      "aim": {
+        "x": 0,
+        "y": 15.2,
+        "z": 80
+      }
+    },
+    "open": true,
+    "position": {
+      "x": -12,
+      "z": 74
+    }
+  },
+  "treeAfter": {
+    "yaw": 0.33,
+    "pitch": 0.48,
+    "distance": 16.5,
+    "fov": 50,
+    "context": null,
+    "manualYaw": false,
+    "revision": 7,
+    "treeOffset": 0,
+    "rendered": {
+      "yaw": 0.33,
+      "pitch": 0.48,
+      "distance": 16.5,
+      "fov": 50
+    },
+    "focus": {
+      "x": -12,
+      "y": 1.4000000000000004,
+      "z": 74
+    },
+    "eye": {
+      "x": -7.257495404353517,
+      "y": 9.019356396434468,
+      "z": 87.84572346482426
+    },
+    "aim": {
+      "x": -12,
+      "y": 1.4000000000000004,
+      "z": 74
+    }
+  },
+  "chatClose": 0,
+  "map": {
+    "tip": "rgba(24, 35, 54, 0.7)",
+    "notice": "rgba(24, 35, 54, 0.7)",
+    "visible": 12
+  },
+  "lighting": {
+    "saved": "#4cbdb9",
+    "rendered": "4cbdb9"
+  },
+  "dye": {
+    "fur": "#303d52",
+    "top": "#c7b4e7",
+    "preview": "303d52",
+    "world": "303d52",
+    "stored": "#c7b4e7"
+  },
+  "sky": [
+    {
+      "moon": [
+        -928,
+        1136,
+        -2608
+      ],
+      "aurora": [
+        0,
+        0,
+        0
+      ],
+      "playerY": 1.272814530245252
+    },
+    {
+      "moon": [
+        -928,
+        1136.0000000000002,
+        -2608
+      ],
+      "aurora": [
+        0,
+        0,
+        0
+      ],
+      "playerY": 967.6061037068716
+    },
+    {
+      "moon": [
+        -928,
+        1136,
+        -2608
+      ],
+      "aurora": [
+        0,
+        0,
+        0
+      ],
+      "playerY": 1800.9501454667723
+    }
+  ],
+  "errors": []
+}

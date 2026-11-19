@@ -1,0 +1,13 @@
+{
+  "environment": "macOS headless Chrome; desktop 1280x800 and touch 390x844, DPR 1",
+  "physicalMobileVerified": false,
+  "left": {
+    "startedAt": 1795120324889,
+    "kind": "lift",
+    "duration": 28
+  },
+  "failure": "page.waitForFunction: Timeout 10000ms exceeded.",
+  "errors": [
+    "400 /api/ride"
+  ]
+}

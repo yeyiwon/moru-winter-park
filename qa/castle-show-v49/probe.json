@@ -1,0 +1,202 @@
+{
+  "environment": "macOS Chrome desktop; mobile/Windows hardware UNKNOWN",
+  "stages": {
+    "before": {
+      "fps": 60.26046465304904,
+      "p50": 16.700000000000728,
+      "p95": 16.700000000000728,
+      "calls": [
+        741,
+        1131
+      ],
+      "triangles": [
+        2783084,
+        4727404
+      ],
+      "memory": {
+        "geometries": 979,
+        "textures": 36
+      },
+      "view": {
+        "yaw": 0,
+        "pitch": 0.04999999999999999,
+        "distance": 260,
+        "fov": 50
+      },
+      "quality": "high",
+      "particles": 0,
+      "lasers": false,
+      "smoke": false
+    }
+  },
+  "device": {
+    "renderer": "ANGLE (Apple, ANGLE Metal Renderer: Apple M2, Unspecified Version)",
+    "output": "srgb",
+    "drawingBuffer": "srgb"
+  },
+  "probe": {
+    "blur": {
+      "fps": 35.7026939305553,
+      "p50": 33.299999999995634,
+      "p95": 33.400000000001455,
+      "calls": [
+        788,
+        1135
+      ],
+      "triangles": [
+        2956424,
+        4738264
+      ],
+      "memory": {
+        "geometries": 982,
+        "textures": 36
+      },
+      "view": {
+        "yaw": 0,
+        "pitch": 0.049999999999999996,
+        "distance": 260,
+        "fov": 50
+      },
+      "quality": "high",
+      "particles": 47600,
+      "lasers": true,
+      "smoke": true
+    },
+    "clear": {
+      "fps": 57.70816158287391,
+      "p50": 16.69999999999709,
+      "p95": 16.80000000000291,
+      "calls": [
+        1063,
+        1135
+      ],
+      "triangles": [
+        3930898,
+        4738264
+      ],
+      "memory": {
+        "geometries": 982,
+        "textures": 36
+      },
+      "view": {
+        "yaw": 0,
+        "pitch": 0.049999999999999996,
+        "distance": 260,
+        "fov": 50
+      },
+      "quality": "high",
+      "particles": 47600,
+      "lasers": true,
+      "smoke": true
+    },
+    "blur-repeat": {
+      "fps": 34.505870962962746,
+      "p50": 33.30000000000291,
+      "p95": 33.400000000001455,
+      "calls": [
+        1063,
+        1135
+      ],
+      "triangles": [
+        3930898,
+        4738264
+      ],
+      "memory": {
+        "geometries": 982,
+        "textures": 36
+      },
+      "view": {
+        "yaw": 0,
+        "pitch": 0.049999999999999996,
+        "distance": 260,
+        "fov": 50
+      },
+      "quality": "high",
+      "particles": 47600,
+      "lasers": true,
+      "smoke": true
+    },
+    "clear-repeat": {
+      "fps": 57.73989551829505,
+      "p50": 16.69999999999709,
+      "p95": 16.80000000000291,
+      "calls": [
+        1063,
+        1135
+      ],
+      "triangles": [
+        3930898,
+        4738264
+      ],
+      "memory": {
+        "geometries": 982,
+        "textures": 36
+      },
+      "view": {
+        "yaw": 0,
+        "pitch": 0.049999999999999996,
+        "distance": 260,
+        "fov": 50
+      },
+      "quality": "high",
+      "particles": 47600,
+      "lasers": true,
+      "smoke": true
+    },
+    "no-fx-blur": {
+      "fps": 33.930442592703926,
+      "p50": 33.30000000000291,
+      "p95": 33.400000000001455,
+      "calls": [
+        1060,
+        1132
+      ],
+      "triangles": [
+        3930838,
+        4738204
+      ],
+      "memory": {
+        "geometries": 982,
+        "textures": 36
+      },
+      "view": {
+        "yaw": 0,
+        "pitch": 0.049999999999999996,
+        "distance": 260,
+        "fov": 50
+      },
+      "quality": "high",
+      "particles": 47600,
+      "lasers": false,
+      "smoke": false
+    },
+    "no-fx-clear": {
+      "fps": 59.98350453629717,
+      "p50": 16.69999999999709,
+      "p95": 16.799999999995634,
+      "calls": [
+        1060,
+        1132
+      ],
+      "triangles": [
+        3930838,
+        4738204
+      ],
+      "memory": {
+        "geometries": 982,
+        "textures": 36
+      },
+      "view": {
+        "yaw": 0,
+        "pitch": 0.049999999999999996,
+        "distance": 260,
+        "fov": 50
+      },
+      "quality": "high",
+      "particles": 47600,
+      "lasers": false,
+      "smoke": false
+    }
+  },
+  "errors": []
+}

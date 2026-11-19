@@ -1,0 +1,5 @@
+
+> build:realtime
+> node scripts/build-realtime.mjs
+
+Built bounded WebSocket Worker; provisioning and secrets are separate deployment steps.

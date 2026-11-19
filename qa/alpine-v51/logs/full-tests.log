@@ -1,0 +1,2691 @@
+
+> test
+> node --experimental-vm-modules --test --test-concurrency=4 tests/*.test.mjs
+
+TAP version 13
+# Subtest: fashion accessories share finite geometry with a bounded draw-group budget
+ok 1 - fashion accessories share finite geometry with a bounded draw-group budget
+  ---
+  duration_ms: 435.849459
+  ...
+# Subtest: new headwear and eyewear replace their own slots and stay attached during activities
+ok 2 - new headwear and eyewear replace their own slots and stay attached during activities
+  ---
+  duration_ms: 151.066334
+  ...
+# Subtest: collar sits below the face, broad cloth tails and hardware have real thickness
+ok 3 - collar sits below the face, broad cloth tails and hardware have real thickness
+  ---
+  duration_ms: 172.736084
+  ...
+# Subtest: heart, star and dazed eyes have balanced anchors and readable symmetrical pupils
+ok 4 - heart, star and dazed eyes have balanced anchors and readable symmetrical pupils
+  ---
+  duration_ms: 129.91725
+  ...
+# Subtest: compact resort groups all base boarding entrances and leaves the park/food approaches walkable
+ok 5 - compact resort groups all base boarding entrances and leaves the park/food approaches walkable
+  ---
+  duration_ms: 22.798333
+  ...
+# Subtest: new chalet signs leave the full piste width and player clearance open
+ok 6 - new chalet signs leave the full piste width and player clearance open
+  ---
+  duration_ms: 1.244041
+  ...
+# Subtest: fir sparkles reuse one bounded GPU buffer, support reduced motion and release resources
+ok 7 - fir sparkles reuse one bounded GPU buffer, support reduced motion and release resources
+  ---
+  duration_ms: 3.973125
+  ...
+# Subtest: open summit has no enclosing peaks and every cable stays inside the snow boundary
+ok 8 - open summit has no enclosing peaks and every cable stays inside the snow boundary
+  ---
+  duration_ms: 5.959292
+  ...
+# Subtest: map pins identify physical stations independently of safe arrival sockets
+ok 9 - map pins identify physical stations independently of safe arrival sockets
+  ---
+  duration_ms: 6.677375
+  ...
+# Subtest: alpine forest actually populates the rendered island at ground level
+ok 10 - alpine forest actually populates the rendered island at ground level
+  ---
+  duration_ms: 5.924167
+  ...
+# Subtest: restored trees leave all runs, lift lines, runouts and summit transfer open
+ok 11 - restored trees leave all runs, lift lines, runouts and summit transfer open
+  ---
+  duration_ms: 21.947042
+  ...
+# Subtest: five physical courses share terrain/map anchors and start at appropriate elevations
+ok 12 - five physical courses share terrain/map anchors and start at appropriate elevations
+  ---
+  duration_ms: 10.832542
+  ...
+# Subtest: every course descends continuously across its full width without seams or leaving the island
+ok 13 - every course descends continuously across its full width without seams or leaving the island
+  ---
+  duration_ms: 465.608125
+  ...
+# Subtest: left and right lifts enclose the slopes, their cabins clear snow and both arrivals are accessible
+ok 14 - left and right lifts enclose the slopes, their cabins clear snow and both arrivals are accessible
+  ---
+  duration_ms: 12.695
+  ...
+# Subtest: beginner arrival has a wide clear connection and the base retains both food trucks and fire
+ok 15 - beginner arrival has a wide clear connection and the base retains both food trucks and fire
+  ---
+  duration_ms: 6.6885
+  ...
+# Subtest: arc-length lift sampling has frame-independent constant speed and continuous headings
+ok 16 - arc-length lift sampling has frame-independent constant speed and continuous headings
+  ---
+  duration_ms: 12.992083
+  ...
+# Subtest: preserved food trucks rest on a level base and their service positions remain accessible
+ok 17 - preserved food trucks rest on a level base and their service positions remain accessible
+  ---
+  duration_ms: 7.029084
+  ...
+# Subtest: every physically entered ski run responds to steering and reaches its own exit
+ok 18 - every physically entered ski run responds to steering and reaches its own exit
+  ---
+  duration_ms: 206.656667
+  ...
+# Subtest: nine gondolas keep their identities through departure and return without overlapping cabins
+ok 19 - nine gondolas keep their identities through departure and return without overlapping cabins
+  ---
+  duration_ms: 21.65
+  ...
+# Subtest: gondola has a straight alignment, real supports outside pistes and an unbroken level base concourse
+ok 20 - gondola has a straight alignment, real supports outside pistes and an unbroken level base concourse
+  ---
+  duration_ms: 0.573
+  ...
+# (node:72126) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: removed guide is rejected and AI decoration failure retains a safe fallback
+ok 21 - removed guide is rejected and AI decoration failure retains a safe fallback
+  ---
+  duration_ms: 31.295542
+  ...
+# Subtest: validated structured results admit only real destinations and presets
+ok 22 - validated structured results admit only real destinations and presets
+  ---
+  duration_ms: 1.4325
+  ...
+# Subtest: audio buses mute independently and movement loops are bounded and stop
+ok 23 - audio buses mute independently and movement loops are bounded and stop
+  ---
+  duration_ms: 47.471458
+  ...
+# Subtest: crossfade cancellation leaves one current track and visibility pause never duplicates it
+ok 24 - crossfade cancellation leaves one current track and visibility pause never duplicates it
+  ---
+  duration_ms: 223.442375
+  ...
+# Subtest: jump rises and settles in pitch; landing adds only soft snow and respects mute
+ok 25 - jump rises and settles in pitch; landing adds only soft snow and respects mute
+  ---
+  duration_ms: 8.016292
+  ...
+# Subtest: a delayed crossfade loads only one successor and survives an interrupted audio context
+ok 26 - a delayed crossfade loads only one successor and survives an interrupted audio context
+  ---
+  duration_ms: 46.8465
+  ...
+# Subtest: remote curtains occupy a bounded part of the sky without doubled-back columns
+ok 27 - remote curtains occupy a bounded part of the sky without doubled-back columns
+  ---
+  duration_ms: 14.212292
+  ...
+# Subtest: aurora layers respect night, interiors, quality and stopped animation
+ok 28 - aurora layers respect night, interiors, quality and stopped animation
+  ---
+  duration_ms: 289.207083
+  ...
+# Subtest: the moon has deterministic maria and crater relief with a shaded terminator
+ok 29 - the moon has deterministic maria and crater relief with a shaded terminator
+  ---
+  duration_ms: 213.566708
+  ...
+# Subtest: every balloon design and colour round trips through validated multiplayer activity
+ok 30 - every balloon design and colour round trips through validated multiplayer activity
+  ---
+  duration_ms: 3.45025
+  ...
+# Subtest: carried balloon has bounded inertial lag, a reusable curved string and clean teleport/reduced-motion reset
+ok 31 - carried balloon has bounded inertial lag, a reusable curved string and clean teleport/reduced-motion reset
+  ---
+  duration_ms: 16.36325
+  ...
+# Subtest: a deployment source archive without Git retains its verified provider revision
+ok 32 - a deployment source archive without Git retains its verified provider revision
+  ---
+  duration_ms: 48.618417
+  ...
+# Subtest: camera retracts before an actual wall in every facility and recovers smoothly
+ok 33 - camera retracts before an actual wall in every facility and recovers smoothly
+  ---
+  duration_ms: 12.281333
+  ...
+# Subtest: only occluding tagged cabin panels fade; shared materials and opacity restore
+ok 34 - only occluding tagged cabin panels fade; shared materials and opacity restore
+  ---
+  duration_ms: 1.410708
+  ...
+# Subtest: camera detects translated instanced obstacles outside the base geometry bounds
+ok 35 - camera detects translated instanced obstacles outside the base geometry bounds
+  ---
+  duration_ms: 1.098167
+  ...
+# Subtest: lift supports dissolve only while blocking the rider view, without pumping camera distance
+ok 36 - lift supports dissolve only while blocking the rider view, without pumping camera distance
+  ---
+  duration_ms: 0.868417
+  ...
+# Subtest: bath camera recovery has a speed limit after a rock stops occluding the view
+ok 37 - bath camera recovery has a speed limit after a rock stops occluding the view
+  ---
+  duration_ms: 0.999292
+  ...
+# Subtest: activity changes do not bypass collision recovery and pre-constrained rays stay short
+ok 38 - activity changes do not bypass collision recovery and pre-constrained rays stay short
+  ---
+  duration_ms: 0.789709
+  ...
+# Subtest: main tree foliage never collapses walking camera while a solid wall still does
+ok 39 - main tree foliage never collapses walking camera while a solid wall still does
+  ---
+  duration_ms: 0.631042
+  ...
+# Subtest: carousel structures beyond the seat fade without collapsing the wider view
+ok 40 - carousel structures beyond the seat fade without collapsing the wider view
+  ---
+  duration_ms: 0.445125
+  ...
+# Subtest: station canopy fades for waiting players while solid columns still constrain the camera
+ok 41 - station canopy fades for waiting players while solid columns still constrain the camera
+  ---
+  duration_ms: 1.673791
+  ...
+# Subtest: passing lift chairs cannot pump the walking camera at a transfer station
+ok 42 - passing lift chairs cannot pump the walking camera at a transfer station
+  ---
+  duration_ms: 3.744625
+  ...
+# Subtest: walking, facilities and gestures retain manual view instead of supplying camera presets
+ok 43 - walking, facilities and gestures retain manual view instead of supplying camera presets
+  ---
+  duration_ms: 2.505917
+  ...
+# Subtest: jump height never changes the walking focus or orbital camera
+ok 44 - jump height never changes the walking focus or orbital camera
+  ---
+  duration_ms: 0.464083
+  ...
+# Subtest: carousel bob is cancelled while lift and ferris retain their physical seat height
+ok 45 - carousel bob is cancelled while lift and ferris retain their physical seat height
+  ---
+  duration_ms: 0.536041
+  ...
+# Subtest: tree framing permits temporary edits and restores the exploration view on close
+ok 46 - tree framing permits temporary edits and restores the exploration view on close
+  ---
+  duration_ms: 0.372542
+  ...
+# Subtest: indoor view is remembered separately and map departure consumes the outdoor snapshot
+ok 47 - indoor view is remembered separately and map departure consumes the outdoor snapshot
+  ---
+  duration_ms: 0.567791
+  ...
+# Subtest: higher interior preset fits real entry bounds and all three dining seats without collapsing to a close view
+ok 48 - higher interior preset fits real entry bounds and all three dining seats without collapsing to a close view
+  ---
+  duration_ms: 0.646708
+  ...
+# Subtest: ski may follow heading slowly but never changes pitch, zoom or FOV with speed
+ok 49 - ski may follow heading slowly but never changes pitch, zoom or FOV with speed
+  ---
+  duration_ms: 0.257959
+  ...
+# Subtest: room-edge focus and observatory roof never produce a zero ray or change the viewing angle
+ok 50 - room-edge focus and observatory roof never produce a zero ray or change the viewing angle
+  ---
+  duration_ms: 0.494833
+  ...
+# Subtest: room boundaries shorten a viewing ray without changing direction or requested zoom
+ok 51 - room boundaries shorten a viewing ray without changing direction or requested zoom
+  ---
+  duration_ms: 1.058708
+  ...
+# Subtest: terrain retraction preserves the ray and low views never collapse on flat ground
+ok 52 - terrain retraction preserves the ray and low views never collapse on flat ground
+  ---
+  duration_ms: 0.947833
+  ...
+# Subtest: world-up orbit keeps horizon roll zero and explicit reset restores one fixed view
+ok 53 - world-up orbit keeps horizon roll zero and explicit reset restores one fixed view
+  ---
+  duration_ms: 1.3945
+  ...
+# Subtest: upward orbit keeps the eye above the ground and reaches the fireworks sky
+ok 54 - upward orbit keeps the eye above the ground and reaches the fireworks sky
+  ---
+  duration_ms: 0.197042
+  ...
+# Subtest: whole-canopy framing is temporary, with direct user control taking priority
+ok 55 - whole-canopy framing is temporary, with direct user control taking priority
+  ---
+  duration_ms: 0.09675
+  ...
+# Subtest: tree framing and return interpolate focus and lens on one reversible timeline
+ok 56 - tree framing and return interpolate focus and lens on one reversible timeline
+  ---
+  duration_ms: 0.659166
+  ...
+# Subtest: carousel has a wider low-angle view, permits free orbit and restores untouched view on exit
+ok 57 - carousel has a wider low-angle view, permits free orbit and restores untouched view on exit
+  ---
+  duration_ms: 0.076458
+  ...
+# Subtest: manual show orbit keeps its current distance and restores the saved exploration view before indoor framing
+ok 58 - manual show orbit keeps its current distance and restores the saved exploration view before indoor framing
+  ---
+  duration_ms: 0.095083
+  ...
+# Subtest: accelerated camera sweeps match exact triangles under transforms and material sides
+ok 59 - accelerated camera sweeps match exact triangles under transforms and material sides
+  ---
+  duration_ms: 730.039291
+  ...
+# Subtest: cached camera bounds rebuild after position/index edits and obey draw ranges
+ok 60 - cached camera bounds rebuild after position/index edits and obey draw ranges
+  ---
+  duration_ms: 17.943916
+  ...
+# Subtest: sculpted anatomy retains all four legs down to their hoof joints
+ok 61 - sculpted anatomy retains all four legs down to their hoof joints
+  ---
+  duration_ms: 31.511917
+  ...
+# Subtest: authored carousel has bounded finite geometry and physical saddle sockets
+ok 62 - authored carousel has bounded finite geometry and physical saddle sockets
+  ---
+  duration_ms: 125.044625
+  ...
+# Subtest: saddles bob with their horse and provide head clearance throughout the rotation
+ok 63 - saddles bob with their horse and provide head clearance throughout the rotation
+  ---
+  duration_ms: 2188.537958
+  ...
+# Subtest: saddle forward follows the tangent and does not change during bobbing
+ok 64 - saddle forward follows the tangent and does not change during bobbing
+  ---
+  duration_ms: 2.40225
+  ...
+# Subtest: the horse and rider face the actual direction of travel
+ok 65 - the horse and rider face the actual direction of travel
+  ---
+  duration_ms: 1.817875
+  ...
+# Subtest: wide carousel camera keeps horse and rider framed through a full turn and restores occluding meshes
+ok 66 - wide carousel camera keeps horse and rider framed through a full turn and restores occluding meshes
+  ---
+  duration_ms: 98.008875
+  ...
+# Subtest: carousel clearance tolerates the camera follow lag beside moving lift poles
+ok 67 - carousel clearance tolerates the camera follow lag beside moving lift poles
+  ---
+  duration_ms: 50.146542
+  ...
+# Subtest: the new castle is a detailed main landmark within its geometry and material budget
+ok 68 - the new castle is a detailed main landmark within its geometry and material budget
+  ---
+  duration_ms: 60.873
+  ...
+# Subtest: the entire broad arcade is clear from the front plaza through the north bridge
+ok 69 - the entire broad arcade is clear from the front plaza through the north bridge
+  ---
+  duration_ms: 3949.566416
+  ...
+# Subtest: castle fixtures remain inside the promenade-side footprint with no low facade over the passage
+ok 70 - castle fixtures remain inside the promenade-side footprint with no low facade over the passage
+  ---
+  duration_ms: 135.227416
+  ...
+# Subtest: castle animation never modifies the architectural vertices and stops its clocks when requested
+ok 71 - castle animation never modifies the architectural vertices and stops its clocks when requested
+  ---
+  duration_ms: 83.834291
+  ...
+# Subtest: mobile quality reduces light effects without removing the architectural silhouette
+ok 72 - mobile quality reduces light effects without removing the architectural silhouette
+  ---
+  duration_ms: 0.273292
+  ...
+# Subtest: approach lighting responds near the entrance and hidden effects do not advance
+ok 73 - approach lighting responds near the entrance and hidden effects do not advance
+  ---
+  duration_ms: 0.416125
+  ...
+# Subtest: show cues address actual architectural regions and all six emitter locations without new geometry batches
+ok 74 - show cues address actual architectural regions and all six emitter locations without new geometry batches
+  ---
+  duration_ms: 591.533375
+  ...
+# Subtest: projection shares a clock across existing surfaces and preserves geometry and materials on cleanup
+ok 75 - projection shares a clock across existing surfaces and preserves geometry and materials on cleanup
+  ---
+  duration_ms: 288.137
+  ...
+# Subtest: original music follows server time, skips old cues, respects mute and releases voices
+ok 76 - original music follows server time, skips old cues, respects mute and releases voices
+  ---
+  duration_ms: 2.112667
+  ...
+# Subtest: head and expression slots coexist, replace peers, and preserve helmet auto-equipping
+ok 77 - head and expression slots coexist, replace peers, and preserve helmet auto-equipping
+  ---
+  duration_ms: 1.461083
+  ...
+# Subtest: plush ear concepts share one bounded mesh, match body fur color, and clear spa headwear
+ok 78 - plush ear concepts share one bounded mesh, match body fur color, and clear spa headwear
+  ---
+  duration_ms: 500.2575
+  ...
+# Subtest: expressions use rounded geometry and remain distinct while blinking and skiing
+ok 79 - expressions use rounded geometry and remain distinct while blinking and skiing
+  ---
+  duration_ms: 78.314584
+  ...
+# Subtest: body and fur keep one local silhouette under motion, customization and night lighting
+ok 80 - body and fur keep one local silhouette under motion, customization and night lighting
+  ---
+  duration_ms: 527.971667
+  ...
+# Subtest: landing squash never inverts the body even when an upstream clock delivers invalid values
+ok 81 - landing squash never inverts the body even when an upstream clock delivers invalid values
+  ---
+  duration_ms: 108.691
+  ...
+# Subtest: opaque eyewear covers clay eyes and restores the chosen expression after removal
+ok 82 - opaque eyewear covers clay eyes and restores the chosen expression after removal
+  ---
+  duration_ms: 77.442542
+  ...
+# Subtest: departing characters release previously selected eye, ear and held-item GPU resources exactly once
+ok 83 - departing characters release previously selected eye, ear and held-item GPU resources exactly once
+  ---
+  duration_ms: 106.922291
+  ...
+# Subtest: reduced decorative motion preserves essential walking feet without body sway
+ok 84 - reduced decorative motion preserves essential walking feet without body sway
+  ---
+  duration_ms: 106.070792
+  ...
+# (node:72148) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: report form remains usable independently of an empty decoration list
+ok 85 - report form remains usable independently of an empty decoration list
+  ---
+  duration_ms: 319.189625
+  ...
+# Subtest: admin loads retained tools without notices or events and keeps fireworks status separate
+ok 86 - admin loads retained tools without notices or events and keeps fireworks status separate
+  ---
+  duration_ms: 227.325
+  ...
+# Subtest: a replacement panel owns input, closes chat without losing its draft and retains the active ride
+ok 87 - a replacement panel owns input, closes chat without losing its draft and retains the active ride
+  ---
+  duration_ms: 33.415333
+  ...
+# Subtest: customization boots without the removed front button and reflects confirmed names above the preview
+ok 88 - customization boots without the removed front button and reflects confirmed names above the preview
+  ---
+  duration_ms: 146.313166
+  ...
+# Subtest: reopening during close animation keeps the current modal, focus and input ownership
+ok 89 - reopening during close animation keeps the current modal, focus and input ownership
+  ---
+  duration_ms: 25.4125
+  ...
+# Subtest: admin fireworks honor corrected server-time cooldown boundaries and clear the local timer on close
+ok 90 - admin fireworks honor corrected server-time cooldown boundaries and clear the local timer on close
+  ---
+  duration_ms: 359.997542
+  ...
+# (node:72151) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: invited accountless guests reconnect to their session; wishes remain private and admin access is server verified
+    # Subtest: saved decorations have no 160-record creation cap; recent render window and spam guard stay bounded
+    ok 1 - saved decorations have no 160-record creation cap; recent render window and spam guard stay bounded
+      ---
+      duration_ms: 814.105292
+      ...
+    1..1
+ok 91 - invited accountless guests reconnect to their session; wishes remain private and admin access is server verified
+  ---
+  duration_ms: 9357.704667
+  ...
+# Subtest: every island snow cap is closed except intentional bath openings; bridge air remains air
+ok 92 - every island snow cap is closed except intentional bath openings; bridge air remains air
+  ---
+  duration_ms: 113.430334
+  ...
+# Subtest: eighty-two fully structured items across at least six fields, twelve representatives
+ok 93 - eighty-two fully structured items across at least six fields, twelve representatives
+  ---
+  duration_ms: 3.350708
+  ...
+# Subtest: every knowledge room has completed material, including dedicated memory items
+ok 94 - every knowledge room has completed material, including dedicated memory items
+  ---
+  duration_ms: 0.290875
+  ...
+# Subtest: spaced review uses a distinct new situation instead of immediate application
+ok 95 - spaced review uses a distinct new situation instead of immediate application
+  ---
+  duration_ms: 0.3385
+  ...
+# (node:72216) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: draft changes, cancellation, failed save and duplicate submission preserve committed appearance
+ok 96 - draft changes, cancellation, failed save and duplicate submission preserve committed appearance
+  ---
+  duration_ms: 3.1705
+  ...
+# Subtest: one head slot and independent eyes, glasses and tails preserve combinations and server rejects unknown options before normalization
+ok 97 - one head slot and independent eyes, glasses and tails preserve combinations and server rejects unknown options before normalization
+  ---
+  duration_ms: 0.576041
+  ...
+# Subtest: new accessories retain a single model cache, symmetrical cat ears, separate colors and fixed narrow spacing
+ok 98 - new accessories retain a single model cache, symmetrical cat ears, separate colors and fixed narrow spacing
+  ---
+  duration_ms: 509.671083
+  ...
+# Subtest: authenticated appearance save persists only the caller and restores through the existing guest session
+ok 99 - authenticated appearance save persists only the caller and restores through the existing guest session
+  ---
+  duration_ms: 109.9725
+  ...
+# Subtest: googly pupils stay inside the black frames through turns and freeze with reduced motion
+ok 100 - googly pupils stay inside the black frames through turns and freeze with reduced motion
+  ---
+  duration_ms: 0.983166
+  ...
+# Subtest: cat tail stays low, groomed, color-matched and attached while walking and turning
+ok 101 - cat tail stays low, groomed, color-matched and attached while walking and turning
+  ---
+  duration_ms: 102.698458
+  ...
+# Subtest: brief passes do not flash a card; staying nearby reveals it
+ok 102 - brief passes do not flash a card; staying nearby reveals it
+  ---
+  duration_ms: 0.704583
+  ...
+# Subtest: dismissed cards remain closed until leaving and re-entering
+ok 103 - dismissed cards remain closed until leaving and re-entering
+  ---
+  duration_ms: 0.140875
+  ...
+# Subtest: moving to another book starts a new dwell
+ok 104 - moving to another book starts a new dwell
+  ---
+  duration_ms: 0.405583
+  ...
+# Subtest: freshwater fish remain inside glass and move with finite bounded steering
+ok 105 - freshwater fish remain inside glass and move with finite bounded steering
+  ---
+  duration_ms: 35.714541
+  ...
+# Subtest: the orbit puzzle changes real quarter turns and solves only all aligned rings
+ok 106 - the orbit puzzle changes real quarter turns and solves only all aligned rings
+  ---
+  duration_ms: 0.576583
+  ...
+# Subtest: aquarium and museum gallery have a complete walkable route
+ok 107 - aquarium and museum gallery have a complete walkable route
+  ---
+  duration_ms: 15.377125
+  ...
+# Subtest: lazy rooms have bounded geometry and camera stays inside solid room boundaries
+ok 108 - lazy rooms have bounded geometry and camera stays inside solid room boundaries
+  ---
+  duration_ms: 316.523209
+  ...
+# Subtest: one exit control invokes only the active action and fully disables after leaving
+ok 109 - one exit control invokes only the active action and fully disables after leaving
+  ---
+  duration_ms: 64.952084
+  ...
+# (node:72429) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: catalog, prediction, evidence, explanation, application and resume form a complete DOM flow
+ok 110 - catalog, prediction, evidence, explanation, application and resume form a complete DOM flow
+  ---
+  duration_ms: 1462.795625
+  ...
+# Subtest: all content renders, choices cannot submit before prediction, and hints progress
+ok 111 - all content renders, choices cannot submit before prediction, and hints progress
+  ---
+  duration_ms: 4586.66025
+  ...
+# Subtest: coin and bridge controls update visible results after a prediction
+ok 112 - coin and bridge controls update visible results after a prediction
+  ---
+  duration_ms: 599.10925
+  ...
+# Subtest: a changed prediction is recorded and spaced review grades its own new situation
+ok 113 - a changed prediction is recorded and spaced review grades its own new situation
+  ---
+  duration_ms: 613.279208
+  ...
+# Subtest: each physical exhibit discovers a question from its own subject instead of a generic room
+ok 114 - each physical exhibit discovers a question from its own subject instead of a generic room
+  ---
+  duration_ms: 967.617208
+  ...
+# Subtest: timbre experiment requires prediction, reports unavailable audio, and connects the world instrument to its lesson
+ok 115 - timbre experiment requires prediction, reports unavailable audio, and connects the world instrument to its lesson
+  ---
+  duration_ms: 506.819834
+  ...
+# Subtest: audio synthesis preserves the 220 Hz fundamental and mute prevents playback
+ok 116 - audio synthesis preserves the 220 Hz fundamental and mute prevents playback
+  ---
+  duration_ms: 473.902375
+  ...
+# Subtest: soft padded ears follow the fur color and contain a recessed front cup for every silhouette
+ok 117 - soft padded ears follow the fur color and contain a recessed front cup for every silhouette
+  ---
+  duration_ms: 379.159625
+  ...
+# Subtest: cached name height follows selected headwear and body proportions
+ok 118 - cached name height follows selected headwear and body proportions
+  ---
+  duration_ms: 79.784333
+  ...
+# (node:72631) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: AI preference defaults are opt-out and explicit choices alone rank existing music
+ok 119 - AI preference defaults are opt-out and explicit choices alone rank existing music
+  ---
+  duration_ms: 1.314375
+  ...
+# Subtest: absent consent and unexpected personal fields never reach the model
+ok 120 - absent consent and unexpected personal fields never reach the model
+  ---
+  duration_ms: 21.730708
+  ...
+# Subtest: structured music selection contains only catalogue facts and caches without identity
+ok 121 - structured music selection contains only catalogue facts and caches without identity
+  ---
+  duration_ms: 4.456291
+  ...
+# Subtest: malformed output, duplicate IDs, refusal, timeout and daily limits retain authored content
+ok 122 - malformed output, duplicate IDs, refusal, timeout and daily limits retain authored content
+  ---
+  duration_ms: 5.220541
+  ...
+# Subtest: concurrent identical recommendations share one provider request
+ok 123 - concurrent identical recommendations share one provider request
+  ---
+  duration_ms: 16.995459
+  ...
+# Subtest: exhibit generation selects reviewed content and rejects disabled or unrelated exhibits
+ok 124 - exhibit generation selects reviewed content and rejects disabled or unrelated exhibits
+  ---
+  duration_ms: 2.73875
+  ...
+# Subtest: component rendering cannot inject HTML, arbitrary actions or invented music
+ok 125 - component rendering cannot inject HTML, arbitrary actions or invented music
+  ---
+  duration_ms: 251.417209
+  ...
+# Subtest: retired voice compatibility module never constructs recognition or accepts commands
+ok 126 - retired voice compatibility module never constructs recognition or accepts commands
+  ---
+  duration_ms: 0.281583
+  ...
+# Subtest: orbit is frame independent, settles promptly, and walking never overrides yaw
+ok 127 - orbit is frame independent, settles promptly, and walking never overrides yaw
+  ---
+  duration_ms: 4.891125
+  ...
+# Subtest: jump height is isolated from the camera ground anchor; upward view never dips underground
+ok 128 - jump height is isolated from the camera ground anchor; upward view never dips underground
+  ---
+  duration_ms: 1.697208
+  ...
+# Subtest: ride targets are adopted once and manual orbit survives subsequent ride updates
+ok 129 - ride targets are adopted once and manual orbit survives subsequent ride updates
+  ---
+  duration_ms: 1.421792
+  ...
+# Subtest: tree framing includes tree and player above the dock without changing yaw
+ok 130 - tree framing includes tree and player above the dock without changing yaw
+  ---
+  duration_ms: 5.577666
+  ...
+# Subtest: tree close and show completion restore previous view; manual show input takes ownership
+ok 131 - tree close and show completion restore previous view; manual show input takes ownership
+  ---
+  duration_ms: 2.433208
+  ...
+# Subtest: travel ends tree/show framing before restoring exploration at the destination
+ok 132 - travel ends tree/show framing before restoring exploration at the destination
+  ---
+  duration_ms: 0.431083
+  ...
+# Subtest: reduced flashing hides pulse flashes while preserving movement trails
+ok 133 - reduced flashing hides pulse flashes while preserving movement trails
+  ---
+  duration_ms: 7.811375
+  ...
+# Subtest: movement leaves a short tapered filament and stardust, jump and landing remain bounded, and reduced motion clears them
+ok 134 - movement leaves a short tapered filament and stardust, jump and landing remain bounded, and reduced motion clears them
+  ---
+  duration_ms: 7.017583
+  ...
+# Subtest: nearby peers and all quality pool sizes are capped
+ok 135 - nearby peers and all quality pool sizes are capped
+  ---
+  duration_ms: 5.3985
+  ...
+# Subtest: wish animation carries the supplied ornament, follows a rising curved route and completes once
+ok 136 - wish animation carries the supplied ornament, follows a rising curved route and completes once
+  ---
+  duration_ms: 3.579083
+  ...
+# Subtest: wish overflow, quality reduction, reduced motion and disposal reveal every hidden target exactly once
+ok 137 - wish overflow, quality reduction, reduced motion and disposal reveal every hidden target exactly once
+  ---
+  duration_ms: 3.898458
+  ...
+# Subtest: all pooled attributes stay finite with teleports, absent peers, zero dt and malformed optional state
+ok 138 - all pooled attributes stay finite with teleports, absent peers, zero dt and malformed optional state
+  ---
+  duration_ms: 4.915041
+  ...
+# Subtest: Ferris geometry is finite, shared, and partitioned for cabin camera fading
+ok 139 - Ferris geometry is finite, shared, and partitioned for cabin camera fading
+  ---
+  duration_ms: 186.254917
+  ...
+# Subtest: each cabin keeps two facing full-size passenger anchors upright over a full turn
+ok 140 - each cabin keeps two facing full-size passenger anchors upright over a full turn
+  ---
+  duration_ms: 10.930458
+  ...
+# Subtest: passengers have at least three metres of clear vertical space in each cabin
+ok 141 - passengers have at least three metres of clear vertical space in each cabin
+  ---
+  duration_ms: 181.814834
+  ...
+# Subtest: neighboring full-size cabins cannot intersect anywhere around the wheel
+ok 142 - neighboring full-size cabins cannot intersect anywhere around the wheel
+  ---
+  duration_ms: 13.619042
+  ...
+# Subtest: rotation depends only on the world clock and still mode preserves the last pose
+ok 143 - rotation depends only on the world clock and still mode preserves the last pose
+  ---
+  duration_ms: 0.263459
+  ...
+# Subtest: the western placement leaves the castle approach and photo garden independent
+ok 144 - the western placement leaves the castle approach and photo garden independent
+  ---
+  duration_ms: 153.36225
+  ...
+# Subtest: photo garden replaces deleted rides and keeps entrances clear
+ok 145 - photo garden replaces deleted rides and keeps entrances clear
+  ---
+  duration_ms: 87.667708
+  ...
+# Subtest: removed train leaves no hidden vehicle or ride destination
+ok 146 - removed train leaves no hidden vehicle or ride destination
+  ---
+  duration_ms: 30.603792
+  ...
+# (node:72816) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: seeded show has five distinct patterns, overlaps, depth and a bounded final fade
+ok 147 - seeded show has five distinct patterns, overlaps, depth and a bounded final fade
+  ---
+  duration_ms: 1.826708
+  ...
+# Subtest: show uses fixed buffers, late-join clock, lower mobile density and clears the draw at finish
+ok 148 - show uses fixed buffers, late-join clock, lower mobile density and clears the draw at finish
+  ---
+  duration_ms: 31.055833
+  ...
+# Subtest: sparkler activity synchronizes as an item and the unchanged kiosk entrance is walkable
+ok 149 - sparkler activity synchronizes as an item and the unchanged kiosk entrance is walkable
+  ---
+  duration_ms: 0.821417
+  ...
+# Subtest: firework lighting reuses the world light with bounded pulses and respects reduced flashing
+ok 150 - firework lighting reuses the world light with bounded pulses and respects reduced flashing
+  ---
+  duration_ms: 4.7295
+  ...
+# Subtest: embers finish in the sky with short tapered tails instead of long vertical rain
+ok 151 - embers finish in the sky with short tapered tails instead of long vertical rain
+  ---
+  duration_ms: 297.508041
+  ...
+# Subtest: simultaneous guest requests claim one show and merge into its ten-second server countdown
+ok 152 - simultaneous guest requests claim one show and merge into its ten-second server countdown
+  ---
+  duration_ms: 98.925125
+  ...
+# Subtest: a show must finish and complete its cooldown before another guest can schedule a new one
+ok 153 - a show must finish and complete its cooldown before another guest can schedule a new one
+  ---
+  duration_ms: 67.678
+  ...
+# Subtest: owner cancellation is idempotent and cannot shorten or repeatedly extend the reserved cooldown
+ok 154 - owner cancellation is idempotent and cannot shorten or repeatedly extend the reserved cooldown
+  ---
+  duration_ms: 54.961166
+  ...
+# Subtest: admin start keeps the same atomic cooldown and guests cannot use administrative actions or another room
+ok 155 - admin start keeps the same atomic cooldown and guests cannot use administrative actions or another room
+  ---
+  duration_ms: 50.342833
+  ...
+# Subtest: request spam does not exclude other guests or prevent an owner from stopping the show
+ok 156 - request spam does not exclude other guests or prevent an owner from stopping the show
+  ---
+  duration_ms: 50.90975
+  ...
+# Subtest: legacy show records receive complete lifecycle timestamps without losing their seed or original start
+ok 157 - legacy show records receive complete lifecycle timestamps without losing their seed or original start
+  ---
+  duration_ms: 45.227708
+  ...
+# Subtest: the client derives phases from server time and rejects stale snapshots after cancellation
+ok 158 - the client derives phases from server time and rejects stale snapshots after cancellation
+  ---
+  duration_ms: 8.745625
+  ...
+# Subtest: guest controls request a show, avoid interrupting editors and never replay a countdown after tab return
+ok 159 - guest controls request a show, avoid interrupting editors and never replay a countdown after tab return
+  ---
+  duration_ms: 93.013792
+  ...
+# Subtest: a failed guest request leaves the control retryable and never announces an unconfirmed show
+ok 160 - a failed guest request leaves the control retryable and never announces an unconfirmed show
+  ---
+  duration_ms: 12.670917
+  ...
+# Subtest: fireworks never fall back to weather controls or an action group outside the activities tab
+ok 161 - fireworks never fall back to weather controls or an action group outside the activities tab
+  ---
+  duration_ms: 14.3115
+  ...
+# Subtest: finale retains all overlapping shells, and peers reconstruct identical lower-density prefixes
+ok 162 - finale retains all overlapping shells, and peers reconstruct identical lower-density prefixes
+  ---
+  duration_ms: 85.077875
+  ...
+# Subtest: mouse hover is inert, short primary clicks travel, and either mouse drag orbits without a mode
+ok 163 - mouse hover is inert, short primary clicks travel, and either mouse drag orbits without a mode
+  ---
+  duration_ms: 52.778416
+  ...
+# Subtest: long presses, released drags without a move event, and mouse releases lost outside the canvas cannot travel
+ok 164 - long presses, released drags without a move event, and mouse releases lost outside the canvas cannot travel
+  ---
+  duration_ms: 8.110833
+  ...
+# Subtest: wheel zoom works directly, normalizes line/page mice, and leaves browser shortcuts and UI scrolling alone
+ok 165 - wheel zoom works directly, normalizes line/page mice, and leaves browser shortcuts and UI scrolling alone
+  ---
+  duration_ms: 6.44025
+  ...
+# Subtest: joystick, jump, one-finger orbit and two-finger world pinch own independent pointers
+ok 166 - joystick, jump, one-finger orbit and two-finger world pinch own independent pointers
+  ---
+  duration_ms: 27.195833
+  ...
+# Subtest: extra pinch fingers and pointer cancellation do not jump the camera or create a tap
+ok 167 - extra pinch fingers and pointer cancellation do not jump the camera or create a tap
+  ---
+  duration_ms: 13.897959
+  ...
+# Subtest: modal locks and pause/blur release owned captures and cannot resume a stale drag
+ok 168 - modal locks and pause/blur release owned captures and cannot resume a stale drag
+  ---
+  duration_ms: 18.562167
+  ...
+# Subtest: legacy learning open and close reset a held gesture even when no pointer moves while the modal is open
+ok 169 - legacy learning open and close reset a held gesture even when no pointer moves while the modal is open
+  ---
+  duration_ms: 10.11675
+  ...
+# Subtest: ride modes suppress locomotion but preserve deliberate camera gestures, and capture loss never becomes a tap
+ok 170 - ride modes suppress locomotion but preserve deliberate camera gestures, and capture loss never becomes a tap
+  ---
+  duration_ms: 4.997958
+  ...
+# (node:72958) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: shared glass picker supports keyboard selection, outside close and dynamically added selects
+ok 171 - shared glass picker supports keyboard selection, outside close and dynamically added selects
+  ---
+  duration_ms: 185.645959
+  ...
+# Subtest: wish composition retains selected shape, color and public sharing without dropdown ambiguity
+ok 172 - wish composition retains selected shape, color and public sharing without dropdown ambiguity
+  ---
+  duration_ms: 209.10675
+  ...
+# Subtest: ornament instance colors are distinct before first render and tint their night emission
+ok 173 - ornament instance colors are distinct before first render and tint their night emission
+  ---
+  duration_ms: 54.906583
+  ...
+# Subtest: new automatic nicknames have no numeric guest suffix and manual names are left alone
+ok 174 - new automatic nicknames have no numeric guest suffix and manual names are left alone
+  ---
+  duration_ms: 1.06475
+  ...
+# Subtest: one wish submission persists and displays its chosen decoration; failed saves keep the draft
+ok 175 - one wish submission persists and displays its chosen decoration; failed saves keep the draft
+  ---
+  duration_ms: 363.685
+  ...
+# Subtest: world input follows UI and text focus, never platform or touch capabilities
+ok 176 - world input follows UI and text focus, never platform or touch capabilities
+  ---
+  duration_ms: 73.978125
+  ...
+# Subtest: free-look is explicit, releases on UI/Escape/blur, never relocks, and removes listeners
+ok 177 - free-look is explicit, releases on UI/Escape/blur, never relocks, and removes listeners
+  ---
+  duration_ms: 10.392375
+  ...
+# Subtest: a denied pointer lock enables drag fallback and a tree tap does not lock the cursor
+ok 178 - a denied pointer lock enables drag fallback and a tree tap does not lock the cursor
+  ---
+  duration_ms: 8.716834
+  ...
+# Subtest: completed actions return to idle and stay dismissed until genuine re-entry
+ok 179 - completed actions return to idle and stay dismissed until genuine re-entry
+  ---
+  duration_ms: 1.922041
+  ...
+# Subtest: interior arrivals, exits and usable activities occupy clear space
+ok 180 - interior arrivals, exits and usable activities occupy clear space
+  ---
+  duration_ms: 1.095584
+  ...
+# Subtest: every indoor activity can be reached on foot from the entrance
+ok 181 - every indoor activity can be reached on foot from the entrance
+  ---
+  duration_ms: 55.503125
+  ...
+# Subtest: interior assets use bounded finite geometry, real floor heights and opaque room boundaries
+ok 182 - interior assets use bounded finite geometry, real floor heights and opaque room boundaries
+  ---
+  duration_ms: 644.607375
+  ...
+# Subtest: activity poses align with their real furniture surface and remain valid for presence
+ok 183 - activity poses align with their real furniture surface and remain valid for presence
+  ---
+  duration_ms: 259.823958
+  ...
+# (node:73292) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: public admission upgrades old identities while only the bound owner manages legacy links
+ok 184 - public admission upgrades old identities while only the bound owner manages legacy links
+  ---
+  duration_ms: 399.592959
+  ...
+# Subtest: different invitations and Sites/Vercel clients share one world, movement, chat, wishes and saved appearance
+ok 185 - different invitations and Sites/Vercel clients share one world, movement, chat, wishes and saved appearance
+  ---
+  duration_ms: 224.915916
+  ...
+# Subtest: public admission is independent of retired links and preserves wishes and appearance
+ok 186 - public admission is independent of retired links and preserves wishes and appearance
+  ---
+  duration_ms: 114.194125
+  ...
+# Subtest: owner kick invalidates the old invitation for that guest; block survives reissue and self-kick is denied
+ok 187 - owner kick invalidates the old invitation for that guest; block survives reissue and self-kick is denied
+  ---
+  duration_ms: 108.502125
+  ...
+# Subtest: capacity reserves owner access, never creates overflow rooms and cannot exceed twelve
+ok 188 - capacity reserves owner access, never creates overflow rooms and cannot exceed twelve
+  ---
+  duration_ms: 118.003917
+  ...
+# Subtest: invitation attempts are bounded and untrusted origins cannot mutate state
+ok 189 - invitation attempts are bounded and untrusted origins cannot mutate state
+  ---
+  duration_ms: 312.529
+  ...
+# Subtest: decoration cleanup requires the owner and a current confirmed snapshot; wishes and backups survive
+ok 190 - decoration cleanup requires the owner and a current confirmed snapshot; wishes and backups survive
+  ---
+  duration_ms: 89.091166
+  ...
+# Subtest: server pose time and speed remain authoritative when chat updates the heartbeat
+ok 191 - server pose time and speed remain authoritative when chat updates the heartbeat
+  ---
+  duration_ms: 101.503208
+  ...
+# Subtest: owner departure leaves public guest movement, chat and persistence available; unchanged polls do not rewrite pose
+ok 192 - owner departure leaves public guest movement, chat and persistence available; unchanged polls do not rewrite pose
+  ---
+  duration_ms: 143.909875
+  ...
+# Subtest: castle dominates the wheel and its central silhouette stays clear from the promenades
+ok 193 - castle dominates the wheel and its central silhouette stays clear from the promenades
+  ---
+  duration_ms: 486.470375
+  ...
+# Subtest: park arrival framing contains both the castle crown and the original character
+ok 194 - park arrival framing contains both the castle crown and the original character
+  ---
+  duration_ms: 0.767083
+  ...
+# Subtest: castle arch joins a short straight bridge and spa has both park and ski access
+ok 195 - castle arch joins a short straight bridge and spa has both park and ski access
+  ---
+  duration_ms: 0.374875
+  ...
+# Subtest: unavailable and corrupt storage do not prevent a fresh lesson
+ok 196 - unavailable and corrupt storage do not prevent a fresh lesson
+  ---
+  duration_ms: 3.702625
+  ...
+# Subtest: draft, first answer and transfer-review survive a storage round trip
+ok 197 - draft, first answer and transfer-review survive a storage round trip
+  ---
+  duration_ms: 0.798416
+  ...
+# Subtest: content requests deduplicate and cached lessons survive a network failure
+ok 198 - content requests deduplicate and cached lessons survive a network failure
+  ---
+  duration_ms: 12.0685
+  ...
+# Subtest: first-load network failure exposes an actionable error and can retry
+ok 199 - first-load network failure exposes an actionable error and can retry
+  ---
+  duration_ms: 0.579334
+  ...
+# Subtest: coin calculations count outcomes exactly and bound work per click
+ok 200 - coin calculations count outcomes exactly and bound work per click
+  ---
+  duration_ms: 0.517959
+  ...
+# Subtest: Monty Hall enumeration and host rules
+ok 201 - Monty Hall enumeration and host rules
+  ---
+  duration_ms: 0.365708
+  ...
+# Subtest: bridge truth table, truncated graph and seasons agree with teaching conditions
+ok 202 - bridge truth table, truncated graph and seasons agree with teaching conditions
+  ---
+  duration_ms: 0.240708
+  ...
+# Subtest: both lift paths cross the mountain continuously with bounded cable grades
+ok 203 - both lift paths cross the mountain continuously with bounded cable grades
+  ---
+  duration_ms: 2.856958
+  ...
+# Subtest: authoritative lift presence accepts the sampled cable, rejecting impossible height/position
+ok 204 - authoritative lift presence accepts the sampled cable, rejecting impossible height/position
+  ---
+  duration_ms: 17.967333
+  ...
+# Subtest: both base approaches are clear across a player-width lane
+ok 205 - both base approaches are clear across a player-width lane
+  ---
+  duration_ms: 3.993292
+  ...
+# Subtest: loading reports real stages including connection, fails visibly and completes without a timed gate
+ok 206 - loading reports real stages including connection, fails visibly and completes without a timed gate
+  ---
+  duration_ms: 105.463208
+  ...
+# Subtest: static uppercase branding reuses the exact loading-tree curve without animation
+ok 207 - static uppercase branding reuses the exact loading-tree curve without animation
+  ---
+  duration_ms: 32.943917
+  ...
+# Subtest: emote menu cancels prior input and closes on selection, outside touch or Escape
+ok 208 - emote menu cancels prior input and closes on selection, outside touch or Escape
+  ---
+  duration_ms: 13.854333
+  ...
+# Subtest: slow preparation recovers after its deadline but a genuine startup error stays visible
+ok 209 - slow preparation recovers after its deadline but a genuine startup error stays visible
+  ---
+  duration_ms: 69.325708
+  ...
+# Subtest: approximate lunar illumination follows USNO November 2026 phase dates
+ok 210 - approximate lunar illumination follows USNO November 2026 phase dates
+  ---
+  duration_ms: 173.8715
+  ...
+# Subtest: lamp halos and ground reflections follow their translated district in two draw calls
+ok 211 - lamp halos and ground reflections follow their translated district in two draw calls
+  ---
+  duration_ms: 2.615167
+  ...
+# Subtest: direct world gestures own mobile pointers independently, resets on lift/pause/cancel, and pinch never taps
+ok 212 - direct world gestures own mobile pointers independently, resets on lift/pause/cancel, and pinch never taps
+  ---
+  duration_ms: 73.409
+  ...
+# Subtest: analog steering retains small inputs and clamps full deflection
+ok 213 - analog steering retains small inputs and clamps full deflection
+  ---
+  duration_ms: 0.123792
+  ...
+# Subtest: interaction prompts stay inside portrait and landscape safe regions around name labels
+ok 214 - interaction prompts stay inside portrait and landscape safe regions around name labels
+  ---
+  duration_ms: 0.444125
+  ...
+# Subtest: post office remains reachable after the rink is removed
+ok 215 - post office remains reachable after the rink is removed
+  ---
+  duration_ms: 112.589208
+  ...
+# Subtest: mobile sprint stays active with separate movement, world drag and jump fingers, and resets on pause
+ok 216 - mobile sprint stays active with separate movement, world drag and jump fingers, and resets on pause
+  ---
+  duration_ms: 21.069542
+  ...
+# Subtest: wading retains independent mobile movement and world dragging, hides jump and resets on exit
+ok 217 - wading retains independent mobile movement and world dragging, hides jump and resets on exit
+  ---
+  duration_ms: 11.530625
+  ...
+# Subtest: all analog angles retain magnitude, full deflection is normalized in every camera heading
+ok 218 - all analog angles retain magnitude, full deflection is normalized in every camera heading
+  ---
+  duration_ms: 1.512375
+  ...
+# Subtest: touch capture stays saturated outside the ring, separates fingers and stops on interruption
+ok 219 - touch capture stays saturated outside the ring, separates fingers and stops on interruption
+  ---
+  duration_ms: 100.011334
+  ...
+# Subtest: mobile quality preserves native pixels and resolved edges, low load tier disables postprocessing
+ok 220 - mobile quality preserves native pixels and resolved edges, low load tier disables postprocessing
+  ---
+  duration_ms: 0.695167
+  ...
+# Subtest: nickname and speech bounds fit all screen edges without remeasuring every frame
+ok 221 - nickname and speech bounds fit all screen edges without remeasuring every frame
+  ---
+  duration_ms: 11.822334
+  ...
+# Subtest: the long mountain rock rim follows its narrow base without polar-sampling gaps
+ok 222 - the long mountain rock rim follows its narrow base without polar-sampling gaps
+  ---
+  duration_ms: 87.045625
+  ...
+# Subtest: streamed trees release per-instance GPU buffers when tiles leave or quality changes
+ok 223 - streamed trees release per-instance GPU buffers when tiles leave or quality changes
+  ---
+  duration_ms: 2404.973708
+  ...
+# Subtest: main trail is a compact 2.34km 3D arc with a 900m drop, and both gear types finish with the requested faster pace
+ok 224 - main trail is a compact 2.34km 3D arc with a 900m drop, and both gear types finish with the requested faster pace
+  ---
+  duration_ms: 151.960875
+  ...
+# Subtest: all stations lead to their courses by walkable snow with no forced course teleport
+ok 225 - all stations lead to their courses by walkable snow with no forced course teleport
+  ---
+  duration_ms: 94.744
+  ...
+# Subtest: jump lands, edge contact brakes without teleporting, and recovery requires an explicit request
+ok 226 - jump lands, edge contact brakes without teleporting, and recovery requires an explicit request
+  ---
+  duration_ms: 5.707583
+  ...
+# Subtest: gondola launch, doors, return loop and all six server seats remain continuous and above terrain
+ok 227 - gondola launch, doors, return loop and all six server seats remain continuous and above terrain
+  ---
+  duration_ms: 7.546167
+  ...
+# Subtest: six gondola seats leave room for rounded avatars without row overlap
+ok 228 - six gondola seats leave room for rounded avatars without row overlap
+  ---
+  duration_ms: 0.198042
+  ...
+# Subtest: gondola and three lift corridors stay separated and the middle lift clears every piste
+ok 229 - gondola and three lift corridors stay separated and the middle lift clears every piste
+  ---
+  duration_ms: 11.960458
+  ...
+# Subtest: diagonal speed is normalized and camera relative
+ok 230 - diagonal speed is normalized and camera relative
+  ---
+  duration_ms: 0.7955
+  ...
+# Subtest: 30 and 60 Hz movement cover identical distance
+ok 231 - 30 and 60 Hz movement cover identical distance
+  ---
+  duration_ms: 4.913458
+  ...
+# Subtest: buildings and edge block feet while the portal stays open
+ok 232 - buildings and edge block feet while the portal stays open
+  ---
+  duration_ms: 10.437125
+  ...
+# Subtest: large frame gaps cannot teleport through barriers
+ok 233 - large frame gaps cannot teleport through barriers
+  ---
+  duration_ms: 0.309958
+  ...
+# (node:74073) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: museum furniture stays within the original colliders and every exhibit retains a walkable approach
+ok 234 - museum furniture stays within the original colliders and every exhibit retains a walkable approach
+  ---
+  duration_ms: 241.606334
+  ...
+# Subtest: museum detail has bounded finite renderables and adds no realtime lights or transmission pass
+ok 235 - museum detail has bounded finite renderables and adds no realtime lights or transmission pass
+  ---
+  duration_ms: 142.780958
+  ...
+# Subtest: reduced motion and inactive rooms keep authored poses, while quality keeps all four usable galleries
+ok 236 - reduced motion and inactive rooms keep authored poses, while quality keeps all four usable galleries
+  ---
+  duration_ms: 89.167125
+  ...
+# Subtest: lazy museum disposal releases each owned geometry/material once and stops stale animation callbacks
+ok 237 - lazy museum disposal releases each owned geometry/material once and stops stale animation callbacks
+  ---
+  duration_ms: 197.329
+  ...
+# Subtest: real gallery proximity opens its exhibit, central quiz, and private knowledge journal
+ok 238 - real gallery proximity opens its exhibit, central quiz, and private knowledge journal
+  ---
+  duration_ms: 572.647958
+  ...
+# Subtest: only the newest click is queued and movement cancellation rejects stale worker results
+ok 239 - only the newest click is queued and movement cancellation rejects stale worker results
+  ---
+  duration_ms: 1.180208
+  ...
+# Subtest: unsupported or failed workers retain navigation with a single fallback
+ok 240 - unsupported or failed workers retain navigation with a single fallback
+  ---
+  duration_ms: 0.444584
+  ...
+# Subtest: broad phase covers boundary cells, large rectangles and ellipses without losing an exact hit
+ok 241 - broad phase covers boundary cells, large rectangles and ellipses without losing an exact hit
+  ---
+  duration_ms: 6.9615
+  ...
+# Subtest: active activity entrances remain reachable from home and each other
+ok 242 - active activity entrances remain reachable from home and each other
+  ---
+  duration_ms: 1288.188917
+  ...
+# Subtest: gate and entire north bridge are directly traversable with clearance
+ok 243 - gate and entire north bridge are directly traversable with clearance
+  ---
+  duration_ms: 5.9165
+  ...
+# Subtest: A star paths around building sides can actually be walked
+ok 244 - A star paths around building sides can actually be walked
+  ---
+  duration_ms: 10.227458
+  ...
+# Subtest: void, non-finite clicks and wall shortcuts are rejected
+ok 245 - void, non-finite clicks and wall shortcuts are rejected
+  ---
+  duration_ms: 0.430542
+  ...
+# Subtest: every island arrival and exhibit is reachable, and the direct park-to-spa bridge remains open
+ok 246 - every island arrival and exhibit is reachable, and the direct park-to-spa bridge remains open
+  ---
+  duration_ms: 1581.375417
+  ...
+# Subtest: removed memory landmark leaves continuous snowfield without a redundant bridge
+ok 247 - removed memory landmark leaves continuous snowfield without a redundant bridge
+  ---
+  duration_ms: 37.573417
+  ...
+# Subtest: observatory removal leaves a direct unobstructed park to alpine bridge
+ok 248 - observatory removal leaves a direct unobstructed park to alpine bridge
+  ---
+  duration_ms: 4.03875
+  ...
+# Subtest: precomputed visual promenades stay traversable through the current collision model
+ok 249 - precomputed visual promenades stay traversable through the current collision model
+  ---
+  duration_ms: 29.17
+  ...
+# Subtest: promenades preserve a 2.2 metre clear corridor, including curved corners
+ok 250 - promenades preserve a 2.2 metre clear corridor, including curved corners
+  ---
+  duration_ms: 43.958875
+  ...
+# (node:74076) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: inline nickname waits for server confirmation, preserves a failed draft and retries in the same row
+ok 251 - inline nickname waits for server confirmation, preserves a failed draft and retries in the same row
+  ---
+  duration_ms: 1282.263417
+  ...
+# Subtest: confirmed-name refreshes leave the editing draft intact and cancel restores the latest server name
+ok 252 - confirmed-name refreshes leave the editing draft intact and cancel restores the latest server name
+  ---
+  duration_ms: 812.951917
+  ...
+# Subtest: composition Enter never saves and Escape closes only the nickname editor before the settings dialog
+ok 253 - composition Enter never saves and Escape closes only the nickname editor before the settings dialog
+  ---
+  duration_ms: 762.243875
+  ...
+# Subtest: a save finishing after leaving customization updates the name without stealing another panel focus
+ok 254 - a save finishing after leaving customization updates the name without stealing another panel focus
+  ---
+  duration_ms: 857.1135
+  ...
+# Subtest: nickname limit counts visible Korean and composed emoji, validates both boundaries
+ok 255 - nickname limit counts visible Korean and composed emoji, validates both boundaries
+  ---
+  duration_ms: 1.262916
+  ...
+# Subtest: both authored bath entrances have reachable standing space, not just one precise point
+ok 256 - both authored bath entrances have reachable standing space, not just one precise point
+  ---
+  duration_ms: 90.311083
+  ...
+# Subtest: entry and exit stay on the shared tread line, validate on the server and finish in walking space
+ok 257 - entry and exit stay on the shared tread line, validate on the server and finish in walking space
+  ---
+  duration_ms: 2.171125
+  ...
+# Subtest: water transition validation rejects arbitrary height, outside corridors and wrong modes
+ok 258 - water transition validation rejects arbitrary height, outside corridors and wrong modes
+  ---
+  duration_ms: 0.09675
+  ...
+# Subtest: waterfall geometry, texture phase and particle fall all follow the downward axis
+ok 259 - waterfall geometry, texture phase and particle fall all follow the downward axis
+  ---
+  duration_ms: 5.411709
+  ...
+# Subtest: water events use a fixed pool, quality limits and reduced motion freeze
+ok 260 - water events use a fixed pool, quality limits and reduced motion freeze
+  ---
+  duration_ms: 0.701375
+  ...
+# (node:74079) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: server authorizes actual entrances, synchronizes regions and clears rides on exit
+ok 261 - server authorizes actual entrances, synchronizes regions and clears rides on exit
+  ---
+  duration_ms: 168.859583
+  ...
+# Subtest: only server-authenticated owner changes notices/content flags; blocked content rejects entry
+ok 262 - only server-authenticated owner changes notices/content flags; blocked content rejects entry
+  ---
+  duration_ms: 94.074208
+  ...
+# Subtest: session retention expires stale identity and transient messages without deleting wishes
+ok 263 - session retention expires stale identity and transient messages without deleting wishes
+  ---
+  duration_ms: 118.640667
+  ...
+# Subtest: appearance is bounded, persisted and sent to another guest
+ok 264 - appearance is bounded, persisted and sent to another guest
+  ---
+  duration_ms: 86.058458
+  ...
+# Subtest: owner can start one synchronized firework score; late visitors receive its original clock
+ok 265 - owner can start one synchronized firework score; late visitors receive its original clock
+  ---
+  duration_ms: 120.748167
+  ...
+# (node:74082) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: concurrent guest show requests have one winner; cooldown starts at completion; owner bypass never duplicates
+ok 266 - concurrent guest show requests have one winner; cooldown starts at completion; owner bypass never duplicates
+  ---
+  duration_ms: 158.373667
+  ...
+# Subtest: owner callback is bound to browser state, single use, expiring, CSRF checked and unavailable to guests
+ok 267 - owner callback is bound to browser state, single use, expiring, CSRF checked and unavailable to guests
+  ---
+  duration_ms: 129.188875
+  ...
+# Subtest: callback cookie survives Vercel proxy without forwarding provider identity or arbitrary cookies
+ok 268 - callback cookie survives Vercel proxy without forwarding provider identity or arbitrary cookies
+  ---
+  duration_ms: 1.569583
+  ...
+# Subtest: unconfigured realtime is explicitly polling; operations remains owner-only and persistent content is retained
+ok 269 - unconfigured realtime is explicitly polling; operations remains owner-only and persistent content is retained
+  ---
+  duration_ms: 114.165583
+  ...
+# Subtest: public profile edits are rate limited without losing the last accepted name
+ok 270 - public profile edits are rate limited without losing the last accepted name
+  ---
+  duration_ms: 407.592209
+  ...
+# Subtest: rapid custom colours discard obsolete GPU thumbnails, retain the visible image and reuse the final result
+ok 271 - rapid custom colours discard obsolete GPU thumbnails, retain the visible image and reuse the final result
+  ---
+  duration_ms: 78.970417
+  ...
+# Subtest: park routes remain clear of stalls, benches, lamps and rides
+ok 272 - park routes remain clear of stalls, benches, lamps and rides
+  ---
+  duration_ms: 30.567625
+  ...
+# Subtest: preview rotates through multiple full turns and reduced motion stops inertia
+ok 273 - preview rotates through multiple full turns and reduced motion stops inertia
+  ---
+  duration_ms: 71.593875
+  ...
+# Subtest: carried food, toasted color, expressions and pooled reactions follow activity state
+ok 274 - carried food, toasted color, expressions and pooled reactions follow activity state
+  ---
+  duration_ms: 683.710167
+  ...
+# Subtest: tea rim reaches the mouth instead of the eyes, and hand props render during walking
+ok 275 - tea rim reaches the mouth instead of the eyes, and hand props render during walking
+  ---
+  duration_ms: 138.555375
+  ...
+# Subtest: heart eyes are centered on their anchors and sit fully in front of the fur
+ok 276 - heart eyes are centered on their anchors and sit fully in front of the fur
+  ---
+  duration_ms: 135.118042
+  ...
+# Subtest: park promenades reserve at least three metres of unobstructed walking width
+ok 277 - park promenades reserve at least three metres of unobstructed walking width
+  ---
+  duration_ms: 40.500083
+  ...
+# Subtest: wheel front and museum gate can be reached without passing behind the wheel
+ok 278 - wheel front and museum gate can be reached without passing behind the wheel
+  ---
+  duration_ms: 234.190667
+  ...
+# Subtest: real movement reaches the new door, booths and both front ride entrances
+ok 279 - real movement reaches the new door, booths and both front ride entrances
+  ---
+  duration_ms: 309.86675
+  ...
+# Subtest: popcorn uses the existing synchronized activity contract and a bounded two-material asset
+ok 280 - popcorn uses the existing synchronized activity contract and a bounded two-material asset
+  ---
+  duration_ms: 22.285958
+  ...
+# Subtest: fixed physics covers the same time at 30, 60 and 120 Hz and bounds stall recovery
+ok 281 - fixed physics covers the same time at 30, 60 and 120 Hz and bounds stall recovery
+  ---
+  duration_ms: 1.20225
+  ...
+# Subtest: exclusive ride/activity states gate jumping and recover on exit
+ok 282 - exclusive ride/activity states gate jumping and recover on exit
+  ---
+  duration_ms: 0.490334
+  ...
+# Subtest: painted batches retain every triangle, UV seam, normal and per-part colour
+ok 283 - painted batches retain every triangle, UV seam, normal and per-part colour
+  ---
+  duration_ms: 6.873791
+  ...
+# Subtest: lazy rooms reuse assets, release after absence, restore lights and do not retain colliders
+ok 284 - lazy rooms reuse assets, release after absence, restore lights and do not retain colliders
+  ---
+  duration_ms: 559.121625
+  ...
+# Subtest: owned resources dispose once while explicitly shared assets remain alive
+ok 285 - owned resources dispose once while explicitly shared assets remain alive
+  ---
+  duration_ms: 0.351125
+  ...
+# Subtest: network interest deltas preserve remote poses, propagate chat, refresh near peers and remove departures
+ok 286 - network interest deltas preserve remote poses, propagate chat, refresh near peers and remove departures
+  ---
+  duration_ms: 0.489209
+  ...
+# Subtest: frame metrics report measured percentiles and unavailable GPU as null
+ok 287 - frame metrics report measured percentiles and unavailable GPU as null
+  ---
+  duration_ms: 0.339042
+  ...
+# Subtest: precache supports versioned CSS and modules offline before an online cache hit
+ok 288 - precache supports versioned CSS and modules offline before an online cache hit
+  ---
+  duration_ms: 21.958042
+  ...
+# Subtest: unchanged static files return a bodyless 304; changed files and byte ranges still work
+ok 289 - unchanged static files return a bodyless 304; changed files and byte ranges still work
+  ---
+  duration_ms: 1.495208
+  ...
+# Subtest: the tree revision passes through Vercel without forwarding arbitrary room or identity queries
+ok 290 - the tree revision passes through Vercel without forwarding arbitrary room or identity queries
+  ---
+  duration_ms: 1.553833
+  ...
+# Subtest: sustained sub-10 FPS triggers bounded adaptive quality instead of being discarded as a pause
+ok 291 - sustained sub-10 FPS triggers bounded adaptive quality instead of being discarded as a pause
+  ---
+  duration_ms: 0.303292
+  ...
+# Subtest: label projection reuses measurements until text or viewport changes
+ok 292 - label projection reuses measurements until text or viewport changes
+  ---
+  duration_ms: 47.344709
+  ...
+# Subtest: audio media registration is idempotent and disposal stops active loops and event handlers
+ok 293 - audio media registration is idempotent and disposal stops active loops and event handlers
+  ---
+  duration_ms: 10.49775
+  ...
+# Subtest: inactive diagnostics never poll GPU status without a pending query
+ok 294 - inactive diagnostics never poll GPU status without a pending query
+  ---
+  duration_ms: 0.388083
+  ...
+# Subtest: diagnostics collect ten seconds of game frames rather than time spent in paused menus
+ok 295 - diagnostics collect ten seconds of game frames rather than time spent in paused menus
+  ---
+  duration_ms: 0.839625
+  ...
+# Subtest: the snowman actually removes the carrot, holds it and returns it to the face
+ok 296 - the snowman actually removes the carrot, holds it and returns it to the face
+  ---
+  duration_ms: 169.125167
+  ...
+# Subtest: snowman articulation and detailed geometry stay finite and within the asset budget
+ok 297 - snowman articulation and detailed geometry stay finite and within the asset budget
+  ---
+  duration_ms: 103.93775
+  ...
+# Subtest: snowman waves and makes a small hop without drifting, and reduced motion restores the feet
+ok 298 - snowman waves and makes a small hop without drifting, and reduced motion restores the feet
+  ---
+  duration_ms: 61.423708
+  ...
+# (node:74179) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: music recommendation is opt-in, request-only, manually applied, and resettable
+ok 299 - music recommendation is opt-in, request-only, manually applied, and resettable
+  ---
+  duration_ms: 158.465083
+  ...
+# Subtest: opting out cancels pending AI and late results cannot return
+ok 300 - opting out cancels pending AI and late results cannot return
+  ---
+  duration_ms: 74.144583
+  ...
+# Subtest: closing settings cancels its pending request without a hidden late UI update
+ok 301 - closing settings cancels its pending request without a hidden late UI update
+  ---
+  duration_ms: 51.1605
+  ...
+# Subtest: physical exhibit opens sourced cards without an AI request, and its quiz uses the selected ID
+ok 302 - physical exhibit opens sourced cards without an AI request, and its quiz uses the selected ID
+  ---
+  duration_ms: 58.468416
+  ...
+# Subtest: unsupported voice input does not request permission or create hidden controls
+ok 303 - unsupported voice input does not request permission or create hidden controls
+  ---
+  duration_ms: 20.478167
+  ...
+# Subtest: light trivia grades once, celebrates correct answers, and clears the modal on close
+ok 304 - light trivia grades once, celebrates correct answers, and clears the modal on close
+  ---
+  duration_ms: 144.804917
+  ...
+# (node:74181) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: daily quiz generation shares one request, validates references and never publishes unreviewed output
+ok 305 - daily quiz generation shares one request, validates references and never publishes unreviewed output
+  ---
+  duration_ms: 100.8455
+  ...
+# Subtest: invalid or failed model output is rejected and cannot create a retry loop
+ok 306 - invalid or failed model output is rejected and cannot create a retry loop
+  ---
+  duration_ms: 84.13175
+  ...
+# Subtest: scheduled generation rejects guests, forged roles and untrusted proxy credentials
+ok 307 - scheduled generation rejects guests, forged roles and untrusted proxy credentials
+  ---
+  duration_ms: 6.182041
+  ...
+# (node:74182) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: the shared API router keeps knowledge records within the admitted anonymous session
+ok 308 - the shared API router keeps knowledge records within the admitted anonymous session
+  ---
+  duration_ms: 109.356
+  ...
+# Subtest: anonymous journals are private, server graded, retry safe and retain the answered revision
+ok 309 - anonymous journals are private, server graded, retry safe and retain the answered revision
+  ---
+  duration_ms: 85.500834
+  ...
+# (node:74182) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# Subtest: a solo answer appears in the knowledge journal; saving, returning and guest isolation work
+ok 310 - a solo answer appears in the knowledge journal; saving, returning and guest isolation work
+  ---
+  duration_ms: 213.322375
+  ...
+# Subtest: an offline answer retry cannot save knowledge into a replacement guest session
+ok 311 - an offline answer retry cannot save knowledge into a replacement guest session
+  ---
+  duration_ms: 115.721708
+  ...
+# Subtest: ending and restoring the same guest identity rejects stale answer confirmations and old save callbacks
+ok 312 - ending and restoring the same guest identity rejects stale answer confirmations and old save callbacks
+  ---
+  duration_ms: 108.259666
+  ...
+# (node:74203) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: real Cloudflare runtime: authenticated sockets, sequence validation, persistence-free motion, shared show and revoke
+ok 313 - real Cloudflare runtime: authenticated sockets, sequence validation, persistence-free motion, shared show and revoke
+  ---
+  duration_ms: 10525.19775
+  ...
+# Subtest: tickets are signed, scoped and expire; forged tokens never authenticate
+ok 314 - tickets are signed, scoped and expire; forged tokens never authenticate
+  ---
+  duration_ms: 3.901208
+  ...
+# Subtest: hibernation restores player attachments; peers are bounded and stationary motion settles
+ok 315 - hibernation restores player attachments; peers are bounded and stationary motion settles
+  ---
+  duration_ms: 8.161708
+  ...
+# Subtest: a greeting persists across movement packets and expires without replay
+ok 316 - a greeting persists across movement packets and expires without replay
+  ---
+  duration_ms: 7.488792
+  ...
+# Subtest: capacity, oversized messages and rapid senders are bounded per connection
+ok 317 - capacity, oversized messages and rapid senders are bounded per connection
+  ---
+  duration_ms: 12.448042
+  ...
+# Subtest: 20 complete items, exactly four representatives, complete explanations and real-source metadata
+ok 318 - 20 complete items, exactly four representatives, complete explanations and real-source metadata
+  ---
+  duration_ms: 2.684416
+  ...
+# Subtest: representative simulation contracts remain compatible
+ok 319 - representative simulation contracts remain compatible
+  ---
+  duration_ms: 0.205167
+  ...
+# Subtest: rea01 independent coin: conditioning on five heads leaves the sixth probability at 1/2
+ok 320 - rea01 independent coin: conditioning on five heads leaves the sixth probability at 1/2
+  ---
+  duration_ms: 0.129625
+  ...
+# Subtest: rea02 Monty Hall: exhaustive weighted host actions give switch 2/3, stay 1/3
+ok 321 - rea02 Monty Hall: exhaustive weighted host actions give switch 2/3, stay 1/3
+  ---
+  duration_ms: 0.25075
+  ...
+# Subtest: rea03 every inventory state agrees with AND, inclusive OR and neither bridge rules
+ok 322 - rea03 every inventory state agrees with AND, inclusive OR and neither bridge rules
+  ---
+  duration_ms: 0.12325
+  ...
+# Subtest: rea04 graph: truncated-bar ratio, actual growth and percentage-point transfer differ
+ok 323 - rea04 graph: truncated-bar ratio, actual growth and percentage-point transfer differ
+  ---
+  duration_ms: 0.071292
+  ...
+# Subtest: rea05 implication is equivalent to contraposition, not converse or inverse
+ok 324 - rea05 implication is equivalent to contraposition, not converse or inverse
+  ---
+  duration_ms: 0.101
+  ...
+# Subtest: rea06 exhaustive hidden faces: A and 7 are the unique minimum sufficient inspection set
+ok 325 - rea06 exhaustive hidden faces: A and 7 are the unique minimum sufficient inspection set
+  ---
+  duration_ms: 0.496125
+  ...
+# Subtest: rea07 all 24 permutations: one original solution, four transfer solutions
+ok 326 - rea07 all 24 permutations: one original solution, four transfer solutions
+  ---
+  duration_ms: 1.413792
+  ...
+# Subtest: rea08 all six label assignments: observation plus all-wrong labels gives unique arrangements
+ok 327 - rea08 all six label assignments: observation plus all-wrong labels gives unique arrangements
+  ---
+  duration_ms: 0.881
+  ...
+# Subtest: rea09 pigeonhole minimum: enumerate all distributions of six and seven chips
+ok 328 - rea09 pigeonhole minimum: enumerate all distributions of six and seven chips
+  ---
+  duration_ms: 1.396666
+  ...
+# Subtest: rea10 32 hidden values can all be identified in five yes/no questions, four records insufficient
+ok 329 - rea10 32 hidden values can all be identified in five yes/no questions, four records insufficient
+  ---
+  duration_ms: 0.36475
+  ...
+# Subtest: rea11 mutually exclusive positive-probability events are dependent; overlapping example independent
+ok 330 - rea11 mutually exclusive positive-probability events are dependent; overlapping example independent
+  ---
+  duration_ms: 0.519125
+  ...
+# Subtest: rea12 confusion matrix is exhaustive and inverse probability uses the right denominator
+ok 331 - rea12 confusion matrix is exhaustive and inverse probability uses the right denominator
+  ---
+  duration_ms: 0.097584
+  ...
+# Subtest: rea13 enumerate ordered physical-ball draws with and without replacement
+ok 332 - rea13 enumerate ordered physical-ball draws with and without replacement
+  ---
+  duration_ms: 0.101708
+  ...
+# Subtest: rea14 equal expectation does not imply equal dispersion or deadline guarantee
+ok 333 - rea14 equal expectation does not imply equal dispersion or deadline guarantee
+  ---
+  duration_ms: 0.05375
+  ...
+# Subtest: rea15 Simpson data: subgroup order reverses, equal weighting restores subgroup order
+ok 334 - rea15 Simpson data: subgroup order reverses, equal weighting restores subgroup order
+  ---
+  duration_ms: 0.045541
+  ...
+# Subtest: rea16 adding selected fans cannot identify the unobserved population opinion
+ok 335 - rea16 adding selected fans cannot identify the unobserved population opinion
+  ---
+  duration_ms: 0.060875
+  ...
+# Subtest: rea17 total probability weights the selection procedure, not just item counts
+ok 336 - rea17 total probability weights the selection procedure, not just item counts
+  ---
+  duration_ms: 0.056333
+  ...
+# Subtest: rea18 exact birthday complement: 22 below half, 23 above half; fixed-person event differs
+ok 337 - rea18 exact birthday complement: 22 below half, 23 above half; fixed-person event differs
+  ---
+  duration_ms: 0.106375
+  ...
+# Subtest: rea19 enumerate all 16 fair sequences: each exact sequence once, two-head event six times
+ok 338 - rea19 enumerate all 16 fair sequences: each exact sequence once, two-head event six times
+  ---
+  duration_ms: 0.12875
+  ...
+# Subtest: rea20 every Boolean state: De Morgan covers all failures and transfer reverses OR correctly
+ok 339 - rea20 every Boolean state: De Morgan covers all failures and transfer reverses OR correctly
+  ---
+  duration_ms: 0.098667
+  ...
+# Subtest: 20 delayed reviews are complete, have a distinct context from immediate application, and expose their conditions
+ok 340 - 20 delayed reviews are complete, have a distinct context from immediate application, and expose their conditions
+  ---
+  duration_ms: 0.473125
+  ...
+# Subtest: rea01 review: independent assignment preserves 1/2 after ten identical prior assignments
+ok 341 - rea01 review: independent assignment preserves 1/2 after ten identical prior assignments
+  ---
+  duration_ms: 0.42275
+  ...
+# Subtest: rea02 review: random inspection conditioned on normal gives 1/2, unlike informed host disclosure
+ok 342 - rea02 review: random inspection conditioned on normal gives 1/2, unlike informed host disclosure
+  ---
+  duration_ms: 0.101791
+  ...
+# Subtest: rea03 review: combined AND / inclusive OR query admits only C
+ok 343 - rea03 review: combined AND / inclusive OR query admits only C
+  ---
+  duration_ms: 0.055083
+  ...
+# Subtest: rea04 review: area encoding requires square-root radius, not linear radius
+ok 344 - rea04 review: area encoding requires square-root radius, not linear radius
+  ---
+  duration_ms: 0.036709
+  ...
+# Subtest: rea05 review: necessary encryption does not determine permission
+ok 345 - rea05 review: necessary encryption does not determine permission
+  ---
+  duration_ms: 0.055458
+  ...
+# Subtest: rea06 review: exactly one offered integer is a counterexample to universal nonnegativity
+ok 346 - rea06 review: exactly one offered integer is a counterexample to universal nonnegativity
+  ---
+  duration_ms: 0.683791
+  ...
+# Subtest: rea07 review: dependency graph enables inspection and notes in parallel after collection
+ok 347 - rea07 review: dependency graph enables inspection and notes in parallel after collection
+  ---
+  duration_ms: 0.259375
+  ...
+# Subtest: rea08 review: complete fault hypothesis set plus observations leaves only sensor failure
+ok 348 - rea08 review: complete fault hypothesis set plus observations leaves only sensor failure
+  ---
+  duration_ms: 0.051958
+  ...
+# Subtest: rea09 review: an injective 300-to-256 code assignment is impossible
+ok 349 - rea09 review: an injective 300-to-256 code assignment is impossible
+  ---
+  duration_ms: 0.077375
+  ...
+# Subtest: rea10 review: a constant first answer creates only eight possible four-answer records
+ok 350 - rea10 review: a constant first answer creates only eight possible four-answer records
+  ---
+  duration_ms: 0.062958
+  ...
+# Subtest: rea11 review: two independent fair signals permit simultaneous activation
+ok 351 - rea11 review: two independent fair signals permit simultaneous activation
+  ---
+  duration_ms: 0.069167
+  ...
+# Subtest: rea12 review: all-negative classifier achieves 99.8% accuracy but zero target detection
+ok 352 - rea12 review: all-negative classifier achieves 99.8% accuracy but zero target detection
+  ---
+  duration_ms: 0.035833
+  ...
+# Subtest: rea13 review: conditional presentation order has 18 candidates, six with A second
+ok 353 - rea13 review: conditional presentation order has 18 candidates, six with A second
+  ---
+  duration_ms: 0.11025
+  ...
+# Subtest: rea14 review: exact mean 30 is not the most common daily observation
+ok 354 - rea14 review: exact mean 30 is not the most common daily observation
+  ---
+  duration_ms: 0.04525
+  ...
+# Subtest: rea15 review: case mix permits opposite within-group order despite higher overall A
+ok 355 - rea15 review: case mix permits opposite within-group order despite higher overall A
+  ---
+  duration_ms: 0.051792
+  ...
+# Subtest: rea16 review: 100% response in current accounts does not identify former users satisfaction
+ok 356 - rea16 review: 100% response in current accounts does not identify former users satisfaction
+  ---
+  duration_ms: 0.0465
+  ...
+# Subtest: rea17 review: weighting team choice by size gives every person probability 1/10
+ok 357 - rea17 review: weighting team choice by size gives every person probability 1/10
+  ---
+  duration_ms: 0.064167
+  ...
+# Subtest: rea18 review: enumerate all unordered manuscript pairs, distinguish single-reference comparisons
+ok 358 - rea18 review: enumerate all unordered manuscript pairs, distinguish single-reference comparisons
+  ---
+  duration_ms: 0.113542
+  ...
+# Subtest: rea19 review: every one of 120 uniformly shuffled photo orders has the same exact-sequence probability
+ok 359 - rea19 review: every one of 120 uniformly shuffled photo orders has the same exact-sequence probability
+  ---
+  duration_ms: 0.980042
+  ...
+# Subtest: rea20 review: all eight three-state rows validate nested De Morgan and reject other choices
+ok 360 - rea20 review: all eight three-state rows validate nested De Morgan and reject other choices
+  ---
+  duration_ms: 0.227584
+  ...
+# Subtest: final five islands preserve relative placement and never overlap
+ok 361 - final five islands preserve relative placement and never overlap
+  ---
+  duration_ms: 32.248083
+  ...
+# Subtest: bridge landings support the full walking width and crossings retain a continuous ground profile
+ok 362 - bridge landings support the full walking width and crossings retain a continuous ground profile
+  ---
+  duration_ms: 9.363416
+  ...
+# Subtest: all requested routes walk through real collision with no teleport shortcuts
+ok 363 - all requested routes walk through real collision with no teleport shortcuts
+  ---
+  duration_ms: 2083.448416
+  ...
+# Subtest: changing a region origin moves its bridge anchors, landmarks and safe arrival together
+ok 364 - changing a region origin moves its bridge anchors, landmarks and safe arrival together
+  ---
+  duration_ms: 0.597958
+  ...
+# Subtest: bridge aprons keep the full walking width clear before paths turn
+ok 365 - bridge aprons keep the full walking width clear before paths turn
+  ---
+  duration_ms: 3.880875
+  ...
+# Subtest: release id follows app code, HTML and branding without including release metadata
+ok 366 - release id follows app code, HTML and branding without including release metadata
+  ---
+  duration_ms: 1.568292
+  ...
+# Subtest: cache accepts injected provider HTML carrying the same release stamp
+ok 367 - cache accepts injected provider HTML carrying the same release stamp
+  ---
+  duration_ms: 44.899583
+  ...
+# Subtest: a release swap mid-install discards the partial cache
+ok 368 - a release swap mid-install discards the partial cache
+  ---
+  duration_ms: 15.318833
+  ...
+# Subtest: remote interpolation is timestamp ordered and never navigates on stale speed
+ok 369 - remote interpolation is timestamp ordered and never navigates on stale speed
+  ---
+  duration_ms: 1.71425
+  ...
+# Subtest: teleports and region transitions reset interpolation; yaw takes the shortest arc
+ok 370 - teleports and region transitions reset interpolation; yaw takes the shortest arc
+  ---
+  duration_ms: 0.181042
+  ...
+# Subtest: HDR bloom uses format-specific samples and fails safely without float color targets
+ok 371 - HDR bloom uses format-specific samples and fails safely without float color targets
+  ---
+  duration_ms: 0.466917
+  ...
+# Subtest: batching preserves painted snow colors and uses white for unpainted vertices
+ok 372 - batching preserves painted snow colors and uses white for unpainted vertices
+  ---
+  duration_ms: 2.971417
+  ...
+# Subtest: personal lighting transitions bulbs, reflections and pooled light without recoloring fixed landmarks
+ok 373 - personal lighting transitions bulbs, reflections and pooled light without recoloring fixed landmarks
+  ---
+  duration_ms: 5.442125
+  ...
+# Subtest: indexed batching preserves every transformed triangle and UV without vertex expansion
+ok 374 - indexed batching preserves every transformed triangle and UV without vertex expansion
+  ---
+  duration_ms: 13.281834
+  ...
+# Subtest: local lighting keeps fixtures intact, excludes hidden rooms, and uses a stable shader light count
+ok 375 - local lighting keeps fixtures intact, excludes hidden rooms, and uses a stable shader light count
+  ---
+  duration_ms: 2.500917
+  ...
+# Subtest: automatic resolution responds to sustained slow frames, ignores pauses, and respects manual quality
+ok 376 - automatic resolution responds to sustained slow frames, ignores pauses, and respects manual quality
+  ---
+  duration_ms: 0.898167
+  ...
+# Subtest: distance detail keeps the exact character and restores all fur in close-ups
+ok 377 - distance detail keeps the exact character and restores all fur in close-ups
+  ---
+  duration_ms: 399.1695
+  ...
+# Subtest: network latency corrections do not snap or reverse the ride clock
+ok 378 - network latency corrections do not snap or reverse the ride clock
+  ---
+  duration_ms: 1.093333
+  ...
+# Subtest: architectural batching preserves all instanced paving transforms
+ok 379 - architectural batching preserves all instanced paving transforms
+  ---
+  duration_ms: 2.900625
+  ...
+# Subtest: only the post-office bench is retired without shifting other seat identities
+ok 380 - only the post-office bench is retired without shifting other seat identities
+  ---
+  duration_ms: 0.224
+  ...
+# Subtest: both lift exits are graded level with the landing chair and fireworks launch above snow
+ok 381 - both lift exits are graded level with the landing chair and fireworks launch above snow
+  ---
+  duration_ms: 0.488625
+  ...
+# Subtest: beginner lift arrival blends into the snow apron without the old deep clearance trench
+ok 382 - beginner lift arrival blends into the snow apron without the old deep clearance trench
+  ---
+  duration_ms: 0.270833
+  ...
+# Subtest: summit hearth follows the shared facility placement and terrain height
+ok 383 - summit hearth follows the shared facility placement and terrain height
+  ---
+  duration_ms: 1.514667
+  ...
+# Subtest: the old decorative mountains no longer intersect the playable slopes
+ok 384 - the old decorative mountains no longer intersect the playable slopes
+  ---
+  duration_ms: 0.358708
+  ...
+# Subtest: fire uses translucent animated tongues and freezes in reduced motion
+ok 385 - fire uses translucent animated tongues and freezes in reduced motion
+  ---
+  duration_ms: 0.183417
+  ...
+# Subtest: asset geometry is finite and scenery stays within its draw-call budget
+ok 386 - asset geometry is finite and scenery stays within its draw-call budget
+  ---
+  duration_ms: 12.144208
+  ...
+# Subtest: retreat clocks freeze in reduced motion and ignore hidden rooms or invalid time
+ok 387 - retreat clocks freeze in reduced motion and ignore hidden rooms or invalid time
+  ---
+  duration_ms: 5.66775
+  ...
+# Subtest: quality reduces particles while retaining every authored vapour source
+ok 388 - quality reduces particles while retaining every authored vapour source
+  ---
+  duration_ms: 1.40225
+  ...
+# Subtest: local effect geometry stays finite, transparent and disposable
+ok 389 - local effect geometry stays finite, transparent and disposable
+  ---
+  duration_ms: 1.130334
+  ...
+# Subtest: interiors only animate the active room and share the quality setting
+ok 390 - interiors only animate the active room and share the quality setting
+  ---
+  duration_ms: 168.165917
+  ...
+# Subtest: outdoor bath atmosphere stays inside existing basin footprints and uses a bounded draw set
+ok 391 - outdoor bath atmosphere stays inside existing basin footprints and uses a bounded draw set
+  ---
+  duration_ms: 343.323834
+  ...
+# Subtest: delayed passengers validate at bounded send time and publish the current authoritative seat
+ok 392 - delayed passengers validate at bounded send time and publish the current authoritative seat
+  ---
+  duration_ms: 3.08275
+  ...
+# Subtest: rink island, bridges, rental and ice are absent while the post office remains
+ok 393 - rink island, bridges, rental and ice are absent while the post office remains
+  ---
+  duration_ms: 1.241875
+  ...
+# Subtest: remaining post-office geometry is finite and batched
+ok 394 - remaining post-office geometry is finite and batched
+  ---
+  duration_ms: 10.884458
+  ...
+# (node:74276) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: 3D, customization, effects, movement and learning bootstrap together without runtime exceptions
+ok 395 - 3D, customization, effects, movement and learning bootstrap together without runtime exceptions
+  ---
+  duration_ms: 28157.973708
+  ...
+# Subtest: rounded ryokan joinery keeps its finished dimensions and the usable tabletop height
+ok 396 - rounded ryokan joinery keeps its finished dimensions and the usable tabletop height
+  ---
+  duration_ms: 15.57475
+  ...
+# Subtest: new ryokan craft stays inside existing fixture footprints without adding lights
+ok 397 - new ryokan craft stays inside existing fixture footprints without adding lights
+  ---
+  duration_ms: 20.876542
+  ...
+# Subtest: raised ryokan roof and all four upper walls remain opaque above the stable camera envelope
+ok 398 - raised ryokan roof and all four upper walls remain opaque above the stable camera envelope
+  ---
+  duration_ms: 203.038708
+  ...
+# (node:74278) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: dining migration preserves every old seat and keeps seat and visitor uniqueness
+ok 399 - dining migration preserves every old seat and keeps seat and visitor uniqueness
+  ---
+  duration_ms: 66.505
+  ...
+# Subtest: three simultaneous diners get distinct seats and consecutive service; the fourth is full and another room is independent
+ok 400 - three simultaneous diners get distinct seats and consecutive service; the fourth is full and another room is independent
+  ---
+  duration_ms: 97.091958
+  ...
+# Subtest: duplicate dining requests return one reservation; leaving and exact expiry free only the corresponding seats
+ok 401 - duplicate dining requests return one reservation; leaving and exact expiry free only the corresponding seats
+  ---
+  duration_ms: 84.585083
+  ...
+# Subtest: competing requests claim only the selected dining chair and never spill into an empty neighbour
+ok 402 - competing requests claim only the selected dining chair and never spill into an empty neighbour
+  ---
+  duration_ms: 98.6395
+  ...
+# Subtest: dining requires the ryokan counter and cannot replace an existing facility reservation
+ok 403 - dining requires the ryokan counter and cannot replace an existing facility reservation
+  ---
+  duration_ms: 91.757459
+  ...
+# Subtest: server seat poses fit all three chairs and one shared clock preserves the complete serving order
+ok 404 - server seat poses fit all three chairs and one shared clock preserves the complete serving order
+  ---
+  duration_ms: 0.838958
+  ...
+# Subtest: the chef reveals one plate during preparation and handoff, clears it on finish or cancellation, and moves finitely between seats
+ok 405 - the chef reveals one plate during preparation and handoff, clears it on finish or cancellation, and moves finitely between seats
+  ---
+  duration_ms: 79.634917
+  ...
+# Subtest: authenticated API dining synchronizes each guest, renews waiting seats and rejects another guest pose
+ok 406 - authenticated API dining synchronizes each guest, renews waiting seats and rejects another guest pose
+  ---
+  duration_ms: 445.42175
+  ...
+# Subtest: expired or left guest sessions cannot retain dining seats through presence
+ok 407 - expired or left guest sessions cannot retain dining seats through presence
+  ---
+  duration_ms: 129.578666
+  ...
+# Subtest: ryokan portal hit target covers the actual doorway, not the whole building
+ok 408 - ryokan portal hit target covers the actual doorway, not the whole building
+  ---
+  duration_ms: 837.444958
+  ...
+# Subtest: snow crowns face upward and their geometry stays finite
+ok 409 - snow crowns face upward and their geometry stays finite
+  ---
+  duration_ms: 35.306417
+  ...
+# Subtest: onsen motion freezes without losing its last frame or changing local light positions
+ok 410 - onsen motion freezes without losing its last frame or changing local light positions
+  ---
+  duration_ms: 0.73075
+  ...
+# Subtest: fish silhouettes taper at both ends and keep per-vertex shading at both LODs
+ok 411 - fish silhouettes taper at both ends and keep per-vertex shading at both LODs
+  ---
+  duration_ms: 0.927125
+  ...
+# Subtest: fish body and tail stay inside the viewing tank even when turning toward the glass
+ok 412 - fish body and tail stay inside the viewing tank even when turning toward the glass
+  ---
+  duration_ms: 33.604292
+  ...
+# Subtest: loose fish shoals travel visibly and turn gradually while preserving deterministic bounded motion
+ok 413 - loose fish shoals travel visibly and turn gradually while preserving deterministic bounded motion
+  ---
+  duration_ms: 25.13375
+  ...
+# Subtest: aquarium keeps its draw objects and quality budgets while reusing instance storage
+ok 414 - aquarium keeps its draw objects and quality budgets while reusing instance storage
+  ---
+  duration_ms: 32.599125
+  ...
+# Subtest: aquarium water, fish and vegetation freeze together and resume without catching up hidden time
+ok 415 - aquarium water, fish and vegetation freeze together and resume without catching up hidden time
+  ---
+  duration_ms: 26.258166
+  ...
+# Subtest: fish matrices update less often when distant or not rendered while the water clock stays bounded
+ok 416 - fish matrices update less often when distant or not rendered while the water clock stays bounded
+  ---
+  duration_ms: 65.380916
+  ...
+# Subtest: mountain trees survive geometry batching and keep their illuminated route edges
+ok 417 - mountain trees survive geometry batching and keep their illuminated route edges
+  ---
+  duration_ms: 1.796625
+  ...
+# Subtest: scene geometry and normals are finite and share a bounded material palette
+ok 418 - scene geometry and normals are finite and share a bounded material palette
+  ---
+  duration_ms: 351.73825
+  ...
+# Subtest: arched bridges leave headroom above the actual walking surface
+ok 419 - arched bridges leave headroom above the actual walking surface
+  ---
+  duration_ms: 3170.685166
+  ...
+# Subtest: the direct spa bridge has no leftover greenhouse, glazing or columns
+ok 420 - the direct spa bridge has no leftover greenhouse, glazing or columns
+  ---
+  duration_ms: 3242.964
+  ...
+# Subtest: plush character has finite geometry and grounded feet in neutral pose
+ok 421 - plush character has finite geometry and grounded feet in neutral pose
+  ---
+  duration_ms: 28.135375
+  ...
+# Subtest: supporting feet remain grounded through walking, landing and customization
+ok 422 - supporting feet remain grounded through walking, landing and customization
+  ---
+  duration_ms: 9.255084
+  ...
+# Subtest: fur responds to fluff and sunglasses are an optional wardrobe item
+ok 423 - fur responds to fluff and sunglasses are an optional wardrobe item
+  ---
+  duration_ms: 228.22975
+  ...
+# Subtest: Santa hat and ski boots are independent optional equipment
+ok 424 - Santa hat and ski boots are independent optional equipment
+  ---
+  duration_ms: 153.749542
+  ...
+# Subtest: hat, goggles and board coexist and the lift pose rests the body above the seat
+ok 425 - hat, goggles and board coexist and the lift pose rests the body above the seat
+  ---
+  duration_ms: 125.783417
+  ...
+# Subtest: snow footsteps alternate, expire and stay off bridges and interior floors
+ok 426 - snow footsteps alternate, expire and stay off bridges and interior floors
+  ---
+  duration_ms: 1.125292
+  ...
+# Subtest: every moving amusement seat stays inside authoritative server bounds
+ok 427 - every moving amusement seat stays inside authoritative server bounds
+  ---
+  duration_ms: 23.24125
+  ...
+# Subtest: summit transfer has shoulder and head clearance through the rendered terminal geometry
+ok 428 - summit transfer has shoulder and head clearance through the rendered terminal geometry
+  ---
+  duration_ms: 1517.848834
+  ...
+# Subtest: upper dismount camera has an unobstructed line to the character above the terminal
+ok 429 - upper dismount camera has an unobstructed line to the character above the terminal
+  ---
+  duration_ms: 6.755625
+  ...
+# Subtest: the rendered summit snow follows the walking height instead of burying the avatar
+ok 430 - the rendered summit snow follows the walking height instead of burying the avatar
+  ---
+  duration_ms: 1264.755
+  ...
+# Subtest: food truck tyres sit on the rendered graded apron, including the rear marshmallow wheels
+ok 431 - food truck tyres sit on the rendered graded apron, including the rear marshmallow wheels
+  ---
+  duration_ms: 12.162
+  ...
+# Subtest: interaction targets are pickable without writing visible trigger rectangles
+ok 432 - interaction targets are pickable without writing visible trigger rectangles
+  ---
+  duration_ms: 0.485833
+  ...
+# Subtest: real canopy branches provide upper-tree pick surfaces separately from invisible facility triggers
+ok 433 - real canopy branches provide upper-tree pick surfaces separately from invisible facility triggers
+  ---
+  duration_ms: 72.342625
+  ...
+# Subtest: quiet licensed music uses its own volume and switch
+ok 434 - quiet licensed music uses its own volume and switch
+  ---
+  duration_ms: 139.064666
+  ...
+# Subtest: music controls work without the duplicate mute button and preserve the master mute and music switch
+ok 435 - music controls work without the duplicate mute button and preserve the master mute and music switch
+  ---
+  duration_ms: 72.209291
+  ...
+# Subtest: audio delivery supports ranges, suffixes, metadata and invalid requests
+ok 436 - audio delivery supports ranges, suffixes, metadata and invalid requests
+  ---
+  duration_ms: 12.666792
+  ...
+# Subtest: only available approved tracks are offered and selection restores without enabling muted music
+ok 437 - only available approved tracks are offered and selection restores without enabling muted music
+  ---
+  duration_ms: 53.407375
+  ...
+# Subtest: simultaneous guests get independent seats, no duplicates; exit and expiry release seats
+ok 438 - simultaneous guests get independent seats, no duplicates; exit and expiry release seats
+  ---
+  duration_ms: 1207.52175
+  ...
+# Subtest: both lift seats share departure time and their positions remain separated
+ok 439 - both lift seats share departure time and their positions remain separated
+  ---
+  duration_ms: 598.513792
+  ...
+# Subtest: authoritative ferris coordinates match both actual model sockets throughout a full revolution
+ok 440 - authoritative ferris coordinates match both actual model sockets throughout a full revolution
+  ---
+  duration_ms: 121.427709
+  ...
+# Subtest: two bench places are authoritative, room-local, renewable and released independently
+ok 441 - two bench places are authoritative, room-local, renewable and released independently
+  ---
+  duration_ms: 788.259709
+  ...
+# Subtest: every shared bench has a walkable approach outside furniture collisions
+ok 442 - every shared bench has a walkable approach outside furniture collisions
+  ---
+  duration_ms: 4.507625
+  ...
+# Subtest: exact bench choice is atomic, retryable and never changes to the other seat
+ok 443 - exact bench choice is atomic, retryable and never changes to the other seat
+  ---
+  duration_ms: 785.630917
+  ...
+# Subtest: automatic seats fill free places concurrently, retry idempotently and preserve the other guest
+ok 444 - automatic seats fill free places concurrently, retry idempotently and preserve the other guest
+  ---
+  duration_ms: 1185.385625
+  ...
+# Subtest: six gondola seats share a cabin atomically, reject the seventh and reopen on release
+ok 445 - six gondola seats share a cabin atomically, reject the seventh and reopen on release
+  ---
+  duration_ms: 3674.138291
+  ...
+# Subtest: mid-mountain lift claims two seats at its own station and rejects base-station boarding
+ok 446 - mid-mountain lift claims two seats at its own station and rejects base-station boarding
+  ---
+  duration_ms: 598.48375
+  ...
+# Subtest: typing stops walking and skiing but never freezes a shared moving vehicle
+ok 447 - typing stops walking and skiing but never freezes a shared moving vehicle
+  ---
+  duration_ms: 5.053625
+  ...
+# Subtest: all seven optional kickers launch and land skis and boards without teleporting or breaking server poses
+ok 448 - all seven optional kickers launch and land skis and boards without teleporting or breaking server poses
+  ---
+  duration_ms: 191.83
+  ...
+# Subtest: kicker flight is frame-rate independent and leaves the main racing line open
+ok 449 - kicker flight is frame-rate independent and leaves the main racing line open
+  ---
+  duration_ms: 178.007417
+  ...
+# Subtest: airborne pose allowance is bounded to slopes and rejects arbitrary flight
+ok 450 - airborne pose allowance is bounded to slopes and rejects arbitrary flight
+  ---
+  duration_ms: 0.365458
+  ...
+# Subtest: racing camera follows steep vertical travel and keeps airborne riders in its composition
+ok 451 - racing camera follows steep vertical travel and keeps airborne riders in its composition
+  ---
+  duration_ms: 0.560917
+  ...
+# Subtest: a steep uphill bank cannot collapse the racing camera into the skier
+ok 452 - a steep uphill bank cannot collapse the racing camera into the skier
+  ---
+  duration_ms: 0.284375
+  ...
+# Subtest: full-speed approaches to every kicker stay inside the server flight envelope
+ok 453 - full-speed approaches to every kicker stay inside the server flight envelope
+  ---
+  duration_ms: 349.008208
+  ...
+# (node:75989) ExperimentalWarning: VM Modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: public, old invite and old room URLs autojoin the same world without token or forced profile
+ok 454 - public, old invite and old room URLs autojoin the same world without token or forced profile
+  ---
+  duration_ms: 1982.64975
+  ...
+# Subtest: admin path requires server owner identity and never joins an unauthenticated owner route
+ok 455 - admin path requires server owner identity and never joins an unauthenticated owner route
+  ---
+  duration_ms: 629.603333
+  ...
+# Subtest: public chat and explicit nickname editing preserve one session; owner leaving does not gate guests
+ok 456 - public chat and explicit nickname editing preserve one session; owner leaving does not gate guests
+  ---
+  duration_ms: 819.42875
+  ...
+# Subtest: failed public bootstrap exposes retry and a blocked session never silently rejoins
+ok 457 - failed public bootstrap exposes retry and a blocked session never silently rejoins
+  ---
+  duration_ms: 677.267833
+  ...
+# Subtest: personal chat hiding does not remove the other player from the world
+ok 458 - personal chat hiding does not remove the other player from the world
+  ---
+  duration_ms: 530.530167
+  ...
+# Subtest: leaving a ride drains the seated pose before deleting the seat and resumes standing updates
+ok 459 - leaving a ride drains the seated pose before deleting the seat and resumes standing updates
+  ---
+  duration_ms: 719.105333
+  ...
+# Subtest: a dining lease expired during mobile sleep wakes once and resumes presence while a panel pauses rendering
+ok 460 - a dining lease expired during mobile sleep wakes once and resumes presence while a panel pauses rendering
+  ---
+  duration_ms: 804.41375
+  ...
+# Subtest: a delayed dining-expiry response cannot clear a newer reservation or a different guest session
+ok 461 - a delayed dining-expiry response cannot clear a newer reservation or a different guest session
+  ---
+  duration_ms: 1333.539375
+  ...
+# Subtest: an invalid dining pose is not mistaken for expired admission or an expired chair
+ok 462 - an invalid dining pose is not mistaken for expired admission or an expired chair
+  ---
+  duration_ms: 678.988083
+  ...
+# Subtest: a rotated district keeps its doorway, safe landing and interaction poses in one frame
+ok 463 - a rotated district keeps its doorway, safe landing and interaction poses in one frame
+  ---
+  duration_ms: 1.356833
+  ...
+# Subtest: rotated wall doors and broad-phase bounds preserve clearance at oblique angles
+ok 464 - rotated wall doors and broad-phase bounds preserve clearance at oblique angles
+  ---
+  duration_ms: 0.345708
+  ...
+# Subtest: both baths allow movement within the actual basin and all activities have valid states
+ok 465 - both baths allow movement within the actual basin and all activities have valid states
+  ---
+  duration_ms: 5.648042
+  ...
+# Subtest: spa validation rejects arbitrary positions, forged heights and modes
+ok 466 - spa validation rejects arbitrary positions, forged heights and modes
+  ---
+  duration_ms: 0.223625
+  ...
+# Subtest: ski cuts form two lanes and sample the actual slope at both edges
+ok 467 - ski cuts form two lanes and sample the actual slope at both edges
+  ---
+  duration_ms: 9.570583
+  ...
+# Subtest: board cuts are wider and teleport, equipment change and new rides never join old tracks
+ok 468 - board cuts are wider and teleport, equipment change and new rides never join old tracks
+  ---
+  duration_ms: 2.054667
+  ...
+# Subtest: powder emits on carving or braking, stays pooled, and settles after leaving the slope
+ok 469 - powder emits on carving or braking, stays pooled, and settles after leaving the slope
+  ---
+  duration_ms: 14.852
+  ...
+# Subtest: long runs reuse track slots and remain finite
+ok 470 - long runs reuse track slots and remain finite
+  ---
+  duration_ms: 118.268625
+  ...
+# Subtest: every course leaves tracks from its actual summit to the relocated lower runout
+ok 471 - every course leaves tracks from its actual summit to the relocated lower runout
+  ---
+  duration_ms: 507.038667
+  ...
+# Subtest: tree illumination batches many trees without changing their silhouettes or footprints
+ok 472 - tree illumination batches many trees without changing their silhouettes or footprints
+  ---
+  duration_ms: 48.969375
+  ...
+# Subtest: tree light quality is bounded and reduced motion freezes the existing animation time
+ok 473 - tree light quality is bounded and reduced motion freezes the existing animation time
+  ---
+  duration_ms: 3.7
+  ...
+# Subtest: daily Korean questions rotate by Seoul calendar with verified sources and no same-day duplicates
+ok 474 - daily Korean questions rotate by Seoul calendar with verified sources and no same-day duplicates
+  ---
+  duration_ms: 18.05225
+  ...
+# Subtest: outage and corrupt caches fall back safely; raw unverified overrides are ignored
+ok 475 - outage and corrupt caches fall back safely; raw unverified overrides are ignored
+  ---
+  duration_ms: 2.900959
+  ...
+# Subtest: static quiz loads before admission without a protected request, then reviewed content loads after entry
+ok 476 - static quiz loads before admission without a protected request, then reviewed content loads after entry
+  ---
+  duration_ms: 1.0235
+  ...
+# Subtest: published database upgrades through 0017 without changing visitors, wishes or journal
+ok 477 - published database upgrades through 0017 without changing visitors, wishes or journal
+  ---
+  duration_ms: 109.670625
+  ...
+# Subtest: Vercel shares only the guest cookie and retains upstream status and session cookie
+ok 478 - Vercel shares only the guest cookie and retains upstream status and session cookie
+  ---
+  duration_ms: 27.95
+  ...
+# Subtest: Vercel rejects cross-origin writes and arbitrary forwarding targets before making a request
+ok 479 - Vercel rejects cross-origin writes and arbitrary forwarding targets before making a request
+  ---
+  duration_ms: 2.361625
+  ...
+# Subtest: Vercel reports an upstream timeout or unexpected login HTML as a connection failure
+ok 480 - Vercel reports an upstream timeout or unexpected login HTML as a connection failure
+  ---
+  duration_ms: 1.368125
+  ...
+# Subtest: Vercel forwards authenticated boarding and individual exit to the shared backend
+ok 481 - Vercel forwards authenticated boarding and individual exit to the shared backend
+  ---
+  duration_ms: 1.343708
+  ...
+# Subtest: upstream hosting cookies cannot replace the guest session on Vercel
+ok 482 - upstream hosting cookies cannot replace the guest session on Vercel
+  ---
+  duration_ms: 1.359333
+  ...
+# Subtest: room transitions and show/operations endpoints reach the shared server without owner escalation
+ok 483 - room transitions and show/operations endpoints reach the shared server without owner escalation
+  ---
+  duration_ms: 1.603041
+  ...
+# Subtest: personal knowledge reads, pagination and answers reach the backend without forwarding another owner
+ok 484 - personal knowledge reads, pagination and answers reach the backend without forwarding another owner
+  ---
+  duration_ms: 1.424375
+  ...
+# Subtest: remote players keep their state while off-screen and reappear without changing their model
+ok 485 - remote players keep their state while off-screen and reappear without changing their model
+  ---
+  duration_ms: 388.662917
+  ...
+# Subtest: new eyewear and crown replace their own slots while the scarf and expression persist
+ok 486 - new eyewear and crown replace their own slots while the scarf and expression persist
+  ---
+  duration_ms: 13.496333
+  ...
+# Subtest: all sunglass lenses cover the existing eyes and the frames fit in front of the face
+ok 487 - all sunglass lenses cover the existing eyes and the frames fit in front of the face
+  ---
+  duration_ms: 417.553084
+  ...
+# Subtest: new wearables remain attached in movement, clear for bathing, and restore afterward
+ok 488 - new wearables remain attached in movement, clear for bathing, and restore afterward
+  ---
+  duration_ms: 101.117667
+  ...
+# Subtest: the curved yukata fits the companion and leaves both eyes and mouth unobstructed
+ok 489 - the curved yukata fits the companion and leaves both eyes and mouth unobstructed
+  ---
+  duration_ms: 90.163083
+  ...
+# Subtest: the snowfolk vendor has finite geometry and independent idle animation
+ok 490 - the snowfolk vendor has finite geometry and independent idle animation
+  ---
+  duration_ms: 101.624916
+  ...
+# Subtest: yukata sleeves share each procedural arm pivot through movement and activity poses
+ok 491 - yukata sleeves share each procedural arm pivot through movement and activity poses
+  ---
+  duration_ms: 639.782333
+  ...
+# Subtest: tree decoration is available around the entire plaza, with its prompt near the visitor
+ok 492 - tree decoration is available around the entire plaza, with its prompt near the visitor
+  ---
+  duration_ms: 366.453042
+  ...
+# Subtest: marshmallow stays in hand, toasts at the fire, survives walking and can be eaten
+ok 493 - marshmallow stays in hand, toasts at the fire, survives walking and can be eaten
+  ---
+  duration_ms: 78.412
+  ...
+# Subtest: physical gates offer both equipment choices and stopping skis never teleports down
+ok 494 - physical gates offer both equipment choices and stopping skis never teleports down
+  ---
+  duration_ms: 67.474667
+  ...
+# Subtest: resting has no countdown and movement stands up
+ok 495 - resting has no countdown and movement stands up
+  ---
+  duration_ms: 37.208166
+  ...
+# Subtest: portable items replace each other, bubbles keep blowing while walking, and map travel retains them
+ok 496 - portable items replace each other, bubbles keep blowing while walking, and map travel retains them
+  ---
+  duration_ms: 45.002041
+  ...
+# Subtest: expired shared lift seats return the rider safely and release their reservation
+ok 497 - expired shared lift seats return the rider safely and release their reservation
+  ---
+  duration_ms: 42.153625
+  ...
+# Subtest: popcorn is picked up at its existing counter, carried while moving and replaced by another item
+ok 498 - popcorn is picked up at its existing counter, carried while moving and replaced by another item
+  ---
+  duration_ms: 65.346459
+  ...
+# Subtest: bubble hold survives walking and releases on E up, touch cancel, blur, panels and item replacement
+ok 499 - bubble hold survives walking and releases on E up, touch cancel, blur, panels and item replacement
+  ---
+  duration_ms: 45.736625
+  ...
+# Subtest: leaving during an outstanding boarding request never reboards the player
+ok 500 - leaving during an outstanding boarding request never reboards the player
+  ---
+  duration_ms: 59.289042
+  ...
+# Subtest: the facing Ferris pair shares a camera focus between the seats
+ok 501 - the facing Ferris pair shares a camera focus between the seats
+  ---
+  duration_ms: 60.037125
+  ...
+# Subtest: ski completion zeros motion, returns gear and leaves no repeat-ride UI
+ok 502 - ski completion zeros motion, returns gear and leaves no repeat-ride UI
+  ---
+  duration_ms: 1246.315
+  ...
+# Subtest: dismissed facility prompts stay hidden until leaving, including after seated actions
+ok 503 - dismissed facility prompts stay hidden until leaving, including after seated actions
+  ---
+  duration_ms: 20.584542
+  ...
+# Subtest: walking up to a fire faces it without creating a ride and movement releases facing
+ok 504 - walking up to a fire faces it without creating a ride and movement releases facing
+  ---
+  duration_ms: 19.871959
+  ...
+# Subtest: sparkler comes from the existing kiosk, stays carried while walking and is replaced by a drink
+ok 505 - sparkler comes from the existing kiosk, stays carried while walking and is replaced by a drink
+  ---
+  duration_ms: 19.353084
+  ...
+# Subtest: tree benches expose one automatic seating action without duplicate tree prompts
+ok 506 - tree benches expose one automatic seating action without duplicate tree prompts
+  ---
+  duration_ms: 35.861375
+  ...
+# Subtest: dining automatically accepts the server seat and does not expose left/right keys
+ok 507 - dining automatically accepts the server seat and does not expose left/right keys
+  ---
+  duration_ms: 28.890458
+  ...
+# Subtest: a full facility reports the failure, permits retry and disables duplicate pending claims
+ok 508 - a full facility reports the failure, permits retry and disables duplicate pending claims
+  ---
+  duration_ms: 27.259084
+  ...
+# Subtest: seat hit planes distinguish chairs and reject other rooms, distant visitors and parallel rays
+ok 509 - seat hit planes distinguish chairs and reject other rooms, distant visitors and parallel rays
+  ---
+  duration_ms: 0.680417
+  ...
+# Subtest: leaving while a selected chair is pending never places the guest in that chair
+ok 510 - leaving while a selected chair is pending never places the guest in that chair
+  ---
+  duration_ms: 34.030042
+  ...
+# Subtest: a lift arrival can start either gear at the actual transfer exit without returning to a remote course gate
+ok 511 - a lift arrival can start either gear at the actual transfer exit without returning to a remote course gate
+  ---
+  duration_ms: 19.555916
+  ...
+# Subtest: lift reaches a stable summit before skiing, and each run lands safely
+ok 512 - lift reaches a stable summit before skiing, and each run lands safely
+  ---
+  duration_ms: 49.559458
+  ...
+# Subtest: ride cancellation clears movement and all resort samples stay on actual terrain
+ok 513 - ride cancellation clears movement and all resort samples stay on actual terrain
+  ---
+  duration_ms: 16.254375
+  ...
+# Subtest: all resort arrival positions are walkable and standing height is coherent
+ok 514 - all resort arrival positions are walkable and standing height is coherent
+  ---
+  duration_ms: 2.199625
+  ...
+# Subtest: mountain has human-scale separation from the old observatory and no lift dismount warp
+ok 515 - mountain has human-scale separation from the old observatory and no lift dismount warp
+  ---
+  duration_ms: 0.262041
+  ...
+# Subtest: Seoul real time and sky interpolation handle day boundaries
+ok 516 - Seoul real time and sky interpolation handle day boundaries
+  ---
+  duration_ms: 19.279625
+  ...
+# Subtest: ski input changes the line and braking reduces speed without leaving the snow
+ok 517 - ski input changes the line and braking reduces speed without leaving the snow
+  ---
+  duration_ms: 6.258417
+  ...
+# Subtest: ski waits for a deliberate push and does not follow the route center automatically
+ok 518 - ski waits for a deliberate push and does not follow the route center automatically
+  ---
+  duration_ms: 5.842
+  ...
+# Subtest: the summit has a broad launch terrace before voluntary departure
+ok 519 - the summit has a broad launch terrace before voluntary departure
+  ---
+  duration_ms: 0.786334
+  ...
+# Subtest: piste descends continuously to the base and chairlifts stay beyond its safety boundary
+ok 520 - piste descends continuously to the base and chairlifts stay beyond its safety boundary
+  ---
+  duration_ms: 1.828458
+  ...
+# Subtest: steering remains responsive at the piste edge and a skier can turn back in
+ok 521 - steering remains responsive at the piste edge and a skier can turn back in
+  ---
+  duration_ms: 4.208292
+  ...
+# Subtest: facility shortcut avoids the name and speech bubble on desktop and mobile
+ok 522 - facility shortcut avoids the name and speech bubble on desktop and mobile
+  ---
+  duration_ms: 1.086084
+  ...
+# Subtest: five districts plus every lift and gondola station have safe map arrivals
+ok 523 - five districts plus every lift and gondola station have safe map arrivals
+  ---
+  duration_ms: 5.432542
+  ...
+# Subtest: mobile region labels remain separate while markers preserve real coordinates
+ok 524 - mobile region labels remain separate while markers preserve real coordinates
+  ---
+  duration_ms: 9.473208
+  ...
+# Subtest: one region tap travels immediately, dragging does not; no destination select exists
+ok 525 - one region tap travels immediately, dragging does not; no destination select exists
+  ---
+  duration_ms: 67.919
+  ...
+# Subtest: touch selection travels directly without a second confirmation
+ok 526 - touch selection travels directly without a second confirmation
+  ---
+  duration_ms: 19.645875
+  ...
+1..526
+# tests 527
+# suites 0
+# pass 527
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 50803.783708

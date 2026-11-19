@@ -1,0 +1,8 @@
+
+> build:vercel
+> node scripts/apply-brand.mjs && node scripts/build-brand-preview.mjs && node scripts/bake-paths.mjs && node scripts/build-vercel.mjs
+
+Applied WINTERLIGHT metadata, static logo, and manifest.
+Built the silver-blue brand review and actual header previews.
+Baked 37 connected promenades.
+Built Vercel web assets.

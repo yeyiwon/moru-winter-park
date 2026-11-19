@@ -1,0 +1,187 @@
+TAP version 13
+# Subtest: walking, facilities and gestures retain manual view instead of supplying camera presets
+ok 1 - walking, facilities and gestures retain manual view instead of supplying camera presets
+  ---
+  duration_ms: 3.971375
+  ...
+# Subtest: jump height never changes the walking focus or orbital camera
+ok 2 - jump height never changes the walking focus or orbital camera
+  ---
+  duration_ms: 0.609583
+  ...
+# Subtest: carousel bob is cancelled while lift and ferris retain their physical seat height
+ok 3 - carousel bob is cancelled while lift and ferris retain their physical seat height
+  ---
+  duration_ms: 0.755
+  ...
+# Subtest: tree framing permits temporary edits and restores the exploration view on close
+ok 4 - tree framing permits temporary edits and restores the exploration view on close
+  ---
+  duration_ms: 0.447209
+  ...
+# Subtest: indoor view is remembered separately and map departure consumes the outdoor snapshot
+ok 5 - indoor view is remembered separately and map departure consumes the outdoor snapshot
+  ---
+  duration_ms: 0.518209
+  ...
+# Subtest: higher interior preset fits real entry bounds and all three dining seats without collapsing to a close view
+ok 6 - higher interior preset fits real entry bounds and all three dining seats without collapsing to a close view
+  ---
+  duration_ms: 1.787166
+  ...
+# Subtest: ski may follow heading slowly but never changes pitch, zoom or FOV with speed
+ok 7 - ski may follow heading slowly but never changes pitch, zoom or FOV with speed
+  ---
+  duration_ms: 23.13425
+  ...
+# Subtest: room-edge focus and observatory roof never produce a zero ray or change the viewing angle
+ok 8 - room-edge focus and observatory roof never produce a zero ray or change the viewing angle
+  ---
+  duration_ms: 1.393167
+  ...
+# Subtest: room boundaries shorten a viewing ray without changing direction or requested zoom
+ok 9 - room boundaries shorten a viewing ray without changing direction or requested zoom
+  ---
+  duration_ms: 22.010458
+  ...
+# Subtest: terrain retraction preserves the ray and low views never collapse on flat ground
+ok 10 - terrain retraction preserves the ray and low views never collapse on flat ground
+  ---
+  duration_ms: 1.819333
+  ...
+# Subtest: world-up orbit keeps horizon roll zero and explicit reset restores one fixed view
+ok 11 - world-up orbit keeps horizon roll zero and explicit reset restores one fixed view
+  ---
+  duration_ms: 12.6025
+  ...
+# Subtest: upward orbit keeps the eye above the ground and reaches the fireworks sky
+ok 12 - upward orbit keeps the eye above the ground and reaches the fireworks sky
+  ---
+  duration_ms: 0.336458
+  ...
+# Subtest: whole-canopy framing is temporary, with direct user control taking priority
+ok 13 - whole-canopy framing is temporary, with direct user control taking priority
+  ---
+  duration_ms: 0.186833
+  ...
+# Subtest: tree framing and return interpolate focus and lens on one reversible timeline
+ok 14 - tree framing and return interpolate focus and lens on one reversible timeline
+  ---
+  duration_ms: 9.459875
+  ...
+# Subtest: carousel has a wider low-angle view, permits free orbit and restores untouched view on exit
+ok 15 - carousel has a wider low-angle view, permits free orbit and restores untouched view on exit
+  ---
+  duration_ms: 0.313
+  ...
+# Subtest: manual show orbit keeps its current distance and restores the saved exploration view before indoor framing
+ok 16 - manual show orbit keeps its current distance and restores the saved exploration view before indoor framing
+  ---
+  duration_ms: 5.06
+  ...
+# Subtest: show cues address actual architectural regions and all six emitter locations without new geometry batches
+ok 17 - show cues address actual architectural regions and all six emitter locations without new geometry batches
+  ---
+  duration_ms: 1578.492834
+  ...
+# Subtest: projection shares a clock across existing surfaces and preserves geometry and materials on cleanup
+ok 18 - projection shares a clock across existing surfaces and preserves geometry and materials on cleanup
+  ---
+  duration_ms: 910.076542
+  ...
+# Subtest: original music follows server time, skips old cues, respects mute and releases voices
+ok 19 - original music follows server time, skips old cues, respects mute and releases voices
+  ---
+  duration_ms: 4.183584
+  ...
+# (node:78747) ExperimentalWarning: Importing JSON modules is an experimental feature and might change at any time
+# (Use `node --trace-warnings ...` to show where the warning was created)
+# Subtest: seeded show has five distinct patterns, overlaps, depth and a bounded final fade
+ok 20 - seeded show has five distinct patterns, overlaps, depth and a bounded final fade
+  ---
+  duration_ms: 5.787041
+  ...
+# Subtest: show uses fixed buffers, late-join clock, lower mobile density and clears the draw at finish
+ok 21 - show uses fixed buffers, late-join clock, lower mobile density and clears the draw at finish
+  ---
+  duration_ms: 46.316459
+  ...
+# Subtest: sparkler activity synchronizes as an item and the unchanged kiosk entrance is walkable
+ok 22 - sparkler activity synchronizes as an item and the unchanged kiosk entrance is walkable
+  ---
+  duration_ms: 1.386458
+  ...
+# Subtest: firework lighting reuses the world light with bounded pulses and respects reduced flashing
+ok 23 - firework lighting reuses the world light with bounded pulses and respects reduced flashing
+  ---
+  duration_ms: 8.123875
+  ...
+# Subtest: embers finish in the sky with short tapered tails instead of long vertical rain
+ok 24 - embers finish in the sky with short tapered tails instead of long vertical rain
+  ---
+  duration_ms: 803.641167
+  ...
+# Subtest: simultaneous guest requests claim one show and merge into its ten-second server countdown
+ok 25 - simultaneous guest requests claim one show and merge into its ten-second server countdown
+  ---
+  duration_ms: 210.917625
+  ...
+# Subtest: a show must finish and complete its cooldown before another guest can schedule a new one
+ok 26 - a show must finish and complete its cooldown before another guest can schedule a new one
+  ---
+  duration_ms: 143.445917
+  ...
+# Subtest: owner cancellation is idempotent and cannot shorten or repeatedly extend the reserved cooldown
+ok 27 - owner cancellation is idempotent and cannot shorten or repeatedly extend the reserved cooldown
+  ---
+  duration_ms: 156.904916
+  ...
+# Subtest: admin start keeps the same atomic cooldown and guests cannot use administrative actions or another room
+ok 28 - admin start keeps the same atomic cooldown and guests cannot use administrative actions or another room
+  ---
+  duration_ms: 96.911334
+  ...
+# Subtest: request spam does not exclude other guests or prevent an owner from stopping the show
+ok 29 - request spam does not exclude other guests or prevent an owner from stopping the show
+  ---
+  duration_ms: 108.897625
+  ...
+# Subtest: legacy show records receive complete lifecycle timestamps without losing their seed or original start
+ok 30 - legacy show records receive complete lifecycle timestamps without losing their seed or original start
+  ---
+  duration_ms: 88.733042
+  ...
+# Subtest: the client derives phases from server time and rejects stale snapshots after cancellation
+ok 31 - the client derives phases from server time and rejects stale snapshots after cancellation
+  ---
+  duration_ms: 8.39125
+  ...
+# Subtest: guest controls request a show, avoid interrupting editors and never replay a countdown after tab return
+ok 32 - guest controls request a show, avoid interrupting editors and never replay a countdown after tab return
+  ---
+  duration_ms: 143.342292
+  ...
+# Subtest: a failed guest request leaves the control retryable and never announces an unconfirmed show
+ok 33 - a failed guest request leaves the control retryable and never announces an unconfirmed show
+  ---
+  duration_ms: 24.511542
+  ...
+# Subtest: fireworks never fall back to weather controls or an action group outside the activities tab
+ok 34 - fireworks never fall back to weather controls or an action group outside the activities tab
+  ---
+  duration_ms: 23.24275
+  ...
+# Subtest: finale retains all overlapping shells, and peers reconstruct identical lower-density prefixes
+ok 35 - finale retains all overlapping shells, and peers reconstruct identical lower-density prefixes
+  ---
+  duration_ms: 190.786459
+  ...
+1..35
+# tests 35
+# suites 0
+# pass 35
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5246.030125
