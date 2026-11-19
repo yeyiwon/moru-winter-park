@@ -1,47 +1,52 @@
-/* One optical surface; nested controls never add another backdrop filter. */
+/* Clear illuminated glass. The world supplies the panel color; a thin white
+   reflection and bright rim provide light without an opaque pearl fill. */
 :root{
+ color-scheme:light;
  --ui-font:'Winter Sans','Apple SD Gothic Neo',sans-serif;
  --ui-display:var(--ui-font);
- --ui-ink:#f3f7ff;--ui-muted:#c9d5e7;--ui-accent:#d4e7ff;
- --ui-glass:rgba(9,18,37,.46);
- --ui-edge:rgba(218,234,255,.2);--ui-hover:rgba(219,235,255,.07);--ui-selected:rgba(219,235,255,.12);
- --ui-field:rgba(8,17,34,.2);--ui-blur:8px;--ui-shadow:inset 0 1px 0 #ffffff1c,0 12px 32px #030b1726;
+ --ui-ink:#f7fbff;--ui-muted:#e0eaf3;--ui-accent:#fff0ca;--ui-text:var(--ui-ink);
+ --panel-glass:linear-gradient(135deg,rgba(255,255,255,.22),rgba(236,248,255,.1) 54%,rgba(239,237,255,.16));
+ --ui-glass:var(--panel-glass);--ui-solid:#eef5fa;--ui-solid-ink:#263b50;--ui-popover:rgba(223,240,253,.2);--ui-hud:rgba(237,247,255,.16);
+ --ui-edge:rgba(237,247,255,.24);--ui-rim:rgba(255,255,255,.52);--ui-divider:rgba(255,255,255,.13);
+ --ui-hover:rgba(245,251,255,.16);--ui-selected:rgba(236,246,255,.21);--ui-selected-edge:rgba(255,250,231,.7);
+ --ui-field:rgba(255,255,255,.055);--ui-field-strong:rgba(246,252,255,.14);
+ --ui-success:#c2f4dd;--ui-success-fill:rgba(87,174,143,.18);--ui-danger:#ffd1d8;--ui-danger-fill:rgba(211,106,130,.16);
+ --ui-scrollbar:rgba(232,245,255,.32);--ui-world-label:#f8f7f2;
+ --ui-blur:10px;--ui-backdrop:blur(var(--ui-blur)) saturate(120%);--ui-text-shadow:0 1px 3px #07182866;
+ --ui-shadow:inset 0 1px 0 #ffffff80,inset 0 -1px 0 #ffffff14,0 12px 32px #06172824;
+ --selection:var(--ui-accent);--choice-fill:var(--ui-field);
  --ui-radius:22px;--ui-control-radius:12px;--ui-control-height:44px;
  --ui-space-1:4px;--ui-space-2:8px;--ui-space-3:12px;--ui-space-4:16px;--ui-space-5:24px;
  --ui-fast:140ms;--ui-duration:180ms;--ui-ease:cubic-bezier(.2,.7,.3,1);
  --ui-layer-dock:26;--ui-layer-picker:100;
- --panel-glass:linear-gradient(145deg,rgba(255,247,230,.18),rgba(232,244,251,.08) 58%,rgba(255,250,240,.12)),linear-gradient(rgba(24,33,49,.42),rgba(24,33,49,.42));
 }
-#studio,#studio:has(#pane-map:not([hidden])),.glass-panel,#wish-panel.is-composing,#wish-feed[open],#tree-tools,#quick-quiz,#museum-puzzle,.select-options,.menu-panel,.control-help>div,.chat-entry,#emote-panel{
- /* Panel ink is local: floating world labels still need their light text. */
- --ui-ink:#f8f6f0;--ui-muted:#e0e5e8;--ui-accent:#ead9b9;
- --ui-glass:var(--panel-glass);--ui-edge:rgba(255,250,240,.3);
- --ui-hover:rgba(255,252,243,.09);--ui-selected:rgba(255,248,231,.17);
- --ui-field:rgba(255,255,255,.055);
- --ui-shadow:inset 0 1px 0 #fff8e963,inset 0 -1px 0 #ffffff0f,0 12px 36px #0715231a;
- color:var(--ui-ink);background:var(--ui-glass);border:1px solid var(--ui-edge);box-shadow:var(--ui-shadow);
- backdrop-filter:blur(var(--ui-blur));-webkit-backdrop-filter:blur(var(--ui-blur));
+#studio,#studio:has(#pane-map:not([hidden])),.glass-panel,#wish-panel.is-composing,#wish-feed[open],#tree-tools,#quick-quiz,#quiz-journal,#museum-puzzle,#learning,#world-experiment,#sound-experiment,.select-options,.menu-panel,.control-help>div,.chat-entry,#emote-panel{
+ /* Local aliases keep legacy controls in the same surface without recoloring
+    the logo, night sky, avatar materials, or labels drawn over the world. */
+ --ink:var(--ui-ink);--muted:var(--ui-muted);--line:var(--ui-edge);--paper:var(--ui-field);--glass:var(--ui-glass);
+ color:var(--ui-ink);background:var(--ui-glass);border:1px solid var(--ui-rim);box-shadow:var(--ui-shadow);text-shadow:var(--ui-text-shadow);
+ backdrop-filter:var(--ui-backdrop);-webkit-backdrop-filter:var(--ui-backdrop);
 }
-/* One quiet pearl surface across settings, wishes and popovers. No nested blur. */
+/* Controls are thin reflections on the same glass, without nested opaque cards. */
 #studio :is(button,summary,output,h2,h3,.studio-footnote,.section-intro p,.audio-status,.audio-credit,.music-credit,.social-count,.social-person,.custom-tabs button),
 .glass-panel :is(button,summary,h2,h3,.field-caption),#tree-tools :is(button,p),#quick-quiz :is(button,h2,p),#museum-puzzle button,
-.chat-entry :is(input,button),#emote-panel button{color:var(--ui-ink);text-shadow:none}
+.chat-entry :is(input,button),#emote-panel button{color:var(--ui-ink);text-shadow:var(--ui-text-shadow)}
 #studio :is(.studio-footnote,.section-intro p,.audio-credit,.music-credit,.preview-hint),
 .glass-panel :is(.wish-compose-head p,.fine-print,.wish-message output,.wish-card small,.wish-card footer),#tree-tools p{color:var(--ui-muted)}
-#studio :is(p,small,a,.control-caption,.eyebrow){color:var(--ui-muted);text-shadow:none}
+#studio :is(p,small,a,.control-caption,.eyebrow){color:var(--ui-muted);text-shadow:var(--ui-text-shadow)}
 #studio :is(.setting-row>span,#social-room,.control-caption){color:var(--ui-ink)}
 #studio input:not([type=range]):not([type=color]):not([type=checkbox]){color:var(--ui-ink)}
 #studio :is(.music-track,.privacy-note,.weather-settings p,.weather-settings small){opacity:1}
 #studio .accessories svg{color:var(--ui-ink)}
 #studio input[type=range]{accent-color:var(--ui-accent)}
-#studio input[type=range]::-webkit-slider-runnable-track{background:#e5dfd42e}
-#studio input[type=range]::-moz-range-track{background:#e5dfd42e}
-#studio input[type=range]::-webkit-slider-thumb{background:#e2d1af;border:3px solid #fffaf0b3;box-shadow:0 1px 4px #35434f24}
-#studio input[type=range]::-moz-range-thumb{background:#e2d1af;border:3px solid #fffaf0b3;box-shadow:0 1px 4px #35434f24}
-#studio :is(input,textarea)::placeholder,.glass-panel :is(input,textarea)::placeholder,.chat-entry input::placeholder{color:var(--ui-muted);opacity:.72}
-#studio .fluff-controls .accessories button,.glass-panel .wish-shapes button,#tree-tools .tree-palette [data-kind]{background:var(--ui-field);border-color:rgba(255,248,231,.13);color:var(--ui-ink)}
+#studio input[type=range]::-webkit-slider-runnable-track{background:var(--ui-edge)}
+#studio input[type=range]::-moz-range-track{background:var(--ui-edge)}
+#studio input[type=range]::-webkit-slider-thumb{background:var(--ui-accent);border:3px solid var(--ui-solid);box-shadow:0 1px 4px #35434f24}
+#studio input[type=range]::-moz-range-thumb{background:var(--ui-accent);border:3px solid var(--ui-solid);box-shadow:0 1px 4px #35434f24}
+#studio :is(input,textarea)::placeholder,.glass-panel :is(input,textarea)::placeholder,.chat-entry input::placeholder{color:var(--ui-muted);opacity:1}
+#studio .fluff-controls .accessories button,.glass-panel .wish-shapes button,#tree-tools .tree-palette [data-kind]{background:var(--ui-field);border-color:var(--ui-edge);color:var(--ui-ink)}
 #studio .music-modes [aria-pressed=true]{background:var(--ui-selected);border-color:var(--ui-edge)}
-#studio .swatches [aria-pressed=true],#studio .custom-color.selected{box-shadow:0 0 0 2px #46535b,0 0 0 4px var(--ui-accent);outline:none}
+#studio .swatches [aria-pressed=true],#studio .custom-color.selected{box-shadow:0 0 0 2px var(--ui-solid),0 0 0 4px var(--ui-accent);outline:none}
 #studio .custom-tabs{background:transparent}
 #studio .fluff-stage{border-radius:18px;background:radial-gradient(ellipse at 50% 42%,#ffffff0a,transparent 72%)}
 #studio .setting-row [aria-checked=true],.select-options [aria-selected=true],.select-options [aria-selected=true]::after{color:var(--ui-ink);background-color:var(--ui-selected)}
@@ -49,11 +54,11 @@
 .select-options{background:var(--ui-glass)}
 .glass-panel .wish-shapes [aria-pressed=true],#tree-tools .tree-palette [aria-pressed=true]{background:var(--ui-selected);border-color:var(--ui-accent)}
 #studio :is(.swatches,.wish-swatches) [aria-pressed=true]{outline-color:var(--ui-accent)}
-#pane-map .map-region>span{background:linear-gradient(145deg,rgba(30,43,61,.24),rgba(23,37,55,.1) 58%,rgba(34,46,64,.17));text-shadow:none}
-#pane-map .map-controls button{background:var(--ui-glass)!important;color:var(--ui-ink)}
-#studio :is([role=tabpanel],.fluff-controls),.glass-panel .panel-scroll,.select-options{scrollbar-color:#fff8e917 transparent}
-#studio :is([role=tabpanel],.fluff-controls):hover,.glass-panel .panel-scroll:hover,.select-options:hover{scrollbar-color:#fff8e92e transparent}
-.chat-entry:focus-within{border-color:#fff8e95c;box-shadow:var(--ui-shadow)}
+#pane-map .map-region>span{background:var(--ui-popover);color:var(--ui-ink);border:1px solid var(--ui-edge);text-shadow:var(--ui-text-shadow);backdrop-filter:none;-webkit-backdrop-filter:none}
+#pane-map .map-controls button{background:var(--ui-field-strong)!important;color:var(--ui-ink);backdrop-filter:none;-webkit-backdrop-filter:none}
+#studio :is([role=tabpanel],.fluff-controls),.glass-panel .panel-scroll,.select-options{scrollbar-color:var(--ui-scrollbar) transparent}
+#studio :is([role=tabpanel],.fluff-controls):hover,.glass-panel .panel-scroll:hover,.select-options:hover{scrollbar-color:var(--ui-accent) transparent}
+.chat-entry:focus-within{border-color:var(--ui-selected-edge);box-shadow:var(--ui-shadow)}
 .chat-entry button{background:var(--ui-hover);border-color:var(--ui-edge)}
 .chat-entry input:focus,.chat-entry input:focus-visible{outline:none;box-shadow:none}
 .glass-panel textarea:focus,.glass-panel textarea:focus-visible{outline:none!important;border-color:var(--ui-edge)!important;box-shadow:none}
@@ -62,7 +67,7 @@
 #admin-panel details[open]{background:var(--ui-field);border-color:var(--ui-edge)}
 .glass-panel textarea:focus,.glass-panel input:focus{background:var(--ui-field);border-color:var(--ui-accent)}
 #studio,.glass-panel,#quick-quiz,#museum-puzzle{border-radius:var(--ui-radius)}
-#studio::backdrop,.glass-panel::backdrop,#quick-quiz::backdrop,#museum-puzzle::backdrop{background:#06152119;backdrop-filter:none;-webkit-backdrop-filter:none}
+#studio::backdrop,.glass-panel::backdrop,#quick-quiz::backdrop,#quiz-journal::backdrop,#museum-puzzle::backdrop{background:rgba(8,20,32,.04);backdrop-filter:none;-webkit-backdrop-filter:none}
 #studio .studio-tabs button,.wish-tabs button,.custom-tabs button{min-height:var(--ui-control-height);border:0;box-shadow:none;border-radius:var(--ui-control-radius);background:transparent;transition:background var(--ui-fast) var(--ui-ease),color var(--ui-fast)}
 #studio .studio-tabs [aria-selected=true],.wish-tabs [aria-pressed=true],.custom-tabs [aria-pressed=true]{background:var(--ui-selected);color:var(--ui-ink);transform:none}
 #studio .studio-tabs button:hover,.wish-tabs button:hover,.custom-tabs button:hover{background:var(--ui-hover)}
@@ -85,7 +90,27 @@ button[aria-label$='닫기']:focus-visible,.studio-head>button:focus-visible{out
 .glass-panel button:active,.studio button:active{filter:brightness(1.08)}
 .panel-primary,.primary{background:var(--ui-selected);border-color:var(--ui-edge);box-shadow:none}
 #tree-tools{z-index:var(--ui-layer-dock)}
-.chat-entry{--ui-blur:8px}.chat-entry input{background:transparent!important}
+.chat-entry input{background:transparent!important}
+/* Child controls use a tint, never another frosted layer. This also removes
+   old white foregrounds that only worked on the former navy panels. */
+.select-options{background:var(--ui-popover);backdrop-filter:var(--ui-backdrop);-webkit-backdrop-filter:var(--ui-backdrop)}
+#studio :is(label,small,output,.music-track,.audio-status,.social-person),.glass-panel :is(label,output),#tree-tools strong{color:var(--ui-ink);text-shadow:var(--ui-text-shadow)}
+#studio :is(.studio-footnote,.studio-saved,.privacy-note,.audio-credit,.music-credit,.preview-hint),.glass-panel :is(.fine-print,.wish-card small){color:var(--ui-muted);opacity:1}
+#studio .studio-saved{color:var(--ui-muted)}
+.glass-panel .panel-heading,.glass-panel .panel-scroll hr,.wish-card{border-color:var(--ui-divider)}
+#studio :is(.weather-settings,.audio-options,.preference-settings){border-color:var(--ui-divider)}
+#studio :is(.setting-row button,.music-modes button,.social-actions button),.glass-panel .wish-card button,#tree-tools .tree-footer button{background:var(--ui-field);border-color:var(--ui-edge);color:var(--ui-ink);text-shadow:var(--ui-text-shadow)}
+#studio .setting-row [aria-checked=true],#studio .music-modes [aria-pressed=true],#tree-tools .tree-footer [data-add]{background:var(--ui-selected);border-color:var(--ui-selected-edge)}
+.glass-panel .panel-primary{background:var(--ui-selected);border-color:var(--ui-selected-edge);color:var(--ui-ink)}
+.wish-privacy input:checked+span{background:var(--ui-selected);border-color:var(--ui-selected-edge);color:var(--ui-ink)}
+.wish-privacy input:focus-visible+span{outline-color:var(--ui-accent)}
+#studio .swatches>[aria-pressed=true],#studio .swatches>.selected,#wish-form .wish-swatches>[aria-pressed=true],#wish-form .wish-swatches>.selected,#tree-tools .tree-swatches>[aria-pressed=true],#tree-tools .tree-swatches>.selected{background-color:var(--ui-selected)!important;box-shadow:none!important}
+#studio .studio-tabs button:not([aria-selected=true]),#studio .wardrobe-tabs button:not([aria-selected=true]){color:var(--ui-muted)}
+#studio :is(input,textarea,select),.glass-panel :is(input,textarea,select){caret-color:var(--ui-accent)}
+#studio select,.glass-panel select{color:var(--ui-ink);background:var(--ui-field);border-color:var(--ui-edge)}
+#studio option,.glass-panel option{color:var(--ui-solid-ink);background:var(--ui-solid)}
+#learning :is(.learning-toolbar,.empty),#world-experiment :is(p,output),#sound-experiment :is(p,output){color:var(--ui-ink);text-shadow:var(--ui-text-shadow)}
+#world-experiment button,#sound-experiment button{color:var(--ui-ink);background:var(--ui-field);border-color:var(--ui-edge)}
 .preference-settings{margin-top:var(--ui-space-4);border-top:1px solid var(--ui-edge)}
 .preference-settings .preference-body{display:grid;gap:var(--ui-space-3);padding:var(--ui-space-2) 0 var(--ui-space-4);min-width:0}
 .preference-body p{margin:0;font-size:12px;line-height:1.7}
@@ -118,8 +143,11 @@ body.still *,body.still *::before,body.still *::after{animation-duration:.001ms!
 }
 @media(max-width:350px){.preference-grid{grid-template-columns:1fr}}
 @media(max-height:500px){#exhibit-panel{left:auto;right:10px;bottom:10px;max-height:calc(100dvh - 20px);width:min(380px,calc(100vw - 20px))}}
-/* Render quality changes the world, never the settings surface. */
-@media(prefers-reduced-transparency:reduce){:root{--panel-glass:#303b4e;--ui-blur:0px}.select-options{--panel-glass:#303b4e}}
+/* Quality changes blur cost, not glass opacity. Accessibility or unsupported
+   backdrop filters deliberately use a readable solid surface and dark ink. */
+:root[data-render-quality=low]{--ui-blur:4px}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root{--panel-glass:var(--ui-solid);--ui-blur:0px;--ui-backdrop:none;--ui-hud:var(--ui-solid);--ui-popover:var(--ui-solid);--ui-ink:#263b50;--ui-muted:#45576b;--ui-accent:#405780;--ui-edge:rgba(92,120,150,.24);--ui-divider:rgba(92,120,150,.14);--ui-hover:rgba(189,215,245,.34);--ui-selected:rgba(195,215,245,.6);--ui-selected-edge:#91a8cf;--ui-success:#255d48;--ui-danger:#8b4048;--ui-text-shadow:none}}
+@media(prefers-reduced-transparency:reduce){:root{--panel-glass:var(--ui-solid);--ui-blur:0px;--ui-backdrop:none;--ui-hud:var(--ui-solid);--ui-popover:var(--ui-solid);--ui-ink:#263b50;--ui-muted:#45576b;--ui-accent:#405780;--ui-edge:rgba(92,120,150,.24);--ui-divider:rgba(92,120,150,.14);--ui-hover:rgba(189,215,245,.34);--ui-selected:rgba(195,215,245,.6);--ui-selected-edge:#91a8cf;--ui-success:#255d48;--ui-danger:#8b4048;--ui-text-shadow:none}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
 
 
@@ -136,13 +164,13 @@ body.still *,body.still *::before,body.still *::after{animation-duration:.001ms!
 #studio>[role=tabpanel]{padding-top:0}
 #studio #pane-map:not([hidden]){display:grid;grid-template-rows:minmax(0,1fr);padding:0}
 #studio #pane-map .studio-footnote{display:none}
-#studio .studio-saved{font-size:10px;line-height:1.4;padding:0;opacity:.65}
+#studio .studio-saved{font-size:10px;line-height:1.4;padding:0;opacity:1}
 #studio:has(#pane-map:not([hidden])) .studio-saved{visibility:hidden;height:0;overflow:hidden}
 #pane-map #island-map.coordinate-map{border-radius:12px;background:transparent}
-#studio .fluff-controls .accessories [aria-pressed=true]{background:var(--ui-selected);border-color:#e5d7ba8c;box-shadow:inset 0 0 0 1px #e5d7ba19}
+#studio .fluff-controls .accessories [aria-pressed=true]{background:var(--ui-selected);border-color:var(--ui-selected-edge);box-shadow:none}
 #studio .studio-description:empty{display:none}
 @media(max-width:650px){
- #studio,#studio:has(#pane-map:not([hidden])){width:calc(100vw - 20px);height:calc(100dvh - 24px - var(--safe-top,0px) - var(--safe-bottom,0px));padding:12px;--ui-blur:8px}
+ #studio,#studio:has(#pane-map:not([hidden])){width:calc(100vw - 20px);height:calc(100dvh - 24px - var(--safe-top,0px) - var(--safe-bottom,0px));padding:12px}
  #studio[open]{gap:10px}.studio-header{grid-template-columns:minmax(0,1fr) 44px;gap:2px 8px}
  #studio .studio-head>button{grid-column:2}.studio-head>span{padding-left:4px;font-size:17px}
  #studio .studio-tabs{grid-column:1/-1;grid-row:2;justify-content:space-between;gap:2px}
@@ -161,7 +189,7 @@ body.still *,body.still *::before,body.still *::after{animation-duration:.001ms!
 #studio #profile-form{gap:8px;margin-bottom:22px}
 #profile-form>label{font-size:12px;line-height:1.5;color:var(--ui-muted)}
 #studio .profile-entry{display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;gap:4px;padding:3px 4px 3px 14px;min-height:50px;border:1px solid var(--ui-edge);border-radius:16px;background:var(--ui-field);box-shadow:inset 0 1px 0 #fff8e914;transition:border-color .18s,background .18s}
-#studio .profile-entry:focus-within{border-color:#fff6df80;background:#fff8ed0e}
+#studio .profile-entry:focus-within{border-color:var(--ui-selected-edge);background:var(--ui-field-strong)}
 #studio .profile-entry input{height:44px;min-height:44px;width:100%;margin:0;padding:0;border:0!important;border-radius:0;background:transparent!important;box-shadow:none!important;outline:none!important;font-size:16px;line-height:1.5;letter-spacing:-.02em}
 #studio .profile-entry button{width:44px;height:44px;border:0;border-radius:12px;background:transparent;box-shadow:none;display:grid;place-items:center;color:var(--ui-accent)}
 #studio .profile-entry button:not(:disabled):hover{background:var(--ui-selected)}
@@ -169,18 +197,18 @@ body.still *,body.still *::before,body.still *::after{animation-duration:.001ms!
 #studio .profile-entry button svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
 .profile-feedback{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:start;min-height:20px;padding:0 4px}
 #profile-status,#profile-count,.nickname-count{font-size:11px;line-height:20px;color:var(--ui-muted);font-variant-numeric:tabular-nums}
-#profile-form[data-state=error] #profile-status{color:#ffcbb8}
-#profile-form[data-state=saved] #profile-status{color:#efe2be}
+#profile-form[data-state=error] #profile-status{color:var(--ui-danger)}
+#profile-form[data-state=saved] #profile-status{color:var(--ui-success)}
 #studio .studio-tabs{justify-content:center}
 header .world-meta{left:50%;transform:translateX(-50%);justify-content:center;text-align:center}
 #studio .snow-setting{position:relative;display:flex;align-items:center;justify-content:space-between;gap:16px;min-height:48px;margin-top:8px;cursor:pointer}
 .snow-setting>span{display:flex;align-items:center;gap:9px}
 .snow-setting svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.1;stroke-linecap:round}
 #studio .snow-setting input{position:absolute;right:0;width:48px;height:44px;margin:0;opacity:0;cursor:pointer;z-index:1}
-.snow-setting i{width:38px;height:22px;flex:none;border:1px solid var(--ui-edge);border-radius:20px;background:#ffffff08;position:relative;transition:background .18s}
-.snow-setting i:after{content:'';position:absolute;left:3px;top:3px;width:14px;height:14px;border-radius:50%;background:#d5dfe6;transition:transform .18s,background .18s}
-.snow-setting input:checked+i{background:#ead9b92b;border-color:#f5e5c254}
-.snow-setting input:checked+i:after{transform:translateX(16px);background:#fff3d8}
+.snow-setting i{width:38px;height:22px;flex:none;border:1px solid var(--ui-edge);border-radius:20px;background:var(--ui-field);position:relative;transition:background .18s}
+.snow-setting i:after{content:'';position:absolute;left:3px;top:3px;width:14px;height:14px;border-radius:50%;background:var(--ui-muted);transition:transform .18s,background .18s}
+.snow-setting input:checked+i{background:var(--ui-selected);border-color:var(--ui-selected-edge)}
+.snow-setting input:checked+i:after{transform:translateX(16px);background:var(--ui-accent)}
 .snow-setting input:focus-visible+i{outline:2px solid var(--ui-accent);outline-offset:4px}
 @media(max-width:650px){#studio .studio-tabs{justify-content:space-evenly}.profile-entry{min-height:50px}header .world-meta{top:46px;max-width:calc(100vw - 28px);gap:10px;font-size:9px}}
 

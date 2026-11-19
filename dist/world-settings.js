@@ -1,6 +1,6 @@
-let settings={notice:'',disabled:[]};
-const notice=document.createElement('aside');notice.id='world-notice';notice.hidden=true;notice.setAttribute('role','status');document.body.append(notice);
-function apply(value){if(!value||!Array.isArray(value.disabled))return;settings=value;notice.textContent=String(value.notice||'');notice.hidden=!value.notice;}
+// Maintenance switches remain active; general announcements are no longer a UI feature.
+let settings={disabled:[]};
+function apply(value){if(!value||!Array.isArray(value.disabled))return;settings={disabled:value.disabled};}
 window.worldContentEnabled=id=>!settings.disabled.includes(id);
 window.addEventListener('lab:world-settings',e=>apply(e.detail));
 let pending=false;

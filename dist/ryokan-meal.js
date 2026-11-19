@@ -16,5 +16,5 @@ export function createRyokanMeal(){
  }
  const leaf=mesh(new T.SphereGeometry(1,12,8).scale(.12,.016,.07),nori,.41,.09,-.17);leaf.rotation.y=.6;
  for(const z of [.33,.39]){const stick=mesh(new T.CylinderGeometry(.009,.016,.95,8),wood,0,.115,z);stick.rotation.z=Math.PI/2;}
- const batches=new Map();root.updateMatrixWorld(true);for(const o of root.children){if(!batches.has(o.material))batches.set(o.material,[]);batches.get(o.material).push(o);}for(const [material,items]of batches){const geometry=mergeMeshGeometry(items);for(const o of items){o.removeFromParent();o.geometry.dispose();}geometry.userData.shared=true;material.userData.shared=true;root.add(new T.Mesh(geometry,material));}template=root;return root.clone(true);
+ const batches=new Map();root.updateMatrixWorld(true);for(const o of root.children){if(!batches.has(o.material))batches.set(o.material,[]);batches.get(o.material).push(o);}for(const [material,items]of batches){const geometry=mergeMeshGeometry(items);for(const o of items){o.removeFromParent();o.geometry.dispose();}geometry.userData.shared=true;material.userData.shared=true;const merged=new T.Mesh(geometry,material);merged.userData.food=material!==porcelain&&material!==wood;root.add(merged);}template=root;return root.clone(true);
 }

@@ -11,3 +11,10 @@ test('bath camera recovery has a speed limit after a rock stops occluding the vi
  for(let i=0;i<90;i++){camera.position.set(0,1,15);guard.update(camera,focus,[wall],1/60,{mode:'bath',maxRecoverySpeed:4});const next=camera.position.distanceTo(focus);assert.ok(next-previous<=4/60+1e-9);previous=next;}
  assert.ok(previous>5);
 });
+
+test('activity changes do not bypass collision recovery and pre-constrained rays stay short',()=>{
+ const guard=createCameraClearance(),camera=new T.PerspectiveCamera(),focus=new T.Vector3(0,1,0),wall=new T.Mesh(new T.BoxGeometry(4,5,.3),new T.MeshStandardMaterial());wall.position.set(0,1,2);wall.updateMatrixWorld(true);
+ camera.position.set(0,1,16.5);guard.update(camera,focus,[wall],1/60,{mode:'walk',maxRecoverySpeed:3.5});const previous=camera.position.distanceTo(focus);wall.visible=false;
+ camera.position.set(0,1,16.5);guard.update(camera,focus,[wall],1/60,{mode:'carousel',maxRecoverySpeed:3.5});assert.ok(camera.position.distanceTo(focus)-previous<=3.5/60+1e-9);
+ for(const shortened of [.5,1,3]){camera.position.set(0,1,shortened);guard.update(camera,focus,[],1/60,{mode:'carousel',maxRecoverySpeed:3.5});assert.ok(camera.position.distanceTo(focus)<=shortened+1e-9,'room/terrain distance must never be expanded by clearance');}
+});

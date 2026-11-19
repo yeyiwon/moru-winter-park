@@ -1,3 +1,47 @@
+# v44 개발 미리보기 검증 — 2026-11-19
+
+후속 CSS 조정: 흰색 알파를 낮춘 투명 글래스·밝은 전경으로 변경한 뒤 데스크톱 설정·드롭다운·퀴즈와390×844 실제 앱 iframe의 중앙 정렬·투과를 확인했다. 아래448개 검사는 그 전 기능 구현의 결과이며 이번 CSS 조정 때문에 전체 기능 검사를 다시 실행하지는 않았다. [후속 UI 근거](../qa/resort-v44/clear-glass-checks.json), [실제 화면·한계](clear-glass-v44.md).
+
+이번 기록은 현재 활성 로컬 개발 미리보기와 격리된 QA 데이터베이스의 결과다. 공개 업로드·커밋·프로덕션 배포는 수행하지 않았다. 아래의 v42/v41 운영 검증은 해당 버전의 과거 기록으로 보존하며 v44의 실행 결과로 사용하지 않는다.
+
+## 자동 검사
+
+최종 전체 `npm test`는 **448/448 PASS**, 실패·취소·건너뜀 0개, **63.006초**였다. 카메라 요청값 보존, 실내 입장과 실제 좌석 선택, 좌석 동시 경쟁, 게스트 불꽃 신청, 개인 퀴즈 기록, 식사 좌석 만료 복구, 료칸·천문대 geometry/동선과 자원 해제 회귀를 포함한다. `park.js`와 관련 모듈의 구문 검사 및 `git diff --check`도 통과했다.
+
+카메라·좌석의 앱 통합 테스트는 실제 DOM과 Three scene을 사용하되 GPU renderer는 stub으로 대체한다. 실제 의자를 화면 좌표로 투영한 pointer 입력 → 정확한 좌석 번호 요청 → 해당 좌표 착석까지 검사하지만 실제 화면 렌더나 체감 조작을 검증한 것은 아니다.
+
+## 실제 브라우저에서 확인한 범위
+
+실제 Chrome UI와 격리 SQLite에 연결된 일반 게스트 세션을 사용했다. 같은 origin의 iframe으로 **390×844, 320×640, 844×390** CSS viewport를 검사했다. 이 크기 검사를 실물 휴대폰 테스트로 표시하지 않는다.
+
+- 커스터마이징 미리보기·선택지·저장 영역의 분리, 작은 화면의 음악 버튼과 채팅 입력, 밝은 유리 패널·텍스트·지도 아이콘/툴팁 표시를 확인했다.
+- 실제 게스트가 퀴즈에 답하고 서버의 저장 완료 응답을 받은 뒤 개인 지식집의 문항·해설·출처를 확인했다.
+- 실제 게스트가 불꽃을 신청하여 버튼의 `10초 후 시작` → `불꽃놀이 진행 중` 상태 전환을 확인했다. 3D 불꽃 자체를 이 브라우저에서 렌더한 것은 아니다.
+- 실제 `quick-quiz.js`와 전체 CSS를 사용하는 `body.inside-room` UI fixture에서 세 화면 크기의 중앙 정렬을 확인했다. 가로 화면은 내부 스크롤을 유지했다. 이 fixture는 3D 실내 입장을 재현하지 않는다.
+- WebGL 오류 이후 로딩 레이어가 아래 UI의 포인터를 가로채지 않고 설정을 열 수 있음을 확인했다.
+- 최종 빌드 후 라이브 미리보기 서버를 재시작하고 기존 실제 게스트로 설정 → 내 지식집 → 퀴즈 재진입을 확인했다. 저장한 기록이 유지됐다. 1363×936에서 퀴즈 dialog는 `[401.5, 197.171875, 560, 541.640625]`, 화면 중심 오차는 `[0, -0.0078125]`px였으며 밝은 팔레트를 유지했다. [재시작 후 최종 화면](../qa/resort-v44/quiz-centered-final.jpg).
+
+원시 근거: [브라우저 검사 JSON](../qa/resort-v44/browser-checks.json). 관련 캡처: [모바일 유리 UI](../qa/resort-v44/mobile-glass-after.jpg), [지식집](../qa/resort-v44/journal-glass-after.jpg), [퀴즈 중앙 정렬](../qa/resort-v44/quiz-centered-mobile.jpg).
+
+## 3D 검증 한계
+
+이 실행 환경은 **GL_VENDOR = Disabled, GL_RENDERER = Disabled**이며 WebGLRenderer 생성이 실패했다. 따라서 실제 카메라 구도의 편안함, 수족관 shader의 GPU 컴파일·물빛, 셰프의 렌더된 전달 동작, 실물 Windows/iOS/Android의 입력·오디오·FPS·발열은 **UNKNOWN**이다. 이 실패를 앱 전체 3D 성공이나 특정 OS의 오류 해결로 보고하지 않는다.
+
+CPU로 만든 료칸·천문대 형상 스틸은 mesh 구성과 겹침을 검토하는 참고 자료다. 실제 WebGL shader·후처리·조명 예산·게임 카메라를 재현한 런타임 완성 화면이 아니다.
+
+## 로컬 빌드와 용량 검사
+
+- `npm run build`: PASS, Worker static assets 228개 생성.
+- `npm run build:vercel`: PASS, Vercel용 web assets 생성.
+- `npm run test:budget`: PASS, 검사 파일 229개, 전체 22,543,964 bytes / 한도 25,165,824 bytes, code gzip 1,014,070 bytes / 한도 1,280,000 bytes, 오디오 16,329,873 bytes.
+- `git diff --check`: PASS. 빌드 후 신규 CSS/JS와 SW 자산 등록이 보존됨을 확인했다.
+
+이 값은 빌드·배포물 용량 검사이며 실제 CPU/GPU/FPS·네트워크·물리 기기 성능이나 프로덕션 배포 성공을 뜻하지 않는다.
+
+구현과 개별 근거: [고정 시야 정책](stable-camera-v44.md), [실내 시야·직접 좌석 선택](seating-and-indoor-view-v44.md), [료칸 마감](ryokan-craft-v44.md), [천문대 실내](museum-interior-v44.md).
+
+---
+
 # v42 모션·지도·불꽃 회귀
 
 전체 **382/382** 검사, Sites/Vercel production build, 용량 검사 PASS. Mac Chrome OS 모션 감소 에뮬레이션에서 보행·눈 낙하 및 명시적 전체 모션 복귀를 확인했다. PC/작은 모바일/일반 모바일/가로 화면 지도 버튼과 설정·관리 메뉴 검사 15개 PASS, page/WebGL 오류 0. 실제 Windows·실물 휴대폰 UNKNOWN. [상세·전후 자료](platform-motion-v42.md).

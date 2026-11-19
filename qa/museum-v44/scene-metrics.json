@@ -1,0 +1,21 @@
+{
+  "kind": "constructed-scene-counts",
+  "baseline": {
+    "renderableObjects": 63,
+    "meshes": 61,
+    "meshTriangles": 143355,
+    "transparentObjects": 5,
+    "lights": 2
+  },
+  "current": {
+    "renderableObjects": 88,
+    "meshes": 84,
+    "meshTriangles": 142735,
+    "transparentObjects": 13,
+    "lights": 2
+  },
+  "rendererDrawCalls": null,
+  "gpuMs": null,
+  "deviceFps": null,
+  "note": "Counts from Three.js scene construction; not renderer.info.render.calls. Baseline was measured before this museum interior change. CPU image omits procedural shader layers and uses inspection lights."
+}

@@ -1,0 +1,45 @@
+{
+  "date": "2026-11-19",
+  "scope": "Clear glass CSS follow-up, local preview only",
+  "desktop": {
+    "viewport": [
+      1363,
+      936
+    ],
+    "quizRect": [
+      401.5,
+      197.171875,
+      560,
+      541.640625
+    ],
+    "panelAlpha": [
+      0.22,
+      0.1,
+      0.16
+    ],
+    "foreground": "rgb(247, 251, 255)",
+    "backdropFilter": "blur(10px) saturate(1.2)",
+    "settings": "visually checked",
+    "dropdown": "visually checked"
+  },
+  "mobile": {
+    "viewport": [
+      390,
+      844
+    ],
+    "quizRect": [
+      10,
+      181.28125,
+      370,
+      481.4375
+    ],
+    "backdropFilter": "blur(8px) saturate(1.2)",
+    "method": "Same-origin iframe of actual application, not a physical phone"
+  },
+  "limits": [
+    "WebGL context disabled in validation browser",
+    "No new actual GPU/FPS measurements",
+    "Existing gameplay tests not rerun for CSS-only change"
+  ],
+  "temporaryFixtureRemoved": true
+}

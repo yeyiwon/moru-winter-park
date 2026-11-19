@@ -1,6 +1,7 @@
 import {createCustomizationUI} from './customization-ui.js';
 import {createWorldMap,mapFacilities} from './world-map.js';
 import {closeDialog} from './ui-motion.js';
+import {preparePanelOpen,syncPanelState} from './panels.js';
 import {normalizeWardrobe,selectedItems} from './wardrobe.js';
 import {islands,bridges} from './world-layout.js';
 const defaults={light:'#bfd7ef',brightness:100,fur:'#f4eee5',furTop:null,fluff:100,roundness:50,accessory:'none'};
@@ -26,10 +27,10 @@ function update(persist=true){
 }
 const customization=createCustomizationUI(appearance,look=>{Object.assign(appearance,look);if(winterSnapshot!==null)winterSnapshot=look.accessory;update();});
 function selectTab(id){if(id==='social'&&!window.labAdmin&&!document.body.classList.contains('invite-gate'))id='map';const names={map:['MAP','지도'],light:['WEATHER & LIGHT','시간·날씨'],fluff:['CUSTOMIZE','커스터마이징'],audio:['SOUND','소리'],social:['INVITE','초대']};document.querySelector('#studio-section-en').textContent=names[id][0];document.querySelector('#studio-section-name').textContent=names[id][1];for(const b of tabs){const active=b.dataset.studio===id;b.setAttribute('aria-selected',active);b.tabIndex=active?0:-1;document.getElementById('pane-'+b.dataset.studio).hidden=!active;}if(id==='fluff')customization.open();else customization.close();window.labPreviewVisible=studio.open&&id==='fluff';window.dispatchEvent(new Event('lab:preview'));}
-function openStudio(tab){window.dismissParkDiscovery?.();if(!studio.open)studio.showModal();document.body.classList.add('studio-open');selectTab(tab);window.dispatchEvent(new Event('lab:pause'));window.labSound?.('open');}
+function openStudio(tab){preparePanelOpen(studio);if(!studio.open)studio.showModal();syncPanelState();selectTab(tab);window.labSound?.('open');}
 function closeStudio(){if(document.body.classList.contains('invite-gate'))return;closeDialog(studio);}
 window.openWinterSettings=openStudio;document.getElementById('hud-map').onclick=()=>openStudio('map');document.getElementById('open-settings').onclick=()=>openStudio('light');document.getElementById('close-studio').onclick=closeStudio;
-studio.addEventListener('close',()=>{document.body.classList.remove('studio-open');customization.close();window.labPreviewVisible=false;window.dispatchEvent(new Event('lab:preview'));document.querySelector('#open-settings').focus({preventScroll:true});window.labSound?.('close');});
+studio.addEventListener('close',()=>{if(studio.open)return;syncPanelState();customization.close();window.labPreviewVisible=false;window.dispatchEvent(new Event('lab:preview'));if(!document.querySelector('dialog[open]'))document.querySelector('#open-settings').focus({preventScroll:true});window.dispatchEvent(new Event('lab:close'));window.labSound?.('close');});
 studio.addEventListener('click',e=>{if(e.target===studio){const r=studio.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeStudio();}const b=e.target.closest('button');if(!b)return;if(b.dataset.studio){selectTab(b.dataset.studio);window.labSound?.('select');}if(b.dataset.light){appearance.light=b.dataset.light;update();window.labSound?.('select');}});
 studio.querySelector('[role=tablist]').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const available=tabs.filter(b=>!b.hidden),current=available.indexOf(document.activeElement),index=e.key==='Home'?0:e.key==='End'?available.length-1:(current+(e.key==='ArrowRight'?1:-1)+available.length)%available.length;selectTab(available[index].dataset.studio);available[index].focus();});
 for(const [id,key] of [['light-color','light'],['light-level','brightness']])document.getElementById(id).addEventListener('input',e=>{appearance[key]=key==='light'?e.target.value:Number(e.target.value);update();});

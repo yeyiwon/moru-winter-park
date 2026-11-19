@@ -28,10 +28,10 @@ export function createCameraClearance(){
    for(const [o,r]of faded)r.target=obscuring.has(o)?.16:1;
   }
   // Retreat quickly at contact, ease back out after the obstruction clears.
-  if(!safeDistance||changed)safeDistance=Math.min(length,limit);
+  if(!safeDistance)safeDistance=Math.min(length,limit);
   const goal=Math.min(length,limit),blend=1-Math.exp(-Math.max(0,dt)*(goal<safeDistance?30:3.2));const change=(goal-safeDistance)*blend;safeDistance+=change>0?Math.min(change,maxRecoverySpeed*Math.max(0,dt)):change;
   // Never leave the near plane behind the wall while interpolation catches up.
-  safeDistance=Math.min(safeDistance,limit);end.copy(focus).addScaledVector(direction,Math.max(.8,safeDistance));camera.position.copy(end);
+  safeDistance=Math.min(safeDistance,limit,length);end.copy(focus).addScaledVector(direction,Math.min(length,Math.max(.8,safeDistance)));camera.position.copy(end);
   for(const [o,r]of faded){for(const m of r.clones)m.opacity+=(r.target-m.opacity)*(1-Math.exp(-dt*9));if(r.target===1&&r.clones.every(m=>m.opacity>.995))restore(o,r);}
  }
  return{update,reset(){safeDistance=0;limit=Infinity;lastMode='';for(const [o,r]of faded)restore(o,r);},get fadedCount(){return faded.size;}};

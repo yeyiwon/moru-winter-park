@@ -1,11 +1,10 @@
-import {ryokanHallDetails} from './winter-architecture-details.js';
+import {addRyokanCraft,roundedRyokanSlab} from './ryokan-craft.js';
 import {ryokanFinish} from './ryokan-finish.js';
 import {ryokanWindow} from './ryokan-window.js';
 import {createOnsenWater} from './onsen-water.js';
 import {buildMuseumInterior} from './museum-world.js';
 import {buildRyokanChef} from './ryokan-chef.js';
 import {buildRyokanAquarium} from './ryokan-aquarium.js';
-import {createRyokanMeal} from './ryokan-meal.js';
 import * as T from './vendor/three.module.js';
 import {createRetreatAtmosphere} from './retreat-atmosphere.js';
 import {interiorRooms,ryokanFixtures} from './interior-layout.js';
@@ -34,28 +33,63 @@ function makeTeaService(b,m,x,y,z){
 }
 
 function buildRyokan(root,m){
- m.cedar.color.set('#967a5b');m.lightWood.color.set('#bda77c');m.endgrain.color.set('#584536');m.cream.color.set('#d8d0bb');m.tatami.color.set('#a3a584');
- for(const material of [m.cedar,m.lightWood,m.endgrain])ryokanFinish(material);ryokanFinish(m.darkStone,'stone');
+ const room=interiorRooms.ryokan,H=room.ceiling,shojiTop=Math.min(5.95,H-.65);
+ m.cedar.color.set('#aa8c67');m.lightWood.color.set('#cdb58d');m.endgrain.color.set('#5b4736');m.cream.color.set('#ece2cb');m.tatami.color.set('#b1ad87');m.darkStone.color.set('#485550');m.stone.color.set('#92998b');
+ m.cedar.roughness=.68;m.lightWood.roughness=.57;m.endgrain.roughness=.7;
+ for(const material of [m.cedar,m.lightWood,m.endgrain])ryokanFinish(material);for(const material of [m.darkStone,m.stone])ryokanFinish(material,'stone');
  const b=makeBuilder(root),walls=[],ceil=new T.Group();ceil.name='ryokan-cutaway-ceiling';ceil.userData.keepGroup=true;root.add(ceil);const cb=makeBuilder(ceil);
- b.box(42,.28,34,m.endgrain,0,-.05,0);b.box(41.6,.035,33.6,m.cedar,0,.072,0);
+ b.box(room.rx*2,.28,room.rz*2,m.endgrain,0,-.05,0);b.box(room.rx*2-.4,.035,room.rz*2-.4,m.cedar,0,.072,0);
  for(let i=0;i<60;i++){const x=-20.65+i*.7;b.box(.008,.006,33.5,m.endgrain,x,.092,0);for(let j=0;j<8;j++)b.box(.68,.007,.008,m.endgrain,x+.24,.094,-16+(j+.5*(i%2))*4.2);}
  // Quiet central circulation is 8 m wide, framed by actual occupied rooms.
  for(const x of [-3.8,3.8])b.box(.035,.008,30,m.brass,x,.097,0);
- for(const side of [-1,1]){const wall=new T.Group();wall.name='ryokan-cutaway-wall-'+(side<0?'west':'east');wall.userData.keepGroup=true;wall.userData.cutawayAxis='x';wall.userData.cutawaySign=side;root.add(wall);walls.push(wall);const wb=makeBuilder(wall);
-  wb.box(.22,1,34,m.cedar,side*20.9,.55,0);wb.box(.26,.35,34,m.endgrain,side*20.9,6.7,0);
-  for(let j=0;j<9;j++){const z=-16+j*4;wb.box(.3,6.5,.3,m.endgrain,side*20.8,3.35,z);if(j<8){wb.box(.035,4.7,3.7,m.glass,side*20.9,3.5,z+2);for(let n=1;n<5;n++)wb.box(.07,4.8,.045,m.lightWood,side*20.74,3.5,z+n*.8);for(const y of [1.15,3.5,5.85])wb.box(.09,.055,4,m.lightWood,side*20.73,y,z+2);}}
-  if(side>0){for(const z of [-10,-6])wall.add(ryokanWindow(wb,m,20.62,3.1,z,3.6,3.25,-Math.PI/2));}
+ for(const side of [-1,1]){
+  const wall=new T.Group();wall.name='ryokan-cutaway-wall-'+(side<0?'west':'east');wall.userData.keepGroup=true;wall.userData.cutawayAxis='x';wall.userData.cutawaySign=side;root.add(wall);walls.push(wall);const wb=makeBuilder(wall),x=side*(room.rx-.1);
+  // A continuous opaque backing closes the taller room. Human-scale shoji
+  // stays below the plaster frieze, instead of stretching into a huge window.
+  wb.box(.22,H,room.rz*2,m.cream,x,H/2+.09,0);
+  wb.box(.25,1,room.rz*2,m.cedar,x-side*.05,.55,0);
+  wb.box(.3,.24,room.rz*2,m.endgrain,x-side*.06,H-.13,0);
+  wb.box(.27,.12,room.rz*2,m.endgrain,x-side*.08,shojiTop+.14,0);
+  for(let j=0;j<9;j++){
+   const z=-16+j*4;wb.box(.3,H-.24,.3,m.endgrain,x-side*.1,(H-.24)/2+.09,z);
+   if(j<8){
+    wb.box(.035,shojiTop-1.2,3.7,m.glass,x-side*.14,(shojiTop+1.2)/2,z+2);
+    for(let n=1;n<5;n++)wb.box(.07,shojiTop-1.2,.045,m.lightWood,x-side*.2,(shojiTop+1.2)/2,z+n*.8);
+    for(const y of [1.2,3.5,shojiTop])wb.box(.09,.055,4,m.lightWood,x-side*.21,y,z+2);
+    for(const dz of [.7,2,3.3])wb.box(.055,H-shojiTop-.7,.075,m.lightWood,x-side*.14,(H+shojiTop)/2,z+dz);
+   }
+  }
+  const windowZ=side<0?[6,10]:[-10,-6];
+  for(const z of windowZ)wall.add(ryokanWindow(wb,m,side*(room.rx-.38),3.1,z,3.6,3.25,-side*Math.PI/2));
   mergeFinish(wall);
  }
- for(const side of [-1,1]){const wall=new T.Group();wall.name='ryokan-cutaway-wall-'+(side<0?'north':'south');wall.userData.keepGroup=true;wall.userData.cutawayAxis='z';wall.userData.cutawaySign=side;root.add(wall);walls.push(wall);const wb=makeBuilder(wall);
-  for(const sx of [-1,1]){wb.box(17.6,1,.22,m.cedar,sx*12.1,.55,side*16.9);wb.box(17.6,4.8,.03,m.glass,sx*12.1,3.5,side*16.9);wb.box(17.6,.35,.28,m.endgrain,sx*12.1,6.7,side*16.9);for(let i=0;i<9;i++)wb.box(.075,5.7,.1,m.lightWood,sx*(3.4+i*2),3.8,side*16.76);for(const y of [1.15,3.5,5.85])wb.box(17.6,.055,.1,m.lightWood,sx*12.1,y,side*16.75);}
-  for(const x of [-3.25,3.25])wb.box(.32,6.5,.32,m.endgrain,x,3.35,side*16.8);
-  wb.box(6.5,1.05,.2,m.endgrain,0,6.25,side*16.8);if(side>0){for(const x of [-1.65,1.65])wb.box(3.1,1.6,.035,m.linen,x,4.65,16.75);wb.ring(.43,.025,m.brass,0,4.7,16.7).rotation.x=0;}
-  else{wb.box(6.2,5.5,.025,m.glass,0,3.2,-16.9);for(const x of [-2,0,2])wb.box(.06,5.5,.09,m.lightWood,x,3.2,-16.8);}
+ for(const side of [-1,1]){
+  const wall=new T.Group();wall.name='ryokan-cutaway-wall-'+(side<0?'north':'south');wall.userData.keepGroup=true;wall.userData.cutawayAxis='z';wall.userData.cutawaySign=side;root.add(wall);walls.push(wall);const wb=makeBuilder(wall),z=side*(room.rz-.1);
+  for(const sx of [-1,1]){
+   wb.box(17.6,H,.22,m.cream,sx*12.1,H/2+.09,z);
+   wb.box(17.6,1,.25,m.cedar,sx*12.1,.55,z-side*.03);
+   wb.box(17.6,shojiTop-1.2,.03,m.glass,sx*12.1,(shojiTop+1.2)/2,z-side*.14);
+   wb.box(17.6,.24,.28,m.endgrain,sx*12.1,H-.13,z-side*.06);
+   wb.box(17.6,.12,.24,m.endgrain,sx*12.1,shojiTop+.14,z-side*.08);
+   for(let i=0;i<9;i++)wb.box(.075,H-.35,.1,m.lightWood,sx*(3.4+i*2),(H-.35)/2+.18,z-side*.2);
+   for(const y of [1.2,3.5,shojiTop])wb.box(17.6,.055,.1,m.lightWood,sx*12.1,y,z-side*.21);
+  }
+  for(const x of [-3.25,3.25])wb.box(.32,H-.15,.32,m.endgrain,x,(H-.15)/2+.09,z-side*.1);
+  // Only the south doorway opens; the upper transom remains opaque at any
+  // ceiling height. Sliding leaves keep their original opening and animation.
+  wb.box(6.5,H-4.03,.22,m.cream,0,(H+4.03)/2,z);
+  wb.box(6.5,.2,.28,m.endgrain,0,4.04,z-side*.13);
+  wb.box(6.5,.24,.28,m.endgrain,0,H-.13,z-side*.06);
+  if(side>0){for(const x of [-1.65,1.65])wb.box(3.1,1.6,.035,m.linen,x,4.65,z-.15);wb.ring(.43,.025,m.brass,0,4.7,z-.2).rotation.x=0;}
+  else{wb.box(6.2,4.03,.22,m.glass,0,2.06,z);for(const x of [-2,0,2])wb.box(.06,4.03,.09,m.lightWood,x,2.06,z+.16);}
   mergeFinish(wall);
  }
- for(const x of [-19.9,19.9])cb.box(.09,.04,31,m.lamp,x,6.62,0);
- cb.box(42,.15,34,m.cream,0,7.25,0);for(const z of [-16,-8,0,8,16]){cb.box(42,.32,.3,m.endgrain,0,7.04,z);for(const x of [-14,-7,0,7,14])cb.box(.22,.3,34,m.lightWood,x,6.8,0);}mergeFinish(ceil);
+ // The camera cap is H-.45. All roof joinery remains above H-.28 so its
+ // upward clearance no longer collides with the former 6.7 m floating beams.
+ for(const x of [-19.9,19.9])cb.box(.09,.035,31,m.lamp,x,H-.22,0);
+ cb.box(room.rx*2,.2,room.rz*2,m.cream,0,H+.1,0);
+ for(const z of [-16,-8,0,8,16])cb.box(room.rx*2,.28,.3,m.endgrain,0,H-.1,z);
+ for(const x of [-14,-7,0,7,14])cb.box(.22,.14,room.rz*2,m.lightWood,x,H-.2,0);
  const partitions=new T.Group();partitions.name='ryokan-room-screens';root.add(partitions);const pb=makeBuilder(partitions);
  for(const o of ryokanFixtures.filter(o=>o.id.includes('wall')||o.id==='tatami-screen')){pb.box(o.rx*2,2.5,o.rz*2,m.cream,o.x,1.34,o.z);const horizontal=o.rx>o.rz,length=horizontal?o.rx*2:o.rz*2;for(let i=0;i<=length/.38;i++)pb.box(horizontal?.045:.32,2.6,horizontal?.32:.045,m.endgrain,o.x+(horizontal?-o.rx+i*.38:0),1.39,o.z+(horizontal?0:-o.rz+i*.38));pb.box(o.rx*2+.06,.12,o.rz*2+.06,m.lightWood,o.x,2.68,o.z);}
  mergeFinish(partitions);
@@ -71,29 +105,29 @@ function buildRyokan(root,m){
  for(let i=0;i<3;i++)b.tube([[13.5,.8,-16.1],[13.4+i*.12,1.3,-16.12],[13.1+i*.4,1.7+i*.12,-16.1]],.012,m.endgrain);
  // Tatami mats have woven linework and sewn cloth borders at actual floor height.
  for(let x=8;x<=17;x+=3)for(let z=-13;z<=-4;z+=3){b.box(2.95,.025,2.95,m.tatami,x,.108,z);for(const side of [-1,1])b.box(.085,.01,2.95,m.tatamiEdge,x+side*1.41,.128,z);for(let i=0;i<18;i++)b.box(2.7,.004,.009,m.sage,x,.13,z-1.4+i*.16);}
- const table=(id,material)=>{const o=ryokanFixtures.find(o=>o.id===id);b.box(o.rx*2,.18,o.rz*2,material,o.x,.73,o.z);for(const x of [-o.rx+.25,o.rx-.25])for(const z of [-o.rz+.25,o.rz-.25])b.box(.13,.54,.13,m.endgrain,o.x+x,.38,o.z+z);makeTeaService(b,m,o.x,.83,o.z);};table('tea-table',m.lightWood);table('tatami-table',m.cedar);
+ const table=(id,material)=>{const o=ryokanFixtures.find(o=>o.id===id);roundedRyokanSlab(b,material,o.rx*2,.18,o.rz*2,o.x,.73,o.z,.16);for(const x of [-o.rx+.25,o.rx-.25])for(const z of [-o.rz+.25,o.rz-.25])b.box(.13,.54,.13,m.endgrain,o.x+x,.38,o.z+z);makeTeaService(b,m,o.x,.83,o.z);};table('tea-table',m.lightWood);table('tatami-table',m.cedar);
  for(const [x,z]of [[9,-6],[15,-6],[9,-12],[-13,4.6]]){const pillow=b.oval(m.linen,x,.2,z,.8,.11,.65);pillow.rotation.y=.08;for(const side of [-1,1])b.box(.025,.01,1.05,m.tatamiEdge,x+side*.58,.3,z);}
- for(const o of ryokanFixtures.filter(o=>o.id.includes('bench'))){b.box(o.rx*2,.5,o.rz*2,m.endgrain,o.x,.35,o.z);const alongX=o.rx>o.rz,n=Math.ceil((alongX?o.rz:o.rx)*2/.2);for(let j=0;j<n;j++)b.box(alongX?o.rx*2:.17,.075,alongX?.17:o.rz*2,m.lightWood,o.x+(alongX?0:-o.rx+.1+j*.2),.64,o.z+(alongX?-o.rz+.1+j*.2:0));if(o.id.includes('sauna')){b.box(o.rx*2,.25,o.rz*1.3,m.cedar,o.x,.45,o.z+.35);for(let j=-1;j<=1;j++)b.box(.85,.06,.55,m.linen,o.x+(alongX?j*2:0),.71,o.z+(alongX?0:j*2));}}
+ for(const o of ryokanFixtures.filter(o=>o.id.includes('bench'))){b.box(o.rx*2,.5,o.rz*2,m.endgrain,o.x,.35,o.z);const alongX=o.rx>o.rz,n=Math.ceil((alongX?o.rz:o.rx)*2/.2);for(let j=0;j<n;j++)b.box(alongX?o.rx*2:.17,o.id.includes('sauna')?.075:.055,alongX?.17:o.rz*2,m.lightWood,o.x+(alongX?0:-o.rx+.1+j*.2),o.id.includes('sauna')?.64:.62,o.z+(alongX?-o.rz+.1+j*.2:0));if(o.id.includes('sauna')){b.box(o.rx*2,.25,o.rz*1.3,m.cedar,o.x,.45,o.z+.35);for(let j=-1;j<=1;j++)b.box(.85,.06,.55,m.linen,o.x+(alongX?j*2:0),.71,o.z+(alongX?0:j*2));}}
  // Reception has a bowed front, joinery, luggage niche and a discreet lamp.
- const desk=ryokanFixtures.find(o=>o.id==='reception');b.box(8,1.15,2.2,m.endgrain,desk.x,.67,desk.z);for(let i=0;i<40;i++){const x=desk.x-3.9+i*.2,z=desk.z+1.12+.12*Math.cos((i/39-.5)*Math.PI);b.box(.12,1.05,.09,m.lightWood,x,.67,z);}b.box(8.2,.13,2.45,m.darkStone,desk.x,1.32,desk.z);makeLantern(b,m,16,1.39,10,.6);b.box(1.3,.06,.75,m.cream,12,1.42,10);
+ const desk=ryokanFixtures.find(o=>o.id==='reception');b.box(8,1.15,2.2,m.endgrain,desk.x,.67,desk.z);for(let i=0;i<40;i++){const x=desk.x-3.9+i*.2,z=desk.z+1.025+.025*Math.cos((i/39-.5)*Math.PI);b.box(.12,1.05,.09,m.lightWood,x,.67,z);}roundedRyokanSlab(b,m.darkStone,7.98,.13,2.18,desk.x,1.32,desk.z,.18);makeLantern(b,m,16,1.39,10,.6);b.box(1.3,.06,.75,m.cream,12,1.42,10);
  // A clear front aisle serves the dining counter, separate from reception and the tatami route.
- const counter=ryokanFixtures.find(o=>o.id==='omakase-counter');b.box(8.1,.18,1.9,m.lightWood,counter.x,1.06,counter.z);b.box(7.7,.85,1.55,m.cedar,counter.x,.55,counter.z);
+ const counter=ryokanFixtures.find(o=>o.id==='omakase-counter');roundedRyokanSlab(b,m.lightWood,7.98,.18,1.78,counter.x,1.06,counter.z,.15);b.box(7.7,.85,1.55,m.cedar,counter.x,.55,counter.z);
  for(let i=0;i<34;i++)b.box(.09,.8,.035,m.endgrain,8.2+i*.23,.55,.79);
- for(const x of [10,12,14]){b.mesh(new T.CylinderGeometry(.45,.48,.12,32),m.linen,x,.69,2.1);b.mesh(new T.CylinderGeometry(.31,.34,.53,20),m.endgrain,x,.365,2.1);b.ring(.4,.025,m.brass,x,.47,2.1);const meal=createRyokanMeal();meal.position.set(x,1.15,.25);root.add(meal);b.mesh(new T.LatheGeometry([[.13,0],[.2,.05],[.21,.16],[.18,.19],[.15,.05]].map(p=>new T.Vector2(...p)),24),m.darkStone,x+.75,1.15,.1);b.rod([x-.6,6.6,.1],[x-.6,3.9,.1],.014,m.endgrain);makeLantern(b,m,x-.6,3.2,.1,.8);}
+ for(const x of [10,12,14]){b.mesh(new T.CylinderGeometry(.45,.48,.12,32),m.linen,x,.69,2.1);b.mesh(new T.CylinderGeometry(.31,.34,.53,20),m.endgrain,x,.365,2.1);b.ring(.4,.025,m.brass,x,.47,2.1);b.mesh(new T.LatheGeometry([[.13,0],[.2,.05],[.21,.16],[.18,.19],[.15,.05]].map(p=>new T.Vector2(...p)),24),m.darkStone,x+.75,1.15,.1);b.rod([x-.6,H-.32,.1],[x-.6,H-1.2,.1],.014,m.endgrain);makeLantern(b,m,x-.6,H-1.82,.1,.8);}
  // Layered shoji panels slide from a clear doorway; the collision opening remains unchanged.
  const doors=[];for(const side of [-1,1]){const door=new T.Group();door.name='ryokan-sliding-door';door.userData.keepGroup=true;door.position.set(side*1.55,0,16.6);root.add(door);const db=makeBuilder(door);db.box(2.9,3.8,.07,m.cream,0,2.0,0);for(const x of [-1.43,1.43])db.box(.09,3.9,.12,m.endgrain,x,2,0);for(const y of [.1,1.4,2.7,3.95])db.box(2.9,.065,.12,m.endgrain,0,y,0);for(let i=-3;i<=3;i++)db.box(.03,3.8,.1,m.lightWood,i*.36,2,0);db.box(.04,.23,.04,m.brass,-side*1.1,1.9,-.08);mergeFinish(door);doors.push({root:door,side});}
  const stove=ryokanFixtures.find(o=>o.id==='sauna-stove');b.mesh(new T.CylinderGeometry(.8,.9,1.2,24),m.darkStone,stove.x,.7,stove.z);for(let i=0;i<20;i++){const a=i*2.399,r=.65*Math.sqrt(i/20);b.oval(m.stone,stove.x+Math.cos(a)*r,1.32+(i%3)*.08,stove.z+Math.sin(a)*r,.24,.16,.22);}for(let j=0;j<20;j++){const a=j*Math.PI/10;b.rod([stove.x+Math.cos(a)*1,.2,stove.z+Math.sin(a)*1],[stove.x+Math.cos(a)*1,1.45,stove.z+Math.sin(a)*1],.035,m.cedar);}b.ring(1,.04,m.lightWood,stove.x,1.45,stove.z);
- const bath=ryokanFixtures.find(o=>o.id==='footbath');b.box(bath.rx*2,.28,bath.rz*2,m.darkStone,bath.x,.16,bath.z);const footWater=createOnsenWater({lights:[[0,5.5,-6],[-12,5.5,-8],[12,5.5,-8]]});const waterGeo=new T.PlaneGeometry(5.3,3.5,18,12);waterGeo.rotateX(-Math.PI/2);waterGeo.translate(bath.x,.33,bath.z);b.mesh(waterGeo,footWater.material);for(const z of [-1,1])b.box(6.2,.16,.45,m.cedar,bath.x,.41,bath.z+z*1.95);for(const x of [-1,1])b.box(.45,.16,3.5,m.cedar,bath.x+x*2.85,.41,bath.z);
+ const bath=ryokanFixtures.find(o=>o.id==='footbath');b.box(bath.rx*2,.28,bath.rz*2,m.darkStone,bath.x,.16,bath.z);const footWater=createOnsenWater({lights:[[0,5.5,-6],[-12,5.5,-8],[12,5.5,-8]]});const waterGeo=new T.PlaneGeometry(5.1,3.18,24,16);waterGeo.rotateX(-Math.PI/2);waterGeo.translate(bath.x,.33,bath.z);b.mesh(waterGeo,footWater.material);for(const z of [-1,1])roundedRyokanSlab(b,m.stone,5.8,.18,.42,bath.x,.4,bath.z+z*1.79,.09);for(const x of [-1,1])roundedRyokanSlab(b,m.stone,.38,.18,3.16,bath.x+x*2.71,.4,bath.z,.09);
  for(const o of ryokanFixtures.filter(o=>['locker','tatami-cabinet'].includes(o.id))){b.box(o.rx*2,1.8,o.rz*2,m.cedar,o.x,1,o.z);for(let i=0;i<4;i++)for(let j=0;j<3;j++){const xx=o.x-o.rx+.5+i*(o.rx*2/4),y=.5+j*.55;b.box(o.rx*.43,.5,.04,m.lightWood,xx,y,o.z+o.rz+.035);b.oval(m.brass,xx+.12,y,o.z+o.rz+.065,.025,.025,.015);}}
  for(const p of ryokanFixtures.filter(o=>o.id.startsWith('planter')))makePlanter(b,m,p.x,p.z);
- for(const [x,z]of [[-12,7],[12,10],[-12,-8],[12,-8],[0,-6],[0,8]]){makeLantern(b,m,x,5.25,z,1.1);b.rod([x,6.8,z],[x,6.05,z],.015,m.endgrain);}
- ryokanHallDetails(root,m);
+ for(const [x,z]of [[-12,7],[12,10],[-12,-8],[12,-8]]){makeLantern(b,m,x,H-1.85,z,1.1);b.rod([x,H-.3,z],[x,H-1.03,z],.015,m.endgrain);}
+ addRyokanCraft(root,m,{room,ceiling:ceil});mergeFinish(ceil);
  const aquarium=buildRyokanAquarium(root,m),chef=buildRyokanChef(root,m);
- const light=new T.PointLight('#ffc991',85,38,2);light.position.set(0,5,0);root.add(light);const fill=new T.HemisphereLight('#ffe4bf','#79674f',1.8);root.add(fill);
+ const light=new T.PointLight('#ffc991',85,38,2);light.position.set(0,Math.min(6.1,H-1.4),0);root.add(light);const fill=new T.HemisphereLight('#ffe8cc','#706453',1.65);root.add(fill);
  const atmosphere=createRetreatAtmosphere(root,{name:'ryokan',
   waters:[],
   fireflies:[{x:12,y:2.1,z:-9,rx:4,rz:3,height:2.3,size:.06,count:18,color:'#f0d8a5'},{x:-13,y:1.5,z:7,rx:3,rz:2,height:2,size:.05,count:12,color:'#e8d2b1'}],
-  vapour:[{x:bath.x,y:.34,z:bath.z-.5,rx:2.15,rz:1.05,rise:1.25,size:.9,count:20,opacity:.11},{x:-13,y:1.25,z:7,rx:.18,rz:.18,rise:.65,size:.32,count:6,opacity:.1},{x:12,y:1.38,z:.1,rx:.2,rz:.2,rise:.6,size:.26,count:5,opacity:.08},{x:12,y:1.25,z:-9,rx:.18,rz:.18,rise:.65,size:.32,count:6,opacity:.1},{x:stove.x,y:1.5,z:stove.z,rx:.65,rz:.65,rise:1.6,size:.6,count:8,opacity:.065}],
+  vapour:[{x:bath.x,y:.34,z:bath.z-.5,rx:2.15,rz:1.05,rise:1.25,size:.9,count:20,opacity:.11},{x:-13,y:1.25,z:7,rx:.18,rz:.18,rise:.65,size:.32,count:6,opacity:.1},{x:12,y:1.25,z:-9,rx:.18,rz:.18,rise:.65,size:.32,count:6,opacity:.1},{x:stove.x,y:1.5,z:stove.z,rx:.65,rz:.65,rise:1.6,size:.6,count:8,opacity:.065}],
   lamps:[[-12,7],[12,10],[-12,-8],[12,-8],[0,-6],[0,8]].map(([x,z])=>({x,y:.143,z,rx:3.3,rz:2.5}))
  });
  mergeFinish(root);return{root,walls,doors,doorOpen:0,ceiling:ceil,uniforms:[],atmosphere,update:(t,still,p)=>{footWater.update(t,still);aquarium.update(t,still,p);chef.update(t,still,p);},setQuality:q=>aquarium.setQuality(q),dispose:()=>aquarium.dispose()};

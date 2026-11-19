@@ -15,7 +15,7 @@ if(isNumberedGuest(nameInput.value))nameInput.value=createGuestName();
 function setName(name){nameInput.value=name;$('#profile-name').value=name;$('#self-name').textContent=name;updateNicknameInputs();try{localStorage.setItem('winter-visitor-name',name);}catch{}}
 // Cold WebGL compilation can delay processing the first session response.
 // Give only session bootstrap the same bounded window as the loading screen.
-async function request(path,body,method){const sent=Date.now();const r=await fetch('/api/'+path,{method:method||(body===undefined?'GET':'POST'),headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(['access','join'].includes(path)?30000:8000)});const data=await r.json();if(r.ok&&Number.isFinite(data.serverTime))observeServerTime(data.serverTime,sent,Date.now());if(!r.ok){const e=Error(data.error||'연결을 확인해 주세요.');e.status=r.status;throw e;}return data;}
+async function request(path,body,method){const sent=Date.now();const r=await fetch('/api/'+path,{method:method||(body===undefined?'GET':'POST'),headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(['access','join'].includes(path)?30000:8000)});const data=await r.json();if(r.ok&&Number.isFinite(data.serverTime))observeServerTime(data.serverTime,sent,Date.now());if(!r.ok){const e=Error(data.error||'연결을 확인해 주세요.');e.status=r.status;if(typeof data.code==='string')e.code=data.code;throw e;}return data;}
 let peopleSignature='';function showPeople(list){list=list.filter(p=>!window.isVisitorBlocked?.(p.id));window.dispatchEvent(new CustomEvent('lab:visitors',{detail:list}));const next=JSON.stringify(list.map(p=>[p.id,p.name,p.gesture==='wave']));if(next===peopleSignature)return;peopleSignature=next;people.replaceChildren();for(const person of list){const li=document.createElement('li');li.textContent=person.name+(person.gesture==='wave'?' · 인사':'');const block=document.createElement('button');block.textContent='차단';block.dataset.blockVisitor=person.id;block.setAttribute('aria-label',person.name+' 차단');li.append(block);people.append(li);}}
 function openInvite(){ window.openWinterSettings?.('social'); }
 function endGate(){document.body.classList.remove('invite-gate');if(studio.open)closeDialog(studio);$('.studio-head>span').textContent='설정';}
@@ -53,7 +53,32 @@ window.saveWinterAppearance=async look=>{
  appearanceSaving=true;
  try{await syncing;return await request('appearance',look);}finally{appearanceSaving=false;nextSync=Date.now()+500;}
 };
-async function performSync(){busy=true;lastSent=Date.now();lastMoving=(window.labPlayerState?.speed||0)>.1;try{const a=window.labAppearance||{},data=await request('presence',{...window.labPlayerState,...presenceCache.request(),color:a.fur,colorTop:a.furTop,accessory:a.accessory,fluff:a.fluff,roundness:a.roundness,gesture:gesture||encodeActivity(window.labPlayerState)});gesture='';failures=0;window.labServerOffset=data.serverTime-Date.now();window.labFireworks=data.fireworks||null;window.dispatchEvent(new CustomEvent('lab:fireworks',{detail:window.labFireworks}));window.labRideSeats=data.rideSeats||[];if(window.labRideReservation&&!window.labRideSeats.some(s=>s.id===window.labGuestId))window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));const people=presenceCache.merge(data.people,data.farBucket);remoteMoving=people.some(p=>!p.distant&&p.speed>.1);showPeople(people);status.textContent='접속 중 · '+data.count+'명';}catch(e){failures++;if(e.status===401||e.status===403){pendingToken=null;inviteURL='';updateRoomLinks();gate(e.message);}status.textContent=e.message;if(failures>2)showPeople([]);}finally{busy=false;nextSync=Date.now()+presenceDelay({hidden:document.hidden,moving:remoteMoving||(window.labPlayerState?.speed||0)>.1,chat:!chatForm.hidden,failures});}}
+async function performSync(){
+ busy=true;lastSent=Date.now();lastMoving=(window.labPlayerState?.speed||0)>.1;
+ const sentGuest=window.labGuestId,sentReservation=window.labRideReservation;let recoveredSeat=false;
+ try{
+  const a=window.labAppearance||{},data=await request('presence',{...window.labPlayerState,...presenceCache.request(),color:a.fur,colorTop:a.furTop,accessory:a.accessory,fluff:a.fluff,roundness:a.roundness,gesture:gesture||encodeActivity(window.labPlayerState)});
+  gesture='';failures=0;window.labServerOffset=data.serverTime-Date.now();window.labFireworks=data.fireworks||null;window.dispatchEvent(new CustomEvent('lab:fireworks',{detail:window.labFireworks}));window.labRideSeats=data.rideSeats||[];
+  if(window.labRideReservation&&!window.labRideSeats.some(s=>s.id===window.labGuestId))window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));
+  const people=presenceCache.merge(data.people,data.farBucket);remoteMoving=people.some(p=>!p.distant&&p.speed>.1);showPeople(people);status.textContent='접속 중 · '+data.count+'명';
+ }catch(e){
+  // A sleeping mobile tab can outlive its chair's lease without losing admission.
+  // Match the exact request's reservation object, so an old response cannot evict
+  // a fresh claim (even if it reused the same chair) or a newly joined guest.
+  if(e.status===409&&e.code==='RIDE_RESERVATION_EXPIRED'&&sentGuest===window.labGuestId&&sentReservation?.kind==='dining'&&window.labRideReservation===sentReservation){
+   failures=0;recoveredSeat=true;
+   window.labRideSeats=(window.labRideSeats||[]).filter(seat=>seat.id!==sentGuest);
+   window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:'dining'}));
+   // wake() owns the normal release and publishes a standing pose. These guards
+   // also clear stale state if the world is still loading or its loop is paused.
+   if(window.labRideReservation===sentReservation)window.releaseRide();
+   if(window.labPlayerState?.mode==='dining')window.labPlayerState={...window.labPlayerState,mode:'',speed:0};
+  }else{failures++;if(e.status===401||e.status===403){pendingToken=null;inviteURL='';updateRoomLinks();gate(e.message);}if(failures>2)showPeople([]);}
+  status.textContent=e.message;
+ }finally{
+  busy=false;nextSync=recoveredSeat?0:Date.now()+presenceDelay({hidden:document.hidden,moving:remoteMoving||(window.labPlayerState?.speed||0)>.1,chat:!chatForm.hidden,failures});
+ }
+}
 window.addEventListener('lab:wave',()=>{if(joined){gesture='wave';sync();}});
 $('#invite-form').addEventListener('submit',async e=>{
  e.preventDefault();const button=e.target.querySelector('[type=submit]');button.disabled=true;
@@ -108,7 +133,7 @@ $('#profile-form').addEventListener('submit',async e=>{e.preventDefault();const 
 
 const visualViewport=window.visualViewport;function keyboardLayout(){const bottom=visualViewport?Math.max(0,innerHeight-visualViewport.height-visualViewport.offsetTop):0;document.documentElement.style.setProperty('--keyboard',bottom+'px');}visualViewport?.addEventListener('resize',keyboardLayout);visualViewport?.addEventListener('scroll',keyboardLayout);chatInput.addEventListener('focus',()=>{document.body.classList.add('chat-typing');window.dispatchEvent(new Event('lab:pause'));keyboardLayout();});chatInput.addEventListener('blur',keyboardLayout);window.addEventListener('online',()=>{if(!joined)initialize();else sync();});
 
-window.reserveRide=async (kind,benchId)=>{await ensureChatSession();await releasingRide;await sync(true);const data=await request('ride',{kind,benchId});window.labServerOffset=data.serverTime-Date.now();window.labRideReservation=data.reservation;return data.reservation;};
+window.reserveRide=async (kind,benchId,seat)=>{await ensureChatSession();await releasingRide;await sync(true);const data=await request('ride',{kind,benchId,seat});window.labServerOffset=data.serverTime-Date.now();window.labRideReservation=data.reservation;return data.reservation;};
 let releasingRide=Promise.resolve();
 window.releaseRide=()=>{window.labRideReservation=null;releasingRide=fetch('/api/ride',{method:'DELETE',headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(8000)}).catch(()=>{});return releasingRide;};
 

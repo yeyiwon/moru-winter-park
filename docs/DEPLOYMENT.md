@@ -1,3 +1,27 @@
+# v44 개발 미리보기 상태 — 2026-11-19
+
+**이번 변경은 현재 활성 로컬 라이브 미리보기까지 반영했다. 공개 업로드·Git 커밋·push·프로덕션 배포는 수행하지 않았다.** 아래의 v41/v39/v38 배포 ID, 실행 SHA와 운영 검증은 과거 이력이며 v44가 같은 운영 주소에 올라갔다는 근거가 아니다.
+
+- 기존 체크아웃과 개발 미리보기를 유지했다. 새로운 운영 서버나 저장소를 만들지 않았고 실제 운영 데이터를 수정하지 않았다.
+- 최종 빌드 후 현재 라이브 로컬 미리보기를 재시작했다. `sites-preview`는 **RUNNING**, 개발 서버 4173과 relay 3000을 유지한다. 기존 실제 게스트로 설정 → 지식집 → 퀴즈에 다시 들어가 저장 기록 유지와 최종 코드 제공을 확인했다. 1363×936에서 중앙 정렬된 밝은 퀴즈 UI를 확인했다. [재시작 후 화면](../qa/resort-v44/quiz-centered-final.jpg).
+- 최종 전체 자동 검사 **448/448 PASS, 63.006초**. 좌석·퀴즈·불꽃·권한·마이그레이션 회귀는 격리 테스트 데이터베이스에서 확인했다. 이 검사를 운영 DB migration 실행으로 표시하지 않는다.
+- 실제 브라우저에서도 격리 로컬 QA SQLite의 일반 게스트 세션으로 퀴즈 저장·개인지식집과 불꽃 신청을 확인했다. 운영 소유자 로그인이나 실제 운영 게스트를 사용한 재검증이 아니다.
+- 390×844·320×640·844×390의 CSS 배치 검사는 실제 Chrome UI/iframe viewport에서 수행했다. 3D 입퇴장·실물 모바일·Windows 확인을 대신하지 않는다.
+- GL_VENDOR/GL_RENDERER가 `Disabled`라 실제 3D 육안·GPU/FPS·실물 기기 검증은 **UNKNOWN**이다. CPU 형상 스틸도 런타임 완성 화면이 아니다.
+
+근거: [실제 브라우저 검사](../qa/resort-v44/browser-checks.json), [전체 검증 범위](TESTING.md), [성능 한계](PERFORMANCE.md). 변경 상세: [카메라](stable-camera-v44.md), [실내·좌석](seating-and-indoor-view-v44.md), [료칸](ryokan-craft-v44.md), [천문대](museum-interior-v44.md).
+
+## 공개하지 않은 로컬 배포물 검증
+
+- `npm run build`: PASS, Worker static assets 228개.
+- `npm run build:vercel`: PASS, Vercel용 web assets 생성.
+- `npm run test:budget`: PASS, 파일 229개. 전체 22,543,964 / 25,165,824 bytes, code gzip 1,014,070 / 1,280,000 bytes, 오디오 16,329,873 bytes.
+- `git diff --check`: PASS. 빌드 후 신규 CSS/JS와 SW 자산 등록을 재확인했다.
+
+위 결과는 로컬 배포물 생성·용량 검사다. 공개 업로드나 프로덕션 배포 성공을 의미하지 않으며 CPU/GPU·물리 기기 성능 수치도 아니다. 현재는 라이브 로컬 개발 미리보기만 유지한다.
+
+---
+
 # v41 프로덕션 배포 — 2026-11-19
 
 기존 Sites/D1 → GitHub main → Vercel 흐름으로 동일 소스를 반영했다. 새 서버/저장소와 권한 우회는 추가하지 않았다. 마이그레이션 0012~0014는 추가형이며 기존 소원·외형·초대 데이터 삭제 없음. 기존 env는 유지하고 예약 호출용 CRON_SECRET만 양쪽 runtime에 같은 값으로 설정했다. 비밀 값·초대 토큰·쿠키는 기록하지 않는다.

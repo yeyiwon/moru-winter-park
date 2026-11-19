@@ -21,3 +21,6 @@
 #world-loading::before{content:'';position:absolute;inset:-24px;z-index:-1;background-image:linear-gradient(#17213828,#17213828),var(--loading-scene,url('./textures/loading-world.webp'));background-size:cover;background-position:center;filter:blur(22px);transform:scale(1.04);opacity:1}
 #world-loading.has-world::before{opacity:0}
 #world-loading::after{display:none}
+/* Keep the existing text/quiz fallback operable if WebGL creation fails. */
+.no-webgl #world-loading{pointer-events:none}
+.no-webgl #world-loading .loading-basic{pointer-events:auto}

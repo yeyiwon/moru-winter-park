@@ -5,6 +5,7 @@ import {getEarGeometries} from './character-ears.js';
 import {createHeldBalloon} from './held-balloon.js';
 import {createHandSparkler} from './hand-sparkler.js';
 import {createRyokanMeal} from './ryokan-meal.js';
+import {diningServiceState} from './ryokan-service.js';
 import {createYukata} from './winter-costumes.js';
 import {disposeOwnedScene} from './scene-resources.js';
 import {selectedItems,normalizeWardrobe} from './wardrobe.js';
@@ -200,7 +201,7 @@ export function createCompanion({detail='full'}={}){
   if(santa.visible)headTop=Math.max(headTop,1.15);if(helmet.visible)headTop=Math.max(headTop,.97);if(earmuffs.visible)headTop=Math.max(headTop,.94);
   const headScale=1-roundness*.5;nameHeight=headTop*headScale+.86*(headScale-1)+.1;
  }
- function pose({phase=0,walking=false,time=0,landing=0,still=false,look=0,mode='',lean=0,tilt=0,speed=0,brake=false,gesture='',heldItem,balloonTone=0,balloonStyle='classic',roast=0,room=''}={}){
+ function pose({phase=0,walking=false,time=0,landing=0,still=false,look=0,mode='',lean=0,tilt=0,speed=0,brake=false,gesture='',heldItem,balloonTone=0,balloonStyle='classic',roast=0,room='',diningStartedAt=null,diningNow=null}={}){
   landing=Number.isFinite(landing)?THREE.MathUtils.clamp(landing,0,1):0;
   yukata.visible=room==='ryokan';heldItem=heldItem??(['ski','lift','bath','sauna','lie','tea'].includes(mode)?'':appearanceItems.find(v=>['coffee','cocoa','odeng','marshmallow','bubble-wand','balloon','icecream'].includes(v))||'');
   group.rotation.order='YXZ';const spa=['bath','sauna','lie','tea','dining'].includes(mode),snack=gesture==='snack'&&mode!=='ski'&&mode!=='lift',warming=gesture==='warm'&&mode!=='ski'&&mode!=='lift',bubbling=gesture==='bubble'&&!spa&&mode!=='ski'&&mode!=='lift',waving=gesture==='wave'&&!spa&&mode!=='ski'&&mode!=='lift';if(spa!==relaxing){relaxing=spa;equip(spa?'none':wardrobeGear);}tail.pose({time,phase,walking,still,spa,yaw:group.rotation.y});googly.root.visible=!spa&&appearanceItems.includes('googly-glasses');googly.update({time,yaw:group.rotation.y,walking,phase,still});bathTowel.visible=spa;teaCup.visible=mode==='tea'||snack||['coffee','cocoa'].includes(heldItem);cupMaterial.color.set(heldItem==='coffee'?'#b7b0cd':heldItem==='cocoa'?'#ac857b':'#f0e3cd');tea.material.color.set(heldItem==='coffee'?'#4f3028':heldItem==='cocoa'?'#6c3b2a':'#976e42');santa.visible=!spa&&appearanceItems.includes('santa');helmet.visible=!spa&&appearanceItems.includes('helmet');headband.visible=!spa&&!!headband.userData.kind&&!appearanceItems.includes('helmet');for(const [mesh,id] of extras)mesh.visible=!spa&&appearanceItems.includes(id);beret.visible=!spa&&appearanceItems.includes('beret');scarf.visible=!spa&&appearanceItems.includes('soft-scarf');earmuffs.visible=!spa&&appearanceItems.includes('earmuffs');goggles.visible=!spa&&appearanceItems.includes('goggles');for(const [mesh,item] of eyewear)mesh.visible=!spa&&appearanceItems.includes(item);crown.visible=!spa&&appearanceItems.includes('crown');group.rotation.x=mode==='lie'?-Math.PI/2:mode==='ski'?tilt:0;
@@ -242,7 +243,12 @@ export function createCompanion({detail='full'}={}){
    feet.forEach((f,i)=>{f.position.y=-.52;f.position.z=.58+(mode==='bath'?(i?1:-1)*stroke*swim*.07:0);});
    for(let i=0;i<2;i++){const side=i?1:-1;if(mode==='bath')armPose(i,[side*(.78+stroke*side*swim*.07),.025+breath*.008,.3+stroke*side*(.018+swim*.1)],-.025);else if(mode==='lie')armPose(i,[side*.63,-.38,.23]);else armPose(i,[side*.43,-.39+breath*.009,.48]);}
   }
-  if(mode==='dining'&&!meal){meal=createRyokanMeal();meal.scale.setScalar(.42);shape.add(meal);}if(meal)meal.visible=mode==='dining';if(mode==='dining'){const bite=still?0:Math.pow(.5+.5*Math.sin(time*.8),5);eatProgress=bite;meal.position.set(0,-.32+bite*.07,.7);meal.rotation.set(0,0,Math.sin(time*.8)*.015);armPose(0,[-.28,-.3,.73]);armPose(1,[.22,-.3+bite*.14,.8]);}
+  const dining=mode==='dining'?diningServiceState(diningStartedAt,diningNow):null;
+  if(dining?.holding&&!meal){meal=createRyokanMeal();meal.scale.setScalar(.42);shape.add(meal);}
+  if(meal){meal.visible=!!dining?.holding;for(const part of meal.children)if(part.userData.food)part.visible=!dining?.finished;}
+  if(dining?.stage==='handoff'){const reach=dining.progress;armPose(0,[-.43+.15*reach,-.39+.09*reach,.48+.25*reach]);armPose(1,[.43-.21*reach,-.39+.09*reach,.48+.32*reach]);}
+  if(dining?.holding){const bite=still||dining.finished?0:Math.pow(.5+.5*Math.sin((dining.elapsed-9000)/1000*.8-Math.PI/2),5);eatProgress=bite;meal.position.set(0,-.32+bite*.07,.7);meal.rotation.set(0,0,still?0:Math.sin(time*.8)*.015);armPose(0,[-.28,-.3,.73]);armPose(1,[.22,-.3+bite*.14,.8]);}
+
   if(mode==='tea'||snack){const sip=still?0:Math.pow(.5+.5*Math.sin(time*.72),6);sipProgress=sip;teaCup.position.set(0,-.36+sip*.145,.88-sip*.04);teaCup.rotation.x=sip*.24;shape.rotation.x+=sip*.025;for(let i=0;i<2;i++)armPose(i,[(i?1:-1)*.14,-.36+sip*.145,.87-sip*.04]);}
   if(['coffee','cocoa'].includes(heldItem)&&mode!=='tea'){const sip=gesture==='drink'?(still?.9:THREE.MathUtils.smoothstep(gestureTime,0,.6)*(1-THREE.MathUtils.smoothstep(gestureTime,2.1,2.8))):0;sipProgress=sip;teaCup.position.set(.46*(1-sip),-.4+sip*.185,.52+sip*.32);teaCup.rotation.x=sip*.24;armPose(1,[teaCup.position.x+.13,teaCup.position.y,teaCup.position.z]);}
   if(warming){const hover=still?0:Math.sin(time*1.35)*.02;shape.rotation.x+=.055;for(let i=0;i<2;i++)armPose(i,[(i?1:-1)*.28,-.08+hover,.77],-.08);}

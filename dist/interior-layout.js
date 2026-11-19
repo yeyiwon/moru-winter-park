@@ -1,10 +1,11 @@
 import {museumGalleries} from './district-layout.js';
+import {diningSeats} from './ryokan-service.js';
 // Room-local architecture and collision share these dimensions. World positions are
 // separate from the outdoor map, so an interior can be spacious without moving its door.
 const floor=.09;
 export const interiorRooms={
  museum:{id:'museum',name:'별빛 만물관',x:600,z:0,rx:24,rz:22,floor,ceiling:28,shape:'rectangle',entry:{x:586,z:0},exit:{x:577,z:0},arrivalYaw:Math.PI/2,ambient:'#b7d8e9'},
- ryokan:{id:'ryokan',name:'료칸',x:400,z:0,rx:21,rz:17,floor,ceiling:7.2,shape:'rectangle',entry:{x:400,z:8.5},exit:{x:400,z:15.2},arrivalYaw:Math.PI,ambient:'#e9c79e'},
+ ryokan:{id:'ryokan',name:'료칸',x:400,z:0,rx:21,rz:17,floor,ceiling:11.5,shape:'rectangle',entry:{x:400,z:5.3},exit:{x:400,z:15.2},arrivalYaw:Math.PI,ambient:'#e9c79e'},
 };
 export const ryokanFixtures=[
  {id:'aquarium',x:-12,z:14.7,rx:7.3,rz:1.85},
@@ -51,7 +52,7 @@ export const interiorActivityPoses={
  'interior-dining':{room:'ryokan',x:412,y:1.57,z:2.1,yaw:Math.PI,seatY:.75},
  'interior-footbath':{room:'ryokan',x:400,y:1.31,z:-9.05,yaw:Math.PI,seatY:.49},
 };
-export function interiorActivityPoseValid(x,y,z){return Number.isFinite(x+y+z)&&Object.values(interiorActivityPoses).some(p=>Math.hypot(x-p.x,z-p.z)<.22&&Math.abs(y-p.y)<.2);}
+export function interiorActivityPoseValid(x,y,z){return Number.isFinite(x+y+z)&&[...Object.values(interiorActivityPoses),...diningSeats].some(p=>Math.hypot(x-p.x,z-p.z)<.22&&Math.abs(y-p.y)<.2);}
 export function interiorAt(x,z){if(!Number.isFinite(x+z))return null;return Object.values(interiorRooms).find(r=>Math.abs(x-r.x)<=r.rx+.6&&Math.abs(z-r.z)<=r.rz+.6)||null;}
 export const museumFixtures=[{x:-18,z:16,rx:2.05,rz:.7},{x:18,z:16,rx:2.05,rz:.7},{x:0,z:0,r:4.2},...museumGalleries.map(g=>({x:g.x,z:g.z,r:2.4}))];
 export function interiorSurfaceHeight(x,z){return interiorAt(x,z)?floor:null;}

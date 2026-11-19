@@ -1,27 +1,81 @@
 import {fireworkConfig} from '../dist/firework-score.js';
+import {publicRoom} from '../dist/space-links.js';
 import {rateLimit} from './community-api.js';
-export async function readFireworkShow(DB,now){
- const row=await DB.prepare('SELECT payload FROM world_settings WHERE id=?').bind('fireworks').first();
- const show=row?JSON.parse(row.payload):null;
- if(show&&show.state!=='stopped'&&now<show.startsAt+fireworkConfig.duration*1000)return{...show,state:now<show.startsAt?'scheduled':'playing'};
- if(fireworkConfig.auto){const n=Math.floor(now/fireworkConfig.intervalMs),startsAt=n*fireworkConfig.intervalMs;return{id:'auto-'+n,startsAt,seed:n>>>0,state:now<startsAt+fireworkConfig.duration*1000?'playing':'finished'};}
- return show?{...show,state:show.state==='stopped'?'stopped':'finished'}:null;
+
+const showKey='fireworks';
+const showLength=fireworkConfig.duration*1000;
+const active=show=>show&&['scheduled','playing'].includes(show.state);
+
+function describeShow(show,now){
+ if(!show)return null;
+ const endsAt=Number.isFinite(show.endsAt)?show.endsAt:show.startsAt+showLength;
+ const nextRequestAt=Number.isFinite(show.nextRequestAt)?show.nextRequestAt:endsAt+fireworkConfig.cooldownMs;
+ return {...show,endsAt,nextRequestAt,revision:show.revision||1,
+  state:show.state==='stopped'?'stopped':now<show.startsAt?'scheduled':now<endsAt?'playing':'finished'};
 }
+
+function snapshot(show,now){
+ const nextRequestAt=show?.nextRequestAt||0;
+ return {show,serverTime:now,nextRequestAt,canRequest:!active(show)&&now>=nextRequestAt,
+  phase:active(show)?show.state:now<nextRequestAt?'cooldown':'idle',
+  retryAfterMs:Math.max(0,nextRequestAt-now)};
+}
+
+export async function readFireworkShow(DB,now){
+ const row=await DB.prepare('SELECT payload FROM world_settings WHERE id=?').bind(showKey).first();
+ return describeShow(row?JSON.parse(row.payload):null,now);
+}
+
 export async function fireworksAPI(request,DB,self,admin,now){
  if(new URL(request.url).pathname!=='/api/fireworks')return null;
- const reply=(data,status=200)=>Response.json(data,{status,headers:{'Cache-Control':'no-store'}});
- if(request.method==='GET')return reply({show:await readFireworkShow(DB,now),serverTime:now});
+ const reply=(data,status=200,headers={})=>Response.json(data,{status,headers:{'Cache-Control':'no-store',...headers}});
+ // handleAPI validates admission first; keep the single-world boundary here too.
+ if(!self?.id||self.room!==publicRoom)return reply({error:'공간에 입장한 뒤 신청해 주세요.'},403);
+ if(request.method==='GET')return reply(snapshot(await readFireworkShow(DB,now),now));
  if(request.method!=='POST')return reply({error:'지원하지 않는 요청입니다.'},405);
- if(!admin)return reply({error:'관리자만 공연을 시작하거나 종료할 수 있습니다.'},403);
- const raw=await request.text();if(raw.length>128)return reply({error:'요청이 너무 큽니다.'},413);const {action}=JSON.parse(raw);
- if(!['start','stop'].includes(action))return reply({error:'공연 동작을 확인해 주세요.'},400);
- if(!await rateLimit(DB,'fireworks:'+self.id,now,6))return reply({error:'잠시 뒤 다시 시도해 주세요.'},429);
- if(action==='stop'){
-  const current=await readFireworkShow(DB,now);if(current){const show={...current,state:'stopped'};await DB.prepare('UPDATE world_settings SET payload=? WHERE id=?').bind(JSON.stringify(show),'fireworks').run();return reply({show,serverTime:now});}return reply({show:null,serverTime:now});
+ const raw=await request.text();
+ if(raw.length>128)return reply({error:'요청이 너무 큽니다.'},413);
+ let body;
+ try{body=JSON.parse(raw);}catch{return reply({error:'입력 형식을 확인해 주세요.'},400);}
+ const action=body?.action;
+ if(!['request','start','stop'].includes(action))return reply({error:'공연 동작을 확인해 주세요.'},400);
+ if(action!=='request'&&!admin)return reply({error:'관리자만 공연을 직접 시작하거나 종료할 수 있습니다.'},403);
+ const limitKey=(action==='request'?'fireworks-request:':'fireworks-control:')+self.id;
+ if(!await rateLimit(DB,limitKey,now,action==='request'?6:12)){
+  return reply({...snapshot(await readFireworkShow(DB,now),now),error:'신청이 너무 빨라요. 잠시 뒤 다시 시도해 주세요.',retryAfterMs:60000},429,{'Retry-After':'60'});
  }
- const show={id:crypto.randomUUID(),startsAt:now+fireworkConfig.leadMs,seed:crypto.getRandomValues(new Uint32Array(1))[0],state:'scheduled'};
- // Conditional upsert makes concurrent admin starts one atomic claim across Workers.
- const result=await DB.prepare('INSERT INTO world_settings(id,payload,updated_at) VALUES(?,?,?) ON CONFLICT(id) DO UPDATE SET payload=excluded.payload,updated_at=excluded.updated_at WHERE updated_at<?').bind('fireworks',JSON.stringify(show),now,now-fireworkConfig.duration*1000-fireworkConfig.leadMs-fireworkConfig.cooldownMs).run();
- if(!result.meta?.changes)return reply({error:'진행 중인 공연이 있거나 잠시 쉬는 중입니다.'},409);
- return reply({show,serverTime:now});
+ if(action==='stop'){
+  const row=await DB.prepare('SELECT payload FROM world_settings WHERE id=?').bind(showKey).first();
+  const current=describeShow(row?JSON.parse(row.payload):null,now);
+  if(!active(current))return reply(snapshot(current,now));
+  // Cancellation never releases the reserved cooldown. A repeated stop is a no-op.
+  const stopped={...current,state:'stopped',stoppedAt:now,revision:current.revision+1};
+  await DB.prepare('UPDATE world_settings SET payload=?,updated_at=? WHERE id=? AND payload=?')
+   .bind(JSON.stringify(stopped),now,showKey,row.payload).run();
+  return reply(snapshot(await readFireworkShow(DB,now),now));
+ }
+
+ const existing=await readFireworkShow(DB,now);
+ const existingResponse=show=>{
+  if(action==='request'&&active(show))return reply({...snapshot(show,now),created:false,merged:true});
+  const wait=Math.max(1,Math.ceil(((show?.nextRequestAt||now)-now)/1000));
+  return reply({...snapshot(show,now),created:false,merged:false,
+   error:active(show)?'이미 준비 중이거나 진행 중인 공연이 있어요.':'불꽃놀이가 잠시 쉬고 있어요. 표시된 시간이 지나면 다시 신청할 수 있어요.'},
+   action==='start'?409:429,{'Retry-After':String(wait)});
+ };
+ if(active(existing)||existing&&now<existing.nextRequestAt)return existingResponse(existing);
+
+ const startsAt=now+fireworkConfig.leadMs,endsAt=startsAt+showLength;
+ const show={id:crypto.randomUUID(),startsAt,endsAt,nextRequestAt:endsAt+fireworkConfig.cooldownMs,
+  seed:crypto.getRandomValues(new Uint32Array(1))[0],state:'scheduled',revision:1};
+ // One atomic claim across Workers. JSON timestamps also preserve the reservation
+ // after stop; older records without these fields retain a conservative cooldown.
+ const result=await DB.prepare(`INSERT INTO world_settings(id,payload,updated_at) VALUES(?,?,?)
+  ON CONFLICT(id) DO UPDATE SET payload=excluded.payload,updated_at=excluded.updated_at
+  WHERE COALESCE(json_extract(world_settings.payload,'$.nextRequestAt'),
+   json_extract(world_settings.payload,'$.startsAt')+?,world_settings.updated_at+?)<=?`)
+  .bind(showKey,JSON.stringify(show),now,showLength+fireworkConfig.cooldownMs,
+   fireworkConfig.leadMs+showLength+fireworkConfig.cooldownMs,now).run();
+ if(!result.meta?.changes)return existingResponse(await readFireworkShow(DB,now));
+ return reply({...snapshot(show,now),created:true,merged:false});
 }

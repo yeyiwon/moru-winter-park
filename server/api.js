@@ -1,4 +1,6 @@
 import {quizGenerationAPI} from './quiz-generation.js';
+import {quizJournalAPI} from './quiz-journal.js';
+import {diningPoseValid} from '../dist/ryokan-service.js';
 import {fireworksAPI,readFireworkShow} from './fireworks.js';
 import {benchPoseValid} from '../dist/bench-layout.js';
 import {validateNickname} from '../dist/nickname.js';
@@ -38,6 +40,7 @@ export async function handleAPI(request,env){
  const session=await sessionInfo(request,env,now);
  if(!session.valid)return json({error:session.blocked?'이 게스트의 이용이 제한되었습니다.':'접속 권한이 만료되었거나 취소됐어요. 새 초대 링크를 받아 주세요.'},session.blocked?403:401);
  const self=session.self,id=self.id;
+ const journalResponse=await quizJournalAPI(request,env,self,now);if(journalResponse)return journalResponse;
  const operation=await operationsAPI(request,env.DB,self,path==='/api/operations'?await isOwner(request,env):false,now);if(operation)return operation;
  const fireworksResponse=await fireworksAPI(request,env.DB,self,path==='/api/fireworks'&&request.method==='POST'?await isOwner(request,env):false,now);if(fireworksResponse)return fireworksResponse;
  const regionResponse=await regionAPI(request,env.DB,self,now);if(regionResponse)return regionResponse;
@@ -72,8 +75,9 @@ export async function handleAPI(request,env){
  }
  if(path==='/api/presence'&&request.method==='POST'){
   const raw=await request.text();if(raw.length>2048)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);
-  const benchReservation=['rest','tea','sauna'].includes(b.mode)?await env.DB.prepare('SELECT kind,cabin,seat FROM ride_seats WHERE visitor=? AND expires_at>?').bind(id,now).first():null;
+  const benchReservation=['rest','tea','sauna','dining'].includes(b.mode)?await env.DB.prepare('SELECT kind,cabin,seat FROM ride_seats WHERE visitor=? AND expires_at>?').bind(id,now).first():null;
   const benchOK=benchPoseValid(benchReservation,b);
+  const diningOK=diningPoseValid(benchReservation,b);if(b.mode==='dining'&&!diningOK)return json({error:benchReservation?'오마카세 좌석을 다시 확인해 주세요.':'연결이 잠시 끊겨 오마카세 자리에서 일어났어요.',code:benchReservation?'RIDE_POSE_INVALID':'RIDE_RESERVATION_EXPIRED'},409);
   const restOK=b.mode==='rest'&&Object.values(restSeats).some(p=>Math.hypot(b.x-p.x,b.z-p.z)<.15&&Math.abs(b.y-p.y)<.15);
   const groundOK=canStandAt(b.x,b.z)&&b.y>=surfaceHeight(b.x,b.z)+.5&&b.y<=surfaceHeight(b.x,b.z)+3;
   if(!Number.isFinite(b.x)||!Number.isFinite(b.z)||!Number.isFinite(b.yaw)||!Number.isFinite(b.y)||!(interiorPositionValid(b.x,b.y,b.z)||groundOK||restOK||benchOK||amusementPositionValid(b.x,b.y,b.z,b.mode)||spaPositionValid(b.x,b.y,b.z,b.mode)||resortRidePosition(b.x,b.y,b.z,b.mode)))return json({error:'이동 위치를 확인해 주세요.'},400);
@@ -82,7 +86,7 @@ export async function handleAPI(request,env){
   const color=/^#[0-9a-f]{6}$/i.test(b.color)?b.color:'#f4eee5',accessory=normalizeWardrobe(b.accessory),gesture=activityGestures.includes(b.gesture)?b.gesture:'';
   await env.DB.prepare('UPDATE visitors SET x=?,z=?,yaw=?,y=?,mode=?,color=?,color_top=?,accessory=?,fluff=?,roundness=?,seen=?,gesture=?,gesture_at=?,region=?,pose_at=?,speed=? WHERE id=? AND pose_at<=?').bind(b.x,b.z,b.yaw,b.y,['lift','summit','ski','rest','bath','sauna','lie','tea','dining','carousel','ferris','view','footbath'].includes(b.mode)?b.mode:'',color,/^#[0-9a-f]{6}$/i.test(b.colorTop)?b.colorTop:null,accessory,fluff,roundness,now,gesture,gesture?now:0,interiorAt(b.x,b.z)?.id||'outdoors',now,speed,id,now-500).run();
   await env.DB.prepare("UPDATE visitors SET chat='',chat_at=0 WHERE room=? AND chat_at>0 AND chat_at<?").bind(self.room,now-600000).run();
-  if(benchOK||['ferris','lift'].includes(b.mode))await env.DB.prepare('UPDATE ride_seats SET expires_at=? WHERE visitor=? AND expires_at>?').bind(now+20000,id,now).run();
+  if(benchOK||diningOK||['ferris','lift'].includes(b.mode))await env.DB.prepare('UPDATE ride_seats SET expires_at=? WHERE visitor=? AND expires_at>?').bind(now+20000,id,now).run();
   else await env.DB.prepare('DELETE FROM ride_seats WHERE visitor=? AND started_at<?').bind(id,now-6000).run();
   await maintainSessions(env.DB,now);
   const rideSeats=await listRideSeats(env.DB,self.room,now);

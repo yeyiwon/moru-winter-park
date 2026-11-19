@@ -38,9 +38,16 @@ export function createWinterFireworks(parent,{light=null}={}){
   }
   for(const attribute of Object.values(geometry.attributes))attribute.needsUpdate=true;
  }
- function setShow(next){if(!next){show=null;previousAge=null;return;}if(next.id!==show?.id){prepare(next.seed);previousAge=null;}show=next;}
+ function setShow(next){
+  if(!next){show=null;previousAge=null;return;}
+  if(show){
+   if(next.id===show.id&&((next.revision||1)<(show.revision||1)||show.state==='stopped'&&(next.revision||1)<=(show.revision||1)))return;
+   if(next.id!==show.id&&next.startsAt<=show.startsAt)return;
+  }
+  if(next.id!==show?.id){prepare(next.seed);previousAge=null;}show=next;
+ }
  function update(now,{still=false,reduceFlash=false,interior=false,listener=null,pixelRatio=1}={}){
-  const age=show?(now-show.startsAt)/1000:-1;active=!!show&&['scheduled','playing'].includes(show.state)&&age>=0&&age<fireworkConfig.duration&&!interior;
+  const age=show?(now-show.startsAt)/1000:-1,duration=show?.endsAt===undefined?fireworkConfig.duration:(show.endsAt-show.startsAt)/1000;active=!!show&&['scheduled','playing'].includes(show.state)&&age>=0&&age<duration&&!interior;
   points.visible=active;if(!active){geometry.setDrawRange(0,0);previousAge=age;return;}
   const soften=still||reduceFlash;uniforms.clock.value=age;uniforms.reduced.value=soften?1:0;uniforms.pixelRatio.value=Math.min(2,pixelRatio);
   if(light&&!soften&&listener){let weight=0;flashColor.setRGB(0,0,0);for(let i=0;i<score.length;i++){const shell=score[i],t=age-shell.at-shell.flight;if(t<0||t>1.5)continue;const distance=Math.hypot(listener.x-shell.x,listener.y-shell.y-shell.height,listener.z-shell.z),energy=Math.sin(Math.min(1,t/.16)*Math.PI/2)*Math.exp(-t*3.5)*.42/(1+(distance/230)**2);weight+=energy;flashColor.r+=shellColors[i].r*energy;flashColor.g+=shellColors[i].g*energy;flashColor.b+=shellColors[i].b*energy;}if(weight>0){flashColor.multiplyScalar(1/weight);light.color.lerp(flashColor,Math.min(.48,weight));light.intensity+=Math.min(.38,weight);}}

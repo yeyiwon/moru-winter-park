@@ -3,7 +3,7 @@ export function joystickVector(dx,dy,radius=42,deadZone=.08){
  const length=Math.hypot(dx,dy),amount=Math.min(1,Math.max(0,(length/radius-deadZone)/(1-deadZone)));
  return length?{x:dx/length*amount,y:dy/length*amount}:{x:0,y:0};
 }
-export function createTouchControls({canvas,joystick,jumpButton,brakeButton,runButton,onMove,onOrbit,onZoom,onTap,onJump,locked=()=>false,onCancel=()=>{}}){
+export function createTouchControls({canvas,joystick,jumpButton,brakeButton,runButton,onMove,onOrbit,onZoom,onTap,onJump,locked=()=>false,canAdjustCamera=()=>false,onCancel=()=>{}}){
  const bindings=[];function listen(target,type,fn,options){if(!target)return;target.addEventListener(type,fn,options);bindings.push([target,type,fn,options]);}
  const stick=joystick.querySelector('.joystick-stick'),pointers=new Map();
  let joyId=null,jumpId=null,runId=null,brakeId=null,originX=0,originY=0,radius=42,knobRadius=28,mode='walk',pinch=0,moved=false,tapStart=null,braking=false,sprinting=false;
@@ -28,11 +28,16 @@ export function createTouchControls({canvas,joystick,jumpButton,brakeButton,runB
  listen(runButton,'click',e=>{own(e);if(e.detail===0&&!e.pointerType&&runId===null&&!blocked()&&mode==='walk')setRunning(!sprinting);});
  listen(brakeButton,'pointerdown',e=>{own(e);if(!['ski','skate'].includes(mode)||blocked()||brakeId!==null)return;brakeId=e.pointerId;brakeButton.setPointerCapture(brakeId);braking=true;brakeButton.classList.add('active');});
  for(const event of ['pointerup','pointercancel','lostpointercapture'])listen(brakeButton,event,e=>{if(e.pointerId===brakeId)releaseBrake();});
- listen(canvas,'pointerdown',e=>{if(locked())return;e.preventDefault();document.activeElement?.blur();canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===1){tapStart={x:e.clientX,y:e.clientY};moved=false;}else{moved=true;pinch=distance();}});
+ // Ordinary world gestures only select a destination. A dragged finger cancels
+ // that tap; it cannot tilt the horizon. Camera intent is captured at gesture
+ // start, either by the explicit mode or a deliberate right-mouse drag.
+ listen(canvas,'pointerdown',e=>{if(locked()||e.button===1)return;e.preventDefault();document.activeElement?.blur();canvas.setPointerCapture(e.pointerId);const secondary=e.button===2&&(!e.pointerType||e.pointerType==='mouse');pointers.set(e.pointerId,{x:e.clientX,y:e.clientY,camera:secondary||canAdjustCamera(),secondary});if(pointers.size===1){tapStart={x:e.clientX,y:e.clientY};moved=false;}else{moved=true;pinch=distance();}});
  function distance(){const [a,b]=[...pointers.values()];return a&&b?Math.hypot(a.x-b.x,a.y-b.y):0;}
- listen(canvas,'pointermove',e=>{const previous=pointers.get(e.pointerId);if(!previous||locked())return;e.preventDefault();const dx=e.clientX-previous.x,dy=e.clientY-previous.y;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size>1){const next=distance();if(pinch>0)onZoom((pinch-next)*.07);pinch=next;moved=true;}else{if(tapStart&&Math.hypot(e.clientX-tapStart.x,e.clientY-tapStart.y)>7)moved=true;if(moved)onOrbit(dx,dy);}});
- listen(canvas,'pointerup',e=>{if(!pointers.has(e.pointerId))return;const tap=pointers.size===1&&!moved&&!locked();pointers.delete(e.pointerId);pinch=0;if(tap)onTap(e);if(!pointers.size)tapStart=null;});
+ const cameraGesture=pointer=>pointer.camera&&(pointer.secondary||canAdjustCamera());
+ listen(canvas,'pointermove',e=>{const previous=pointers.get(e.pointerId);if(!previous||locked())return;e.preventDefault();const dx=e.clientX-previous.x,dy=e.clientY-previous.y;pointers.set(e.pointerId,{...previous,x:e.clientX,y:e.clientY});if(pointers.size>1){const next=distance();if(pinch>0&&[...pointers.values()].every(cameraGesture))onZoom((pinch-next)*.07);pinch=next;moved=true;}else{if(tapStart&&Math.hypot(e.clientX-tapStart.x,e.clientY-tapStart.y)>7)moved=true;if(moved&&cameraGesture(previous))onOrbit(dx,dy);}});
+ listen(canvas,'pointerup',e=>{const previous=pointers.get(e.pointerId);if(!previous)return;const tap=pointers.size===1&&!moved&&!previous.camera&&!locked();pointers.delete(e.pointerId);pinch=0;if(tap)onTap(e);if(!pointers.size)tapStart=null;});
  for(const event of ['pointercancel','lostpointercapture'])listen(canvas,event,e=>{pointers.delete(e.pointerId);pinch=0;moved=true;});
- listen(window,'blur',reset);listen(document,'visibilitychange',reset);listen(window,'lab:pause',reset);listen(window,'orientationchange',reset);listen(window,'resize',reset);listen(window,'pagehide',reset);listen(window.visualViewport,'resize',reset);
+ listen(canvas,'contextmenu',e=>e.preventDefault());
+ listen(window,'blur',reset);listen(document,'visibilitychange',reset);listen(window,'lab:pause',reset);listen(window,'lab:camera-mode',reset);listen(window,'lab:camera-reset',reset);listen(window,'orientationchange',reset);listen(window,'resize',reset);listen(window,'pagehide',reset);listen(window.visualViewport,'resize',reset);
  return{reset,dispose(){reset();for(const [target,type,fn,options]of bindings)target.removeEventListener(type,fn,options);bindings.length=0;},get braking(){return braking;},get sprinting(){return sprinting;},setMode(next){next=['carousel','ferris','bath','sauna','lie','tea','dining','view','rest'].includes(next)?'ride':['ski','skate','lift','wade'].includes(next)?next:'walk';if(next===mode)return;reset();mode=next;document.body.dataset.controls=mode;joystick.setAttribute('aria-disabled',String(mode==='lift'));jumpButton.disabled=mode!=='walk';if(runButton)runButton.hidden=mode!=='walk';brakeButton.hidden=!['ski','skate'].includes(mode);}};
 }

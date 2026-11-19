@@ -50,7 +50,13 @@ export function createCustomizationUI(initial,commit){
  options.addEventListener('input',e=>{if(e.target.id==='fur-length'||e.target.id==='roundness'){success=false;editor.edit({[e.target.id==='fur-length'?'fluff':'roundness']:Number(e.target.value)});}});
  save.onclick=async()=>{success=await editor.save();renderState(editor.state());};cancel.onclick=()=>{success=false;editor.cancel();renderOptions();};
  root.querySelector('#wardrobe-reset').onclick=()=>{success=false;editor.edit({fur:'#f4eee5',furTop:null,accessory:'none',fluff:100,roundness:50});renderOptions();};
- root.querySelector('#preview-front').onclick=()=>window.dispatchEvent(new Event('lab:preview-front'));
+ // The small editable name above the preview follows the confirmed guest name.
+ const previewName=root.querySelector('#preview-name'),profile=root.querySelector('.wardrobe-profile'),profileForm=root.querySelector('#profile-form'),selfName=document.querySelector('#self-name');
+ const syncName=()=>{if(previewName)previewName.textContent=selfName?.textContent||'게스트';};
+ syncName();
+ const nameObserver=new MutationObserver(changes=>{syncName();if(changes.some(change=>change.target===profileForm&&change.attributeName==='data-state')&&profileForm?.dataset.state==='saved'){if(profileForm.contains(document.activeElement))document.activeElement.blur();profile.open=false;}});
+ if(selfName)nameObserver.observe(selfName,{childList:true,characterData:true,subtree:true});
+ if(profileForm)nameObserver.observe(profileForm,{attributes:true,attributeFilter:['data-state']});
  renderOptions();
  return {open(){if(active)return;active=true;success=false;editor.restore(window.labAppearance);renderOptions();},close(){active=false;window.labDraftAppearance=null;editor.cancel();window.dispatchEvent(new CustomEvent('lab:preview-appearance',{detail:window.labAppearance}));},restore(look){editor.restore(look);renderOptions();}};
 }

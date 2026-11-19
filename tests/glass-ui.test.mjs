@@ -27,7 +27,10 @@ test('wish composition retains selected shape, color and public sharing without 
  const {w,d,run}=setup(t);await run('dist/community-ui.js');let draft;w.submitTreeWish=async data=>{draft=data;return 'saved-wish';};w.openWishComposer();const form=d.querySelector('#wish-form');
  form.querySelector('[data-wish-kind=snowflake]').click();const color=form.querySelectorAll('[data-wish-color]')[2];color.click();assert.equal(color.getAttribute('aria-pressed'),'true');assert.equal(form.elements.kind.value,'snowflake');
  form.elements.message.value='  테스트 소원  ';form.dispatchEvent(new w.Event('submit',{cancelable:true}));await new Promise(r=>setTimeout(r,0));assert.equal(draft.message,'테스트 소원');assert.equal(draft.kind,'snowflake');assert.equal(draft.color,color.dataset.wishColor);assert.equal(draft.visibility,'public');assert.equal(d.querySelector('#wish-panel').open,false);
- w.openWishList();await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('#wish-feed').open,true);assert.equal(d.body.classList.contains('studio-open'),false);assert.equal(d.querySelector('#wish-panel').open,false);w.openWishComposer();assert.equal(d.querySelector('#wish-feed').open,true);assert.equal(form.hidden,false);
+ w.openWishList();await new Promise(r=>setTimeout(r,0));assert.equal(d.querySelector('#wish-feed').open,true);assert.equal(d.body.classList.contains('studio-open'),false);assert.equal(d.querySelector('#wish-panel').open,false);
+ const feed=d.querySelector('#wish-feed'),scroll=feed.querySelector('.panel-scroll');scroll.scrollTop=120;
+ w.openWishComposer();assert.equal(feed.open,true);assert.equal(form.hidden,false);assert.equal(feed.hasAttribute('inert'),true);assert.equal(feed.getAttribute('aria-hidden'),'true');assert.equal(feed.dataset.panelSuspended,'true');
+ d.querySelector('#wish-panel').close();await new Promise(r=>setTimeout(r,0));assert.equal(feed.open,true);assert.equal(feed.hasAttribute('inert'),false);assert.equal(feed.hasAttribute('aria-hidden'),false);assert.equal(feed.hasAttribute('data-panel-suspended'),false);assert.equal(scroll.scrollTop,120);
 });
 test('ornament instance colors are distinct before first render and tint their night emission',()=>{
  const root=new T.Group(),{meshes}=createTreeOrnamentMeshes(root),red=new T.Color('#d94371'),blue=new T.Color('#398cdd'),actual=new T.Color();
