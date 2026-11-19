@@ -40,11 +40,11 @@ test('carousel bob is cancelled while lift and ferris retain their physical seat
  }
 });
 
-test('tree framing is small and closing it preserves newer manual edits',()=>{
+test('tree framing permits temporary edits and restores the exploration view on close',()=>{
  const policy=createCameraPolicy(),before=policy.snapshot();policy.beginTree();
  const framed={...policy.view()};assert.ok(framed.distance-before.distance<=3);assert.ok(framed.distance<20);near(framed.yaw,before.yaw);near(framed.pitch,before.pitch);
  policy.orbit(19,20);policy.zoom(-1,framed.distance);const changed=viewFields(policy.view());policy.endTree();
- assert.deepEqual(viewFields(policy.view()),changed,'closing a tree must not restore an old view over user input');
+ assert.notDeepEqual(changed,viewFields(before));assert.deepEqual(viewFields(policy.view()),viewFields(before),'tree edits must not permanently overwrite exploration zoom');
  policy.reset();policy.beginTree();policy.endTree();near(policy.view().distance,cameraDefaults.distance);
 });
 
@@ -122,7 +122,7 @@ test('upward orbit keeps the eye above the ground and reaches the fireworks sky'
 });
 test('whole-canopy framing is temporary, with direct user control taking priority',()=>{
  const policy=createCameraPolicy(),before={...policy.view()};policy.beginTree({yaw:1,pitch:.1,distance:48});near(policy.view().distance,48);policy.endTree();assert.deepEqual({...policy.view()},before);
- policy.beginTree({yaw:1,pitch:.1,distance:48});policy.orbit(20,-30);const manual={...policy.view()};policy.endTree();assert.deepEqual({...policy.view()},manual);
+ policy.beginTree({yaw:1,pitch:.1,distance:48});policy.orbit(20,-30);const manual={...policy.view()};assert.equal(manual.distance,48);policy.beginTree(manual);policy.endTree();assert.deepEqual({...policy.view()},before,'submitting repeatedly must preserve the original exploration view');
 });
 
 
@@ -150,4 +150,10 @@ test('carousel has a wider low-angle view, permits free orbit and restores untou
  near(ride.distance,24);near(ride.pitch,.16);near(ride.yaw,before.yaw);near(ride.fov,before.fov);
  assert.deepEqual(viewFields(policy.view({mode:''})),before);
  policy.view({mode:'carousel'});policy.orbit(20,20);policy.zoom(2);const manual=viewFields(policy.view());assert.ok(manual.distance>24);assert.ok(manual.yaw!==before.yaw);assert.deepEqual(viewFields(policy.view({mode:''})),manual);
+});
+
+test('manual show orbit keeps its current distance and restores the saved exploration view before indoor framing',()=>{
+ const policy=createCameraPolicy(),before=policy.snapshot();policy.adopt({yaw:0,pitch:.05,distance:476});policy.orbit(10,2);policy.zoom(-5);
+ assert.equal(policy.snapshot().distance,471);policy.restoreView(before);assert.equal(policy.snapshot().distance,before.distance);assert.equal(policy.snapshot().manualYaw,before.manualYaw);
+ policy.setContext('museum');assert.equal(policy.snapshot().distance,cameraDefaults.interiorDistance);policy.setContext(null);assert.equal(policy.snapshot().distance,before.distance);
 });

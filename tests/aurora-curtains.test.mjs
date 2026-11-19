@@ -20,8 +20,15 @@ test('aurora layers respect night, interiors, quality and stopped animation',t=>
  const scene=new T.Scene();scene.background=new T.Color();scene.fog=new T.Fog('#071329',100,400);const sky=createWinterSky(scene,new T.HemisphereLight(),new T.DirectionalLight(),new T.DirectionalLight(),{}),root=scene.getObjectByName('winter-auroral-curtains');
  sky.update(80,false,{x:12,y:1,z:-7});assert.equal(root.visible,true);assert.equal(root.position.x,12);assert.equal(root.position.z,-7);
  const material=root.children[0].material;assert.equal(material.blending,T.NormalBlending);assert.equal(material.depthWrite,false);assert.equal(material.uniforms.time.value,80);assert.equal(material.uniforms.night.value,1);
- sky.setQuality('low');assert.equal(root.children.filter(o=>o.visible).length,1);sky.setQuality('medium');assert.equal(root.children.filter(o=>o.visible).length,2);sky.setQuality('high');assert.equal(root.children.filter(o=>o.visible).length,3);
+ sky.setQuality('low');assert.equal(root.children.filter(o=>o.visible).length,2);sky.setQuality('medium');assert.equal(root.children.filter(o=>o.visible).length,3);sky.setQuality('high');assert.equal(root.children.filter(o=>o.visible).length,3);
  sky.update(120,true,{x:0,y:1,z:0});assert.equal(material.uniforms.time.value,0);const snow=scene.getObjectByName('winter-snow-crystals'),before=snow.geometry.attributes.position.getY(0);sky.update(120.5,true,{x:0,y:1,z:0});assert.ok(snow.geometry.attributes.position.getY(0)<before,'gentle snowfall continues when decorative motion is reduced');assert.equal(snow.material.uniforms.time.value,0,'flakes do not spin with reduced motion');w.labInterior='ryokan';sky.update(121,false,{x:0,y:1,z:0});assert.equal(root.visible,false);w.labInterior='';
+ // Camera-relative sky retains its azimuth/elevation throughout the 1800m ascent.
+ const moon=scene.getObjectByName('detailed-winter-moon');
+ for(const eye of [new T.Vector3(0,10,70),new T.Vector3(200,850,-3200),new T.Vector3(-30,1850,-5000)]){
+  sky.update(121,false,{x:eye.x,y:eye.y-5,z:eye.z-8},1,false,eye);
+  assert.ok(root.position.equals(eye));assert.deepEqual(moon.position.clone().sub(eye).toArray(),[-928,1136,-2608]);
+ }
+ sky.setQuality('low');assert.ok(root.children[0].visible&&root.children[2].visible,'uphill and downhill sky keep a curtain at low quality');
  w.dispatchEvent(new w.CustomEvent('lab:time',{detail:{hour:12}}));sky.update(122,false,{x:0,y:1,z:0});assert.equal(root.visible,false);assert.equal(material.uniforms.night.value,0);
  assert.equal(scene.getObjectByName('detailed-winter-moon').visible,false);
 });

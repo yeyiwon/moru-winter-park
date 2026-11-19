@@ -1,4 +1,4 @@
-node_modules/
+node_modules
 qa/asset-review/*.json
 qa/asset-review/*.blend
 qa/asset-review/*.blend1

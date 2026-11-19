@@ -1,4 +1,4 @@
-import {alpineShift} from './resort-layout.js';
+import {alpineShift,mountainRest,alpineHeight} from './resort-layout.js';
 import {parkBenches} from './park-layout.js';
 import {festivalBenches} from './festival-layout.js';
 import {treeLayout} from './tree-layout.js';
@@ -19,7 +19,8 @@ export const benches=[
  {id:'ryokan-sauna-side',region:'ryokan',x:382,z:-8.5,yaw:Math.PI/2,seatY:.74,mode:'sauna'}
 ,
  {id:'alpine-hearth-west',region:'outdoors',x:-42.8,z:-154+alpineShift,yaw:Math.PI/2,seatY:.64,access:{x:-44,z:-151.5+alpineShift}},
- {id:'alpine-hearth-east',region:'outdoors',x:-35.2,z:-154+alpineShift,yaw:-Math.PI/2,seatY:.64,access:{x:-34,z:-151.5+alpineShift}}
+ {id:'alpine-hearth-east',region:'outdoors',x:-35.2,z:-154+alpineShift,yaw:-Math.PI/2,seatY:.64,access:{x:-34,z:-151.5+alpineShift}},
+ ...mountainRest.map(p=>({...p,region:'outdoors',seatY:alpineHeight(p.x,p.z)+.55}))
 ].map((b,cabin)=>({...b,cabin,mode:b.mode||'rest'})).filter(b=>b.id!=='tree-bench-5');
 // Reservation indices remain stable when the post-office bench is removed.
 export function benchSeatPose(cabin,seat=0){const b=benches.find(b=>b.cabin===cabin);if(!b||![0,1].includes(seat))return null;const offset=(seat===1?1:-1)*(b.offset??.94);return{x:b.x+Math.cos(b.yaw)*offset,y:b.seatY+.82,z:b.z-Math.sin(b.yaw)*offset,yaw:b.yaw,mode:b.mode};}

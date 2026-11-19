@@ -1,37 +1,9 @@
 import {ryokanGardenObstacles} from './ryokan-exterior-layout.js';
-// Local resort coordinates; the island, bridges and other districts stay fixed.
+import {mountainWayfinders,mountainShelter,mountainBounds,skiJumps,skiJumpCoordinates,mountainGroundHeight,alpineHeight,skiRunCenter,skiRunHalfWidth,skiRunHeight,skiRunAt,skiRuns,skiStarts,skiRunouts,skiNetwork,mountainTerraces,ridgeBase,ridgeSummit,ridgeLiftLayout,ridgeLiftEntry,ridgeLiftPoint,ridgeTransfers,summit,peakSummit,middleSummit,liftLayout,upperLiftLayout,upperLiftEntry,liftPoint,upperLiftPoint,summitTransfer,middleTransfer,mountainRest,beginnerAccess,gondolaEntry,gondolaApproach,liftApproach,gondolaPoints,gondolaStations} from './mountain-layout.js';
+export {skiJumps,skiJumpCoordinates,mountainGroundHeight,alpineHeight,skiRunCenter,skiRunHalfWidth,skiRunHeight,skiRunAt,skiRuns,skiStarts,skiRunouts,skiNetwork,mountainTerraces,ridgeBase,ridgeSummit,ridgeLiftLayout,ridgeLiftEntry,ridgeLiftPoint,ridgeTransfers,summit,peakSummit,middleSummit,liftLayout,upperLiftLayout,upperLiftEntry,liftPoint,upperLiftPoint,summitTransfer,middleTransfer,mountainRest,beginnerAccess,gondolaEntry,gondolaApproach,liftApproach,gondolaPoints};
 export const spaShift=-40;
 export const alpine={x:0,z:-260,r:144,landZ:-230,rx:144,rz:174},spa={x:0,z:119+spaShift,r:31};
-const clamp=t=>Math.max(0,Math.min(1,t)),smooth=t=>{t=clamp(t);return t*t*(3-2*t);},mix=(a,b,t)=>a+(b-a)*t;
-function spline(z,nodes){let i=0;while(i<nodes.length-2&&z>nodes[i+1][0])i++;const a=nodes[i],b=nodes[i+1],t=clamp((z-a[0])/(b[0]-a[0])),prev=nodes[Math.max(0,i-1)],next=nodes[Math.min(nodes.length-1,i+2)],m0=(b[1]-prev[1])/(b[0]-prev[0]),m1=(next[1]-a[1])/(next[0]-a[0]),d=b[0]-a[0];return(2*t**3-3*t*t+1)*a[1]+(t**3-2*t*t+t)*m0*d+(-2*t**3+3*t*t)*b[1]+(t**3-t*t)*m1*d;}
-export const summit={x:-62,z:-296,height:30.09,rx:27,rz:13};
-export const peakSummit={x:16,z:-359,height:68.09,rx:48,rz:17};
-export const liftLayout={x:-84,z:-188,dx:6,dz:-110,spacing:4,hanger:3.1,supports:[0,.16,.35,.55,.75,.92,1]};
-export const upperLiftLayout={x:98,z:-202,dx:-38,dz:-158,spacing:4,hanger:3.1,supports:[0,.15,.32,.5,.68,.85,1]};
-const n=Math.hypot(upperLiftLayout.dx,upperLiftLayout.dz),ux=-upperLiftLayout.dz/n,uz=upperLiftLayout.dx/n;
-export const upperLiftEntry={x:upperLiftLayout.x-upperLiftLayout.dx/n*6,z:upperLiftLayout.z-upperLiftLayout.dz/n*6};
-export const summitTransfer=[{x:-70,z:-298},{x:-49,z:-290},{x:-42,z:-286}];
-export const beginnerAccess={start:summitTransfer[0],end:summitTransfer.at(-1),halfWidth:6};
-const lines={
- main:[[-346,-12],[-318,-24],[-286,-14],[-250,0],[-214,-6],[-172,-6]],
- easy:[[-286,-42],[-259,-55],[-230,-48],[-199,-34],[-174,-26]],
- advanced:[[-346,10],[-316,15],[-284,18],[-252,14],[-224,0],[-172,-6]],
- curve:[[-346,34],[-324,43],[-299,57],[-272,61],[-243,48],[-215,29],[-174,25]]
-};
-export const skiRuns=[
- {id:'main',name:'센트럴 · 중급',level:'중급',color:'#8fcbe8',startX:-12,startZ:-346,finish:-172,width:12,adjacent:['advanced'],merges:[{with:'advanced',z:-224}]},
- {id:'easy',name:'메도우 · 초급',level:'초급',color:'#a7d8ba',startX:-42,startZ:-286,finish:-174,width:15,adjacent:['main'],merges:[{with:'main',z:-190}]},
- {id:'advanced',name:'리지 · 상급',level:'상급',color:'#e8a18f',startX:10,startZ:-346,finish:-172,width:9,adjacent:['main'],merges:[{with:'main',z:-224}]},
- {id:'curve',name:'파노라마 하산로',level:'중급',color:'#d8c6ea',startX:34,startZ:-346,finish:-174,width:11,adjacent:[],merges:[]}
-];
-export function skiRunCenter(z,id='main'){const own=spline(z,lines[id]||lines.main);return id==='advanced'?mix(own,spline(z,lines.main),smooth((z+250)/26)):own;}
-export function skiRunHalfWidth(z,id='main'){const r=skiRuns.find(r=>r.id===id)||skiRuns[0];return mix(id==='easy'?7:5,r.width,smooth((z-r.startZ)/28));}
-export const skiStarts=skiRuns.map(r=>({id:r.id,name:r.name,level:r.level,x:r.startX,z:r.startZ,r:4}));
-export function skiRunAt(x,z){let nearest=skiRuns[0],distance=Infinity;for(const r of skiRuns){if(z<r.startZ-7||z>r.finish+16)continue;const d=Math.abs(x-skiRunCenter(z,r.id))/skiRunHalfWidth(z,r.id);if(d<distance){nearest=r;distance=d;}}return nearest;}
-// Shared grades make joins flush. The beginner starts halfway down, below the steep pitch.
-const grades=[[-346,68.09],[-320,55],[-294,30.09],[-265,20],[-230,8],[-198,1.7],[-172,.09]];
-export function skiRunHeight(z){if(z<=-346)return 68.09;if(z>=-172)return .09;return Math.max(.09,spline(z,grades));}
-export const skiRunouts=[{x:-25,z:-170,rx:20,rz:16},{x:0,z:-170,rx:20,rz:16},{x:25,z:-170,rx:20,rz:16}];
+export const skiTicketBooth={x:-110,z:-187};
 export const skiCenter=z=>skiRunCenter(z),skiHalfWidth=z=>skiRunHalfWidth(z);
 function columns(line,half,t){const length=Math.hypot(line.dx,line.dz),nx=-line.dz/length,nz=line.dx/length;return[-1,1].flatMap(side=>[-1.65,1.65].map(d=>({x:line.x+line.dx*t+(2+side*half)*nx-d*nz,z:line.z+line.dz*t+(2+side*half)*nz+d*nx,r:.3})));}
 export const summitFacilities=[
@@ -39,30 +11,12 @@ export const summitFacilities=[
  {id:'odeng',name:'어묵 포장마차',x:-53,z:-163,model:{x:-53,z:-167},view:{distance:9,yaw:.25,pitch:.3}},
  {id:'marshmallow',name:'마시멜로 트럭',x:-68,z:-160,model:{x:-68,z:-164},view:{distance:9,yaw:.25,pitch:.3}},
  {id:'campfire',name:'모닥불',x:-39,z:-151,r:2.2,model:{x:-39,z:-154},view:{distance:11,yaw:.25,pitch:.3}},
- {id:'upperlift',name:'정상 리프트 · 중급·상급·파노라마',...upperLiftEntry,r:5.5,model:{x:upperLiftLayout.x,z:upperLiftLayout.z},view:{distance:24,yaw:.75,pitch:.3}}
+ {id:'gondola',name:'구름정상 곤돌라',...gondolaEntry,r:6,model:{x:gondolaStations[0].x,z:gondolaStations[0].z}},
+ {id:'ridgelift',name:'정상 연결 리프트',...ridgeLiftEntry,r:5.5,model:{x:ridgeLiftLayout.x,z:ridgeLiftLayout.z}},
+ {id:'upperlift',name:'포레스트 리프트 · 초중급',...upperLiftEntry,r:5.5,model:{x:upperLiftLayout.x,z:upperLiftLayout.z},view:{distance:24,yaw:.75,pitch:.3}}
 ];
-export const summitObstacles=[...columns(liftLayout,5.2,0),...columns(liftLayout,3.4,1),...columns(upperLiftLayout,5.2,0),...columns(upperLiftLayout,3.4,1),...summitFacilities.filter(p=>['odeng','marshmallow'].includes(p.id)).map(p=>({...p.model,w:4.15,d:1.85})),{x:-39,z:-154,r:1.65},{x:-42.8,z:-154,w:.6,d:1.6},{x:-35.2,z:-154,w:.6,d:1.6}];
+export const summitObstacles=[...mountainWayfinders.map(p=>({x:p.x,z:p.z,r:1.9})),...mountainRest.map(p=>({...p,w:2,d:.7})),...gondolaStations.flatMap(s=>s.columns),...[-18,18].flatMap(dx=>[-5,5].map(dz=>({x:mountainShelter.x+dx,z:mountainShelter.z+dz,r:.12}))),...columns(ridgeLiftLayout,5.2,0),...columns(ridgeLiftLayout,4.8,1),...columns(liftLayout,5.2,0),...columns(liftLayout,4.8,1),...columns(upperLiftLayout,5.2,0),...columns(upperLiftLayout,4.8,1),...summitFacilities.filter(p=>['odeng','marshmallow'].includes(p.id)).map(p=>({...p.model,w:4.15,d:1.85})),{x:-39,z:-154,r:1.65},{x:-42.8,z:-154,w:.6,d:1.6},{x:-35.2,z:-154,w:.6,d:1.6}];
 export function summitPositionValid(x,z){return !summitObstacles.some(o=>o.r?Math.hypot(x-o.x,z-o.z)<o.r+.35:Math.abs(x-o.x)<o.w+.35&&Math.abs(z-o.z)<o.d+.35);}
-function terrainHeight(x,z){
- const height=skiRunHeight(z),edge=1-smooth((Math.hypot(x/1.03,z+260)-115)/42),back=1-smooth((-z-369)/39);
- const ridge=(7+5*Math.cos(x*.051+z*.014))*Math.exp(-(((z+320)/69)**2));
- let y=.09+(height-.09+ridge)*edge*back;
- for(const terrace of [summit,peakSummit]){const d=Math.hypot((x-terrace.x)/terrace.rx,(z-terrace.z)/terrace.rz);y=mix(y,terrace.height,1-smooth((d-.78)/.8));}
- // Pistes are cut into a single watertight heightfield, with broad soft snowbanks.
- let weight=0;
- for(const r of skiRuns){if(z<r.startZ-1||z>r.finish+16)continue;weight=Math.max(weight,1-smooth((Math.abs(x-skiRunCenter(z,r.id))-skiRunHalfWidth(z,r.id))/12));}
- y=mix(y,height,weight);
- // The middle arrival opens onto the beginner mouth; the final apron is level.
- if(z>=-312&&z<=-280){const q=smooth((z+298)/12),cx=mix(-70,-42,q),width=mix(11,7,q),along=smooth((z+312)/8)*(1-smooth((z+286)/6));y=mix(y,Math.min(summit.height,height),along*(1-smooth((Math.abs(x-cx)-width)/9)));}
- y=mix(y,.09,smooth((z+189)/25));
- return Math.max(.09,y);
-}
-function cable(line,t,top){t=clamp(t);const q=clamp(t/.96);return[line.x+line.dx*t,.69+(top-.09)*smooth(q),line.z+line.dz*t];}
-export const liftPoint=t=>cable(liftLayout,t,summit.height);
-export const upperLiftPoint=t=>cable(upperLiftLayout,t,peakSummit.height);
-export function alpineHeight(x,z){let y=terrainHeight(x,z);for(const [line,point]of [[liftLayout,liftPoint],[upperLiftLayout,upperLiftPoint]]){const t=((x-line.x)*line.dx+(z-line.z)*line.dz)/(line.dx**2+line.dz**2);if(t<-.000001||t>1.000001)continue;const p=point(t),len=Math.hypot(line.dx,line.dz),cross=((x-p[0])*-line.dz+(z-p[2])*line.dx)/len,weight=1-smooth((Math.abs(cross-2)-4)/13),air=Math.min(smooth(t/.1),line===liftLayout?smooth((.9-t)/.16):smooth((1-t)/.1));const pisteClear=skiRuns.every(r=>z<r.startZ||z>r.finish||Math.abs(x-skiRunCenter(z,r.id))>skiRunHalfWidth(z,r.id)+1);if(pisteClear)y=mix(y,Math.min(y,p[1]-.6-air*3.2),weight);}return Math.max(.09,y);}
-// Map, surface tests and the run controller consume these same sampled paths.
-export const skiNetwork=skiRuns.map(r=>({...r,start:{x:r.startX,y:skiRunHeight(r.startZ),z:r.startZ},end:{x:skiRunCenter(r.finish,r.id),y:.09,z:r.finish},points:Array.from({length:81},(_,i)=>{const z=mix(r.startZ,r.finish,i/80);return{x:skiRunCenter(z,r.id),y:skiRunHeight(z,r.id),z,width:skiRunHalfWidth(z,r.id)*2,grade:(skiRunHeight(z-.5)-skiRunHeight(z+.5))/Math.hypot(skiRunCenter(z+.5,r.id)-skiRunCenter(z-.5,r.id),1)};})}));
 export const resortDestinations=[
  {id:'ski',name:'초급 리프트',x:liftLayout.x,z:-185,kind:'ski',view:{distance:24,yaw:.6,pitch:.3,lookAhead:-1.8,lookHeight:0}},
  {id:'onsen',name:'설림 노천 온천',x:-10,z:114+spaShift,kind:'onsen',view:{distance:40,yaw:2.65,pitch:.62}},
@@ -80,11 +34,17 @@ export const spaActivities=Object.fromEntries(Object.entries({
  tea:{x:15.2,y:1.28,z:118.8,yaw:0,mode:'tea',label:'찻자리 · 따뜻한 차 한 잔',view:{distance:5,yaw:.35,pitch:.2,lookHeight:-.8}}
 }).map(([id,p])=>[id,{...p,z:p.z+spaShift,...(p.pool?{pool:{...p.pool,z:p.pool.z+spaShift}}:{})}]));
 export function spaPositionValid(x,y,z,mode){return Object.values(spaActivities).some(a=>{if(a.mode!==mode||Math.abs(y-a.y)>.12)return false;if(a.pool)return ((x-a.pool.x)/a.pool.rx)**2+((z-a.pool.z)/a.pool.rz)**2<=1.02;return Math.hypot(x-a.x,z-a.z)<.15;});}
-const ski=Array.from({length:181},(_,i)=>{const z=-346+i/180*174,x=skiCenter(z);return[x,alpineHeight(x,z),z];});
-const lift=Array.from({length:321},(_,i)=>liftPoint(i/320)),upperlift=Array.from({length:401},(_,i)=>upperLiftPoint(i/400));
-export const resortRides={lift:{bodyOffset:.82,heightMode:'seat',points:lift,exit:[-70,alpineHeight(-70,-298),-298],duration:26,arrivalYaw:.65},upperlift:{bodyOffset:.82,heightMode:'seat',points:upperlift,exit:[47,alpineHeight(47,-350),-350],duration:36,arrivalYaw:.6},ski:{heightMode:'surface',points:ski,duration:38}};
+const ski=skiNetwork[0].points.map(p=>[p.x,p.y,p.z]);
+const lift=Array.from({length:321},(_,i)=>liftPoint(i/320)),upperlift=Array.from({length:601},(_,i)=>upperLiftPoint(i/600));
+export const resortRides={
+ lift:{bodyOffset:.82,heightMode:'seat',points:lift,exit:[summitTransfer[0].x,alpineHeight(summitTransfer[0].x,summitTransfer[0].z),summitTransfer[0].z],duration:28,arrivalYaw:.65},
+ upperlift:{bodyOffset:.82,heightMode:'seat',points:upperlift,exit:[middleSummit.x+20,alpineHeight(middleSummit.x+20,middleSummit.z),middleSummit.z],duration:46,arrivalYaw:.6},
+ ridgelift:{bodyOffset:.82,heightMode:'seat',points:Array.from({length:321},(_,i)=>ridgeLiftPoint(i/320)),exit:[ridgeTransfers[1][0].x,alpineHeight(ridgeTransfers[1][0].x,ridgeTransfers[1][0].z),ridgeTransfers[1][0].z],duration:38,arrivalYaw:.6},
+ gondola:{smoothHeading:true,bodyOffset:.82,heightMode:'seat',points:gondolaPoints,exit:[peakSummit.x+5,alpineHeight(peakSummit.x+5,peakSummit.z+29),peakSummit.z+29],baseExit:[gondolaEntry.x,alpineHeight(gondolaEntry.x,gondolaEntry.z),gondolaEntry.z],duration:65,boardingSeconds:5,arrivalSeconds:8,arrivalYaw:0},
+ ski:{heightMode:'surface',points:ski,duration:480}
+};
 export const resortObstacles=[
- {x:-97,z:-176,w:9.3,d:6},{x:liftLayout.x-8,z:-185,w:1.5,d:1.4},
+ {x:-97,z:-176,w:9.3,d:6},{...skiTicketBooth,w:1.5,d:1.4},
  ...summitObstacles,
  ...[
  ...ryokanGardenObstacles,
@@ -99,11 +59,10 @@ export const resortObstacles=[
  {x:-16,z:101,rx:3.4,rz:2.5},{x:-22,z:98,rx:3.1,rz:2.4},{x:-27,z:106,rx:3.4,rz:2.1},{x:23,z:112,rx:2.8,rz:2.1}
  ].map(p=>({...p,z:p.z+spaShift}))
 ];
-export function resortGround(x,z){if(Math.hypot(x,z+260)<144)return alpineHeight(x,z);const localZ=z-spaShift;if(x>0&&x<24&&localZ>115&&localZ<137)return .34;if(Math.abs(x-12)<2.2&&localZ>=114.2&&localZ<=115)return .09+.25*(localZ-114.2)/.8;if(x>=-.8&&x<=0&&Math.abs(z-spaPavilion.sideDoorZ)<2.3)return .09+.25*(x+.8)/.8;return .09;}
+export function resortGround(x,z){if(z< -137)return alpineHeight(x,z);const localZ=z-spaShift;if(x>0&&x<24&&localZ>115&&localZ<137)return .34;if(Math.abs(x-12)<2.2&&localZ>=114.2&&localZ<=115)return .09+.25*(localZ-114.2)/.8;if(x>=-.8&&x<=0&&Math.abs(z-spaPavilion.sideDoorZ)<2.3)return .09+.25*(x+.8)/.8;return .09;}
 export function resortRidePosition(x,y,z,mode){
- if(!Number.isFinite(x)||!Number.isFinite(y)||!Number.isFinite(z))return false;
- if(mode==='lift'||mode==='upperlift'){
-  return [[liftLayout,liftPoint],[upperLiftLayout,upperLiftPoint]].some(([line,point])=>{const t=((x-line.x)*line.dx+(z-line.z)*line.dz)/(line.dx*line.dx+line.dz*line.dz);if(t<-.001||t>1.001)return false;const p=point(t);return Math.hypot(x-p[0],z-p[2])<1.5&&Math.abs(y-p[1]-.82)<.5;});
- }
- return ['summit','ski'].includes(mode)&&Math.hypot(x,z+260)<142&&y>=alpineHeight(x,z)-.1&&y<=alpineHeight(x,z)+8;
+ if(!Number.isFinite(x+y+z))return false;
+ if(mode==='lift')return Object.values(resortRides).filter(r=>r.heightMode==='seat').some(r=>r.points.slice(1).some((b,i)=>{const a=r.points[i],dx=b[0]-a[0],dz=b[2]-a[2],t=((x-a[0])*dx+(z-a[2])*dz)/(dx*dx+dz*dz||1);if(t< -1e-6||t>1+1e-6)return false;return Math.hypot(x-a[0]-t*dx,z-a[2]-t*dz)<2&&Math.abs(y-.82-a[1]-t*(b[1]-a[1]))<(r.boardingSeconds?1.2:.2);}));
+ const airLimit=mode==='ski'&&skiRuns.some(r=>z>=r.startZ&&z<=r.finish+12&&Math.abs(x-skiRunCenter(z,r.id))<=skiRunHalfWidth(z,r.id))?(skiJumps.some(j=>Math.hypot(x-j.x,z-j.z)<160)?32:16):3;
+ return ['summit','ski'].includes(mode)&&z>=mountainBounds.minZ&&z<=mountainBounds.maxZ&&x>mountainBounds.minX&&x<mountainBounds.maxX&&y>=alpineHeight(x,z)-.1&&y<=alpineHeight(x,z)+airLimit;
 }

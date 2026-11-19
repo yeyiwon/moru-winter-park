@@ -8,6 +8,7 @@ import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
 import {JSDOM} from 'jsdom';
 import {createLocalDatabase} from '../scripts/local-database.mjs';
 import {fireworksAPI,readFireworkShow} from '../server/fireworks.js';
+import {showTrack} from '../dist/show-tracks.js';
 import {fireworkRequestState,mergeFireworkShow,installFireworkRequests} from '../dist/fireworks-request.js';
 test('seeded show has five distinct patterns, overlaps, depth and a bounded final fade',()=>{
  const score=createFireworkScore(42);assert.deepEqual(score,createFireworkScore(42));assert.notDeepEqual(score,createFireworkScore(43));assert.deepEqual([...new Set(score.map(s=>s.pattern))].sort(),[...fireworkPatterns].sort());assert.ok(score.every(s=>s.at+s.flight+s.life<fireworkConfig.duration));assert.ok(new Set(score.map(s=>s.z)).size>10);assert.ok(score.some((s,i)=>i&&s.at-score[i-1].at<1));assert.equal(fireworkConfig.auto,false);
@@ -34,12 +35,16 @@ test('firework lighting reuses the world light with bounded pulses and respects 
 test('embers finish in the sky with short tapered tails instead of long vertical rain',()=>{
  const score=createFireworkScore(42);assert.ok(score.every(s=>s.life<=5.6));assert.ok(score.filter(s=>s.pattern!=='willow').every(s=>s.life<=4.2));
  const scene=new T.Scene(),show=createWinterFireworks(scene);show.setShow({id:'tail-test',seed:42,startsAt:0,state:'playing'});
- const {position,velocity,timing,design}=show.root.geometry.attributes;for(let i=0;i<timing.count;i++){assert.ok(timing.getY(i)<=.551);assert.ok(design.getZ(i)<=5.601);}
- // Sample actual seeded trajectories at extinction: even the lowest ember stays above the ground.
- for(let i=0;i<timing.count;i+=12){const t=design.getZ(i);if(!t)continue;const willow=design.getX(i)===2,drag=willow?.19:.46;
-  const height=position.getY(i)+timing.getW(i)+velocity.getY(i)*(1-Math.exp(-t*drag))/drag-(willow?1.15:1.8)*t*t;
-  assert.ok(height>10,'embers must extinguish before descending into the park');
+ const {position,velocity,timing,design}=show.root.geometry.attributes;
+ let sampled=0;
+ for(let age=0;age<74;age+=.5){show.update(age*1000);const count=show.root.geometry.drawRange.count;
+  assert.ok(count<=position.count,'fixed pool must contain every live shell');
+  for(let i=0;i<count;i+=10){const t=design.getZ(i),willow=design.getX(i)===2,drag=willow?.28:.48;
+   const height=position.getY(i)+velocity.getY(i)*(1-Math.exp(-t*drag))/drag-(willow?1:1.6)*t*t;
+   assert.ok(height>10,'embers must extinguish before descending into the park');assert.ok(t<=5.601);sampled++;
+  }
  }
+ assert.ok(sampled>10000);
  show.dispose();
 });
 
@@ -65,7 +70,7 @@ test('simultaneous guest requests claim one show and merge into its ten-second s
  assert.equal(results.filter(r=>r.data.merged).length,7);
  assert.equal(new Set(results.map(r=>r.data.show.id)).size,1);
  const first=results[0].data.show;
- assert.equal(first.startsAt,base+10000);assert.equal(first.endsAt,first.startsAt+74000);
+ assert.equal(first.startsAt,base+10000);assert.equal(first.endsAt,first.startsAt+showTrack(first.musicId).duration*1000);
  assert.equal(first.nextRequestAt,first.endsAt+900000);
  assert.equal((await DB.prepare('SELECT COUNT(*) AS count FROM world_settings').bind().first()).count,1);
  const replay=await call('request',{now:base+1000});
@@ -167,7 +172,7 @@ test('guest controls request a show, avoid interrupting editors and never replay
  d.body.classList.add('studio-open');view.button.click();await flush();
  assert.equal(requests,1);assert.equal(view.button.disabled,true);assert.equal(view.notice.hidden,true);
  d.body.classList.remove('studio-open');w.dispatchEvent(new w.Event('lab:close'));
- assert.equal(view.notice.hidden,false);assert.match(view.notice.textContent,/10초/);assert.equal(view.notice.querySelector('button'),null,'notice cannot take over the camera');
+ assert.equal(view.notice.hidden,false);assert.match(view.notice.textContent,/10초/);let watches=0;w.addEventListener('lab:watch-fireworks',()=>watches++);assert.equal(watches,0);assert.equal(view.notice.querySelector('#firework-watch'),null);assert.equal(watches,0,'notice never changes the free camera');
  now=show.startsAt+5000;d.dispatchEvent(new w.Event('visibilitychange'));await flush();
  assert.equal(view.notice.hidden,false);assert.equal(view.notice.querySelector('.firework-notice-countdown').textContent,'');assert.match(view.button.textContent,/진행 중/);
  w.dispatchEvent(new w.CustomEvent('lab:fireworks',{detail:{...show,state:'stopped',revision:2}}));
@@ -196,4 +201,19 @@ test('fireworks never fall back to weather controls or an action group outside t
   const dom=new JSDOM('<body>'+body+'</body>',{url:'https://winter.test'});t.after(()=>dom.window.close());const w=dom.window;w.labSocialJoined=true;let requests=0;w.fetch=async()=>{requests++;return{ok:true,json:async()=>({show:null})};};
   assert.equal(installFireworkRequests({win:w,doc:w.document}),null);assert.equal(w.document.querySelector('#firework-request'),null);assert.equal(w.document.querySelector('#firework-notice'),null);assert.equal(requests,0);
  }
+});
+
+
+test('finale retains all overlapping shells, and peers reconstruct identical lower-density prefixes',()=>{
+ const a=createWinterFireworks(new T.Scene()),b=createWinterFireworks(new T.Scene()),state={id:'same-show',seed:91,startsAt:0,state:'playing'};
+ a.setShow(state);b.setShow(state);b.setQuality('low');a.update(67050);b.update(67050);
+ const score=createFireworkScore(91),live=score.filter(s=>67.05>=s.at&&67.05<s.at+s.flight+6.15).length;
+ assert.equal(live,17);assert.equal(a.root.geometry.drawRange.count,live*360*6);assert.equal(b.root.geometry.drawRange.count,live*96*6);
+ for(const attribute of ['position','velocity','timing','design','color']){
+  const x=a.root.geometry.attributes[attribute],y=b.root.geometry.attributes[attribute];
+  for(let shell=0;shell<live;shell++)assert.deepEqual(x.array.slice(shell*2160*x.itemSize,(shell*2160+576)*x.itemSize),y.array.slice(shell*576*y.itemSize,(shell+1)*576*y.itemSize));
+ }
+ const buffers=Object.values(a.root.geometry.attributes).map(v=>v.array);
+ for(let i=1;i<=6;i++){a.setShow({...state,id:'again-'+i,startsAt:i*100000});a.update(i*100000+67050);a.update(i*100000+74000);assert.equal(a.root.geometry.drawRange.count,0);assert.equal(a.castle.uniforms.showPower.value,0);Object.values(a.root.geometry.attributes).forEach((v,j)=>assert.equal(v.array,buffers[j]));}
+ a.dispose();b.dispose();
 });

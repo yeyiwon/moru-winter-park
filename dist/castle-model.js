@@ -22,9 +22,11 @@ export function buildCastle(){
 #include <colorspace_fragment>
 }`}),
  };
- function add(g,color='stone',finish='stone',position=[0,0,0],rotation=[0,0,0]){transform.position.set(...position);transform.rotation.set(...rotation);transform.updateMatrix();g.applyMatrix4(transform.matrix);if(!batches.has(finish))batches.set(finish,[]);batches.get(finish).push({g,color:new T.Color(C[color]||color)});}
+ let showRegion=4;
+ function add(g,color='stone',finish='stone',position=[0,0,0],rotation=[0,0,0]){transform.position.set(...position);transform.rotation.set(...rotation);transform.updateMatrix();g.applyMatrix4(transform.matrix);if(!batches.has(finish))batches.set(finish,[]);batches.get(finish).push({g,color:new T.Color(C[color]||color),region:finish==='roof'?3:finish==='metal'&&![6,7].includes(showRegion)?9:showRegion});}
  const box=(w,h,d,color,x,y,z,finish='stone')=>add(new T.BoxGeometry(w,h,d),color,finish,[x,y,z]);
  function window(x,y,z,w,h,yaw=0){
+  const previousRegion=showRegion;showRegion=5;
   const shape=archShape(w,h),outline=shape.getPoints(9).map(p=>V(p.x,p.y,.09));
   const matrix=new T.Matrix4().makeTranslation(x,y,z).multiply(new T.Matrix4().makeRotationY(yaw));
   // A deep stone reveal and slender leaded panes keep lit openings architectural at close range.
@@ -35,7 +37,7 @@ export function buildCastle(){
   for(const [a,b]of [[[0,.08,.08],[0,h*.93,.08]],[[-w*.43,h*.43,.08],[w*.43,h*.43,.08]],[[-w*.32,h*.7,.08],[w*.32,h*.7,.08]]])add(rod(a,b,.021).applyMatrix4(matrix),'gold','metal');
   for(const side of [-1,1])add(rod([side*w*.23,.13,.08],[side*w*.23,h*.73,.08],.012).applyMatrix4(matrix),'silver','metal');
   add(new T.BoxGeometry(w+.38,.15,.38).translate(0,-.07,.09).applyMatrix4(matrix),'snow');
-  add(new T.BoxGeometry(w+.42,.035,.41).translate(0,-.16,.10).applyMatrix4(matrix),'gold','metal');
+  add(new T.BoxGeometry(w+.42,.035,.41).translate(0,-.16,.10).applyMatrix4(matrix),'gold','metal');showRegion=previousRegion;
  }
  function balcony(x,y,z,w,yaw=0){
   const matrix=new T.Matrix4().makeTranslation(x,y,z).multiply(new T.Matrix4().makeRotationY(yaw));
@@ -61,6 +63,7 @@ export function buildCastle(){
   for(let i=0;i<=Math.floor(width/.9);i++){const px=x-width/2+i*width/Math.floor(width/.9);box(.36,.68,.55,'stone',px,y+.4,z);box(.47,.1,.68,'snow',px,y+.78,z);add(new T.SphereGeometry(.075,8,6),'gold','metal',[px,y+.9,z]);}
  }
  function roofRidge(x,z,r,y,h){
+  const previousRegion=showRegion;showRegion=3;
   const profile=Array.from({length:19},(_,i)=>{const u=i/18;return new T.Vector2(.035+r*1.35*(1-u)**1.42,h*u);});
   add(new T.LatheGeometry(profile,28),'roof','roof',[x,y,z]);
   // Windward snow follows the roof profile instead of a white cone floating above it.
@@ -74,9 +77,10 @@ export function buildCastle(){
    if(j%3===0)add(new T.ConeGeometry(.045,.22+(j%2)*.1,5),'ice','light',[x+rx,y-.28,z+rz],[Math.PI,0,0]);
   }
   if(r>1.4)for(let j=0;j<4;j++){const a=j*Math.PI/2;dormer(x+Math.sin(a)*r*.98,y+h*.11,z+Math.cos(a)*r*.98,r*.5,h*.23,a);}
-
+  showRegion=previousRegion;
  }
  function tower(t){
+  const previousRegion=showRegion;showRegion=t.central?0:t.x<0?1:2;
   const {x,z,r,base,height:h,roof:rh}=t;
   add(new T.CylinderGeometry(r,r*1.055,h,24),'stone','stone',[x,base+h/2,z]);
   for(const y of [base+.3,base+h*.38,base+h*.72,base+h-.2]){add(new T.CylinderGeometry(r*1.085,r*1.085,.24,24),'snow','stone',[x,y,z]);add(ring(r*1.09,.033),'gold','metal',[x,y-.14,z]);}
@@ -89,19 +93,19 @@ export function buildCastle(){
   }
   if(r>1.5&&h>10)for(let j=0;j<4;j++){const a=j*Math.PI/2;balcony(x+Math.sin(a)*(r+.07),start+step,z+Math.cos(a)*(r+.07),r*.6,a);}
   roofRidge(x,z,r,base+h,rh);
-  add(rod([x,base+h+rh-.05,z],[x,base+h+rh+.85,z],.04),'gold','metal');
+  add(rod([x,base+h+rh-.05,z],[x,base+h+rh+.85,z],.04),'gold','metal');showRegion=previousRegion;
  }
  // The elevated keep bridges a full 8.5m-wide arcade. Nothing solid closes its floor.
  const portal=new T.Shape();portal.moveTo(-4.5,7.3);portal.bezierCurveTo(-4.5,9.5,-2.4,11.5,0,11.5);portal.bezierCurveTo(2.4,11.5,4.5,9.5,4.5,7.3);portal.lineTo(4.5,14);portal.lineTo(-4.5,14);portal.closePath();
- add(new T.ExtrudeGeometry(portal,{depth:9,curveSegments:16,bevelEnabled:false}),'stone','stone',[0,0,-9]);
+ showRegion=7;add(new T.ExtrudeGeometry(portal,{depth:9,curveSegments:16,bevelEnabled:false}),'stone','stone',[0,0,-9]);showRegion=4;
  for(const side of [-1,1]){
   box(7.1,12.5,10.8,'stone',side*8.05,6.25,-4.2);
   for(const y of [.35,5.6,9.1,12.45]){box(7.35,.22,11,'snow',side*8.05,y,-4.2);box(7.4,.055,11.05,'gold',side*8.05,y-.16,-4.2,'metal');}
   // Facade pilasters and layered buttress feet make the large wings read as architecture.
-  for(const x of [side*4.68,side*8.05,side*11.42]){
+  showRegion=6;for(const x of [side*4.68,side*8.05,side*11.42]){
    box(.42,12.2,.5,'shadow',x,6.1,1.4);box(.7,.75,.78,'stone',x,.45,1.5);box(.62,.2,.68,'snow',x,12.2,1.5);for(const y of [1.5,3.8,6.1,8.4,10.7])box(.48,.19,.56,'snow',x,y,1.42);
   }
-  for(const x of [side*6.2,side*9.8]){window(x,2.1,1.24,1.15,3.7);window(x,7.1,1.24,.92,2.55);balcony(x,7.1,1.42,1.35);
+  showRegion=4;for(const x of [side*6.2,side*9.8]){window(x,2.1,1.24,1.15,3.7);window(x,7.1,1.24,.92,2.55);balcony(x,7.1,1.42,1.35);
    // Sapphire heraldic crests replace the repeated top storey of identical windows.
    const crest=new T.Shape();crest.moveTo(-.45,0);crest.lineTo(-.45,-.8);crest.quadraticCurveTo(-.32,-1.18,0,-1.4);crest.quadraticCurveTo(.32,-1.18,.45,-.8);crest.lineTo(.45,0);crest.closePath();
    add(new T.ExtrudeGeometry(crest,{depth:.09,bevelEnabled:true,bevelSize:.04,bevelThickness:.03,bevelSegments:2}),'roof','roof',[x,11.9,1.53]);
@@ -122,25 +126,26 @@ export function buildCastle(){
   for(let i=0;i<16;i++){const u=i/15,px=side*8.05-3.5+7*u,py=13.05+4*(1-Math.abs(u*2-1));add(new T.SphereGeometry(.044,6,4),'warm','light',[px,py,-.29]);}
 
  }
- box(8.8,9.2,7.3,'stone',0,18.65,-4.7);box(9.2,.3,7.7,'snow',0,14,-4.7);box(9.2,.25,7.7,'gold',0,23.3,-4.7,'metal');
+ showRegion=0;box(8.8,9.2,7.3,'stone',0,18.65,-4.7);box(9.2,.3,7.7,'snow',0,14,-4.7);box(9.2,.25,7.7,'gold',0,23.3,-4.7,'metal');
  for(const x of [-2.8,0,2.8])window(x,15.8,-.99,x===0?1.55:1.15,x===0?5.8:4.6);
  for(const side of [-1,1])for(const z of [-3.1,-5.6,-7.9])window(side*4.43,16,z,.9,3.9,side*Math.PI/2);
  parapet(0,-.82,8.8,23.65);
  for(const x of [-2.8,0,2.8])balcony(x,15.8,-.87,x===0?1.8:1.35);
  for(const x of [-4.23,4.23]){box(.27,8.7,.3,'shadow',x,18.7,-.9);for(const y of [14.5,17.5,20.5,22.8])box(.36,.16,.39,'snow',x,y,-.9);}
 
- for(const t of castleTowers)tower(t);
+ showRegion=4;for(const t of castleTowers)tower(t);
  // Separate front/back archivolts keep the northbound portal legible from both directions.
- for(const z of [.10,-9.15])for(const offset of [0,.24]){
+ showRegion=7;for(const z of [.10,-9.15])for(const offset of [0,.24]){
   const points=[[-4.55-offset,.15,z],[-4.55-offset,7.2,z],[-3.55-offset,9.95,z],[0,11.6+offset,z],[3.55+offset,9.95,z],[4.55+offset,7.2,z],[4.55+offset,.15,z]];
   add(pathTube(points,offset?.045:.095,54),offset?'ice':'gold',offset?'light':'metal');
  }
  // An open rose-window crest and fan tracery sit above the arch, never across its clearance.
- add(new T.TorusGeometry(.94,.055,6,48),'gold','metal',[0,13,.24]);
+ showRegion=8;add(new T.TorusGeometry(.94,.055,6,48),'gold','metal',[0,13,.24]);
  for(let j=0;j<12;j++){const a=j*Math.PI/6;add(new T.TorusGeometry(.21,.018,4,18),'silver','metal',[Math.cos(a)*.65,13+Math.sin(a)*.65,.25]);add(new T.SphereGeometry(.05,6,4),'warm','light',[Math.cos(a)*.94,13+Math.sin(a)*.94,.27]);}
  // A six-fold ice crest, with no copied insignia.
  for(let i=0;i<6;i++){const a=i*Math.PI/3,x=Math.cos(a),y=Math.sin(a);add(rod([0,13.0,.22],[x*.8,13+y*.8,.22],.045),'ice','light');for(const s of [-1,1])add(rod([x*.5,13+y*.5,.22],[x*.63-s*y*.2,13+y*.63+s*x*.2,.22],.03),'gold','metal');}
 
+ showRegion=9;
  // A luminous stained-glass rose and a pointed crown break up the broad central keep.
  for(let j=0;j<12;j++){const a=j*Math.PI/6;add(new T.CircleGeometry(.89,8,a+.035,Math.PI/6-.07),j%3===0?'#eed6a4':j%2?'#8ec7dd':'#b6d8e5','light',[0,13,.205]);}
  for(const side of [-1,1]){
@@ -178,7 +183,7 @@ export function buildCastle(){
  }
 
  for(const [kind,parts]of batches){
-  const geometry=mergePaintedGeometry(parts.map(p=>({geometry:p.g,color:p.color})));for(const part of parts)part.g.dispose();const object=new T.Mesh(geometry,materials[kind]);object.name='winter-palace-'+kind;object.castShadow=kind!=='light';object.receiveShadow=kind!=='light';root.add(object);
+  const geometry=mergePaintedGeometry(parts.map(p=>({geometry:p.g,color:p.color})));const regions=new Float32Array(geometry.attributes.position.count);let offset=0;for(const part of parts){const count=part.g.attributes.position.count;regions.fill(part.region,offset,offset+count);offset+=count;part.g.dispose();}geometry.setAttribute('showRegion',new T.BufferAttribute(regions,1));const object=new T.Mesh(geometry,materials[kind]);object.name='winter-palace-'+kind;object.castShadow=kind!=='light';object.receiveShadow=kind!=='light';root.add(object);
  }
  const atmosphere=createCastleAtmosphere(root,castleTowers);
  function update(t,still=false,{quality,player}={}){if(!still&&Number.isFinite(t))time.value=t;atmosphere.update(t,still,{quality,player});}

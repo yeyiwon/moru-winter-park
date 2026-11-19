@@ -21,7 +21,7 @@ export const worldEvents=sqliteTable('world_events',{id:text('id').primaryKey(),
 
 export const rideSeats=sqliteTable('ride_seats',{room:text('room').notNull(),kind:text('kind').notNull(),cabin:integer('cabin').notNull(),seat:integer('seat').notNull(),visitor:text('visitor').notNull().unique(),startedAt:integer('started_at').notNull(),expiresAt:integer('expires_at').notNull()},t=>[
  primaryKey({columns:[t.room,t.kind,t.cabin,t.seat]}),
- check('ride_seats_kind_seat',sql`(${t.kind} = 'dining' AND ${t.seat} IN (0,1,2)) OR (${t.kind} <> 'dining' AND ${t.seat} IN (0,1))`)
+ check('ride_seats_kind_seat',sql`(${t.kind} = 'dining' AND ${t.seat} IN (0,1,2)) OR (${t.kind} = 'gondola' AND ${t.seat} IN (0,1,2,3,4,5)) OR (${t.kind} NOT IN ('dining','gondola') AND ${t.seat} IN (0,1))`)
 ]);
 
 export const worldSettings=sqliteTable('world_settings',{id:text('id').primaryKey(),payload:text('payload').notNull(),updatedAt:integer('updated_at').notNull()});

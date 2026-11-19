@@ -1,5 +1,7 @@
 // Small coloured landmarks, without badge backgrounds or enclosing borders.
 const drawings={
+ gondola:'<path d="M4 7h32M20 7v7" fill="none"/><rect x="8" y="15" width="24" height="19" rx="7" fill="#9fc9d9"/><path d="M11 19h18v9H11z" fill="#def2f6"/><path d="M20 19v15M12 30h16" fill="none"/>',
+
  lift:'<path d="M4 8h32M21 8v10l-8 4v8" fill="none"/><path d="M13 23h17v9H13z" fill="#72b8df"/><path d="M17 18v6m8-7v7" fill="none"/><path d="M13 27h17" stroke="#e5f3ff"/>',
  summit:'<path d="m4 33 16-22 16 22H4Z" fill="#7fa5d5"/><path d="m14 20 6 4 6-4-6-9Z" fill="#f4f7ff"/><path d="M20 11V4l10 3-10 4" fill="#ecc278"/>',
  park:'<path d="M7 30V17h7v6h12v-6h7v13H7Z" fill="#ccd3f0"/><path d="M16 23V13h8v10" fill="#b9c8ed"/><path d="m5 17 5.5-7 5.5 7Zm19 0 5.5-7 5.5 7ZM16 13l4-8 4 8Z" fill="#cb985c"/><path d="M17 30v-5a3 3 0 0 1 6 0v5" fill="#54769b"/>',

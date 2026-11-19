@@ -1,7 +1,7 @@
 /* Clear illuminated glass. The world supplies the panel color; a thin white
    reflection and bright rim provide light without an opaque pearl fill. */
 :root{
- color-scheme:light;
+ color-scheme:only dark;
  --ui-font:'Winter Sans','Apple SD Gothic Neo',sans-serif;
  --ui-display:var(--ui-font);
  --ui-ink:#f7fbff;--ui-muted:#e0eaf3;--ui-accent:#fff0ca;--ui-text:var(--ui-ink);
@@ -143,11 +143,11 @@ body.still *,body.still *::before,body.still *::after{animation-duration:.001ms!
 }
 @media(max-width:350px){.preference-grid{grid-template-columns:1fr}}
 @media(max-height:500px){#exhibit-panel{left:auto;right:10px;bottom:10px;max-height:calc(100dvh - 20px);width:min(380px,calc(100vw - 20px))}}
-/* Quality changes blur cost, not glass opacity. Accessibility or unsupported
-   backdrop filters deliberately use a readable solid surface and dark ink. */
+/* Reduce compositing or transparency without swapping the app's colour theme.
+   Windows exposes its transparency preference independently of dark mode. */
 :root[data-render-quality=low]{--ui-blur:4px}
-@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root{--panel-glass:var(--ui-solid);--ui-blur:0px;--ui-backdrop:none;--ui-hud:var(--ui-solid);--ui-popover:var(--ui-solid);--ui-ink:#263b50;--ui-muted:#45576b;--ui-accent:#405780;--ui-edge:rgba(92,120,150,.24);--ui-divider:rgba(92,120,150,.14);--ui-hover:rgba(189,215,245,.34);--ui-selected:rgba(195,215,245,.6);--ui-selected-edge:#91a8cf;--ui-success:#255d48;--ui-danger:#8b4048;--ui-text-shadow:none}}
-@media(prefers-reduced-transparency:reduce){:root{--panel-glass:var(--ui-solid);--ui-blur:0px;--ui-backdrop:none;--ui-hud:var(--ui-solid);--ui-popover:var(--ui-solid);--ui-ink:#263b50;--ui-muted:#45576b;--ui-accent:#405780;--ui-edge:rgba(92,120,150,.24);--ui-divider:rgba(92,120,150,.14);--ui-hover:rgba(189,215,245,.34);--ui-selected:rgba(195,215,245,.6);--ui-selected-edge:#91a8cf;--ui-success:#255d48;--ui-danger:#8b4048;--ui-text-shadow:none}}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root{--panel-glass:rgba(30,44,62,.94);--ui-blur:0px;--ui-backdrop:none;--ui-hud:rgba(30,44,62,.94);--ui-popover:#26364a}}
+@media(prefers-reduced-transparency:reduce){:root{--panel-glass:#26364a;--ui-blur:0px;--ui-backdrop:none;--ui-hud:#26364a;--ui-popover:#26364a;--ui-text-shadow:none}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
 
 

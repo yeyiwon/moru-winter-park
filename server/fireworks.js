@@ -1,4 +1,5 @@
 import {fireworkConfig} from '../dist/firework-score.js';
+import {selectShowTrack,showTimelineVersion} from '../dist/show-tracks.js';
 import {publicRoom} from '../dist/space-links.js';
 import {rateLimit} from './community-api.js';
 
@@ -65,8 +66,9 @@ export async function fireworksAPI(request,DB,self,admin,now){
  };
  if(active(existing)||!admin&&existing&&now<existing.nextRequestAt)return existingResponse(existing);
 
- const startsAt=now+fireworkConfig.leadMs,endsAt=startsAt+showLength;
- const show={id:crypto.randomUUID(),startsAt,endsAt,nextRequestAt:endsAt+fireworkConfig.cooldownMs,
+ const track=selectShowTrack(crypto.getRandomValues(new Uint8Array(1))[0]);
+ const startsAt=now+fireworkConfig.leadMs,endsAt=startsAt+track.duration*1000;
+ const show={id:crypto.randomUUID(),musicId:track.id,duration:track.duration,timelineVersion:showTimelineVersion,startsAt,endsAt,nextRequestAt:endsAt+fireworkConfig.cooldownMs,
   seed:crypto.getRandomValues(new Uint32Array(1))[0],state:'scheduled',revision:1};
  // One atomic claim across Workers. JSON timestamps also preserve the reservation
  // after stop; older records without these fields retain a conservative cooldown.

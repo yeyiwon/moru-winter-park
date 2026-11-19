@@ -1,4 +1,4 @@
-import {validPose} from '../server/pose-validation.js';
+import {validPose,currentReservedPose} from '../server/pose-validation.js';
 import {interiorAt} from '../dist/interior-layout.js';
 import {activityGestures} from '../dist/activity-state.js';
 export const realtimeLimits=Object.freeze({capacity:100,peers:32,maxMessage:2048,rate:15,idleMs:15000});
@@ -29,12 +29,13 @@ export class RealtimeWorld{
   if(b.type==='pose'){
    const p=b.pose,reservation=this.rideSeats.find(r=>r.id===s.id&&r.expiresAt>now);
    if(!validPose(p,reservation,now)||!modes.has(p.mode||''))return reject('pose');
+   const currentSeat=currentReservedPose(p,reservation,now);if(currentSeat)for(const key of ['x','y','z','yaw'])p[key]=currentSeat[key];
    const elapsed=Math.max(.1,(now-s.poseAt)/1000),distance=Math.hypot(p.x-s.profile.x,p.z-s.profile.z);
    // Teleports and interior transitions arrive through validated HTTP actions first.
    if(distance>12+Math.min(elapsed,5)*(p.mode==='ski'?48:['lift','summit','ferris'].includes(p.mode)?24:12))return reject('movement');
    // A one-shot greeting must survive the following movement packet.
    const gesture=activityGestures.includes(p.gesture)&&p.gesture?p.gesture:s.profile.gesture==='wave'&&now-s.profile.gestureAt<2000?'wave':'';
-   s.profile={...s.profile,x:p.x,y:p.y,z:p.z,yaw:p.yaw,mode:p.mode||'',speed:Math.max(0,Math.min(p.mode==='ski'?40:8,Number.isFinite(p.speed)?p.speed:0)),region:interiorAt(p.x,p.z)?.id||'outdoors',updatedAt:now,gesture,gestureAt:gesture===s.profile.gesture?s.profile.gestureAt:now};s.poseAt=now;
+   s.profile={...s.profile,x:p.x,y:p.y,z:p.z,yaw:p.yaw,mode:p.mode||'',lean:p.mode==='ski'&&Number.isFinite(p.lean)?Math.max(-1,Math.min(1,p.lean)):0,tilt:p.mode==='ski'&&Number.isFinite(p.tilt)?Math.max(-.55,Math.min(.55,p.tilt)):0,brake:p.mode==='ski'&&p.brake===true,air:p.mode==='ski'&&Number.isFinite(p.air)?Math.max(0,Math.min(1.2,p.air)):0,speed:Math.max(0,Math.min(p.mode==='ski'?56:8,Number.isFinite(p.speed)?p.speed:0)),region:interiorAt(p.x,p.z)?.id||'outdoors',updatedAt:now,gesture,gestureAt:gesture===s.profile.gesture?s.profile.gestureAt:now};s.poseAt=now;
   }
   s.seq=b.seq;s.seen=now;this.save(ws,s);this.send(ws,{type:'snapshot',ack:b.seq,...this.wireSnapshot(ws,s)});
   const samples=this.metrics.samples;samples.push(performance.now()-start);if(samples.length>300)samples.shift();
@@ -42,7 +43,7 @@ export class RealtimeWorld{
  wireSnapshot(ws,self){
   const snapshot=this.snapshot(self),previous=this.known.get(ws)||new Map(),next=new Map();
   snapshot.people=snapshot.people.map(profile=>{
-   const full={...profile};for(const key of ['x','y','z','yaw','speed'])if(Number.isFinite(full[key]))full[key]=Math.round(full[key]*1000)/1000;
+   const full={...profile};for(const key of ['x','y','z','yaw','speed','lean','tilt','air'])if(Number.isFinite(full[key]))full[key]=Math.round(full[key]*1000)/1000;
    next.set(full.id,full);const old=previous.get(full.id);if(!old)return full;
    const delta={id:full.id};for(const key of Object.keys(full))if(full[key]!==old[key])delta[key]=full[key];return delta;
   });this.known.set(ws,next);return snapshot;

@@ -1,4 +1,4 @@
-import {reservedRidePose} from './pose-validation.js';
+import {reservedRidePose,currentReservedPose} from './pose-validation.js';
 import {boundedRequest} from './request-body.js';
 import {realtimeAPI,realtimeConfigured,realtimeRPC,publishRealtime,realtimeProfile,worldCapacity} from './realtime.js';
 import {ownerAuthAPI} from './owner-auth.js';
@@ -57,7 +57,7 @@ export async function handleAPI(request,env){
  const assisted=await assistAPI(request,env,self);if(assisted)return assisted;
  const personalized=await experienceAPI(request,env,self);if(personalized)return personalized;
  const communityRequest=request.clone();const community=await communityAPI(request,env,self,path==='/api/admin'?await isOwner(request,env):false);if(community){if(community.ok&&path==='/api/admin'&&request.method==='POST'){const command=await communityRequest.json().catch(()=>null);if(command&&['kick','block'].includes(command.action))await publishRealtime(env,{action:'revoke',id:command.id});}return community;}
- if(path==='/api/tree'&&request.method==='GET'){const rows=await env.DB.prepare('SELECT id,kind,color,angle,height,origin_x AS originX,origin_y AS originY,origin_z AS originZ,created_at AS createdAt,CASE WHEN author=? THEN 1 ELSE 0 END AS mine FROM tree_decorations WHERE room=? ORDER BY created_at LIMIT 160').bind(self.id,self.room).all();const decorations=rows.results||[],revision=(await digest(JSON.stringify(decorations))).slice(0,24);return json(url.searchParams.get('revision')===revision?{unchanged:true,revision}:{decorations,revision});}
+ if(path==='/api/tree'&&request.method==='GET'){const rows=await env.DB.prepare('SELECT id,kind,color,angle,height,origin_x AS originX,origin_y AS originY,origin_z AS originZ,created_at AS createdAt,CASE WHEN author=? THEN 1 ELSE 0 END AS mine FROM tree_decorations WHERE room=? ORDER BY created_at DESC,id DESC LIMIT 160').bind(self.id,self.room).all();const decorations=(rows.results||[]).reverse(),revision=(await digest(JSON.stringify(decorations))).slice(0,24);return json(url.searchParams.get('revision')===revision?{unchanged:true,revision}:{decorations,revision});}
  if(path==='/api/appearance'&&request.method==='POST'){
   const raw=await request.text();if(raw.length>1024)return json({error:'요청이 너무 큽니다.'},413);
   let look;try{look=validateAppearance(JSON.parse(raw));}catch(e){return json({error:e.message},400);}
@@ -71,7 +71,7 @@ export async function handleAPI(request,env){
   if(!decorationKinds.includes(b.kind)||!validDecorationColor(b.color)||!Number.isFinite(b.angle)||!Number.isFinite(b.height)||b.height<3||b.height>27||Math.abs(b.angle)>Math.PI*2)return json({error:'장식 위치를 확인해 주세요.'},400);
   let wishMessage='';try{if(b.message)wishMessage=messageText(b.message);}catch(e){return json({error:e.message},400);}
   if(b.visibility&&!['public','private'].includes(b.visibility))return json({error:'공개 범위를 확인해 주세요.'},400);
-  const ornament=crypto.randomUUID(),result=await env.DB.prepare('INSERT INTO tree_decorations(id,room,author,kind,color,angle,height,created_at,origin_x,origin_y,origin_z) SELECT ?,?,?,?,?,?,?,?,?,?,? WHERE (SELECT COUNT(*) FROM tree_decorations WHERE room=?)<160 AND NOT EXISTS (SELECT 1 FROM tree_decorations WHERE author=? AND created_at>?)').bind(ornament,self.room,id,b.kind,b.color,b.angle,b.height,now,self.x+Math.sin(self.yaw||0)*.9,self.y+.4,self.z+Math.cos(self.yaw||0)*.9,self.room,id,now-1000).run();if(!result.meta?.changes)return json({error:'잠시 후 다시 시도해 주세요. 트리는 160개까지 꾸밀 수 있어요.'},429);if(wishMessage){try{await env.DB.prepare('INSERT INTO wishes(id,room,author,author_name,message,visibility,created_at) VALUES(?,?,?,?,?,?,?)').bind(ornament,self.room,id,'게스트 '+self.id.slice(0,4).toUpperCase(),wishMessage,b.visibility==='public'?'public':'private',now).run();}catch(e){await env.DB.prepare('DELETE FROM tree_decorations WHERE id=?').bind(ornament).run();throw e;}}return json({id:ornament});
+  const ornament=crypto.randomUUID(),result=await env.DB.prepare('INSERT INTO tree_decorations(id,room,author,kind,color,angle,height,created_at,origin_x,origin_y,origin_z) SELECT ?,?,?,?,?,?,?,?,?,?,? WHERE NOT EXISTS (SELECT 1 FROM tree_decorations WHERE author=? AND created_at>?)').bind(ornament,self.room,id,b.kind,b.color,b.angle,b.height,now,self.x+Math.sin(self.yaw||0)*.9,self.y+.4,self.z+Math.cos(self.yaw||0)*.9,id,now-1000).run();if(!result.meta?.changes)return json({error:'장식을 달고 있어요. 잠시 후 다시 시도해 주세요.'},429);if(wishMessage){try{await env.DB.prepare('INSERT INTO wishes(id,room,author,author_name,message,visibility,created_at) VALUES(?,?,?,?,?,?,?)').bind(ornament,self.room,id,'게스트 '+self.id.slice(0,4).toUpperCase(),wishMessage,b.visibility==='public'?'public':'private',now).run();}catch(e){await env.DB.prepare('DELETE FROM tree_decorations WHERE id=?').bind(ornament).run();throw e;}}return json({id:ornament});
  }
  if(path==='/api/tree'&&request.method==='PATCH'){
   const raw=await request.text();if(raw.length>256)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);if(typeof b.id!=='string'||b.id.length>80||!validDecorationColor(b.color))return json({error:'색상을 확인해 주세요.'},400);
@@ -86,12 +86,14 @@ export async function handleAPI(request,env){
   const raw=await request.text();if(raw.length>2048)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);
   const benchReservation=['rest','tea','sauna','dining','lift','ferris'].includes(b.mode)?await env.DB.prepare('SELECT kind,cabin,seat,started_at AS startedAt FROM ride_seats WHERE visitor=? AND expires_at>?').bind(id,now).first():null;
   if(!reservedRidePose(b,benchReservation,now))return json({error:'탑승 좌석을 다시 확인해 주세요.',code:benchReservation?'RIDE_POSE_INVALID':'RIDE_RESERVATION_EXPIRED'},409);
+  const currentSeat=currentReservedPose(b,benchReservation,now);if(currentSeat)for(const key of ['x','y','z','yaw'])b[key]=currentSeat[key];
   const benchOK=benchPoseValid(benchReservation,b),diningOK=diningPoseValid(benchReservation,b);
   if(b.mode==='dining'&&!diningOK)return json({error:'오마카세 좌석을 다시 확인해 주세요.',code:benchReservation?'RIDE_POSE_INVALID':'RIDE_RESERVATION_EXPIRED'},409);
   const restOK=b.mode==='rest'&&Object.values(restSeats).some(p=>Math.hypot(b.x-p.x,b.z-p.z)<.15&&Math.abs(b.y-p.y)<.15);
+  const gondolaOK=b.mode==='lift'&&benchReservation?.kind==='gondola';
   const groundOK=canStandAt(b.x,b.z)&&b.y>=surfaceHeight(b.x,b.z)+.5&&b.y<=surfaceHeight(b.x,b.z)+3;
-  if(!Number.isFinite(b.x)||!Number.isFinite(b.z)||!Number.isFinite(b.yaw)||!Number.isFinite(b.y)||!(interiorPositionValid(b.x,b.y,b.z)||groundOK||restOK||benchOK||amusementPositionValid(b.x,b.y,b.z,b.mode)||spaPositionValid(b.x,b.y,b.z,b.mode)||resortRidePosition(b.x,b.y,b.z,b.mode)))return json({error:'이동 위치를 확인해 주세요.'},400);
-  const speed=Number.isFinite(b.speed)?Math.max(0,Math.min(b.mode==='ski'?40:8,b.speed)):0;
+  if(!Number.isFinite(b.x)||!Number.isFinite(b.z)||!Number.isFinite(b.yaw)||!Number.isFinite(b.y)||!(interiorPositionValid(b.x,b.y,b.z)||gondolaOK||groundOK||restOK||benchOK||amusementPositionValid(b.x,b.y,b.z,b.mode)||spaPositionValid(b.x,b.y,b.z,b.mode)||resortRidePosition(b.x,b.y,b.z,b.mode)))return json({error:'이동 위치를 확인해 주세요.'},400);
+  const speed=Number.isFinite(b.speed)?Math.max(0,Math.min(b.mode==='ski'?56:8,b.speed)):0;
   const fluff=Number.isFinite(b.fluff)?Math.max(50,Math.min(100,b.fluff)):100,roundness=Number.isFinite(b.roundness)?Math.max(0,Math.min(100,b.roundness)):50;
   const color=/^#[0-9a-f]{6}$/i.test(b.color)?b.color:'#f4eee5',accessory=normalizeWardrobe(b.accessory),gesture=activityGestures.includes(b.gesture)?b.gesture:'';
   // Stationary polls still receive peers, but do not rewrite an identical pose.

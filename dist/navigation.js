@@ -8,14 +8,14 @@ export function clearSegment(a,b){
  const n=Math.ceil(Math.hypot(b.x-a.x,b.z-a.z)/.12);let previous=a;
  for(let i=0;i<=n;i++){const t=n?i/n:0,p={x:a.x+(b.x-a.x)*t,z:a.z+(b.z-a.z)*t};if(!canStandAt(p.x,p.z)||!canMoveBetween(previous,p))return false;previous=p;}return true;
 }
-function gridFor(room){
- const key=room?.id||'outdoors';if(grids.has(key))return grids.get(key);
- const minX=room?room.x-room.rx:navigationBounds.minX,minZ=room?room.z-room.rz:navigationBounds.minZ,width=room?Math.ceil(room.rx*2/STEP)+1:Math.ceil((navigationBounds.maxX-minX)/STEP)+1,height=room?Math.ceil(room.rz*2/STEP)+1:Math.ceil((navigationBounds.maxZ-minZ)/STEP)+1;
+function gridFor(room,start,goal){
+ const key=room?.id||[Math.floor(start.x/128),Math.floor(start.z/128),Math.floor(goal.x/128),Math.floor(goal.z/128)].join(':');if(grids.has(key))return grids.get(key);
+ const minX=room?room.x-room.rx:Math.floor(Math.min(start.x,goal.x)/128)*128-32,minZ=room?room.z-room.rz:Math.floor(Math.min(start.z,goal.z)/128)*128-32,width=room?Math.ceil(room.rx*2/STEP)+1:Math.ceil(((Math.floor(Math.max(start.x,goal.x)/128)+1)*128+32-minX)/STEP)+1,height=room?Math.ceil(room.rz*2/STEP)+1:Math.ceil(((Math.floor(Math.max(start.z,goal.z)/128)+1)*128+32-minZ)/STEP)+1;
  const point=i=>({x:minX+i%width*STEP,z:minZ+Math.floor(i/width)*STEP}),walkable=new Int8Array(width*height);
  // Unknown cells are evaluated on demand. Building the full 231k-cell world
  // grid synchronously made the first obstructed click freeze for several seconds.
  const isWalkable=i=>{if(!walkable[i]){const p=point(i);walkable[i]=canStandAt(p.x,p.z)?1:-1;}return walkable[i]===1;};
- const grid={minX,minZ,width,height,point,walkable,isWalkable};grids.set(key,grid);return grid;
+ const grid={minX,minZ,width,height,point,walkable,isWalkable};if(grids.size>=8)grids.delete(grids.keys().next().value);grids.set(key,grid);return grid;
 }
 function closest(grid,p,connect=false){
  const {minX,minZ,width,height,isWalkable,point}=grid,cx=Math.round((p.x-minX)/STEP),cz=Math.round((p.z-minZ)/STEP);let best=-1,dist=Infinity;
@@ -34,9 +34,10 @@ class Queue{
 export function findPath(start,requested){
  if(!Number.isFinite(start.x+start.z+requested.x+requested.z))return [];
  const room=interiorAt(start.x,start.z),endRoom=interiorAt(requested.x,requested.z);if(room?.id!==endRoom?.id)return [];
+ if(!room&&Math.hypot(requested.x-start.x,requested.z-start.z)>220)return [];
  if(!room&&(requested.x<navigationBounds.minX||requested.x>navigationBounds.maxX||requested.z<navigationBounds.minZ||requested.z>navigationBounds.maxZ))return [];
  if(canStandAt(requested.x,requested.z)&&clearSegment(start,requested))return[{...requested}];
- const grid=gridFor(room),{width,height,point,walkable}=grid,end=closest(grid,requested,canStandAt(requested.x,requested.z));if(end.id<0||end.dist>4)return [];
+ const grid=gridFor(room,start,requested),{width,height,point,walkable}=grid,end=closest(grid,requested,canStandAt(requested.x,requested.z));if(end.id<0||end.dist>4)return [];
  const goal=canStandAt(requested.x,requested.z)?requested:point(end.id),first=closest(grid,start,true);if(first.id<0)return [];
  const cost=new Float64Array(walkable.length).fill(Infinity),parent=new Int32Array(walkable.length).fill(-1),closed=new Uint8Array(walkable.length),queue=new Queue();cost[first.id]=0;queue.push({id:first.id,score:0});
  while(queue.items.length){

@@ -1,7 +1,7 @@
 import {benches,benchAccess} from '../dist/bench-layout.js';
 import {ferrisDimensions} from '../dist/ferris-layout.js';
-import {ferrisCabinAtStation,sharedRideKinds,sharedSeatChoices,canReachSharedSeat} from '../dist/ride-seats.js';
-import {upperLiftEntry,resortDestinations} from '../dist/resort-layout.js';
+import {ferrisCabinAtStation,sharedRideKinds,sharedSeatChoices,canReachSharedSeat,gondolaAtStation} from '../dist/ride-seats.js';
+import {ridgeLiftEntry,upperLiftEntry,gondolaEntry,resortDestinations} from '../dist/resort-layout.js';
 import {diningEntrance,diningServiceSlot} from '../dist/ryokan-service.js';
 const json=(v,status=200)=>Response.json(v,{status,headers:{'Cache-Control':'no-store'}});
 export async function listRideSeats(DB,room,now){return(await DB.prepare('SELECT visitor AS id,kind,cabin,seat,started_at AS startedAt,expires_at AS expiresAt FROM ride_seats WHERE room=? AND expires_at>?').bind(room,now).all()).results||[];}
@@ -19,7 +19,7 @@ export async function rideAPI(request,DB,self,now){
  const readExisting=()=>DB.prepare('SELECT room,kind,cabin,seat,started_at AS startedAt FROM ride_seats WHERE visitor=?').bind(self.id).first();
  const respondExisting=existing=>existing.room===self.room&&existing.kind===kind&&(!exact||existing.cabin===expectedCabin&&(requestedSeat===undefined||existing.seat===requestedSeat))?json({reservation:{kind:existing.kind,cabin:existing.cabin,seat:existing.seat,startedAt:existing.startedAt},serverTime:now}):json({error:'먼저 이용 중인 자리에서 일어난 뒤 다른 자리를 선택해 주세요.',code:'already_seated'},409);
  const existing=await readExisting();if(existing)return respondExisting(existing);
- const entrance=kind==='dining'?diningEntrance:bench?benchAccess(bench):kind==='ferris'?ferrisDimensions.entrance:kind==='lift'?resortDestinations.find(p=>p.id==='ski'):upperLiftEntry;
+ const entrance=kind==='dining'?diningEntrance:bench?benchAccess(bench):kind==='ferris'?ferrisDimensions.entrance:kind==='lift'?resortDestinations.find(p=>p.id==='ski'):kind==='gondola'?gondolaEntry:kind==='ridgelift'?ridgeLiftEntry:upperLiftEntry;
  const choices=exact?sharedSeatChoices(kind,benchId):[];
  if(exact?!choices.some(choice=>(requestedSeat===undefined||choice.seat===requestedSeat)&&canReachSharedSeat(choice,self)):Math.hypot(self.x-entrance.x,self.z-entrance.z)>9)return json({error:exact?'선택한 자리 가까이에서 앉아 주세요.':'승강장 가까이에서 탑승해 주세요.'},400);
  if(exact){
@@ -35,6 +35,11 @@ export async function rideAPI(request,DB,self,now){
    const claimed=await readExisting();if(claimed)return respondExisting(claimed);
   }
   return json({error:'지금은 빈자리가 없어요. 잠시 후 다시 이용해 주세요.',code:'seat_occupied'},409);
+ }
+ if(kind==='gondola'){
+  const station=gondolaAtStation(now);if(!station.open)return json({error:`다음 곤돌라가 ${Math.ceil(station.wait/1000)}초 후 도착해요.`,code:'station_closed'},409);
+  for(let seat=0;seat<6;seat++){const result=await DB.prepare('INSERT INTO ride_seats(room,kind,cabin,seat,visitor,started_at,expires_at) VALUES(?,?,?,?,?,?,?) ON CONFLICT DO NOTHING').bind(self.room,kind,station.cabin,seat,self.id,station.startedAt,now+20000).run();if(result.meta?.changes)return json({reservation:{kind,cabin:station.cabin,seat,startedAt:station.startedAt},serverTime:now});const claimed=await readExisting();if(claimed)return respondExisting(claimed);}
+  return json({error:'이번 곤돌라가 찼어요. 다음 캐빈을 이용해 주세요.',code:'seat_occupied'},409);
  }
  const seats=await listRideSeats(DB,self.room,now),pairs=seats.filter(s=>s.kind===kind&&(!bench||s.cabin===bench.cabin)&&(bench||s.startedAt>now-(kind==='ferris'?10000:1500)));
  const candidates=[...new Set(pairs.map(s=>s.cabin))];let empty=bench?bench.cabin:kind==='ferris'?ferrisCabinAtStation(now):now;if(!bench&&kind!=='ferris')while(seats.some(s=>s.kind===kind&&s.cabin===empty))empty++;if(!candidates.includes(empty))candidates.push(empty);

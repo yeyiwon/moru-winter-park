@@ -51,7 +51,7 @@ export function installFireworkRequests({win=window,doc=document,now=serverNow}=
   // Only a future scheduled start produces an announcement. Resuming a tab or
   // closing an editor after the start cannot replay a stale countdown.
   const announce=joined&&!doc.hidden&&!doc.body.classList.contains('studio-open')&&(state.phase==='playing'||state.phase==='scheduled'&&state.remaining<=Math.ceil(fireworkConfig.leadMs/1000));
-  notice.hidden=!announce;if(announce){text(noticeText,state.phase==='playing'?'밤하늘에 불꽃놀이가 펼쳐지고 있어요':'잠시 후 불꽃놀이가 시작돼요');text(countdown,state.phase==='scheduled'?state.remaining+'초':'');}
+  notice.hidden=!announce;notice.classList.toggle('audio-blocked',state.phase==='playing'&&!!win.labAudio?.showAudioBlocked);if(announce){text(noticeText,state.phase==='playing'?'밤하늘에 불꽃놀이가 펼쳐지고 있어요':'잠시 후 불꽃놀이가 시작돼요');text(countdown,state.phase==='scheduled'?state.remaining+'초':win.labAudio?.showAudioBlocked?'화면을 누르면 음악이 함께 재생돼요':'');}
   if(joined&&!doc.hidden&&(state.phase!=='idle'||time<errorUntil))timer=win.setTimeout(refresh,1000);
  }
  function receive(incoming){

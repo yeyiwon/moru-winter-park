@@ -1,3 +1,4 @@
+import {paintSwatches} from './color-swatches.js';
 import {wardrobeSlots,wardrobeCategories,furPalettes,selectedItems,toggleItem,clearSlot} from './wardrobe.js';
 import {wardrobeIcon} from './wardrobe-icons.js';
 import {createAppearanceDraft} from './appearance-draft.js';
@@ -33,6 +34,7 @@ export function createCustomizationUI(initial,commit){
   root.querySelector('#wardrobe-equipped').textContent=labels.join(' · ')||'가볍고 포근한 기본 모습';
   root.querySelector('#wardrobe-reset').disabled=state.saving;save.disabled=state.saving||!state.dirty;cancel.disabled=state.saving||!state.dirty;save.textContent=state.saving?'저장 중…':state.error?'다시 저장':'저장';
   status.textContent=state.error?state.error+' 다시 저장해 주세요.':state.saving?'외형을 저장하고 있어요.':state.dirty?'미리보기 · 저장하면 월드에 적용돼요.':success?'저장했어요.':'현재 적용 중';
+  paintSwatches(root);
   if(active){window.labDraftAppearance=state.draft;window.dispatchEvent(new CustomEvent('lab:preview-appearance',{detail:state.draft}));}
  }
  tabs.addEventListener('click',e=>{const b=e.target.closest('[data-category]');if(!b)return;category=b.dataset.category;renderOptions();});

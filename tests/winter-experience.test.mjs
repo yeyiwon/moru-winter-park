@@ -1,10 +1,11 @@
+import {summitTransfer} from '../dist/resort-layout.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import {JSDOM} from 'jsdom';
 import {createWinterExperience} from '../dist/winter-experience.js';
 import {resortRides,resortDestinations,skiStarts,skiRunCenter,alpineShift,liftLayout} from '../dist/resort-layout.js';
-import {walkToStart} from './ski-driver.mjs';
+import {courseStart} from './ski-driver.mjs';
 import * as T from '../dist/vendor/three.module.js';
 import {ferrisDimensions} from '../dist/ferris-layout.js';
 import {benches,benchInteractions} from '../dist/bench-layout.js';
@@ -18,14 +19,14 @@ test('tree decoration is available around the entire plaza, with its prompt near
  assert.ok(opened>0&&opened<=12);e.proximity(treeLayout.x+40,treeLayout.z);assert.equal(document.querySelector('#place-card').hidden,true);
 });
 test('marshmallow stays in hand, toasts at the fire, survives walking and can be eaten',t=>{
- const {e,click}=setup(t);e.rides.start('lift');e.update(45);e.proximity(-68,-160+alpineShift);click();assert.equal(e.heldItem,'marshmallow');e.update(.1,{x:1});assert.equal(e.heldItem,'marshmallow');assert.equal(e.roast,0);
+ const {e,click}=setup(t);e.proximity(-68,-160+alpineShift);click();assert.equal(e.heldItem,'marshmallow');e.update(.1,{x:1});assert.equal(e.heldItem,'marshmallow');assert.equal(e.roast,0);
  e.proximity(-39,-151+alpineShift);click();e.update(2,{});assert.equal(e.gesture,'roast');assert.ok(e.roast>.3);e.update(.1,{x:1});assert.equal(e.gesture,'');const saved=e.roast;assert.equal(e.heldItem,'marshmallow');
  e.proximity(-3,-340+alpineShift);e.proximity(-39,-151+alpineShift);click();e.update(4,{});assert.ok(e.roast>saved);assert.equal(e.roast,1);assert.equal(e.gesture,'');e.proximity(-3,-340+alpineShift);e.proximity(-39,-151+alpineShift);assert.match(document.querySelector('#place-actions button').textContent,/먹기/);click();assert.equal(e.gesture,'eat');e.update(3,{});assert.equal(e.heldItem,'');
  e.proximity(-53,-163+alpineShift);click();assert.equal(e.heldItem,'odeng');assert.equal(e.gesture,'');e.useHeldItem();assert.equal(e.gesture,'eat');e.update(3,{});assert.equal(e.heldItem,'');
 });
-test('physical gates show one contextual action and stopping skis never teleports down',t=>{
- const app=setup(t),{e}=app;e.rides.start('lift');e.update(45);for(const gate of skiStarts){e.proximity(gate.x,gate.z);assert.equal(document.querySelector('#place-name').textContent,gate.name);assert.equal(document.querySelectorAll('#place-actions button').length,1);}
- const before=walkToStart(e.rides,'advanced');e.proximity(before.x,before.z);app.click();const waiting=e.update(2,{});assert.equal(waiting.runId,'advanced');assert.equal(waiting.x,before.x);assert.equal(waiting.z,before.z);assert.equal(waiting.speed,0);document.querySelector('#stop-ride').click();assert.equal(app.trips,0);assert.equal(e.rides.mode,'');
+test('physical gates offer both equipment choices and stopping skis never teleports down',t=>{
+ const app=setup(t),{e}=app;for(const gate of skiStarts){e.proximity(gate.x,gate.z);assert.equal(document.querySelector('#place-name').textContent,gate.name);assert.equal(document.querySelectorAll('#place-actions button').length,2);}
+ const before=courseStart('advanced');e.proximity(before.x,before.z);app.click();const waiting=e.update(2,{});assert.ok(['main','advanced'].includes(waiting.runId));assert.equal(waiting.x,before.x);assert.equal(waiting.z,before.z);assert.equal(waiting.speed,0);document.querySelector('#stop-ride').click();assert.equal(app.trips,0);assert.equal(e.rides.mode,'');
 });
 test('resting has no countdown and movement stands up',t=>{
  const {e}=setup(t);e.show('interior-tea');document.querySelector('#place-actions button').click();e.update(30,{});assert.equal(document.querySelector('#ride-label').textContent,'');assert.equal(document.querySelector('#stop-ride').textContent,'일어나기');assert.equal(e.update(.05,{x:1}),null);assert.equal(e.active,false);
@@ -73,8 +74,8 @@ test('the facing Ferris pair shares a camera focus between the seats',async t=>{
 
 test('ski completion zeros motion, returns gear and leaves no repeat-ride UI',t=>{
  const {e,click}=setup(t);let returns=0;window.addEventListener('lab:return-winter',()=>returns++);
- e.show('ski');click();e.update(45);const gate=walkToStart(e.rides,'main');e.proximity(gate.x,gate.z);click();let p=e.update(0,{});
- for(let i=0;i<10000&&!p.finished;i++){const desired=Math.atan2(skiRunCenter(p.z+6,'main')-p.x,6),delta=Math.atan2(Math.sin(p.heading-desired),Math.cos(p.heading-desired));p=e.update(.025,{push:true,steer:Math.max(-1,Math.min(1,delta*2.5))});}
+ const gate=courseStart('main');e.proximity(gate.x,gate.z);click();let p=e.update(0,{});
+ for(let i=0;i<30000&&!p.finished;i++){const desired=Math.atan2(skiRunCenter(p.z+6,'main')-p.x,6),delta=Math.atan2(Math.sin(p.heading-desired),Math.cos(p.heading-desired));p=e.update(.025,{push:true,steer:Math.max(-1,Math.min(1,delta*2.5))});}
  assert.ok(p.finished);assert.equal(p.speed,0);assert.equal(p.mode,'');assert.equal(e.active,false);assert.equal(returns,1);assert.equal(e.lifecycle.state,'Idle');
  for(const selector of ['#place-card','#ride-hud','#ski-controls'])assert.equal(document.querySelector(selector).hidden,true);
  assert.equal(document.querySelector('#ride-label').textContent,'');e.proximity(p.x,p.z);assert.equal(document.querySelector('#place-card').hidden,true);
@@ -126,4 +127,8 @@ test('seat hit planes distinguish chairs and reject other rooms, distant visitor
 test('leaving while a selected chair is pending never places the guest in that chair',async t=>{
  const {e}=setup(t);let resolveClaim,releases=0;window.reserveRide=()=>new Promise(resolve=>resolveClaim=resolve);window.releaseRide=()=>releases++;
  const selection=e.selectSeat('interior-dining',2);e.cancel();resolveClaim({kind:'dining',cabin:0,seat:2,startedAt:Date.now()});assert.equal(await selection,false);assert.equal(e.active,false);assert.equal(releases,1);
+});
+
+test('a lift arrival can start either gear at the actual transfer exit without returning to a remote course gate',t=>{
+ const {e}=setup(t);e.rides.start('lift');e.rides.syncElapsed(resortRides.lift.duration);e.update(0,{});const {x,z}=summitTransfer.at(-1);e.proximity(x,z);const buttons=[...document.querySelectorAll('#place-actions button')];assert.equal(document.querySelector('#place-card').hidden,false);assert.deepEqual(buttons.map(b=>b.getAttribute('aria-label')),['스키','스노보드']);buttons[1].click();assert.equal(e.rides.equipment,'board');const p=e.rides.update(0);assert.ok(Math.hypot(p.x-x,p.z-z)<.01);
 });

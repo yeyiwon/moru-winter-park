@@ -85,11 +85,11 @@ body.chat-typing :is(#place-card,#ride-hud,#emote-panel){visibility:hidden!impor
 #firework-notice[hidden],body:is(.studio-open,.quiz-open,.chat-typing) #firework-notice{display:none!important}
 @media(pointer:coarse),(max-width:650px){
  body:not(.invite-gate) #studio{max-height:calc(100dvh - var(--keyboard,0px) - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
- #studio .studio-header{grid-template-rows:44px auto;gap:2px 8px}
+ #studio .studio-header{grid-template-rows:44px auto auto;gap:2px 8px}
  #studio .studio-head>span{font-size:16px}
  #studio .studio-tabs{justify-content:safe center;gap:2px;overflow-x:auto}
  #studio .studio-tabs button{flex:0 0 auto;min-height:44px;font-size:11px;padding:8px 10px}
- #studio .studio-section-title{display:none}
+ #studio .studio-section-title{display:flex;min-height:28px;padding:4px 4px 0}
  #admin-panel{padding:12px 16px;max-height:calc(var(--dialog-viewport,100dvh) - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
  #admin-panel .admin-row{grid-template-columns:minmax(0,1fr);gap:5px}
  #admin-panel .admin-row-actions{justify-content:flex-start;max-width:none}
@@ -114,7 +114,7 @@ body.chat-typing :is(#place-card,#ride-hud,#emote-panel){visibility:hidden!impor
  #emote-panel{bottom:calc(150px + env(safe-area-inset-bottom));right:max(14px,env(safe-area-inset-right));left:auto;flex-wrap:wrap;max-width:calc(100vw - 28px)}
 }
 @media(max-height:500px) and (orientation:landscape){
- #studio .studio-header{grid-template-rows:36px auto}
+ #studio .studio-header{grid-template-rows:44px auto auto}
  #studio .studio-tabs button{min-height:36px}
  #place-card,#ride-hud{bottom:calc(106px + env(safe-area-inset-bottom))}
  #chat-log{max-height:58px;bottom:calc(172px + env(safe-area-inset-bottom))}
@@ -131,10 +131,10 @@ body.chat-typing :is(#place-card,#ride-hud,#emote-panel){visibility:hidden!impor
 #studio:has(#pane-activities:not([hidden])) .studio-saved{visibility:hidden}
 
 .chat-close svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
-.chat-entry{grid-template-columns:minmax(0,1fr) 44px 44px}
+.chat-entry{grid-template-columns:minmax(0,1fr) 44px}
 @media(max-width:650px),(pointer:coarse){
  body.chat-typing :is(#chat-toggle,#emote-toggle,#joystick,.touch-actions,#hud-map){visibility:hidden!important;pointer-events:none!important}
- #chat-form .chat-entry{grid-template-columns:minmax(0,1fr) 44px 44px;gap:0;padding:0 2px 0 12px;border-radius:16px}
+ #chat-form .chat-entry{grid-template-columns:minmax(0,1fr) 44px;gap:0;padding:0 2px 0 12px;border-radius:16px}
  #chat-form .chat-entry button{width:44px;min-width:44px;height:44px;min-height:44px;padding:12px;border:0;background:transparent;box-shadow:none}
  #chat-form .chat-entry button svg{width:18px;height:18px}
  body.chat-typing #chat-log{padding-right:13px;bottom:calc(82px + env(safe-area-inset-bottom) + var(--keyboard,0px))}
@@ -183,13 +183,32 @@ body.chat-typing :is(#place-card,#ride-hud,#emote-panel){visibility:hidden!impor
 @media(max-height:500px){#tree-tools .tree-palette [data-kind]{height:48px;min-height:48px;grid-template-rows:24px 12px}#tree-tools .tree-palette .ornament-choice{width:24px;height:24px}}
 
 /* Notices alone use a darker translucent lens for legibility over bright snow. */
-:is(#tree-status,#firework-notice,#world-notice){background:rgba(24,35,54,.7);color:#fff8ef;border:1px solid rgba(231,240,255,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 6px 24px rgba(8,17,32,.16);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);text-shadow:0 1px 2px #08112066}
+/* Small live notices keep glass colour/highlights without repeatedly filtering the WebGL canvas. */
+:is(#tree-status,#firework-notice,#world-notice),#pane-map .map-region>span{background:rgba(24,35,54,.7);color:#fff8ef;border:1px solid rgba(231,240,255,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 6px 24px rgba(8,17,32,.16);backdrop-filter:none;-webkit-backdrop-filter:none;text-shadow:0 1px 2px #08112066}
 #firework-notice .firework-notice-countdown{color:#f2deac}
-#chat-form .chat-entry{display:grid;grid-template-columns:minmax(0,1fr) 44px 44px;align-items:center;gap:2px;padding:2px 4px 2px 12px}
-#chat-form .chat-entry button{display:grid;place-items:center;box-sizing:border-box;width:44px;min-width:44px;height:44px;min-height:44px;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;outline:0;transition:opacity .16s,color .16s}
+#chat-form .chat-entry{display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;gap:2px;padding:2px 12px}
+#chat-form .chat-entry button{display:grid;place-items:center;box-sizing:border-box;width:44px;min-width:44px;height:44px;min-height:44px;margin:0;padding:0;border:0;border-radius:0;background:transparent;box-shadow:none;outline:0;transition:opacity .16s,color .16s}
 #chat-form .chat-entry button:not(:disabled):hover{background:transparent;color:#fff}
 #chat-form .chat-entry button:not(:disabled):active{opacity:.6}
 #chat-form .chat-entry button:focus-visible{background:transparent!important;text-decoration:underline;text-underline-offset:5px}
 #chat-form .chat-entry button:focus-visible svg{filter:drop-shadow(0 0 3px currentColor);stroke-width:2.2}
 #chat-form .chat-entry button svg{width:18px;height:18px;stroke-width:1.6}
 #chat-form .chat-entry .chat-close{font:500 12px/1 var(--ui-font);color:var(--ui-muted)}
+
+
+/* Shared optical centre and hit area, including the admin panel. */
+:root{--panel-close-size:44px;--panel-close-icon:20px}
+.glass-panel .panel-heading{display:flex;align-items:center;gap:16px;min-height:var(--panel-close-size)}
+.glass-panel .panel-heading h2{flex:1;margin:0;min-width:0}
+#studio .studio-head>button,.glass-panel .panel-heading>.icon-button{display:grid;place-items:center;flex:none;box-sizing:border-box;position:static;width:var(--panel-close-size);height:var(--panel-close-size);min-width:var(--panel-close-size);min-height:var(--panel-close-size);padding:0;margin:0;border:0;border-radius:12px;background:transparent;color:var(--ui-ink);line-height:1}
+#studio .studio-head>button svg,.glass-panel .panel-heading>.icon-button svg{display:block;width:var(--panel-close-icon);height:var(--panel-close-icon);fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;filter:none}
+#studio .studio-head>button:hover,.glass-panel .panel-heading>.icon-button:hover{background:var(--ui-hover)}
+/* Canvas colour content stays unchanged when a browser recolours CSS surfaces. */
+.swatch-paint-host{position:relative}
+#studio .swatches>.has-swatch-paint,#wish-form .wish-swatches>.has-swatch-paint,#tree-tools .tree-swatches>.has-swatch-paint{background-image:none!important}
+.color-swatch-paint{position:absolute;inset:0;margin:auto;width:26px;height:26px;border-radius:50%;pointer-events:none}
+#studio .wardrobe-swatches button>span.swatch-paint-host,#studio .dye-targets span.swatch-paint-host,#tree-tools [data-colors] i.swatch-paint-host{background:transparent}
+#studio .wardrobe-swatches .color-swatch-paint,#studio .dye-targets .color-swatch-paint,#tree-tools [data-colors] .color-swatch-paint{width:100%;height:100%}
+.has-swatch-paint>span:not(.swatch-paint-host){position:relative;z-index:1}
+
+#firework-notice.audio-blocked{flex-direction:column;gap:2px}

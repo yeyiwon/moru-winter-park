@@ -6,11 +6,11 @@ import {createLightingThemeManager} from './lighting-theme.js';
 import {mountMuseumPuzzle} from './museum-puzzle.js';
 import './world-settings.js';
 import {interiorDoors,museumGalleries} from './district-layout.js';
-import {createCameraTransition,cameraDefaults,createCameraPolicy,smoothCameraAngle,followCameraHeight,cameraSubjectFocus,cameraOrbitPosition,cameraOrbitFocus,constrainCameraFocusToRoom,constrainCameraToRoom,constrainCameraToTerrain} from './camera-policy.js';
+import {createCameraTransition,cameraDefaults,createCameraPolicy,smoothCameraAngle,followCameraHeight,cameraSubjectFocus,cameraOrbitPosition,cameraOrbitFocus,constrainCameraFocusToRoom,constrainCameraToRoom,constrainCameraToTerrain,clearSkiCameraTerrain} from './camera-policy.js';
 import {createNavigationClient} from './navigation-client.js';
 import {createFrameMetrics} from './frame-metrics.js';
 import {disposeOwnedScene} from './scene-resources.js';
-import {createSimulationClock} from './simulation-clock.js';
+import {createSimulationClock,shouldPauseSimulation} from './simulation-clock.js';
 import {createPlayerState} from './player-state.js';
 import {createLocalLights} from './local-lights.js';
 import {createRenderBudget,projectedCharacterHeight} from './render-budget.js';
@@ -50,7 +50,7 @@ let renderer;try{renderer=new T.WebGLRenderer({canvas,antialias:true,powerPrefer
 if(renderer){
 await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
 renderer.setPixelRatio(Math.min(devicePixelRatio,innerWidth<650?1.25:1.5));renderer.setSize(innerWidth,innerHeight,false);renderer.outputColorSpace=T.SRGBColorSpace;renderer.toneMapping=T.ACESFilmicToneMapping;renderer.toneMappingExposure=1.12;renderer.shadowMap.enabled=true;renderer.shadowMap.type=T.PCFSoftShadowMap;renderer.shadowMap.autoUpdate=false;renderer.info.autoReset=false;
-const scene=new T.Scene();scene.background=new T.Color('#34304b');scene.fog=new T.Fog('#8b9aaa',110,330);const camera=new T.PerspectiveCamera(cameraDefaults.fov,innerWidth/innerHeight,.1,1200);
+const scene=new T.Scene();scene.background=new T.Color('#34304b');scene.fog=new T.Fog('#8b9aaa',110,330);const camera=new T.PerspectiveCamera(cameraDefaults.fov,innerWidth/innerHeight,.1,9000);
 const hemi=new T.HemisphereLight('#fff1e8','#697d74',1.5);scene.add(hemi);const moon=new T.DirectionalLight('#f4e7ff',2.1);moon.position.set(-13,25,12);moon.castShadow=true;moon.shadow.mapSize.set(compactRenderer()?1024:2048,compactRenderer()?1024:2048);Object.assign(moon.shadow.camera,{left:-48,right:48,top:48,bottom:-48,near:1,far:210});moon.shadow.normalBias=.04;moon.shadow.bias=-.0002;scene.add(moon,moon.target);const fill=new T.DirectionalLight('#ffe6c8',.8);fill.position.set(15,5,20);scene.add(fill);
 const world=await buildWorldAsync(scene),lightingTheme=createLightingThemeManager(scene);window.labLoading?.complete('world');world.winter.destinations.push(...[{id:'view-park',name:'놀이공원 전망',x:-34,z:26,kind:'photo',view:{distance:14,yaw:-1.0,pitch:.17}},{id:'view-mountain',name:'설산 전망',x:-15,z:-146+alpineShift,kind:'photo',view:{distance:14,yaw:.2,pitch:.1}},{id:'view-tree',name:'트리 전망',x:treeLayout.x-14,z:treeLayout.z+21,kind:'photo',view:{distance:16,yaw:-.55,pitch:.06}}]);
 
@@ -69,7 +69,7 @@ const keys=new Set(),directions={KeyW:[0,-1],ArrowUp:[0,-1],KeyS:[0,1],ArrowDown
 const navigation=createNavigationClient(findPath),physics=createSimulationClock(),playerState=createPlayerState();let simulationView=null;
 let running=false;function clear(){navigation.cancel();physics.reset();simulationView=null;playerState.reset();running=false;keys.clear();joy.set(0,0);route=[];destination=null;velocity.set(0,0);}
 document.addEventListener('focusin',event=>{if(isTextInput(event.target))clear();});window.addEventListener('blur',clear);document.addEventListener('visibilitychange',clear);window.addEventListener('lab:open',()=>{clear();window.dismissParkDiscovery();});window.addEventListener('lab:pause',clear);window.addEventListener('lab:close',clear);
-function startJump(){if(!paused()&&!experience.active&&playerState.canJump()&&jump===0&&jumpVelocity===0){jumpVelocity=4.6;window.labSound?.('jump');}}
+function startJump(){if(!paused()&&experience.rides.mode==='ski'){window.dispatchEvent(new Event('lab:ski-jump'));window.labSound?.('jump');return;}if(!paused()&&!experience.active&&playerState.canJump()&&jump===0&&jumpVelocity===0){jumpVelocity=4.6;window.labSound?.('jump');}}
 window.addEventListener('keydown',e=>{if(paused()||e.metaKey||e.ctrlKey||['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)||e.target.isContentEditable)return;if(e.code==='ShiftLeft'||e.code==='ShiftRight')running=true;if(directions[e.code]){e.preventDefault();keys.add(e.code);route=[];navigation.cancel();}if(e.code==='Space'&&!e.target.closest?.('button,a,summary,[role=button]')){e.preventDefault();startJump();}});window.addEventListener('keyup',e=>{keys.delete(e.code);if(e.code==='ShiftLeft'||e.code==='ShiftRight')running=false;});
 const joystick=document.querySelector('#joystick');
 joystick.querySelectorAll('button').forEach(b=>b.onclick=e=>{if(e.detail)return;const d={up:[0,-1],down:[0,1],left:[-1,0],right:[1,0]}[b.dataset.move];const v=moveVector(...d,yaw);moveTo(fluff.position.x+v.x*1.5,fluff.position.z+v.z*1.5);});
@@ -105,7 +105,9 @@ function placePlayer(p,yawValue){endTreeFrame(false);cameraTransition.cancel();c
 async function transitionRoom(change,name='겨울 공원'){if(transitioning)return;transitioning=true;clear();experience.cancel();roomFade.setAttribute('aria-label',name+' 준비 중');roomLoader.start();roomFade.setAttribute('aria-hidden','false');roomFade.classList.add('active');try{
  // Give the overlay a paint before building an uncached room; no invented progress/delay.
  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));await change();
- if(glowPass)await glowPass.prepare(scene,camera);else await renderer.compileAsync?.(scene,camera);transitioning=false;await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
+ // Hidden show shaders are prepared with the world, avoiding a first-burst compile stall.
+const showRoots=[fireworks.root,fireworks.smoke,fireworks.castle.root];showRoots.forEach(o=>o.visible=true);
+try{if(glowPass)await glowPass.prepare(scene,camera);else await renderer.compileAsync?.(scene,camera);}finally{showRoots.forEach(o=>o.visible=false);}transitioning=false;await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));
  }catch(e){status.textContent=e.message;window.labToast?.(e.message);}finally{roomLoader.stop();roomFade.classList.remove('active');roomFade.setAttribute('aria-hidden','true');transitioning=false;window.dispatchEvent(new Event('lab:close'));}}
 window.enterInterior=id=>{const room=interiorRooms[id],door=interiorDoors[id];if(!room||!door||activeInterior)return;if(window.worldContentEnabled?.(id)===false){status.textContent='지금은 점검 중입니다.';return;}if(Math.hypot(fluff.position.x-door.x,fluff.position.z-door.z)>6){window.labToast?.('입구에 가까이 와 주세요.');return;}return transitionRoom(async()=>{interiors.ensure(id);const approved=await window.changeWinterRegion(id);returnPosition={x:door.x,z:door.z};window.labInteriorExit=returnPosition;setInterior(id);placePlayer(approved.position,approved.yaw);},room.name);};
 // Exhibit feedback belongs to the object; opening a card never takes over the user's camera.
@@ -114,7 +116,7 @@ window.addEventListener('lab:exhibit-correct',e=>{interiors.react(e.detail,time)
 window.addEventListener('lab:puzzle-turn',e=>interiors.puzzle(e.detail));
 window.exitInterior=()=>{if(!activeInterior)return;return transitionRoom(async()=>{const approved=await window.changeWinterRegion('outdoors');setInterior(null);placePlayer(approved.position,approved.yaw);});};
 
-window.travelToPlace=(id,show=true)=>{const p=world.winter.destinations.find(p=>p.id===id);if(!p)return;experience.cancel();setInterior(null);placePlayer(p,Math.PI);document.body.classList.add('has-walked');window.dismissParkDiscovery();if(show)experience.show(id);};
+window.travelToPlace=(id,show=true)=>{const p=world.winter.destinations.find(p=>p.id===id);if(!p)return;experience.cancel();setInterior(null);if(p.region==='ski'&&p.view)cameraPolicy.adopt(p.view);placePlayer(p,Math.PI);document.body.classList.add('has-walked');window.dismissParkDiscovery();if(show)experience.show(id);};
 window.dismissParkDiscovery=()=>{gate.dismiss();shown=null;window.showParkDiscovery?.(null);};window.parkCelebrate=()=>{land=.5;window.labSound?.('correct');};window.parkNearbyCategory=()=>nearby?.id;
 window.addEventListener('lab:simulation',e=>world.experiment(e.detail));window.addEventListener('lab:content-ready',()=>{shown=null;gate.update(null,performance.now());});
 let lightColor=new T.Color('#c5c8ea'),brightness=1;function appearance(o){companion.customize(o);if(!window.labDraftAppearance)portrait?.customize(o);lightColor.set(o.light||'#c5c8ea');brightness=(o.brightness||100)/100;lightingTheme.set(lightColor,brightness);}window.addEventListener('lab:appearance',e=>appearance(e.detail));
@@ -144,9 +146,10 @@ function positionCamera(mode='',dt=0){
  if(activeInterior)constrainCameraFocusToRoom(orbitFocus,interiorRooms[activeInterior]);
  cameraOrbitPosition(orbitFocus,{yaw,pitch,distance},camera.position);
  if(activeInterior)constrainCameraToRoom(orbitFocus,camera.position,interiorRooms[activeInterior]);
- else constrainCameraToTerrain(orbitFocus,camera.position,surfaceHeight,mode==='ski'?12:8);
+ else if(mode==='ski'||mode==='summit'||!mode&&target.z< -300)clearSkiCameraTerrain(orbitFocus,camera.position,surfaceHeight);
+ else constrainCameraToTerrain(orbitFocus,camera.position,surfaceHeight,8);
  scene.updateMatrixWorld();
- cameraClearance.update(camera,orbitFocus,activeInterior?interiors.occluders:wishShot||cameraTransition.active?treeCameraOccluders:world.occluders,dt,{mode:activeInterior||(wishShot||cameraTransition.active?'tree':mode)||'walk',maxRecoverySpeed:wishShot||cameraTransition.active?24:3.5,minDistance:mode==='ferris'?4:['carousel','lift'].includes(mode)?4.2:2.5});
+ cameraClearance.update(camera,orbitFocus,activeInterior?interiors.occluders:wishShot||cameraTransition.active?treeCameraOccluders:world.occluders.concat(world.winter.rideOccluders||[]),dt,{mode:activeInterior||(wishShot||cameraTransition.active?'tree':mode)||'walk',maxRecoverySpeed:wishShot||cameraTransition.active?24:3.5,minDistance:mode==='ferris'?4:['carousel','lift'].includes(mode)?4.2:2.5});
  if(activeInterior)interiors.setCamera(camera.position);
  camera.up.set(0,1,0);camera.lookAt(orbitFocus);
 }
@@ -163,7 +166,7 @@ function simulatePlayer(dt){
  land=Math.max(0,land-dt*4.2);fluff.position.y=ride?ride.y:.86+surfaceHeight(next.x,next.z)+jump;
  if(cameraRideMode&&!ride?.mode)velocity.set(0,0);if(ride)fluff.rotation.y=ride.yaw;
  cameraRideMode=ride?.mode||'';cameraPolicy.setMode(cameraRideMode,yaw);
- touchControls.setMode(cameraRideMode==='bath'&&!activeInterior?'wade':cameraRideMode);window.labPlayerState={x:fluff.position.x,y:fluff.position.y,z:fluff.position.z,yaw:fluff.rotation.y,mode:ride?.mode||'',speed:ride?.speed||travel/Math.max(dt,.001),gesture:experience.gesture,heldItem:experience.heldItem,balloonTone:experience.balloonTone,balloonStyle:experience.balloonStyle,roast:experience.roast};playerState.update({mode:ride?.mode,jump,moving:walking,running:running||touchControls.sprinting,gesture:experience.focusGesture,room:activeInterior});if(ride&&ride.mode!=='summit'){jump=jumpVelocity=0;}const gaze=destination?destination.x-next.x:velocity.x;
+ touchControls.setMode(cameraRideMode==='bath'&&!activeInterior?'wade':cameraRideMode);window.labPlayerState={x:fluff.position.x,y:fluff.position.y,z:fluff.position.z,yaw:fluff.rotation.y,mode:ride?.mode||'',lean:ride?.lean||0,tilt:ride?.tilt||0,brake:!!ride?.brake,air:ride?.air||0,speed:ride?.speed||travel/Math.max(dt,.001),gesture:experience.gesture,heldItem:experience.heldItem,balloonTone:experience.balloonTone,balloonStyle:experience.balloonStyle,roast:experience.roast};playerState.update({mode:ride?.mode,jump,moving:walking,running:running||touchControls.sprinting,gesture:experience.focusGesture,room:activeInterior});if(ride&&ride.mode!=='summit'){jump=jumpVelocity=0;}const gaze=destination?destination.x-next.x:velocity.x;
  return{ride,next,walking,travel,gaze};
 }
 window.addEventListener('lab:onsen-start',()=>{clear();jump=jumpVelocity=0;});
@@ -193,11 +196,11 @@ window.addEventListener('lab:wish-submitted',()=>{
  cameraPolicy.beginTree({yaw,pitch,distance});wishShot.aim.copy(target);
 });
 window.addEventListener('lab:tree-closed',e=>endTreeFrame(e.detail?.restore!==false));
-window.addEventListener('lab:room',()=>endTreeFrame(false));
+window.addEventListener('lab:room',()=>{endTreeFrame(false);});
 window.addEventListener('lab:session-ended',()=>{experience.cancel();clear();endTreeFrame(false);});
 let animationFrame;function animate(now){animationFrame=requestAnimationFrame(animate);const raw=now-prev;prev=now;if(document.hidden)return;
  // A callback queued before synchronous world construction can carry an older timestamp.
- const dt=Math.max(0,Math.min(.05,raw/1000)),exhibitActive=activeInterior==='museum'&&document.body.classList.contains('quiz-open'),isPaused=paused()&&frame>0&&!exhibitActive;time+=isPaused?0:dt;
+ const dt=Math.max(0,Math.min(.05,raw/1000)),exhibitActive=activeInterior==='museum'&&document.body.classList.contains('quiz-open'),isPaused=shouldPauseSimulation({blocked:worldInputBlocked(),transitioning,mode:cameraRideMode,exhibit:exhibitActive,ready:frame>0});time+=isPaused?0:dt;
  // Resizing clears the drawing buffer even while menus freeze the world.
  // Redraw the same pose once; do not resume simulation or a continuous GPU loop.
  if(isPaused&&backgroundDirty){if(glowPass)glowPass.render(scene,camera);else renderer.render(scene,camera);backgroundDirty=false;}
@@ -205,7 +208,7 @@ let animationFrame;function animate(now){animationFrame=requestAnimationFrame(an
  if(isPaused&&!window.labPreviewVisible){physics.reset();wasPaused=true;return;} // Reading really freezes the background render loop.
  if(!isPaused){frameMetrics.begin();if(activeInterior)interiors.update(time,still());else world.update(time,still());let travelled=0;physics.advance(dt,step=>{simulationView=simulatePlayer(step);travelled+=simulationView.travel;});if(!simulationView)simulationView=simulatePlayer(0);const {ride,next,walking,gaze}=simulationView,travel=travelled;
   // Animate the final simulated pose once per display frame, even after catch-up steps.
-  companion.pose({phase,walking,time,room:activeInterior,mode:ride?.mode,diningStartedAt:ride?.diningStartedAt,diningNow:serverNow(),lean:ride?.lean,tilt:ride?.tilt,speed:ride?.speed??window.labPlayerState.speed,brake:ride?.brake,gesture:experience.gesture,heldItem:experience.heldItem,balloonTone:experience.balloonTone,balloonStyle:experience.balloonStyle,roast:experience.roast,landing:land,still:still(),look:still()?0:Math.max(-.02,Math.min(.02,gaze*.005))});shadow.visible=!['bath','sauna','lie','tea','dining'].includes(ride?.mode);shadow.position.set(next.x,surfaceHeight(next.x,next.z)+.015,next.z);shadow.scale.setScalar(1-jump*.12);shadow.material.opacity=1-jump*.3;
+  companion.pose({phase,walking,time,room:activeInterior,mode:ride?.mode,diningStartedAt:ride?.diningStartedAt,diningNow:serverNow(),lean:ride?.lean,tilt:ride?.tilt,speed:ride?.speed??window.labPlayerState.speed,brake:ride?.brake,gesture:experience.gesture,heldItem:experience.heldItem,balloonTone:experience.balloonTone,balloonStyle:experience.balloonStyle,roast:experience.roast,landing:ride?.landing??land,still:still(),look:still()?0:Math.max(-.02,Math.min(.02,gaze*.005))});shadow.visible=!['bath','sauna','lie','tea','dining'].includes(ride?.mode);shadow.position.set(next.x,surfaceHeight(next.x,next.z)+.015,next.z);shadow.scale.setScalar(1-jump*.12);shadow.material.opacity=1-jump*.3;
  const skiing=ride?.mode==='ski',heading=ride?.heading??ride?.yaw??0;
  cameraSubjectFocus(fluff.position,{groundY:.86+surfaceHeight(next.x,next.z),mode:ride?.mode,view:ride?.view,heading},cameraAim);
  if(wishShot){if(walking||ride||still())endTreeFrame();else cameraAim.copy(wishShot.aim);}
@@ -222,8 +225,8 @@ let animationFrame;function animate(now){animationFrame=requestAnimationFrame(an
  camera.getWorldDirection(soundForward);window.labAudio?.updateWorld({...window.labPlayerState,speed:ride?.speed||0,lean:ride?.lean,brake:ride?.brake},{x:camera.position.x,y:camera.position.y,z:camera.position.z,fx:soundForward.x,fy:soundForward.y,fz:soundForward.z});
 
  frame++;
- moon.position.set(target.x-40,target.y+70,target.z+40);moon.target.position.set(target.x,target.y-1.2,target.z);winterSky.update(time,still(),target,brightness);lightingTheme.update(dt);scene.fog.near=next.z< -170+alpineShift?260:130;scene.fog.far=next.z< -170+alpineShift?950:500;if(activeInterior){scene.background.set(activeInterior==='ryokan'?'#292921':'#152b2b');scene.fog.color.copy(scene.background);scene.fog.near=50;scene.fog.far=110;hemi.intensity=1.2;moon.intensity=.55;fill.intensity=.45;}
- skiTrails.update({x:next.x,z:next.z,yaw:fluff.rotation.y,speed:ride?.speed||0,lean:ride?.lean||0,brake:ride?.brake,gear:companion.gear,active:skiing,time,dt,still:still()});sharedTree.update(next.x,next.z,time,still());reactions.update({gesture:experience.gesture,mode:ride?.mode,x:next.x,y:fluff.position.y,z:next.z,yaw:fluff.rotation.y,time,dt,still:still()});snowman.root.visible=!activeInterior;snowman.update(time,still(),next);footprints.update(time);if(walking&&!jump&&!activeInterior)footprints.walk(next.x,next.z,fluff.rotation.y,travel,time);moveMarker.update(dt,still());
+ moon.position.set(target.x-40,target.y+70,target.z+40);moon.target.position.set(target.x,target.y-1.2,target.z);winterSky.update(time,still(),target,brightness,false,camera.position);lightingTheme.update(dt);const mountainAtmosphere=T.MathUtils.smoothstep(-next.z,80,400);scene.fog.near=130+770*mountainAtmosphere;scene.fog.far=500+6700*mountainAtmosphere;if(activeInterior){scene.background.set(activeInterior==='ryokan'?'#292921':'#152b2b');scene.fog.color.copy(scene.background);scene.fog.near=50;scene.fog.far=110;hemi.intensity=1.2;moon.intensity=.55;fill.intensity=.45;}
+ skiTrails.update({x:next.x,z:next.z,yaw:fluff.rotation.y,speed:ride?.speed||0,lean:ride?.lean||0,brake:ride?.brake,gear:companion.gear,air:ride?.air||0,active:skiing,time,dt,still:still()});sharedTree.update(next.x,next.z,time,still());reactions.update({gesture:experience.gesture,mode:ride?.mode,x:next.x,y:fluff.position.y,z:next.z,yaw:fluff.rotation.y,time,dt,still:still()});snowman.root.visible=!activeInterior;snowman.update(time,still(),next);footprints.update(time);if(walking&&!jump&&!activeInterior)footprints.walk(next.x,next.z,fluff.rotation.y,travel,time);moveMarker.update(dt,still());
  camera.updateMatrixWorld();companion.setViewDetail(projectedCharacterHeight(camera,fluff.position,innerHeight));
  if(!bubble.hidden){const remaining=Number(bubble.dataset.until)-Date.now();bubble.style.opacity=String(Math.max(0,Math.min(1,remaining/700)));if(remaining<=0)bubble.hidden=true;}screen.copy(fluff.position).add(new T.Vector3(0,companion.nameHeight??1.05,0)).project(camera);selfLabel.hidden=screen.z>1||screen.z< -1||!document.querySelector('#self-name').textContent;const ownScreen=selfLayout.fit((screen.x*.5+.5)*innerWidth,(-screen.y*.5+.5)*innerHeight-6,innerWidth,innerHeight);selfLabel.style.transform=`translate(${ownScreen.x}px,${ownScreen.y}px) translate(-50%,-100%)`;const selfBounds=selfLabel.hidden?null:ownScreen.bounds;visitors.update(dt,time,camera,selfBounds);
  if(now>=nextProximityCheck){experience.proximity(next.x,next.z);nextProximityCheck=now+100;}const hint=experience.anchor,prompt=document.querySelector('#place-card');if(hint&&!prompt.hidden)prompt.style.visibility='visible';
@@ -243,7 +246,9 @@ let animationFrame;function animate(now){animationFrame=requestAnimationFrame(an
 function resize(){const w=innerWidth,h=innerHeight;renderBudget.viewport(devicePixelRatio,compactRenderer());applyRenderBudget();camera.aspect=w/h;camera.fov=cameraDefaults.fov;camera.updateProjectionMatrix();}
 resize();snapCameraToPlayer();
 // Compile available programs while the lightweight loading animation is still visible.
-if(glowPass)await glowPass.prepare(scene,camera);else await renderer.compileAsync?.(scene,camera);
+// Hidden show shaders are prepared with the world, avoiding a first-burst compile stall.
+const showRoots=[fireworks.root,fireworks.smoke,fireworks.castle.root];showRoots.forEach(o=>o.visible=true);
+try{if(glowPass)await glowPass.prepare(scene,camera);else await renderer.compileAsync?.(scene,camera);}finally{showRoots.forEach(o=>o.visible=false);}
 window.addEventListener('resize',resize);canvas.addEventListener('webglcontextlost',e=>{e.preventDefault();window.labLoading?.error('3D 화면을 사용할 수 없습니다.');status.textContent='3D 화면 연결이 끊겼습니다. 학습은 계속할 수 있어요. 새로고침하면 화면을 다시 엽니다.';document.body.classList.add('no-webgl');});status.textContent='WASD 또는 터치로 이동하고, 화면을 잡아 돌려 둘러보세요.';document.body.classList.add('world-ready');window.labCameraReady=true;window.dispatchEvent(new Event('lab:camera-ready'));animationFrame=requestAnimationFrame(animate);
-window.addEventListener('pagehide',event=>{if(event.persisted)return;window.labCameraReady=false;cancelAnimationFrame(animationFrame);if(interiorPrefetch){if(window.cancelIdleCallback)window.cancelIdleCallback(interiorPrefetch);else clearTimeout(interiorPrefetch);}navigation.dispose();selfLayout.dispose();frameMetrics.dispose();touchControls.dispose?.();visitors.dispose?.();ornamentPreviews.dispose();sharedTree.dispose?.();cameraClearance.reset();localLights.dispose();interiors.dispose();glowPass?.dispose();fireworks.dispose();roomLoader.dispose();companion.dispose();portrait?.dispose();disposeOwnedScene(scene);if(portraitScene)disposeOwnedScene(portraitScene);portraitRenderer?.dispose();renderer.dispose();},{once:false});
+window.addEventListener('pagehide',event=>{if(event.persisted)return;window.labCameraReady=false;cancelAnimationFrame(animationFrame);if(interiorPrefetch){if(window.cancelIdleCallback)window.cancelIdleCallback(interiorPrefetch);else clearTimeout(interiorPrefetch);}navigation.dispose();selfLayout.dispose();frameMetrics.dispose();touchControls.dispose?.();visitors.dispose?.();ornamentPreviews.dispose();sharedTree.dispose?.();cameraClearance.reset();localLights.dispose();interiors.dispose();glowPass?.dispose();fireworks.dispose();roomLoader.dispose();world.winter.mountainTerrain?.dispose();companion.dispose();portrait?.dispose();disposeOwnedScene(scene);if(portraitScene)disposeOwnedScene(portraitScene);portraitRenderer?.dispose();renderer.dispose();},{once:false});
 }

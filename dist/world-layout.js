@@ -1,3 +1,4 @@
+import {mountainDistance,mountainForm} from './mountain-layout.js';
 import {regions,regionBridges} from './region-layout.js';
 import {museumLayout} from './district-layout.js';
 import {treeLayout,treeShift} from './tree-layout.js';
@@ -14,10 +15,10 @@ export const bridges=regionBridges.map(b=>[{...b.start,r:1},{...b.end,r:1}]);
 export function bridgeHeight(x,z){for(const [a,b] of bridges){const length=Math.hypot(b.x-a.x,b.z-a.z),d=((x-a.x)*(b.x-a.x)+(z-a.z)*(b.z-a.z))/length;if(d>=0&&d<=length&&segmentDistance(x,z,a,b)<bridgeHalfWidth+.4)return .09+Math.sin(d/length*Math.PI)*Math.min(.7,length*.025);}return .09;}
 export function segmentDistance(x,z,a,b){const dx=b.x-a.x,dz=b.z-a.z,t=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-a.x-t*dx,z-a.z-t*dz);}
 // The west gardens and rides share ONE large island. Other districts have real air gaps.
-export const landforms=Object.values(regions).map(r=>({id:terrainIds[r.id],...r.center,...r.size,depth:r.depth,phase:r.phase,yaw:r.yaw||0}));
-export function landRadius(form,angle){let radius=1;if(form.id==='alpine')radius+=.23*Math.max(0,-Math.sin(angle))-.15*Math.max(0,Math.sin(angle))**8;return radius*(1+.018*Math.sin(angle*5+form.phase)+.012*Math.sin(angle*9-form.phase));}
+export const landforms=Object.values(regions).map(r=>({id:terrainIds[r.id],...r.center,...r.size,depth:r.depth,phase:r.phase,yaw:r.yaw||0,...(r.id==='ski'?{...mountainForm,z:mountainForm.z+alpineShift}: {})}));
+export function landRadius(form,angle){if(form.id==='alpine'){let lo=0,hi=2;for(let i=0;i<23;i++){const r=(lo+hi)/2;if(mountainDistance(form.x+Math.cos(angle)*form.rx*r,form.z-alpineShift+Math.sin(angle)*form.rz*r)<0)lo=r;else hi=r;}return(lo+hi)/2;}return (1+.018*Math.sin(angle*5+form.phase)+.012*Math.sin(angle*9-form.phase));}
 export function landPoint(form,angle,r=landRadius(form,angle)){const x=Math.cos(angle)*form.rx*r,z=Math.sin(angle)*form.rz*r,c=Math.cos(form.yaw||0),s=Math.sin(form.yaw||0);return{x:form.x+x*c+z*s,z:form.z-x*s+z*c};}
-export function landDistance(x,z,form){const c=Math.cos(form.yaw||0),s=Math.sin(form.yaw||0),x0=x-form.x,z0=z-form.z,dx=(x0*c-z0*s)/form.rx,dz=(x0*s+z0*c)/form.rz;return(Math.hypot(dx,dz)-landRadius(form,Math.atan2(dz,dx)))*Math.min(form.rx,form.rz);}
+export function landDistance(x,z,form){if(form.id==='alpine')return mountainDistance(x,z-alpineShift);const c=Math.cos(form.yaw||0),s=Math.sin(form.yaw||0),x0=x-form.x,z0=z-form.z,dx=(x0*c-z0*s)/form.rx,dz=(x0*s+z0*c)/form.rz;return(Math.hypot(dx,dz)-landRadius(form,Math.atan2(dz,dx)))*Math.min(form.rx,form.rz);}
 export const snowfields=landforms.map(f=>({a:{x:f.x,z:f.z},b:{x:f.x,z:f.z},r:f.rz}));
 export function snowfieldDistance(x,z){return Math.min(...landforms.map(f=>landDistance(x,z,f)),...bridges.map(([a,b])=>segmentDistance(x,z,a,b)-bridgeHalfWidth));}
 export function terrainAt(x,z){return Number.isFinite(x+z)&&(!!interiorAt(x,z)||snowfieldDistance(x,z)<-.35);}

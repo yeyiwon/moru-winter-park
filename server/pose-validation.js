@@ -8,12 +8,20 @@ import {interiorPositionValid} from '../dist/interior-layout.js';
 import {amusementPositionValid} from '../dist/festival-layout.js';
 export function reservedRidePose(b,reservation,now=Date.now()){
  if(!['lift','ferris'].includes(b.mode))return true;
- if(!reservation||(b.mode==='ferris'?reservation.kind!=='ferris':!['lift','upperlift'].includes(reservation.kind)))return false;
- const expected=sharedSeatPose(reservation,now);return !!expected&&Math.hypot(b.x-expected.x,b.y-expected.y,b.z-expected.z)<=3;
+ if(!reservation||(b.mode==='ferris'?reservation.kind!=='ferris':!['lift','upperlift','ridgelift','gondola'].includes(reservation.kind)))return false;
+ const sampled=Number.isFinite(b.seatAt)&&b.seatAt<=now+250&&b.seatAt>=now-8000?b.seatAt:now;
+ const expected=sharedSeatPose(reservation,sampled);return !!expected&&Math.hypot(b.x-expected.x,b.y-expected.y,b.z-expected.z)<=3;
+}
+// Validate against the bounded send time, then publish the current server seat.
+// Slow frames/network must not expire a valid passenger or let them choose a position.
+export function currentReservedPose(b,reservation,now=Date.now()){
+ if(!['lift','ferris'].includes(b?.mode)||!reservation)return null;
+ return sharedSeatPose(reservation,now);
 }
 export function validPose(b,reservation,now=Date.now()){
  if(!b||![b.x,b.y,b.z,b.yaw].every(Number.isFinite))return false;
  if(!reservedRidePose(b,reservation,now))return false;
+ if(b.mode==='lift'&&reservation?.kind==='gondola')return true;
  const bench=benchPoseValid(reservation,b)||diningPoseValid(reservation,b);
  if(b.mode==='dining'&&!bench)return false;
  const rest=b.mode==='rest'&&Object.values(restSeats).some(p=>Math.hypot(b.x-p.x,b.z-p.z)<.15&&Math.abs(b.y-p.y)<.15);

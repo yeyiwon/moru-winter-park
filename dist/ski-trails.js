@@ -1,5 +1,7 @@
 import * as T from './vendor/three.module.js';
-import {alpine,alpineHeight} from './resort-layout.js';
+import {alpineHeight,alpineShift} from './resort-layout.js';
+
+import {mountainDistance} from './mountain-layout.js';
 
 const TRACK_LIMIT=1536,POWDER_LIMIT=144,LIFETIME=12,SPACING=.42;
 const clamp=(value,lo,hi)=>Math.max(lo,Math.min(hi,value));
@@ -36,7 +38,7 @@ export function createSkiTrails(scene){
   const matrix=new T.Matrix4(),right=new T.Vector3(),forward=new T.Vector3(),up=new T.Vector3(0,1,0),scale=new T.Vector3();
   let previous=null,trackCursor=0,powderCursor=0,emission=0,trackCount=0,powderCount=0,lastTime=0,seed=193;
   const random=()=>{seed=seed*16807%2147483647;return(seed-1)/2147483646;};
-  const onSnow=(x,z)=>Math.hypot(x-alpine.x,z-alpine.z)<alpine.r-1;
+  const onSnow=(x,z)=>mountainDistance(x,z-alpineShift)<-1;
 
   function stamp(a,b,offset,width,strength,time){
     const length=Math.hypot(b.x-a.x,b.z-a.z);if(length<.015)return;
@@ -57,7 +59,7 @@ export function createSkiTrails(scene){
     update(input){
       const {x,z,yaw=0,time=0,active=false,still=false}=input,dt=clamp(Number.isFinite(input.dt)?input.dt:0,0,.1),speed=clamp(input.speed||0,0,30),lean=clamp(input.lean||0,-1,1),gear=input.gear==='board'||input.gear==='snowboard'?'board':'ski';
       if(time<lastTime){births.array.fill(-99);births.needsUpdate=true;for(const p of particles)p.age=p.life;reset();}lastTime=time;uniforms.time.value=time;
-      const riding=active&&!still&&Number.isFinite(x)&&Number.isFinite(z)&&Number.isFinite(yaw)&&speed>.8&&onSnow(x,z);
+      const riding=active&&!still&&!(input.air>0)&&Number.isFinite(x)&&Number.isFinite(z)&&Number.isFinite(yaw)&&speed>.8&&onSnow(x,z);
       if(!riding)reset();
       else {
         const next={x,z,yaw,gear},distance=previous?Math.hypot(x-previous.x,z-previous.z):0;

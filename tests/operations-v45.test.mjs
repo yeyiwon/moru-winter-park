@@ -8,7 +8,7 @@ const showRequest=action=>new Request('https://test/api/fireworks',{method:'POST
 test('concurrent guest show requests have one winner; cooldown starts at completion; owner bypass never duplicates',async t=>{
  const f=await apiFixture(t),now=Date.now(),requests=await Promise.all(Array.from({length:25},(_,i)=>fireworksAPI(showRequest('request'),f.DB,{id:'guest-'+i,room:'winter-plaza'},false,now)));
  assert.equal(requests.filter(r=>r.status===200).length,25);assert.equal(new Set(await Promise.all(requests.map(async r=>(await r.clone().json()).show.id))).size,1);
- const show=await readFireworkShow(f.DB,now);assert.equal(show.startsAt,now+10000);assert.equal(show.nextRequestAt,show.startsAt+74000+900000);
+ const show=await readFireworkShow(f.DB,now);assert.equal(show.startsAt,now+10000);assert.equal(show.nextRequestAt,show.endsAt+900000);
  assert.equal((await fireworksAPI(showRequest('start'),f.DB,{id:'owner',room:'winter-plaza'},true,now+10)).status,409);
  const finish=show.endsAt;
  assert.equal((await fireworksAPI(showRequest('request'),f.DB,{id:'late',room:'winter-plaza'},false,finish+899999)).status,429);

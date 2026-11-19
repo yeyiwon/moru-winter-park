@@ -1,7 +1,8 @@
 import {createRealtimeClient} from './realtime-client.js';
 import {bindOwnerLogin,finishOwnerLogin,continueOwnerLogin} from './owner-login.js';
 import {mergeFireworkShow} from './fireworks-request.js';
-import {observeServerTime} from './server-clock.js';
+import {sharedSeatPose} from './ride-seats.js';
+import {serverNow,observeServerTime} from './server-clock.js';
 import {nicknameLimit,nicknameParts,validateNickname} from './nickname.js';
 import {presenceDelay,createPresenceCache} from './presence-policy.js';
 import {createGuestName,isNumberedGuest} from './guest-names.js';
@@ -51,7 +52,16 @@ let joining=null;function join(){if(joining)return joining;joining=(async()=>{tr
 form.addEventListener('submit',async e=>{e.preventDefault();const button=form.querySelector('button');button.disabled=true;status.textContent='입장 중…';try{await join();closeDialog(studio);}catch(e){status.textContent=e.message;}finally{button.disabled=false;}});
 let syncing=null,nextSync=0,lastSent=0,lastMoving=false,remoteMoving=false,appearanceSaving=false;const presenceCache=createPresenceCache();
 function acceptPresence(data){window.labServerOffset=data.serverTime-Date.now();window.labFireworks=mergeFireworkShow(window.labFireworks,data.fireworks);window.dispatchEvent(new CustomEvent('lab:fireworks',{detail:window.labFireworks}));window.labRideSeats=data.rideSeats||[];if(window.labRideReservation&&!window.labRideSeats.some(s=>s.id===window.labGuestId))window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));const list=presenceCache.merge(data.people,data.farBucket);remoteMoving=list.some(p=>!p.distant&&p.speed>.1);showPeople(list);status.textContent='접속 중 · '+data.count+'명';}
-const realtime=createRealtimeClient({request,pose:()=>{if(!window.labPlayerState)return null;const pose={...window.labPlayerState,gesture:gesture||encodeActivity(window.labPlayerState)};gesture='';return pose;},onSnapshot:acceptPresence,onStatus:message=>{if(message)status.textContent=message;},onCheckpoint:()=>{if(Date.now()-lastSent>600)void sync(true);}});
+function outgoingPose(){
+ const p=window.labPlayerState;if(!p)return null;
+ const reservation=window.labRideReservation;
+ if(reservation&&['lift','ferris'].includes(p.mode)){
+  const seatAt=serverNow(),seat=sharedSeatPose(reservation,seatAt);
+  if(seat)return{...p,x:seat.x,y:seat.y,z:seat.z,yaw:seat.yaw,seatAt};
+ }
+ return p;
+}
+const realtime=createRealtimeClient({request,pose:()=>{if(!window.labPlayerState)return null;const pose={...outgoingPose(),gesture:gesture||encodeActivity(window.labPlayerState)};gesture='';return pose;},onSnapshot:acceptPresence,onStatus:message=>{if(message)status.textContent=message;},onCheckpoint:()=>{if(Date.now()-lastSent>600)void sync(true);}});
 function sync(force=false){if(releasingRide)return force?releasingRide.then(()=>sync(true)):Promise.resolve();if(syncing)return force?syncing.then(()=>sync(true)):syncing;if(appearanceSaving||!joined||joining||!window.labPlayerState)return Promise.resolve();syncing=performSync().finally(()=>{syncing=null;});return syncing;}
 window.saveWinterAppearance=async look=>{
  if(!joined||joining)throw Error('공간에 연결한 뒤 다시 저장해 주세요.');
@@ -63,13 +73,13 @@ async function performSync(){
  busy=true;lastSent=Date.now();lastMoving=(window.labPlayerState?.speed||0)>.1;
  const sentGuest=window.labGuestId,sentReservation=window.labRideReservation;let recoveredSeat=false;
  try{
-  const a=window.labAppearance||{},data=await request('presence',{...window.labPlayerState,...presenceCache.request(),color:a.fur,colorTop:a.furTop,accessory:a.accessory,fluff:a.fluff,roundness:a.roundness,gesture:gesture||encodeActivity(window.labPlayerState)});
+  const a=window.labAppearance||{},data=await request('presence',{...outgoingPose(),...presenceCache.request(),color:a.fur,colorTop:a.furTop,accessory:a.accessory,fluff:a.fluff,roundness:a.roundness,gesture:gesture||encodeActivity(window.labPlayerState)});
   gesture='';failures=0;if(!realtime.active)acceptPresence(data);
  }catch(e){
   // A sleeping mobile tab can outlive its chair's lease without losing admission.
   // Match the exact request's reservation object, so an old response cannot evict
   // a fresh claim (even if it reused the same chair) or a newly joined guest.
-  if(e.status===409&&e.code==='RIDE_RESERVATION_EXPIRED'&&sentGuest===window.labGuestId&&['dining','ferris','lift','upperlift'].includes(sentReservation?.kind)&&window.labRideReservation===sentReservation){
+  if(e.status===409&&e.code==='RIDE_RESERVATION_EXPIRED'&&sentGuest===window.labGuestId&&['dining','ferris','lift','upperlift','ridgelift','gondola'].includes(sentReservation?.kind)&&window.labRideReservation===sentReservation){
    failures=0;recoveredSeat=true;
    window.labRideSeats=(window.labRideSeats||[]).filter(seat=>seat.id!==sentGuest);
    window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:sentReservation.kind}));
@@ -100,7 +110,6 @@ function finishChat(){chatForm.hidden=true;document.body.classList.remove('chat-
 function closeChat(){chatToggle.setAttribute('aria-expanded','false');chatInput.blur();if(!chatForm.animate||matchMedia('(prefers-reduced-motion: reduce)').matches||document.body.classList.contains('still')){finishChat();return;}chatMotion?.cancel();const motion=chatForm.animate([{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(10px)'}],{duration:160,easing:'ease-in'});chatMotion=motion;motion.finished.then(()=>{if(chatMotion===motion){finishChat();chatMotion=null;}}).catch(()=>{});}
 window.closeWinterChat=()=>{if(!chatForm.hidden)closeChat();};
 chatToggle.onclick=()=>chatForm.hidden?openChat():closeChat();
-const chatClose=document.createElement('button');chatClose.type='button';chatClose.className='chat-close';chatClose.setAttribute('aria-label','채팅 닫기');chatClose.textContent='닫기';chatClose.onclick=closeChat;chatForm.querySelector('.chat-entry').append(chatClose);
 window.addEventListener('keydown',e=>{if(e.isComposing||document.body.classList.contains('studio-open')||document.body.classList.contains('quiz-open'))return;if(e.key==='Escape'&&!chatForm.hidden){closeChat();return;}if(e.key==='Enter'&&e.target!==chatInput&&!e.target.closest?.('input,textarea,button,a,summary')){e.preventDefault();openChat();}});
 function renderRecent(){
  const now=Date.now();while(recentChats.length&&(recentChats[0].at<now-600000||recentChats.length>50))recentChats.shift();

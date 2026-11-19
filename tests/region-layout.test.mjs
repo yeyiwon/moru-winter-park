@@ -11,7 +11,7 @@ import {museumLayout} from '../dist/district-layout.js';
 test('final five islands preserve relative placement and never overlap',()=>{
  assert.deepEqual(Object.keys(regions),['park','ski','spa','tree','museum']);
  assert.equal(interiorRooms.conservatory,undefined);assert.equal(interiorPositionValid(800,.95,0),false);
- assert.equal(mapFacilities.length,8);assert.ok(!mapFacilities.some(p=>['conservatory','castle'].includes(p.id)));
+ assert.equal(mapFacilities.length,12);assert.ok(!mapFacilities.some(p=>['conservatory','castle'].includes(p.id)));
  assert.ok(regions.ski.center.z<regions.spa.center.z&&regions.spa.center.z<regions.tree.center.z);
  assert.ok(regions.tree.center.z>regions.park.center.z);assert.ok(regions.museum.center.x<regions.park.center.x-regions.park.size.rx);
  for(let x=-180;x<150;x+=2)for(let z=-360;z<120;z+=2)assert.ok(landforms.filter(f=>landDistance(x,z,f)<0).length<=1,`overlapping land at ${x},${z}`);

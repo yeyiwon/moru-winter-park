@@ -1,12 +1,13 @@
 import {canStandAt} from '../dist/movement.js';
 import {benches,benchAccess,benchPoseValid} from '../dist/bench-layout.js';
-import {alpineShift,resortRides,liftLayout} from '../dist/resort-layout.js';
+import {alpineShift,resortRides,liftLayout,ridgeLiftEntry,gondolaEntry} from '../dist/resort-layout.js';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import {spawnSync} from 'node:child_process';
 import {ferrisDimensions} from '../dist/ferris-layout.js';
 import {rideAPI,listRideSeats} from '../server/ride-api.js';import {sharedSeatPose} from '../dist/ride-seats.js';import {buildFerrisWheel} from '../dist/ferris-model.js';
 const temp=fs.mkdtempSync(path.join(os.tmpdir(),'ride-seats-')),db=path.join(temp,'test.sqlite');
 function q(sql,args=[]){const r=spawnSync('python3',['-c','import sqlite3,json,sys\np=json.load(sys.stdin);c=sqlite3.connect(p["db"]);c.row_factory=sqlite3.Row;r=c.execute(p["sql"],p["args"]);rows=[dict(v) for v in r.fetchall()];n=c.total_changes;c.commit();print(json.dumps({"results":rows,"meta":{"changes":n}}))'],{input:JSON.stringify({db,sql,args}),encoding:'utf8'});if(r.status)throw Error(r.stderr);return JSON.parse(r.stdout);}
 q(fs.readFileSync('drizzle/0007_shared_ride_seats.sql','utf8'));const DB={prepare(sql){return{bind(...args){return{async run(){return q(sql,args)},async all(){return q(sql,args)},async first(){return q(sql,args).results[0]||null}}}}}};
+for(const statement of fs.readFileSync('drizzle/0018_gondola_seats.sql','utf8').split('--> statement-breakpoint'))if(statement.trim())q(statement);
 const now=1800000000000;const visitor=(id,room='test-room')=>({id,room,...ferrisDimensions.entrance});const req=(self,kind='ferris',time=now,method='POST')=>rideAPI(new Request('https://winter.test/api/ride',{method,body:method==='POST'?JSON.stringify({kind}):undefined}),DB,self,time);
 test('simultaneous guests get independent seats, no duplicates; exit and expiry release seats',async()=>{const [a,b,c]=await Promise.all(['a','b','c'].map(id=>req(visitor(id))));assert.equal(a.status,200);assert.equal(b.status,200);assert.equal(c.status,409);const pa=(await a.json()).reservation,pb=(await b.json()).reservation;assert.equal(pa.cabin,pb.cabin);assert.notEqual(pa.seat,pb.seat);assert.equal((await req(visitor('d','other-room'))).status,200);assert.equal((await req(visitor('a'),'ferris',now,'DELETE')).status,200);assert.equal((await listRideSeats(DB,'test-room',now)).length,1);assert.equal((await req(visitor('c'))).status,200);assert.equal((await req(visitor('e'),'ferris',now+21000)).status,200);});
 test('both lift seats share departure time and their positions remain separated',async()=>{const a={id:'lift-a',room:'lift-room',x:liftLayout.x,z:(-185+alpineShift)},b={...a,id:'lift-b'};const pa=await(await req(a,'lift')).json(),pb=await(await req(b,'lift',now+1000)).json();assert.equal(pa.reservation.startedAt,now);assert.equal(pa.reservation.startedAt,pb.reservation.startedAt);assert.ok(sharedSeatPose(pa.reservation,now+300).z<sharedSeatPose(pa.reservation,now).z);for(let elapsed=0;elapsed<=resortRides.lift.duration;elapsed+=.25){const p=sharedSeatPose(pa.reservation,now+elapsed*1000),q=sharedSeatPose(pb.reservation,now+elapsed*1000);assert.ok(Math.abs(Math.hypot(p.x-q.x,p.z-q.z)-1.9)<1e-8);assert.equal(p.y,q.y);}});
@@ -40,3 +41,15 @@ test('automatic seats fill free places concurrently, retry idempotently and pres
  await rideAPI(new Request('https://winter.test/api/ride',{method:'DELETE'}),DB,self(rows[0].id),now);assert.equal((await claim('auto-new')).status,200);
  assert.ok((await listRideSeats(DB,'auto-bench-room',now)).some(s=>s.id===rows[1].id));
 });
+
+test('six gondola seats share a cabin atomically, reject the seventh and reopen on release',async()=>{
+ const time=Math.floor(now/18000)*18000+1000,self=id=>({id,room:'gondola-room',region:'outdoors',...gondolaEntry});
+ const responses=await Promise.all(Array.from({length:7},(_,i)=>req(self('gondola-'+i),'gondola',time)));
+ assert.equal(responses.filter(r=>r.status===200).length,6);assert.equal(responses.filter(r=>r.status===409).length,1);
+ const seats=await listRideSeats(DB,'gondola-room',time);assert.equal(new Set(seats.map(s=>s.seat)).size,6);assert.equal(new Set(seats.map(s=>s.startedAt)).size,1);
+ for(let t=0;t<756;t+=2){const positions=seats.map(s=>sharedSeatPose(s,s.startedAt+t*1000));for(let i=0;i<6;i++)for(let j=0;j<i;j++)assert.ok(Math.hypot(positions[i].x-positions[j].x,positions[i].z-positions[j].z)>1);}
+ await req(self(seats[0].id),'gondola',time,'DELETE');assert.equal((await req(self('gondola-new'),'gondola',time)).status,200);
+ assert.equal((await req(self('gondola-closed'),'gondola',time+6000)).status,409);assert.equal((await req({...self('gondola-far'),x:0,z:0},'gondola',time)).status,400);
+});
+
+test('mid-mountain lift claims two seats at its own station and rejects base-station boarding',async()=>{const self={id:'ridge-a',room:'ridge-room',...ridgeLiftEntry};const a=await(await req(self,'ridgelift',now)).json(),b=await(await req({...self,id:'ridge-b'},'ridgelift',now+200)).json();assert.equal(a.reservation.startedAt,b.reservation.startedAt);assert.notEqual(a.reservation.seat,b.reservation.seat);const p=sharedSeatPose(a.reservation,now+50000);assert.ok(p.z<ridgeLiftEntry.z);assert.equal((await req({id:'ridge-far',room:'ridge-room',x:0,z:0},'ridgelift',now)).status,400);});

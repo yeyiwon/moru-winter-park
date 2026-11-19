@@ -1,15 +1,31 @@
-// Shared score, independent of rendering. Only id/start/seed/state travel over the network.
-export const fireworkConfig=Object.freeze({duration:74,leadMs:10000,cooldownMs:15*60000,auto:false,intervalMs:15*60000});
-export const fireworkPatterns=['chrysanthemum','peony','willow','ring','glitter'];
+import {showTrack} from './show-tracks.js';
+import {castleShowCues} from './castle-show-score.js';
+// Original WINTERLIGHT score. All effects use the same server time and seed.
+export const fireworkConfig=Object.freeze({duration:castleShowCues.at(-1).start+castleShowCues.at(-1).duration,leadMs:10000,cooldownMs:15*60000,auto:false,intervalMs:15*60000});
+export const fireworkPatterns=['chrysanthemum','peony','willow','ring','glitter','star'];
 export function fireworkRandom(seed){let state=seed>>>0||1;return()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return state/4294967296;};}
-export function createFireworkScore(seed=1){
+export function showEnvelope(age,duration=fireworkConfig.duration){return Math.max(0,Math.min(1,age/3,(duration-age)/4));}
+export function createFireworkScore(seed=1,musicId){
  const random=fireworkRandom(seed),score=[];
- const add=(at,pattern,x,height,color,size=1)=>score.push({at,pattern,x:x+(random()-.5)*7,y:4,z:-80-random()*6,height,flight:2.35+random()*.5,color,size,life:pattern==='willow'?5.6:pattern==='glitter'?4.2:3.8,tilt:(random()-.5)*1.2,wind:(random()-.5)*.7});
- // Opening, colour development, overlapping main show, willow interlude and finale.
- [0,2.8,5.7].forEach((t,i)=>add(t,'chrysanthemum',[-33,30,0][i],82+i*8,'#f5d495',.65));
- [[12,'peony',-35,'#f777b2'],[14.5,'ring',30,'#7cd7ff'],[17,'peony',-12,'#78edc0'],[20,'ring',12,'#b896f2']].forEach(([t,p,x,c])=>add(t,p,x,96+random()*15,c,.9));
- for(let i=0;i<6;i++)add(26+(i%3)*.65+Math.floor(i/3)*4.7,i%2?'peony':'chrysanthemum',(i%3-1)*39,99+(i%3)*12,['#c6a5ff','#8ce3ff','#f7dfaf'][i%3],1.1);
- for(let i=0;i<3;i++)add(39+i*1.7,'willow',(i-1)*34,115+i*5,'#efcb88',1.2);
- for(let i=0;i<10;i++)add(53+i*.75,i%3===0?'ring':'glitter',(i%5-2)*23,92+(i%4)*12,['#f5d9a4','#b8e7fc','#ddc4f7','#f58fbc','#8de4c2'][i%5],1+(i%3)*.12);
- return score;
+ const add=(at,pattern,x,height,color,size=1)=>score.push({at,pattern,x,y:5,z:-68-random()*16,launchX:Math.sign(x)*23,launchZ:-32,height,flight:2.35+random()*.25,color,size,life:pattern==='willow'?5.1:pattern==='glitter'?3.7:4,tilt:(random()-.5)*1.2,wind:(random()-.5)*.7});
+ const track=showTrack(musicId);
+ if(track){
+  let previous=-10,sequence=0;
+  for(const section of track.sections){
+   if(section.afterglow)continue;
+   const finale=section.cue===4,interval=finale?1.65:section.cue===0?4.2:3.1;
+   for(const at of track.accents){
+    if(at<section.start||at>=section.end||at<3||at-previous<interval||at>track.duration-5.6)continue;
+    previous=at;const palette=castleShowCues[section.cue].palette,pattern=fireworkPatterns[(sequence+section.cue)%fireworkPatterns.length],count=finale?3:section.cue===0?1:2;
+    for(let n=0;n<count;n++){
+     const x=count===1?Math.sin(sequence)*26:count===3?(n-1)*46:(n?1:-1)*(32+sequence%3*7);
+     add(at-2.5,pattern,x,95+(sequence%3)*12+(count===3&&n===1?34:0),palette[(sequence+n)%3],finale?1.25:.9+section.cue*.07);
+     const shell=score.at(-1);shell.flight=2.5;shell.life=Math.min(shell.life,track.duration-at-.25);
+    }sequence++;
+   }
+  }
+  return score.sort((a,b)=>a.at-b.at);
+ }
+ for(const cue of castleShowCues)for(const burst of cue.fireworks.bursts)add(cue.start+burst.at,burst.pattern,burst.x,burst.height,burst.color,burst.size);
+ return score.sort((a,b)=>a.at-b.at);
 }

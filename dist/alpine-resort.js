@@ -1,3 +1,6 @@
+import {buildWinterBench} from './winter-bench.js';
+import {createGondola} from './alpine-gondola.js';
+import {createMountainTerrainSteps} from './mountain-terrain.js';
 import {finishSteps} from './startup-work.js';
 import {mergeFinish} from './architecture-kit.js';
 import {sampleRide} from './winter-rides.js';
@@ -9,19 +12,23 @@ import {buildResortScenery} from './resort-scenery.js';
 import {createSnowPaths} from './snow-path.js';
 import {buildParkLamps} from './park-lamps.js';
 import * as THREE from './vendor/three.module.js';
-import {alpine,alpineHeight,summit as summitLayout,peakSummit,resortRides,liftLayout,liftPoint,upperLiftLayout,upperLiftPoint,skiRuns,skiRunCenter,skiRunHalfWidth,summitFacilities,summitTransfer,skiStarts,skiRunouts} from './resort-blueprint.js';
+import {skiTicketBooth,skiJumps,alpine,alpineHeight,summit as summitLayout,peakSummit,resortRides,ridgeLiftLayout,ridgeLiftPoint,ridgeTransfers,ridgeBase,ridgeSummit,gondolaEntry,gondolaApproach,liftApproach,gondolaPoints,liftLayout,liftPoint,upperLiftLayout,upperLiftPoint,skiRuns,skiRunCenter,skiRunHalfWidth,summitFacilities,summitTransfer,middleTransfer,mountainRest,skiStarts,skiRunouts} from './resort-blueprint.js';
+import {mountainWayfinders,mountainBounds,mountainShelter,skiNetwork} from './mountain-layout.js';
 import {alpineShift} from './resort-layout.js';
 
 // Geometry and ride code sample the same height function: no decorative ramp above an unrelated floor.
 export function buildAlpineResort(api){return finishSteps(buildAlpineResortSteps(api));}
 export function* buildAlpineResortSteps(api){
  const hitMaterial=new THREE.MeshBasicMaterial({visible:false,colorWrite:false,depthTest:false,transparent:true,opacity:0,depthWrite:false});
- const {scene,mesh,ball,cylinder,box,rod,torus,M}=api;
+ const {scene,mesh,ball:worldBall,cylinder,box,rod,torus:worldTorus,M}=api;
+ const bulbGeometry=new THREE.SphereGeometry(1,8,5),rollerGeometry=new Map();
+ function ball(mat,x,y,z,size,parent){if(size>=.18)return worldBall(mat,x,y,z,size,parent);const o=mesh(bulbGeometry,mat,x,y,z,parent);o.scale.setScalar(size);return o;}
+ function torus(radius,tube,mat,x,y,z,parent){if(radius>=.4)return worldTorus(radius,tube,mat,x,y,z,parent);const key=radius+'/'+tube;if(!rollerGeometry.has(key))rollerGeometry.set(key,new THREE.TorusGeometry(radius,tube,5,16));return mesh(rollerGeometry.get(key),mat,x,y,z,parent);}
  const root=new THREE.Group();root.name='alpine-mountain';scene.add(root);
  const snow=M('#e5edf0',.96,0),groomed=M('#f0f4f4',.92,0),bankSnow=M('#d3e0e7',.98,0),rock=M('#526276',.92,.02),rockLight=M('#71828d',.95,0),timber=M('#80634d',.88,0),oak=M('#a38a6b',.83,0),ink=M('#233448',.72,.08),metal=M('#9bacae',.45,.4),brass=M('#b99e73',.48,.4),red=M('#9f4c4b',.66,.02),blue=M('#5d89a4',.7,.02),pine=[M('#294d4e',.98,0),M('#365c57',.98,0),M('#41685e',.98,0)];
  const windowMat=new THREE.MeshStandardMaterial({color:'#d3bb8a',emissive:'#c89a58',emissiveIntensity:.35,roughness:.4,metalness:.12});
  const lampRequests=[];
- const warm=new THREE.MeshBasicMaterial({color:'#efd4a0'}),interactive=[],dynamic=new Set(),chairs=[],upperChairs=[],steamSystems=[],flames=[];let fireLight=null;const steamDummy=new THREE.Object3D();
+ const warm=new THREE.MeshBasicMaterial({color:'#efd4a0'}),interactive=[],dynamic=new Set(),chairs=[],steamSystems=[],flames=[];let fireLight=null;const steamDummy=new THREE.Object3D();
  let seed=4277;const rand=()=>{seed=seed*16807%2147483647;return(seed-1)/2147483646;};
  const ovalGeo=new THREE.SphereGeometry(1,12,8);
  function oval(mat,x,y,z,sx,sy,sz,p=root){const o=mesh(ovalGeo,mat,x,y,z,p);o.scale.set(sx,sy,sz);return o;}
@@ -39,36 +46,62 @@ export function* buildAlpineResortSteps(api){
  }
 
 
- // A smooth polar heightfield gives the island an uninterrupted, traversable mountain skin.
- const worldForm=landforms.find(p=>p.id==='alpine'),groundForm={...worldForm,z:worldForm.z-alpineShift},rings=224,sectors=320,positions=[groundForm.x,alpineHeight(groundForm.x,groundForm.z),groundForm.z],uv=[.5,.5],indices=[];
- for(let j=1;j<=rings;j++){const r=j/rings;for(let i=0;i<sectors;i++){const a=i/sectors*Math.PI*2,x=groundForm.x+Math.cos(a)*groundForm.rx*landRadius(groundForm,a)*r,z=groundForm.z+Math.sin(a)*groundForm.rz*landRadius(groundForm,a)*r;positions.push(x,alpineHeight(x,z),z);uv.push((x-alpine.x)/alpine.r/2+.5,(z-alpine.z)/alpine.r/2+.5);}if(j%8===0)yield;}
- for(let i=0;i<sectors;i++)indices.push(0,1+(i+1)%sectors,1+i);
- for(let j=0;j<rings-1;j++)for(let i=0;i<sectors;i++){const a=1+j*sectors+i,b=1+j*sectors+(i+1)%sectors,c=a+sectors,d=b+sectors;indices.push(a,b,c,b,d,c);}
- const terrainGeo=new THREE.BufferGeometry();terrainGeo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));terrainGeo.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));terrainGeo.setIndex(indices);terrainGeo.computeVertexNormals();const colors=[],baseColor=new THREE.Color('#e5edf0'),runColor=new THREE.Color('#f2f5f4');for(let i=0;i<positions.length;i+=3){const x=positions[i],z=positions[i+2],inside=Math.max(0,...skiRuns.filter(run=>z>=run.startZ-3&&z<=run.finish).map(run=>1-Math.min(1,Math.max(0,(Math.abs(x-skiRunCenter(z,run.id))-skiRunHalfWidth(z,run.id)+2)/4)))),c=baseColor.clone().lerp(runColor,inside*.72);colors.push(c.r,c.g,c.b);if(i%12288===0)yield;}terrainGeo.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));const terrainMaterial=snow.clone();terrainMaterial.color.set('#ffffff');terrainMaterial.vertexColors=true;const terrain=mesh(terrainGeo,terrainMaterial,0,0,0,root);terrain.name='alpine-heightfield';terrain.userData.skiTerrain=true;
+ const mountainTerrain=yield* createMountainTerrainSteps(root);yield;const gondolas=createGondola(root);dynamic.add(gondolas.root);yield;
  function ribbon(points,width,mat,offset=.055){const pos=[],uv=[],idx=[],columns=Math.max(1,Math.ceil(width/.75));for(let i=0;i<points.length;i++){const p=points[i],prev=points[Math.max(0,i-1)],next=points[Math.min(points.length-1,i+1)],dx=next[0]-prev[0],dz=next[2]-prev[2],length=Math.hypot(dx,dz)||1,nx=-dz/length,nz=dx/length;for(let j=0;j<=columns;j++){const side=j/columns-.5,x=p[0]+nx*width*side,z=p[2]+nz*width*side;pos.push(x,alpineHeight(x,z)+offset,z);uv.push(j/columns,i/(points.length-1));if(i<points.length-1&&j<columns){const k=i*(columns+1)+j;idx.push(k,k+1,k+columns+1,k+1,k+columns+2,k+columns+1);}}}const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.setIndex(idx);g.computeVertexNormals();return mesh(g,mat,0,0,0,root);}
 
+ // Low-cost groomed kickers use the exact gameplay height, independently of tile LOD.
+ for(const jump of skiJumps){const points=[],indices=[],rows=30,cols=8;
+  for(let i=0;i<=rows;i++)for(let j=0;j<=cols;j++){
+   const along=-jump.length+i*(jump.length+8)/rows,side=(j/cols-.5)*jump.width;
+   const x=jump.x+Math.sin(jump.yaw)*along+Math.cos(jump.yaw)*side,z=jump.z+Math.cos(jump.yaw)*along-Math.sin(jump.yaw)*side;
+   points.push(x,alpineHeight(x,z)+.045,z);if(i<rows&&j<cols){const k=i*(cols+1)+j;indices.push(k,k+cols+1,k+1,k+1,k+cols+1,k+cols+2);}
+  }
+  const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(points,3));geometry.setIndex(indices);geometry.computeVertexNormals();
+  const top=mesh(geometry,groomed,0,0,0,root);top.name=jump.id;top.userData.cameraIgnore=true;
+  // Paired blue poles mark the take-off edges without blocking the bypass.
+  for(const side of [-1,1]){const x=jump.x+Math.cos(jump.yaw)*side*(jump.width/2+.4),z=jump.z-Math.sin(jump.yaw)*side*(jump.width/2+.4),y=alpineHeight(x,z);rod([x,y,z],[x,y+1.6,z],.055,blue,root);}
+ }
  // The piste is part of the terrain itself; no lifted strip can cover a skier.
 
  const safetyNet=new THREE.MeshStandardMaterial({color:'#b87c64',roughness:1,transparent:true,opacity:.28,side:THREE.DoubleSide,depthWrite:false});
  const fenceBulbs=[],fenceColors=[],fenceWires=[];
  const runColors=Object.fromEntries(skiRuns.map(run=>[run.id,M(run.color,.6,0)]));
  // Boundaries disappear through shared junctions instead of fencing across another run.
+ const transfers=[summitTransfer,middleTransfer,...ridgeTransfers];
+ function transferOpening(x,z){return transfers.some(path=>path.slice(1).some((b,i)=>{const a=path[i],dx=b.x-a.x,dz=b.z-a.z,t=Math.max(0,Math.min(1,((x-a.x)*dx+(z-a.z)*dz)/(dx*dx+dz*dz||1)));return Math.hypot(x-a.x-dx*t,z-a.z-dz*t)<7;}));}
  for(const run of skiRuns){yield;
-  const points=Array.from({length:Math.max(2,Math.ceil(run.finish-run.startZ-14))},(_,i)=>{const z=run.startZ+6+i;return[skiRunCenter(z,run.id),z];});
-  const exposed=(x,z)=>!skiRuns.some(other=>other.id!==run.id&&z>=other.startZ-2&&z<=other.finish&&Math.abs(x-skiRunCenter(z,other.id))<skiRunHalfWidth(z,other.id)+.7)&&!(z>=-340&&z<=-286&&Math.abs(x-24)<6.8);
+  const points=Array.from({length:Math.max(2,Math.ceil((run.finish-run.startZ-14)/8))},(_,i)=>{const z=run.startZ+6+i*8;return[skiRunCenter(z,run.id),z];});
+  const exposed=(x,z)=>!transferOpening(x,z)&&!skiRuns.some(other=>other.id!==run.id&&z>=other.startZ-2&&z<=other.finish&&Math.abs(x-skiRunCenter(z,other.id))<skiRunHalfWidth(z,other.id)+.7)&&!(z>=-340&&z<=-286&&Math.abs(x-24)<6.8);
   for(const side of [-1,1]){const pos=[],idx=[];
    for(let i=0;i<points.length;i++){const [cx,z]=points[i],x=cx+side*(skiRunHalfWidth(z,run.id)+.5),y=alpineHeight(x,z),show=exposed(x,z);
-    if(show&&i%2===0){fenceBulbs.push(x,y+1.32,z);const c=new THREE.Color(i%8===0?'#a8dfff':'#55b8ff');fenceColors.push(c.r,c.g,c.b);}
-    if(show&&i%8===0){rod([x,y,z],[x,y+1.3,z],.035,metal,root);box(.36,.28,.035,runColors[run.id],x,y+1.12,z,root);}
+    if(show){fenceBulbs.push(x,y+1.32,z);const c=new THREE.Color(i%8===0?'#a8dfff':'#55b8ff');fenceColors.push(c.r,c.g,c.b);}
+    if(show&&i%2===0){rod([x,y,z],[x,y+1.3,z],.035,metal,root);box(.36,.28,.035,runColors[run.id],x,y+1.12,z,root);}
     if(i===points.length-1||!show)continue;const [nx,nz]=points[i+1],ex=nx+side*(skiRunHalfWidth(nz,run.id)+.5);if(!exposed(ex,nz))continue;
-    const ey=alpineHeight(ex,nz),k=pos.length/3;fenceWires.push(x,y+1.3,z,ex,ey+1.3,nz);pos.push(x,y+.2,z,x,y+1.05,z,ex,ey+.2,nz,ex,ey+1.05,nz);idx.push(k,k+1,k+2,k+1,k+3,k+2);
+    const ey=alpineHeight(ex,nz),k=pos.length/3;fenceWires.push(x,y+1.3,z,ex,ey+1.3,nz);for(const f of [.25,.5,.75]){fenceBulbs.push(x+(ex-x)*f,y+(ey-y)*f+1.3,z+(nz-z)*f);const c=new THREE.Color('#6dc7ff');fenceColors.push(c.r,c.g,c.b);}pos.push(x,y+.2,z,x,y+1.05,z,ex,ey+.2,nz,ex,ey+1.05,nz);idx.push(k,k+1,k+2,k+1,k+3,k+2);
    }
-   const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();mesh(geo,safetyNet,0,0,0,root);
+   if(pos.length){const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();mesh(geo,safetyNet,0,0,0,root);}
   }
  }
  // Persistent emissive bulbs never switch off with the nearby-light budget.
  const fenceGeometry=new THREE.BufferGeometry();fenceGeometry.setAttribute('position',new THREE.Float32BufferAttribute(fenceBulbs,3));fenceGeometry.setAttribute('color',new THREE.Float32BufferAttribute(fenceColors,3));
- const fenceLights=new THREE.Points(fenceGeometry,new THREE.ShaderMaterial({vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:false,vertexShader:'varying vec3 tint;void main(){tint=color;vec4 p=modelViewMatrix*vec4(position,1.);gl_Position=projectionMatrix*p;gl_PointSize=clamp(670./max(1.,-p.z),4.4,13.);}',fragmentShader:'varying vec3 tint;void main(){float r=length(gl_PointCoord-.5)*2.;float core=exp(-r*r*20.);float halo=exp(-r*r*4.)*(1.-smoothstep(.65,1.,r));gl_FragColor=vec4(tint*2.9,min(1.,core+halo*.92));}'}));fenceLights.name='alpine-fence-illuminations';fenceLights.userData.cameraIgnore=true;root.add(fenceLights);
+ // Distant bulbs must fade with the mountain fog; otherwise the enlarged resort
+ // draws floating piste outlines across the castle's night sky.
+ const fenceLights=new THREE.Points(fenceGeometry,new THREE.ShaderMaterial({uniforms:THREE.UniformsUtils.clone(THREE.UniformsLib.fog),fog:true,vertexColors:true,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,toneMapped:true,
+  vertexShader:`varying vec3 tint;varying float bulbDistance;
+#include <fog_pars_vertex>
+void main(){tint=color;vec4 mvPosition=modelViewMatrix*vec4(position,1.);bulbDistance=length(mvPosition.xyz);gl_Position=projectionMatrix*mvPosition;gl_PointSize=clamp(820./max(1.,-mvPosition.z),1.1,15.);
+#include <fog_vertex>
+}`,
+  fragmentShader:`varying vec3 tint;varying float bulbDistance;
+#include <fog_pars_fragment>
+void main(){float r=length(gl_PointCoord-.5)*2.;float core=exp(-r*r*20.);float halo=exp(-r*r*4.)*(1.-smoothstep(.65,1.,r));float visibility=1.-smoothstep(350.,900.,bulbDistance);
+#ifdef USE_FOG
+visibility*=1.-smoothstep(fogNear,fogFar,vFogDepth);
+#endif
+float alpha=min(1.,core+halo*.92)*visibility;if(alpha<.003)discard;gl_FragColor=vec4(tint*3.4,alpha);
+#include <tonemapping_fragment>
+#include <colorspace_fragment>
+}`}));fenceLights.name='alpine-fence-illuminations';fenceLights.userData.cameraIgnore=true;root.add(fenceLights);
  const wireGeometry=new THREE.BufferGeometry();wireGeometry.setAttribute('position',new THREE.Float32BufferAttribute(fenceWires,3));const wires=new THREE.LineSegments(wireGeometry,new THREE.LineBasicMaterial({color:'#79caff',transparent:true,opacity:.88,toneMapped:false}));wires.name='alpine-fence-light-cable';wires.userData.cameraIgnore=true;root.add(wires);
  // Each course has its own physical mouth. The sign faces both the summit
  // approach and the slope, while the posts stay beyond the skiable width.
@@ -114,9 +147,11 @@ export function* buildAlpineResortSteps(api){
  // used to make the visible cable diverge from the actual chair near the summit.
  const leftLength=Math.hypot(liftLayout.dx,liftLayout.dz),lnx=-liftLayout.dz/leftLength,lnz=liftLayout.dx/leftLength;
  const liftPoints=resortRides.lift.points,cableCurve=offset=>{const curve=new THREE.Curve();curve.getPoint=t=>{const p=liftPoint(t);return new THREE.Vector3(p[0]+lnx*offset,p[1]+liftLayout.hanger,p[2]+lnz*offset);};return curve;};
- for(const offset of [0,liftLayout.spacing])mesh(new THREE.TubeGeometry(cableCurve(offset),240,.027,6,false),ink,0,0,0,root);
+ // A 5cm cable cannot meaningfully occlude the player; treating it as a wall
+ // collapsed the near-plane sweep whenever a waiting player stood below it.
+ for(const offset of [0,liftLayout.spacing])mesh(new THREE.TubeGeometry(cableCurve(offset),240,.027,6,false),ink,0,0,0,root).userData.cameraIgnore=true;
  for(const t of liftLayout.supports.slice(1,-1)){
-  const support=new THREE.Group();support.name='lift-support';root.add(support);dynamic.add(support);
+  const support=new THREE.Group();support.name='lift-support';root.add(support);
   const p=liftPoint(t),cx=p[0]+lnx*2,cz=p[2]+lnz*2,y=alpineHeight(cx,cz),top=p[1]+liftLayout.hanger;
   rod([cx,y,cz],[cx,top-.45,cz],.16,metal,support);
   rod([cx-lnx*2.7,top-.45,cz-lnz*2.7],[cx+lnx*2.7,top-.45,cz+lnz*2.7],.12,ink,support);
@@ -135,14 +170,14 @@ export function* buildAlpineResortSteps(api){
  for(const side of [-1,1]){rod([side*1.15,.1,-.6],[side*1.15,.48,.94],.045,metal,g);rod([side*1.15,.64,-.6],[0,2.3,-.65],.045,metal,g);}
  rod([-1.15,.48,.94],[1.15,.48,.94],.055,metal,g);rod([-1.1,-.45,1],[1.1,-.45,1],.045,metal,g);
  // Each animated chair needs only three material draws, independent of its frame detail.
- g.scale.x=1.52;g.updateMatrixWorld(true);for(const mat of [metal,oak,ink]){const items=g.children.filter(o=>o.isMesh&&o.material===mat);if(items.length<2)continue;const chunks={position:[],normal:[],uv:[]};let n=0;for(const o of items){let geo=o.geometry.clone().applyMatrix4(o.matrix);if(geo.index)geo=geo.toNonIndexed();n+=geo.attributes.position.count;for(const key in chunks)chunks[key].push(geo.attributes[key].array);o.removeFromParent();geo.dispose();}const geo=new THREE.BufferGeometry();for(const key in chunks){const size=key==='uv'?2:3,out=new Float32Array(n*size);let off=0;for(const a of chunks[key]){out.set(a,off);off+=a.length;}geo.setAttribute(key,new THREE.BufferAttribute(out,size));}mesh(geo,mat,0,0,0,g).userData.rideCameraFade=true;}return g;}
+ g.scale.x=1.52;g.updateMatrixWorld(true);for(const mat of [metal,oak,ink]){const items=g.children.filter(o=>o.isMesh&&o.material===mat);if(items.length<2)continue;const chunks={position:[],normal:[],uv:[]};let n=0;for(const o of items){let geo=o.geometry.clone().applyMatrix4(o.matrix);if(geo.index)geo=geo.toNonIndexed();n+=geo.attributes.position.count;for(const key in chunks)chunks[key].push(geo.attributes[key].array);o.removeFromParent();geo.dispose();}const geo=new THREE.BufferGeometry();for(const key in chunks){const size=key==='uv'?2:3,out=new Float32Array(n*size);let off=0;for(const a of chunks[key]){out.set(a,off);off+=a.length;}geo.setAttribute(key,new THREE.BufferAttribute(out,size));}mesh(geo,mat,0,0,0,g).userData.rideCameraFade=true;}g.traverse(o=>{if(o.isMesh)o.userData.cameraMovingCabin=true;});return g;}
  function pathPoint(t){const p=sampleRide(resortRides.lift,t);return new THREE.Vector3(p.x,p.y-.82,p.z);}
  const turnShare=Math.PI*liftLayout.spacing/2/Math.hypot(liftLayout.dx,liftLayout.dz),upYaw=Math.atan2(liftLayout.dx,liftLayout.dz);
  function loopPose(progress){const s=progress*(2+2*turnShare);if(s<=1)return{position:pathPoint(s),yaw:upYaw};if(s<=1+turnShare){const a=(s-1)/turnShare*Math.PI,p=liftPoint(1);return{position:new THREE.Vector3(p[0]+lnx*2*(1-Math.cos(a))+Math.sin(upYaw)*2*Math.sin(a),p[1],p[2]+lnz*2*(1-Math.cos(a))+Math.cos(upYaw)*2*Math.sin(a)),yaw:upYaw-a};}if(s<=2+turnShare){const p=pathPoint(2+turnShare-s);p.x+=lnx*4;p.z+=lnz*4;return{position:p,yaw:upYaw-Math.PI};}const a=(s-2-turnShare)/turnShare*Math.PI,p=liftPoint(0);return{position:new THREE.Vector3(p[0]+lnx*2*(1+Math.cos(a))-Math.sin(upYaw)*2*Math.sin(a),p[1],p[2]+lnz*2*(1+Math.cos(a))-Math.cos(upYaw)*2*Math.sin(a)),yaw:upYaw-Math.PI-a};}
  for(let i=0;i<8;i++){const g=chair(),offset=i/8,pose=loopPose(offset);g.position.copy(pose.position);g.rotation.y=pose.yaw;chairs.push({g,offset});}
  const rideChair=chair();rideChair.name='alpine-personal-chair';rideChair.visible=false;rideChair.position.copy(pathPoint(0));
  function station(point,name,upper=false,axisYaw=0,addLight=true){
-  const [x,seat,z]=point,y=alpineHeight(x,z),g=place(x+2*Math.cos(axisYaw),z-2*Math.sin(axisYaw),name,y),cable=seat-y+liftLayout.hanger,roof=cable+.9,half=upper?3.4:5.2,depth=upper?5.1:6.6;g.rotation.y=axisYaw;
+  const [x,seat,z]=point,y=alpineHeight(x,z),g=place(x+2*Math.cos(axisYaw),z-2*Math.sin(axisYaw),name,y),cable=seat-y+liftLayout.hanger,roof=cable+.9,half=upper?4.8:5.2,depth=upper?5.1:6.6;g.rotation.y=axisYaw;
   for(const side of [-1,1]){for(const dz of [-1.65,1.65])rod([side*half,0,dz],[side*half,roof,dz],.13,ink,g);box(.12,.6,3.2,metal,side*half,roof-.35,0,g);}
   box(half*2+.7,.28,depth,ink,0,roof,0,g);box(half*2+.8,.16,depth+.1,snow,0,roof+.2,0,g);for(const side of [-1,1])box(half*2-.4,.04,.08,warm,0,roof-.2,side*(depth/2-.65),g);for(const side of [-1,1]){box(half*2+.6,.065,.08,brass,0,roof-.15,side*depth/2,g);for(let k=0;k<=14;k++)ball(warm,-half+k/14*half*2,roof-.24,side*depth/2,.04,g);}
   // Timber soffits and bolted steel haunches sit high above the loading envelope.
@@ -155,7 +190,7 @@ export function* buildAlpineResortSteps(api){
   box(1.4,.4,1.65,metal,0,cable+.58,0,g);for(let j=0;j<8;j++)box(1.1,.025,.05,ink,0,cable+.8,-.65+j*.185,g);
   for(const side of [-1,1])rod([side*.55,cable+.33,0],[side*.55,roof-.28,0],.07,ink,g);
   if(!upper&&addLight){const light=new THREE.PointLight('#ffce91',8,14,2);light.position.set(-1,roof-.65,.6);g.add(light);}
-  plaque([name.includes('peak')?'정상 리프트':'초급 리프트'],0,roof+.12,depth/2+.12,2.2,.55,g);
+  plaque([name.includes('ridge')?'정상 연결 리프트':name.includes('peak')?'포레스트 리프트':'초급 리프트'],0,roof+.12,depth/2+.12,2.2,.55,g);
   const wheel=torus(2,.085,metal,0,cable,0,g);wheel.rotation.x=Math.PI/2;
   for(let i=0;i<8;i++){const a=i/8*Math.PI*2;rod([0,cable,0],[Math.cos(a)*1.96,cable,Math.sin(a)*1.96],.035,metal,g);}for(let i=0;i<20;i++){const a=i/20*Math.PI*2;ball(brass,Math.cos(a)*1.88,cable-.06,Math.sin(a)*1.88,.045,g);}ring(1.93,.035,brass,0,cable-.04,0,g);cylinder(.36,.36,.3,ink,0,cable,0,g,16);
   // The actual cable turns around the terminal wheel rather than ending in air.
@@ -164,32 +199,40 @@ export function* buildAlpineResortSteps(api){
   // The loading lane stays open at the front: railings and columns sit outside it.
   for(const side of [-1,1]){const edge=side*(half-.2);rod([edge,.13,-2],[edge,1.05,-2],.035,metal,g);rod([edge,1.05,-2],[edge,1.05,2],.035,metal,g);}
   box(1.15,.72,.18,blue,-half,2.15,2.05,g);for(const yy of [1.97,2.16,2.35])box(.65,.055,.025,snow,-half,yy,2.16,g);
+  // Rod geometry may already contain its endpoints with position.y === 0.
+  // Classify the whole mesh in station space, keeping ground-reaching posts solid.
+  const canopyBounds=new THREE.Box3();
+  g.traverse(o=>{if(!o.isMesh)return;o.updateMatrix();o.geometry.computeBoundingBox();canopyBounds.copy(o.geometry.boundingBox).applyMatrix4(o.matrix);if(canopyBounds.min.y>2.7)o.userData.cameraCanopy=true;});
   return g;
  }
  yield;station(liftPoints[0],'alpine-base-terminal',false,upYaw-Math.PI);station(liftPoints.at(-1),'alpine-summit-terminal',true,upYaw-Math.PI);
  // The right-hand base lift reaches the upper course junction. Its normal
  // vector is shared by chairs, towers and stations, including both turnaround arcs.
- const upperYaw=Math.atan2(upperLiftLayout.dx,upperLiftLayout.dz),upperAxis=upperYaw-Math.PI,ux=Math.cos(upperAxis),uz=-Math.sin(upperAxis),utx=Math.sin(upperYaw),utz=Math.cos(upperYaw),upperTurn=Math.PI*2/Math.hypot(upperLiftLayout.dx,upperLiftLayout.dz);
- const upperCurve=offset=>{const curve=new THREE.Curve();curve.getPoint=t=>{const p=upperLiftPoint(t);return new THREE.Vector3(p[0]+ux*offset,p[1]+3.1,p[2]+uz*offset);};return curve;};
- for(const offset of [0,4])mesh(new THREE.TubeGeometry(upperCurve(offset),120,.027,6,false),ink,0,0,0,root);
- for(const t of upperLiftLayout.supports.slice(1,-1)){
-  const support=new THREE.Group();support.name='lift-support';root.add(support);dynamic.add(support);
-  const p=upperLiftPoint(t),cx=p[0]+2*ux,cz=p[2]+2*uz,y=alpineHeight(cx,cz),top=p[1]+3.1;
+ function buildSideLift(kind,line,point){
+ const chairs=[];const upperYaw=Math.atan2(line.dx,line.dz),upperAxis=upperYaw-Math.PI,ux=Math.cos(upperAxis),uz=-Math.sin(upperAxis),utx=Math.sin(upperYaw),utz=Math.cos(upperYaw),upperTurn=Math.PI*2/Math.hypot(line.dx,line.dz);
+ const upperCurve=offset=>{const curve=new THREE.Curve();curve.getPoint=t=>{const p=point(t);return new THREE.Vector3(p[0]+ux*offset,p[1]+3.1,p[2]+uz*offset);};return curve;};
+ for(const offset of [0,4])mesh(new THREE.TubeGeometry(upperCurve(offset),120,.027,6,false),ink,0,0,0,root).userData.cameraIgnore=true;
+ for(const t of line.supports.slice(1,-1)){
+  const support=new THREE.Group();support.name='lift-support';root.add(support);
+  const p=point(t),cx=p[0]+2*ux,cz=p[2]+2*uz,y=alpineHeight(cx,cz),top=p[1]+3.1;
   cylinder(.62,.8,.25,rock,cx,y+.125,cz,support,12);rod([cx,y,cz],[cx,top-.4,cz],.16,metal,support);rod([cx-ux*2.6,top-.4,cz-uz*2.6],[cx+ux*2.6,top-.4,cz+uz*2.6],.12,ink,support);
   for(const side of [-1,1]){rod([cx,top-1.6,cz],[cx+side*ux*2.3,top-.4,cz+side*uz*2.3],.07,metal,support);for(const d of [-.4,0,.4]){const wheel=torus(.17,.035,ink,cx+side*ux*2+utx*d,top-.17,cz+side*uz*2+utz*d,support);wheel.rotation.y=upperAxis+Math.PI/2;}}
   mergeFinish(support);support.traverse(o=>{if(o.isMesh)Object.assign(o.userData,{rideCameraFade:true,cameraFadeMode:'lift'});});
  }
  function upperLoopPose(progress){
   const s=progress*(2+2*upperTurn);let p,yaw;
-  if(s<=1){const q=sampleRide(resortRides.upperlift,s);p=[q.x,q.y-.82,q.z];yaw=upperYaw;}
-  else if(s<=1+upperTurn){const a=(s-1)/upperTurn*Math.PI,q=upperLiftPoint(1);p=[q[0]+ux*2*(1-Math.cos(a))+utx*2*Math.sin(a),q[1],q[2]+uz*2*(1-Math.cos(a))+utz*2*Math.sin(a)];yaw=upperYaw-a;}
-  else if(s<=2+upperTurn){const q=sampleRide(resortRides.upperlift,2+upperTurn-s);p=[q.x,q.y-.82,q.z];p[0]+=ux*4;p[2]+=uz*4;yaw=upperYaw-Math.PI;}
-  else{const a=(s-2-upperTurn)/upperTurn*Math.PI,q=upperLiftPoint(0);p=[q[0]+ux*2*(1+Math.cos(a))-utx*2*Math.sin(a),q[1],q[2]+uz*2*(1+Math.cos(a))-utz*2*Math.sin(a)];yaw=upperYaw-Math.PI-a;}
+  if(s<=1){const q=sampleRide(resortRides[kind],s);p=[q.x,q.y-.82,q.z];yaw=upperYaw;}
+  else if(s<=1+upperTurn){const a=(s-1)/upperTurn*Math.PI,q=point(1);p=[q[0]+ux*2*(1-Math.cos(a))+utx*2*Math.sin(a),q[1],q[2]+uz*2*(1-Math.cos(a))+utz*2*Math.sin(a)];yaw=upperYaw-a;}
+  else if(s<=2+upperTurn){const q=sampleRide(resortRides[kind],2+upperTurn-s);p=[q.x,q.y-.82,q.z];p[0]+=ux*4;p[2]+=uz*4;yaw=upperYaw-Math.PI;}
+  else{const a=(s-2-upperTurn)/upperTurn*Math.PI,q=point(0);p=[q[0]+ux*2*(1+Math.cos(a))-utx*2*Math.sin(a),q[1],q[2]+uz*2*(1+Math.cos(a))-utz*2*Math.sin(a)];yaw=upperYaw-Math.PI-a;}
   return{position:new THREE.Vector3(...p),yaw};
  }
- yield;station(upperLiftPoint(0),'alpine-peak-base-terminal',false,upperAxis,false);station(upperLiftPoint(1),'alpine-peak-top-terminal',true,upperAxis,false);
- for(let i=0;i<4;i++){const g=chair(),offset=i/4,pose=upperLoopPose(offset);g.position.copy(pose.position);g.rotation.y=pose.yaw;upperChairs.push({g,offset});}
- const upperStop=summitFacilities.find(p=>p.id==='upperlift');plaque(['정상 리프트','중급 · 상급 · 파노라마'],upperStop.x-3.8,alpineHeight(upperStop.x-3.8,upperStop.z)+2.5,upperStop.z,2.3,.6,root);
+ station(point(0),kind==='ridgelift'?'alpine-ridge-base-terminal':'alpine-peak-base-terminal',false,upperAxis,false);station(point(1),kind==='ridgelift'?'alpine-ridge-top-terminal':'alpine-peak-top-terminal',true,upperAxis,false);
+ for(let i=0;i<4;i++){const g=chair(),offset=i/4,pose=upperLoopPose(offset);g.position.copy(pose.position);g.rotation.y=pose.yaw;chairs.push({g,offset});}
+ return {kind,chairs,pose:upperLoopPose};
+ }
+ yield;const sideLifts=[buildSideLift('upperlift',upperLiftLayout,upperLiftPoint),buildSideLift('ridgelift',ridgeLiftLayout,ridgeLiftPoint)];
+ const upperStop=summitFacilities.find(p=>p.id==='upperlift');plaque(['포레스트 리프트','실버 포레스트 · 초중급'],upperStop.x-3.8,alpineHeight(upperStop.x-3.8,upperStop.z)+2.5,upperStop.z,2.3,.6,root);
  // The summit is an actual rest terrace; the front remains a broad, clear launch apron.
  const foodMat=M('#efd8b7',.8,0),truckRose=M('#bf747d',.65,.05),truckMint=M('#98c5b8',.65,.05),steamMat=new THREE.MeshBasicMaterial({color:'#fff4df',transparent:true,opacity:.11,depthWrite:false});
  function foodTruck(stop,paint,marshmallow=false){
@@ -237,9 +280,14 @@ export function* buildAlpineResortSteps(api){
  for(let i=0;i<summitTransfer.length-1;i++){const a=summitTransfer[i],b=summitTransfer[i+1],length=Math.hypot(b.x-a.x,b.z-a.z),x=(a.x+b.x)/2-(b.z-a.z)/length*6.5,z=(a.z+b.z)/2+(b.x-a.x)/length*6.5;lamp(root,x,z,alpineHeight(x,z));}
 
  const basePaths=createSnowPaths({root,stone:[M('#a1aaac',.98,0)],snow,heightAt:alpineHeight});
- basePaths(summitTransfer.map(p=>[p.x,p.z]),8.5);
- const trailToBase=Array.from({length:30},(_,i)=>{const t=i/29;return[8+(liftLayout.x-8)*t,-172-6*t+Math.sin(t*Math.PI)*3];});basePaths([[-26,-150],[-62,-150],[liftLayout.x,-170]],5.5);basePaths([[25,-150],[70,-160],[upperLiftLayout.x-8,-174],[upperStop.x,upperStop.z]],5.5);basePaths([[-62,-150],[-53,-163]],4.5);basePaths([[-62,-150],[-68,-160]],4.5);basePaths([[-26,-150],[-39,-151]],4.5);
- basePaths([[liftLayout.x,-170],[liftLayout.x,-178],[liftLayout.x,-184],[liftLayout.x,-188]],5.6);
+ basePaths(summitTransfer.map(p=>[p.x,p.z]),8.5);basePaths(middleTransfer.map(p=>[p.x,p.z]),9);for(const path of ridgeTransfers)basePaths(path.map(p=>[p.x,p.z]),9);
+ for(const p of [ridgeBase,ridgeSummit])plaque([p===ridgeBase?'정상 연결 리프트 ↗':'← 은하 파노라마'],p.x+25,alpineHeight(p.x+25,p.z+10)+2.2,p.z+10,3.5,.7,root);
+ basePaths(gondolaApproach.map(p=>[p.x,p.z]),7);
+ for(const p of mountainRest){const bench=buildWinterBench(p);bench.position.y=alpineHeight(p.x,p.z);root.add(bench);}
+ const shelterY=alpineHeight(mountainShelter.x,mountainShelter.z);for(const dx of [-18,18])for(const dz of [-5,5]){const x=mountainShelter.x+dx,z=mountainShelter.z+dz;rod([x,shelterY,z],[x,shelterY+4,z],.12,timber,root);}box(40,.22,14,timber,mountainShelter.x,shelterY+4,mountainShelter.z,root);box(40,.12,14,snow,mountainShelter.x,shelterY+4.17,mountainShelter.z,root);
+ for(const dx of [-15,15]){const x=mountainShelter.x+dx,z=mountainShelter.z+8;lamp(root,x,z,alpineHeight(x,z));}
+ const trailToBase=Array.from({length:30},(_,i)=>{const t=i/29;return[8+(liftLayout.x-8)*t,-172-6*t+Math.sin(t*Math.PI)*3];});basePaths([[-26,-150],...liftApproach.map(p=>[p.x,p.z])],5.5);basePaths([[25,-150],[70,-160],[upperLiftLayout.x-8,-174],[upperStop.x,upperStop.z]],5.5);basePaths([[-62,-150],[-53,-163]],4.5);basePaths([[-62,-150],[-68,-160]],4.5);basePaths([[-26,-150],[-39,-151]],4.5);
+ basePaths([[liftLayout.x,-172],[liftLayout.x,-178],[liftLayout.x,-184],[liftLayout.x,-188]],5.6);
  // A wide, groomed queue approaches the chair directly; nothing crosses its mouth.
  for(const side of [-1,1]){const x=liftLayout.x+side*3.7;for(const z of [-179,-182,-185]){const y=alpineHeight(x,z);cylinder(.075,.1,1.0,timber,x,y+.5,z,root,10);ball(brass,x,y+1.05,z,.1,root);}for(const z of [-179,-182])rod([x,alpineHeight(x,z)+.82,z],[x,alpineHeight(x,z-3)+.82,z-3],.032,oak,root);lamp(root,x,-177,alpineHeight(x,-177));}
 
@@ -260,15 +308,15 @@ export function* buildAlpineResortSteps(api){
  for(const x of [9.65,11.4]){box(.14,1.7,.18,timber,x,1.1,4.48,lodge);box(.45,.12,.9,oak,x,.3,4.48,lodge);}box(1.9,.15,.16,oak,10.52,1.8,4.48,lodge);box(1.9,.1,.16,timber,10.52,.75,4.48,lodge);
  for(let i=0;i<5;i++){const x=10+i*.25,paint=i%2?red:blue,s=box(.16,2.5,.065,paint,x,1.49,4.6,lodge);s.rotation.z=-.16;const tip=oval(paint,x+.2,2.73,4.65,.085,.18,.055,lodge);tip.rotation.z=-.16;box(.17,.32,.14,ink,x,1.3,4.69,lodge);box(.2,.08,.17,metal,x+.03,1.63,4.69,lodge);rod([x+.1,.3,4.83],[x+.1,2.4,4.83],.016,metal,lodge);cylinder(.035,.035,.2,ink,x+.1,2.42,4.83,lodge,8);ring(.07,.012,ink,x+.1,.46,4.83,lodge);}for(let i=0;i<3;i++)box(.75,.12,.5,bankSnow,-7,1.3+i*.13,6.4,lodge);
  // Warm timber ticket window beside the queue, with its footprint out of the approach.
- const booth=place(liftLayout.x-8,-185,'alpine-ticket-window');box(3,.3,2.8,rockLight,0,.15,0,booth);box(2.7,2.7,2.5,timber,0,1.65,0,booth);
+ const booth=place(skiTicketBooth.x,skiTicketBooth.z,'alpine-ticket-window');box(3,.3,2.8,rockLight,0,.15,0,booth);box(2.7,2.7,2.5,timber,0,1.65,0,booth);
  for(const x of [-1.4,1.4])box(.14,2.9,2.6,oak,x,1.65,0,booth);
  const boothArch=new THREE.Shape();boothArch.moveTo(-.95,0);boothArch.lineTo(-.95,.95);boothArch.quadraticCurveTo(0,1.65,.95,.95);boothArch.lineTo(.95,0);boothArch.closePath();mesh(new THREE.ShapeGeometry(boothArch),windowMat,0,1.05,1.26,booth);
  const outline=boothArch.getPoints(24).map(p=>new THREE.Vector3(p.x,p.y+1.05,1.29));mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(outline,true),40,.04,8,true),brass,0,0,0,booth);box(2.2,.12,.6,oak,0,1.04,1.4,booth);
  for(const side of [-1,1]){const eave=box(1.85,.14,3.5,ink,side*.73,3.2,0,booth);eave.rotation.z=-side*.36;const cap=box(1.88,.14,3.6,snow,side*.73,3.35,0,booth);cap.rotation.z=eave.rotation.z;}
  for(let i=0;i<9;i++)ball(warm,-1.4+i*.35,2.95+Math.sin(i/8*Math.PI)*.2,1.77,.055,booth);
- const board=summitFacilities.find(p=>p.id==='trail-map'),sign=place(board.model.x,board.model.z,'alpine-trail-board');sign.rotation.y=Math.atan2(-board.model.x,-125-board.model.z);for(const x of [-1.2,1.2])rod([x,0,0],[x,3.1,0],.08,timber,sign);box(3,1.15,.18,ink,0,.95,0,sign);const map=document.createElement('canvas');map.width=768;map.height=512;const ctx=map.getContext('2d');ctx.fillStyle='#122436';ctx.fillRect(0,0,768,512);ctx.font='28px sans-serif';ctx.fillStyle='#f7e6c9';ctx.fillText('TRAIL MAP',25,36);const px=x=>384+x*2.8,pz=z=>65+(z+365)*1.9;
- for(const run of skiRuns){ctx.strokeStyle=run.color;ctx.lineWidth=9;ctx.lineCap='round';ctx.beginPath();for(let z=run.startZ;z<=run.finish;z++){const x=px(skiRunCenter(z,run.id)),y=pz(z);if(z===run.startZ)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();}
- ctx.setLineDash([8,7]);ctx.lineWidth=3;ctx.strokeStyle='#f3dfad';for(const point of [liftPoint,upperLiftPoint]){ctx.beginPath();for(let i=0;i<=100;i++){const p=point(i/100);if(i)ctx.lineTo(px(p[0]),pz(p[2]));else ctx.moveTo(px(p[0]),pz(p[2]));}ctx.stroke();}ctx.setLineDash([]);ctx.font='22px sans-serif';for(let i=0;i<skiRuns.length;i++){ctx.fillStyle=skiRuns[i].color;ctx.fillText(skiRuns[i].name,24+(i%2)*360,466+Math.floor(i/2)*29);}const mapTexture=new THREE.CanvasTexture(map);mapTexture.colorSpace=THREE.SRGBColorSpace;const mapMat=new THREE.MeshBasicMaterial({map:mapTexture});mesh(new THREE.PlaneGeometry(2.85,1.05),mapMat,0,.95,.12,sign);
+ const board=summitFacilities.find(p=>p.id==='trail-map'),sign=place(board.model.x,board.model.z,'alpine-trail-board');sign.rotation.y=Math.atan2(-board.model.x,-125-board.model.z);for(const x of [-1.2,1.2])rod([x,0,0],[x,3.1,0],.08,timber,sign);box(3,1.15,.18,ink,0,.95,0,sign);const map=document.createElement('canvas');map.width=768;map.height=512;const ctx=map.getContext('2d');ctx.fillStyle='#122436';ctx.fillRect(0,0,768,512);ctx.font='28px sans-serif';ctx.fillStyle='#f7e6c9';ctx.fillText('TRAIL MAP',25,36);const px=x=>384+x*330/mountainBounds.maxX,pz=z=>65+(z-mountainBounds.minZ)*365/(mountainBounds.maxZ-mountainBounds.minZ);
+ for(const run of skiRuns){ctx.strokeStyle=run.color;ctx.lineWidth=9;ctx.lineCap='round';ctx.beginPath();for(let z=run.startZ;z<=run.finish;z+=8){const x=px(skiRunCenter(z,run.id)),y=pz(z);if(z===run.startZ)ctx.moveTo(x,y);else ctx.lineTo(x,y);}ctx.stroke();}
+ ctx.setLineDash([8,7]);ctx.lineWidth=3;ctx.strokeStyle='#f3dfad';for(const point of [liftPoint,upperLiftPoint,ridgeLiftPoint,t=>{const i=Math.min(gondolaPoints.length-1,Math.floor(t*(gondolaPoints.length-1)));return gondolaPoints[i];}]){ctx.beginPath();for(let i=0;i<=100;i++){const p=point(i/100);if(i)ctx.lineTo(px(p[0]),pz(p[2]));else ctx.moveTo(px(p[0]),pz(p[2]));}ctx.stroke();}ctx.setLineDash([]);ctx.font='22px sans-serif';for(let i=0;i<skiRuns.length;i++){ctx.fillStyle=skiRuns[i].color;ctx.fillText(skiRuns[i].name,24+(i%2)*360,466+Math.floor(i/2)*29);}const mapTexture=new THREE.CanvasTexture(map);mapTexture.colorSpace=THREE.SRGBColorSpace;const mapMat=new THREE.MeshBasicMaterial({map:mapTexture});mesh(new THREE.PlaneGeometry(2.85,1.05),mapMat,0,.95,.12,sign);
  box(3.2,.10,.4,snow,0,1.58,0,sign);
  // A little alpine chalet sign reads before the paths split, with broad directional wings.
  for(const side of [-1,1]){
@@ -276,7 +324,7 @@ export function* buildAlpineResortSteps(api){
   for(let i=0;i<7;i++)ball(warm,side*(.15+i*.24),4.58-i*.055,.47,.055,sign);
  }
  plaque(['설산 리조트'],0,3.91,.03,3.15,.6,sign);
- for(const [i,lines]of [[0,['←  초급 리프트','푸드트럭 · 모닥불']],[1,['정상 리프트  →','중급 · 상급 · 파노라마']]]){
+ for(const [i,lines]of [[0,['←  초급 리프트','푸드트럭 · 모닥불']],[1,['포레스트 리프트  →','← 정상 곤돌라 · '+(skiNetwork[0].length/1000).toFixed(1)+' km']]]){
   const side=i?1:-1,g=new THREE.Group();g.position.set(0,3.18-i*.79,.18);sign.add(g);
   plaque(lines,0,0,0,3.65,.67,g);const arrow=new THREE.Shape();arrow.moveTo(side*1.85,-.335);arrow.lineTo(side*2.25,0);arrow.lineTo(side*1.85,.335);arrow.closePath();mesh(new THREE.ShapeGeometry(arrow),oak,0,0,.06,g);box(3.72,.055,.25,snow,0,.39,0,g);
  }
@@ -284,16 +332,27 @@ export function* buildAlpineResortSteps(api){
  // Right-base walkers see both the nearby lift and the rest area across the apron.
  const wayfinder=place(61,-145,'alpine-right-base-wayfinding');
  for(const side of [-1,1])rod([side*1.7,0,0],[side*1.7,2.8,0],.075,timber,wayfinder);
- plaque(['정상 리프트  ↗','←  모닥불 · 어묵'],0,2.2,0,4.1,1.2,wayfinder);
+ plaque(['중간 쉼터 리프트  ↗','←  모닥불 · 어묵'],0,2.2,0,4.1,1.2,wayfinder);
  box(4.35,.12,.45,snow,0,2.91,0,wayfinder);lamp(wayfinder,-2.5,.6);
  target(liftLayout.x,alpineHeight(liftLayout.x,-188)+1.3,-188,5,2.6,4,'ski');
 
+ // Small chalet wayfinders and a wreath give the transfers identity without extra booths.
+ const wayfinderAtlas=document.createElement('canvas');wayfinderAtlas.width=1024;wayfinderAtlas.height=128*mountainWayfinders.length;const wayfinderContext=wayfinderAtlas.getContext('2d');wayfinderContext.textAlign='center';wayfinderContext.textBaseline='middle';wayfinderContext.fillStyle='#fff0d2';
+ mountainWayfinders.forEach((p,i)=>p.lines.forEach((line,j)=>{wayfinderContext.font=(j?'400 30':'600 38')+'px sans-serif';wayfinderContext.fillText(line,512,i*128+(j?91:39),950);}));
+ const wayfinderTexture=new THREE.CanvasTexture(wayfinderAtlas);wayfinderTexture.colorSpace=THREE.SRGBColorSpace;const wayfinderMaterial=new THREE.MeshBasicMaterial({map:wayfinderTexture,transparent:true,depthWrite:false});
+ for(const [index,point] of mountainWayfinders.entries()){
+  const g=place(point.x,point.z,'alpine-wayfinder-'+point.id);g.rotation.y=point.yaw;
+  for(const side of [-1,1]){rod([side*1.25,0,0],[side*1.25,3.45,0],.08,timber,g);const roof=box(1.8,.14,.85,timber,side*.74,3.5,0,g);roof.rotation.z=-side*.25;const cap=box(1.85,.15,.91,snow,side*.74,3.65,0,g);cap.rotation.z=roof.rotation.z;for(let i=0;i<5;i++)ball(warm,side*(.2+i*.25),3.41-i*.055,.46,.065,g);}
+  box(3.22,1.07,.1,oak,0,2.45,.15,g);box(3.1,.95,.04,pine[0],0,2.45,.21,g);
+  const face=new THREE.PlaneGeometry(3,.91),uv=face.attributes.uv;for(let i=0;i<uv.count;i++)uv.setY(i,(mountainWayfinders.length-1-index+uv.getY(i))/mountainWayfinders.length);mesh(face,wayfinderMaterial,0,2.45,.24,g);
+  const wreath=torus(.37,.085,pine[0],0,1.36,.17,g);for(let i=0;i<8;i++){const a=i*Math.PI/4;ball(warm,Math.cos(a)*.37,1.36+Math.sin(a)*.37,.27,.045,g);}box(.17,.25,.09,red,0,1.04,.28,g);
+ }
  // Use the same authored lanterns as the park, retaining the original lamp footprints.
  const alpineLamps=buildParkLamps({...api,scene:root},lampRequests.map(p=>({x:p.x,z:p.z})));
  alpineLamps.forEach((lamp,i)=>{const p=lampRequests[i];lamp.name='alpine-ornate-lamp';p.parent.add(lamp);lamp.position.set(p.x,p.y,p.z);});
  // Merge stationary geometry by material. Moving chair roots retain small local meshes.
- root.updateMatrixWorld(true);const batches=new Map();root.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||o.userData.snowTrail||o.userData.skiTerrain||Array.isArray(o.material)||dynamic.has(o))return;for(let p=o.parent;p&&p!==root;p=p.parent)if(dynamic.has(p))return;if(!o.geometry.attributes.normal||!o.geometry.attributes.uv)return;const k=o.material.uuid+':'+spatialBatchKey(o);if(!batches.has(k))batches.set(k,{material:o.material,items:[]});batches.get(k).items.push(o);});
- for(const {material,items}of batches.values()){if(items.length<2)continue;const g=yield* mergeMeshGeometrySteps(items);for(const item of items)item.removeFromParent();mesh(g,material,0,0,0,root);}
+ root.updateMatrixWorld(true);const batches=new Map();root.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||o.userData.snowTrail||o.userData.skiTerrain||Array.isArray(o.material)||dynamic.has(o))return;for(let p=o.parent;p&&p!==root;p=p.parent)if(dynamic.has(p))return;if(!o.geometry.attributes.normal||!o.geometry.attributes.uv)return;const k=o.material.uuid+':'+!!o.userData.rideCameraFade+':'+!!o.userData.cameraCanopy+':'+!!o.userData.cameraIgnore+':'+spatialBatchKey(o,o.userData.rideCameraFade?256:o.position.z<-390?256:128);if(!batches.has(k))batches.set(k,{material:o.material,items:[]});batches.get(k).items.push(o);});
+ for(const {material,items}of batches.values()){if(items.length<2)continue;const g=yield* mergeMeshGeometrySteps(items);for(const item of items)item.removeFromParent();const merged=mesh(g,material,0,0,0,root);if(items.every(o=>o.userData.cameraCanopy))merged.userData.cameraCanopy=true;if(items.every(o=>o.userData.cameraIgnore))merged.userData.cameraIgnore=true;if(items.every(o=>o.userData.rideCameraFade))Object.assign(merged.userData,{rideCameraFade:true,cameraFadeMode:'lift'});}
  root.position.z=alpineShift;scene.add(rideChair);
- return{root,interactive,rideChair,setQuality:treeLights.setQuality,update(t,still){treeLights.update(t,still);const dummy=steamDummy;for(const system of steamSystems){for(let i=0;i<8;i++){const phase=((still?0:t*.2)+i/8)%1;dummy.position.set(system.x+Math.sin(i*2+phase)*.3,system.y+phase*2,system.z+Math.cos(i*3)*.2);const scale=Math.sin(phase*Math.PI)*(.18+phase*.4);dummy.scale.set(scale,scale*.75,scale);dummy.updateMatrix();system.mesh.setMatrixAt(i,dummy.matrix);}system.mesh.instanceMatrix.needsUpdate=true;}scenery.update(t,still);if(still)return;for(const {g,offset}of chairs){const pose=loopPose((t/(resortRides.lift.duration*2+4)+offset)%1);g.position.copy(pose.position);g.rotation.set(0,pose.yaw,Math.sin(t*.6+offset)*.009);g.visible=!rideChair.visible||Math.hypot(g.position.x-rideChair.position.x,g.position.y-rideChair.position.y,g.position.z+alpineShift-rideChair.position.z)>14;}for(const {g,offset}of upperChairs){const pose=upperLoopPose((t/(resortRides.upperlift.duration*2+4)+offset)%1);g.position.copy(pose.position);g.rotation.set(0,pose.yaw,Math.sin(t*.6+offset)*.009);g.visible=!rideChair.visible||Math.hypot(g.position.x-rideChair.position.x,g.position.y-rideChair.position.y,g.position.z+alpineShift-rideChair.position.z)>14;}}};
+ return{root,interactive,rideChair,rideOccluders:gondolas.occluders,terrain:mountainTerrain,setQuality(value){treeLights.setQuality(value);mountainTerrain.setQuality(value);},update(t,still){gondolas.update();const p=globalThis.window?.labPlayerState;if(p)mountainTerrain.update(p.x,p.z-alpineShift,p.yaw);treeLights.update(t,still);mountainTerrain.updateLights(t,still);const dummy=steamDummy;for(const system of steamSystems){for(let i=0;i<8;i++){const phase=((still?0:t*.2)+i/8)%1;dummy.position.set(system.x+Math.sin(i*2+phase)*.3,system.y+phase*2,system.z+Math.cos(i*3)*.2);const scale=Math.sin(phase*Math.PI)*(.18+phase*.4);dummy.scale.set(scale,scale*.75,scale);dummy.updateMatrix();system.mesh.setMatrixAt(i,dummy.matrix);}system.mesh.instanceMatrix.needsUpdate=true;}scenery.update(t,still);if(still)return;for(const {g,offset}of chairs){const pose=loopPose((t/(resortRides.lift.duration*2+4)+offset)%1);g.position.copy(pose.position);g.rotation.set(0,pose.yaw,Math.sin(t*.6+offset)*.009);g.visible=!rideChair.visible||Math.hypot(g.position.x-rideChair.position.x,g.position.y-rideChair.position.y,g.position.z+alpineShift-rideChair.position.z)>14;}for(const service of sideLifts)for(const {g,offset}of service.chairs){const pose=service.pose((t/(resortRides[service.kind].duration*2+4)+offset)%1);g.position.copy(pose.position);g.rotation.set(0,pose.yaw,Math.sin(t*.6+offset)*.009);g.visible=!rideChair.visible||Math.hypot(g.position.x-rideChair.position.x,g.position.y-rideChair.position.y,g.position.z+alpineShift-rideChair.position.z)>14;}}};
 }

@@ -36,3 +36,19 @@ test('carousel structures beyond the seat fade without collapsing the wider view
  camera.position.set(0,3,24);guard.update(camera,focus,[column],1/60,{mode:'carousel',minDistance:4.2});assert.equal(camera.position.z,24);assert.equal(guard.fadedCount,1);
  guard.reset();camera.position.set(0,3,24);guard.update(camera,focus,[column],1/60,{mode:'walk'});assert.ok(camera.position.z<9);assert.equal(guard.fadedCount,0);
 });
+
+// Boarding must keep the overview even when the waiting player is under the terminal roof.
+test('station canopy fades for waiting players while solid columns still constrain the camera',()=>{
+ const camera=new T.PerspectiveCamera(),focus=new T.Vector3(0,1,0),guard=createCameraClearance(),material=new T.MeshStandardMaterial(),roof=new T.Mesh(new T.BoxGeometry(14,.3,12),material);
+ roof.position.set(0,4,0);roof.userData.cameraCanopy=true;roof.updateMatrixWorld(true);camera.position.set(0,12,22);guard.update(camera,focus,[roof],1/60,{mode:'walk'});
+ assert.equal(camera.position.z,22);assert.equal(guard.fadedCount,1);assert.equal(material.opacity,1);
+ const column=new T.Mesh(new T.BoxGeometry(.5,12,.5),material);column.position.set(0,6,10);column.updateMatrixWorld(true);
+ for(let i=0;i<4;i++){camera.position.set(0,12,22);guard.update(camera,focus,[roof,column],1/60,{mode:'walk'});}assert.ok(camera.position.z<10);assert.equal(column.material,material);guard.reset();assert.equal(roof.material,material);
+});
+
+test('passing lift chairs cannot pump the walking camera at a transfer station',()=>{
+ const camera=new T.PerspectiveCamera(),focus=new T.Vector3(0,1,0),guard=createCameraClearance(),material=new T.MeshStandardMaterial(),chair=new T.Mesh(new T.BoxGeometry(3,3,.3),material);
+ chair.userData={rideCameraFade:true,cameraMovingCabin:true};
+ for(let i=0;i<240;i++){chair.position.set(Math.sin(i/30)*5,1,12);chair.updateMatrixWorld(true);camera.position.set(0,1,26);guard.update(camera,focus,[chair],1/60,{mode:'walk'});assert.equal(camera.position.z,26);}
+ guard.reset();assert.equal(chair.material,material);assert.equal(guard.fadedCount,0);
+});

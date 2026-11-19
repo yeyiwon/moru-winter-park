@@ -24,10 +24,11 @@ export function createCameraTransition(){
 }
 
 export function createCameraPolicy(){
- let requested={yaw:cameraDefaults.yaw,pitch:cameraDefaults.pitch,distance:cameraDefaults.distance},manualYaw=false,context=null,outside=null,mode='',skiAuto=false,treeOffset=0,treeView=null,revision=0,carouselManual=false;
+ let requested={yaw:cameraDefaults.yaw,pitch:cameraDefaults.pitch,distance:cameraDefaults.distance},manualYaw=false,context=null,outside=null,mode='',skiAuto=false,treeOffset=0,treeView=null,treeSaved=null,revision=0,carouselManual=false;
  const indoorViews=new Map(),resolved={...cameraDefaults,automaticYaw:false};
  const copy=()=>({view:{...requested},manualYaw});
  function restore(saved){requested={...saved.view};manualYaw=saved.manualYaw;}
+ function endTree(){if(treeSaved)restore(treeSaved);treeSaved=null;treeOffset=0;treeView=null;}
  function setMode(next,renderedYaw=requested.yaw){
   next=next||'';if(next===mode)return;
   // An automatic ski heading becomes the neutral viewing side on dismount.
@@ -37,6 +38,8 @@ export function createCameraPolicy(){
  }
  function adoptCarouselView(){if(mode!=='carousel'||carouselManual)return;requested.distance=Math.max(24,requested.distance);requested.pitch=Math.min(.16,requested.pitch);carouselManual=true;}
  return {
+  restoreView(saved){requested={yaw:saved.yaw,pitch:saved.pitch,distance:saved.distance};manualYaw=saved.manualYaw;skiAuto=mode==='ski'&&!manualYaw;revision++;},
+  adopt(view){requested={yaw:view.yaw,pitch:clamp(view.pitch,-.95,1.08),distance:clamp(view.distance,8,500)};manualYaw=true;skiAuto=false;revision++;},
   orbit(dx,dy,renderedYaw=requested.yaw){
    if(!Number.isFinite(dx)||!Number.isFinite(dy))return;adoptCarouselView();
    if(treeView){requested={...requested,...treeView};treeView=null;treeOffset=0;}
@@ -47,19 +50,19 @@ export function createCameraPolicy(){
    if(!Number.isFinite(amount))return;adoptCarouselView();
    if(treeView){requested={...requested,...treeView};treeView=null;treeOffset=0;}
    if(treeOffset){requested.distance=Number.isFinite(renderedDistance)?renderedDistance:requested.distance+treeOffset;treeOffset=0;}
-   requested.distance=clamp(requested.distance+amount,context?5.5:8,context?24:64);revision++;
+   requested.distance=clamp(requested.distance+amount,context?5.5:8,context?24:Math.max(64,requested.distance));revision++;
   },
-  reset(){requested={yaw:context?cameraDefaults.interiorYaw:cameraDefaults.yaw,pitch:context?cameraDefaults.interiorPitch:cameraDefaults.pitch,distance:context?cameraDefaults.interiorDistance:cameraDefaults.distance};manualYaw=false;carouselManual=false;skiAuto=mode==='ski';treeOffset=0;treeView=null;revision++;},
+  reset(){treeSaved=null;requested={yaw:context?cameraDefaults.interiorYaw:cameraDefaults.yaw,pitch:context?cameraDefaults.interiorPitch:cameraDefaults.pitch,distance:context?cameraDefaults.interiorDistance:cameraDefaults.distance};manualYaw=false;carouselManual=false;skiAuto=mode==='ski';treeOffset=0;treeView=null;revision++;},
   setContext(next){
-   next=next||null;if(next===context)return;
+   next=next||null;if(next===context)return;endTree();
    if(context)indoorViews.set(context,copy());else outside=copy();
    if(next){const saved=indoorViews.get(next);if(saved)restore(saved);else{requested={yaw:cameraDefaults.interiorYaw,pitch:cameraDefaults.interiorPitch,distance:cameraDefaults.interiorDistance};manualYaw=false;}}
    else if(outside){restore(outside);outside=null;}
    context=next;mode='';carouselManual=false;skiAuto=false;treeOffset=0;treeView=null;
   },
   setMode,
-  beginTree(framing){if(!context){if(framing)treeView={yaw:framing.yaw,pitch:framing.pitch,distance:clamp(framing.distance,8,64)};else treeOffset=Math.min(3,requested.distance*.16);}},
-  endTree(){treeOffset=0;treeView=null;},
+  beginTree(framing){if(!context){if(!treeSaved)treeSaved=copy();if(framing)treeView={yaw:framing.yaw,pitch:framing.pitch,distance:clamp(framing.distance,8,64)};else treeOffset=Math.min(3,requested.distance*.16);}},
+  endTree,
   view({mode:next=mode,heading=0,renderedYaw=requested.yaw}={}){
    setMode(next,renderedYaw);
    Object.assign(resolved,requested,{distance:requested.distance+treeOffset,fov:cameraDefaults.fov,automaticYaw:mode==='ski'&&skiAuto});
@@ -81,8 +84,10 @@ export function followCameraHeight(current,wanted,dt,mode=''){
  if(!Number.isFinite(current))return wanted;
  const delta=wanted-current,deadZone=['lift','ferris','ski'].includes(mode)?.015:.08;
  if(Math.abs(delta)<=deadZone)return current;
- const rate=mode==='ski'?10:['lift','ferris'].includes(mode)?7:3;
- const step=(delta-Math.sign(delta)*deadZone)*(1-Math.exp(-Math.max(0,dt)*5));
+ // Fast descents can fall over 20m/s. A walking-speed cap leaves the view
+ // permanently above the player; damping still removes frame-to-frame vibration.
+ const rate=mode==='ski'?60:mode==='lift'?30:mode==='ferris'?7:3;
+ const step=(delta-Math.sign(delta)*deadZone)*(1-Math.exp(-Math.max(0,dt)*(mode==='ski'?8:5)));
  return current+clamp(step,-rate*dt,rate*dt);
 }
 
@@ -90,7 +95,7 @@ export function cameraSubjectFocus(position,{groundY=position.y,mode='',view=nul
  const paired=mode==='ferris'||mode==='lift';
  out.x=paired&&Number.isFinite(view?.focus?.x)?view.focus.x:position.x;
  out.z=paired&&Number.isFinite(view?.focus?.z)?view.focus.z:position.z;
- out.y=(mode&&mode!=='summit'&&mode!=='ski'?position.y:groundY)+cameraDefaults.focusHeight;
+ out.y=(mode&&mode!=='summit'?position.y:groundY)+cameraDefaults.focusHeight;
  // The carousel's authored focus height cancels the horse's vertical bob only.
  if(mode==='carousel'&&Number.isFinite(view?.lookHeight))out.y=position.y+1.2+view.lookHeight;
  // A look-ahead focus can put the camera in front of the skier when terrain
@@ -150,4 +155,12 @@ export function constrainCameraToTerrain(focus,position,heightAt,samples=10){
   previous=along;
  }
  return position;
+}
+
+// Uphill terrain must not retract the chase camera into the rider at racing speed.
+// Raise the viewing ray just above the snow, keeping its horizontal distance/yaw.
+export function clearSkiCameraTerrain(focus,position,heightAt){
+ const dx=position.x-focus.x,dy=position.y-focus.y,dz=position.z-focus.z;let lift=0;
+ for(let i=1;i<=16;i++){const t=i/16;lift=Math.max(lift,(heightAt(focus.x+dx*t,focus.z+dz*t)+.7-focus.y-dy*t)/t);}
+ position.y+=Math.max(0,lift);return position;
 }

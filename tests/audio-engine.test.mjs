@@ -20,3 +20,10 @@ test('a delayed crossfade loads only one successor and survives an interrupted a
  music.engine.context.state='interrupted';music.engine.unlock();assert.equal(music.engine.context.state,'running');
  w.dispatchEvent(new w.PageTransitionEvent('pagehide',{persisted:true}));assert.ok([...w.document.querySelectorAll('audio')].every(a=>a.paused));w.dispatchEvent(new w.PageTransitionEvent('pageshow',{persisted:true}));assert.equal(plays,3);resolveNext();await Promise.resolve();assert.equal([...w.document.querySelectorAll('audio')].filter(a=>!a.paused).length,1);
 });
+
+test('performance music silences background tracks and restores their chosen level',t=>{
+ const dom=new JSDOM('',{url:'https://test.local'});t.after(()=>dom.window.close());const mock=mockAudio();dom.window.AudioContext=mock.Audio;Object.defineProperty(dom.window.document,'hidden',{value:false});
+ const engine=createAudioEngine(dom.window);engine.unlock();const media={pause(){}};const track=engine.registerMedia(media);engine.fadeMedia(media,.6);assert.equal(track.gain.gain.value,.6);
+ engine.show({id:'legacy',startsAt:0,endsAt:74000,state:'playing'},1000);assert.equal(track.gain.gain.value,0);engine.fadeMedia(media,.4);assert.equal(track.gain.gain.value,0);
+ engine.show(null,75000);assert.equal(track.gain.gain.value,.4);engine.dispose();
+});

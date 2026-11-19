@@ -1,8 +1,11 @@
 import {spaToWorld} from '../dist/spa-transform.js';
 import {regionBridges} from '../dist/region-layout.js';
-import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import vm from 'node:vm';import path from 'node:path';import os from 'node:os';
-const root=path.resolve(path.dirname(new URL(import.meta.url).pathname),'../dist');const noop=()=>{};const context=vm.createContext({console,Float32Array,Uint16Array,Uint32Array,Int32Array,Uint8Array,Math,Date,performance,document:{createElement:()=>({width:256,height:256,getContext:()=>({setLineDash:noop,beginPath:noop,moveTo:noop,lineTo:noop,stroke:noop,fillText:noop,strokeRect:noop,measureText:t=>({width:t.length*24}),fillRect:noop,createRadialGradient:()=>({addColorStop:noop}),createLinearGradient:()=>({addColorStop:noop})})})}});const modules=new Map(),pending=new Map();
-async function mod(file){if(pending.has(file))return pending.get(file);const promise=(async()=>{const m=new vm.SourceTextModule(fs.readFileSync(file,'utf8'),{context,identifier:file});modules.set(file,m);await m.link(s=>mod(path.resolve(path.dirname(file),s.split('?')[0])));return m;})();pending.set(file,promise);return promise;}
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import {pathToFileURL} from 'node:url';import path from 'node:path';import os from 'node:os';
+const root=path.resolve(path.dirname(new URL(import.meta.url).pathname),'../dist');const noop=()=>{};// Each node:test file has its own process. Native modules avoid millions of cross-realm
+// Math calls during metre-scale terrain sampling while keeping the same DOM canvas stub.
+globalThis.document={createElement:()=>({width:256,height:256,getContext:()=>({setLineDash:noop,beginPath:noop,moveTo:noop,lineTo:noop,stroke:noop,fillText:noop,strokeRect:noop,measureText:t=>({width:t.length*24}),fillRect:noop,createRadialGradient:()=>({addColorStop:noop}),createLinearGradient:()=>({addColorStop:noop})})})};
+const modules=new Map();async function mod(file){if(!modules.has(file))modules.set(file,{namespace:await import(pathToFileURL(file)),evaluate:async()=>{}});return modules.get(file);}
+for(const name of ['vendor/three.module.js','resort-layout.js','world-layout.js'])await mod(path.join(root,name));
 const w=await mod(path.join(root,'themepark-world.js'));await w.evaluate();const c=await mod(path.join(root,'companion.js'));await c.evaluate();const T=modules.get(path.join(root,'vendor/three.module.js')).namespace;const scene=new T.Scene();const start=performance.now(),world=w.namespace.buildWorld(scene),ms=performance.now()-start;scene.updateMatrixWorld(true);let count=0,triangles=0,materials=new Set();scene.traverse(o=>{if(o.isMesh){count++;triangles+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;materials.add(o.material.uuid);}});
 const character=c.namespace.createCompanion();
 test('mountain trees survive geometry batching and keep their illuminated route edges',()=>{
@@ -62,14 +65,16 @@ test('upper dismount camera has an unobstructed line to the character above the 
  const ray=new T.Raycaster(camera,dir.clone().normalize(),0,dir.length()-.8);assert.equal(ray.intersectObjects(objects,false).length,0);
 });
 
-test('the rendered summit snow follows the walking height instead of burying the avatar',()=>{
- const layout=modules.get(path.join(root,'resort-layout.js')).namespace,terrain=scene.getObjectByName('alpine-heightfield'),ray=new T.Raycaster();
- for(const point of layout.summitTransfer)for(const dx of [-.6,0,.6]){const x=point.x+dx,z=point.z;ray.set(new T.Vector3(x,150,z),new T.Vector3(0,-1,0));ray.far=200;const hit=ray.intersectObject(terrain,false)[0];assert.ok(hit);assert.ok(Math.abs(hit.point.y-layout.alpineHeight(x,z))<.3,`${x},${z}: ${hit.point.y} vs ${layout.alpineHeight(x,z)}`);}
+async function terrainMeshesAt(x,z){const terrain=world.winter.mountainTerrain;terrain.update(x,z-90);for(let i=0;i<32&&terrain.stats().queued;i++){await new Promise(r=>setTimeout(r,17));terrain.update(x,z-90);}scene.updateMatrixWorld(true);const meshes=[];terrain.root.traverse(o=>{if(o.isMesh&&o.userData.skiTerrain)meshes.push(o);});return meshes;}
+
+test('the rendered summit snow follows the walking height instead of burying the avatar',async()=>{
+ const layout=modules.get(path.join(root,'resort-layout.js')).namespace,terrain=await terrainMeshesAt(layout.summit.x,layout.summit.z),ray=new T.Raycaster();
+ for(const point of layout.summitTransfer)for(const dx of [-.6,0,.6]){const x=point.x+dx,z=point.z;ray.set(new T.Vector3(x,layout.alpineHeight(x,z)+30,z),new T.Vector3(0,-1,0));ray.far=60;const hit=ray.intersectObjects(terrain,false)[0];assert.ok(hit);assert.ok(Math.abs(hit.point.y-layout.alpineHeight(x,z))<.3,`${x},${z}: ${hit.point.y} vs ${layout.alpineHeight(x,z)}`);}
 });
 
-test('food truck tyres sit on the rendered graded apron, including the rear marshmallow wheels',()=>{
- const layout=modules.get(path.join(root,'resort-layout.js')).namespace,terrain=scene.getObjectByName('alpine-heightfield'),ray=new T.Raycaster();
- for(const stop of layout.summitFacilities.filter(p=>['odeng','marshmallow'].includes(p.id))){const base=layout.alpineHeight(stop.model.x,stop.model.z);for(const dx of [-2.5,2.6])for(const dz of [-1.48,1.48]){ray.set(new T.Vector3(stop.model.x+dx,150,stop.model.z+dz),new T.Vector3(0,-1,0));const ground=ray.intersectObject(terrain,false)[0];assert.ok(ground);assert.ok(Math.abs(ground.point.y-base)<.15,stop.id+JSON.stringify(ground.point));}}
+test('food truck tyres sit on the rendered graded apron, including the rear marshmallow wheels',async()=>{
+ const layout=modules.get(path.join(root,'resort-layout.js')).namespace,terrain=await terrainMeshesAt(-53,-77),ray=new T.Raycaster();
+ for(const stop of layout.summitFacilities.filter(p=>['odeng','marshmallow'].includes(p.id))){const base=layout.alpineHeight(stop.model.x,stop.model.z);for(const dx of [-2.5,2.6])for(const dz of [-1.48,1.48]){ray.set(new T.Vector3(stop.model.x+dx,150,stop.model.z+dz),new T.Vector3(0,-1,0));const ground=ray.intersectObjects(terrain,false)[0];assert.ok(ground);assert.ok(Math.abs(ground.point.y-base)<.15,stop.id+JSON.stringify(ground.point));}}
 });
 
 

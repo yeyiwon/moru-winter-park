@@ -1,3 +1,4 @@
+import {paintSwatches} from './color-swatches.js';
 import {createCustomizationUI} from './customization-ui.js';
 import {createWorldMap,mapFacilities} from './world-map.js';
 import {closeDialog} from './ui-motion.js';
@@ -13,7 +14,7 @@ appearance.furTop=validColor(appearance.furTop)?appearance.furTop:null;appearanc
 delete appearance.sunglasses;
 window.labAppearance=appearance;
 let winterSnapshot=null;window.addEventListener('lab:return-winter',()=>{if(winterSnapshot===null)return;appearance.accessory=normalizeWardrobe(selectedItems(winterSnapshot).filter(v=>!['ski','board'].includes(v)).join(','));winterSnapshot=null;update(false);});
-window.addEventListener('lab:equip-winter',()=>{if(winterSnapshot===null)winterSnapshot=appearance.accessory;let items=selectedItems(appearance.accessory);if(!items.some(v=>['ski','board'].includes(v)))items.push('ski');if(!items.some(v=>['sunglasses','goggles'].includes(v)))items.push('goggles');if(!items.includes('helmet')){items=items.filter(v=>!['santa','bunny-ears','cat-ears','bear-ears'].includes(v));items.push('helmet');}appearance.accessory=normalizeWardrobe(items.join(','));update(false);});
+window.addEventListener('lab:equip-winter',e=>{if(winterSnapshot===null)winterSnapshot=appearance.accessory;let items=selectedItems(appearance.accessory);if(['ski','board'].includes(e.detail?.gear))items=items.filter(v=>!['ski','board'].includes(v)).concat(e.detail.gear);if(!items.some(v=>['ski','board'].includes(v)))items.push('ski');if(!items.some(v=>['sunglasses','goggles'].includes(v)))items.push('goggles');if(!items.includes('helmet')){items=items.filter(v=>!['santa','bunny-ears','cat-ears','bear-ears'].includes(v));items.push('helmet');}appearance.accessory=normalizeWardrobe(items.join(','));update(false);});
 window.addEventListener('lab:unequip-winter',()=>{if(winterSnapshot!==null){appearance.accessory=winterSnapshot;winterSnapshot=null;update(false);return;}appearance.accessory=normalizeWardrobe(selectedItems(appearance.accessory).filter(v=>!['ski','board'].includes(v)).join(','));update();});
 const studio=document.getElementById('studio'),tabs=[...studio.querySelectorAll('[data-studio]')];
 function update(persist=true){
@@ -22,6 +23,7 @@ function update(persist=true){
   document.getElementById('light-color').value=appearance.light;document.getElementById('light-level').value=appearance.brightness;document.getElementById('light-value').textContent=appearance.brightness+'%';
   studio.querySelectorAll('[data-light]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.light===appearance.light));
   const chosen=studio.querySelector('[data-light][aria-pressed=true]'),custom=studio.querySelector('.custom-color');custom.classList.toggle('selected',!chosen);custom.style.setProperty('--swatch',appearance.light);document.querySelector('#light-choice').textContent=chosen?chosen.getAttribute('aria-label'):'사용자 지정 · '+appearance.light.toUpperCase();
+  paintSwatches(studio);
   window.dispatchEvent(new CustomEvent('lab:appearance',{detail:{...appearance}}));
   try{if(persist)localStorage.setItem('lab-appearance-v2',JSON.stringify(appearance));}catch{document.querySelector('.studio-saved').textContent='설정을 저장할 수 없습니다. 이 화면에서는 계속 적용됩니다.';}
 }
@@ -33,7 +35,11 @@ window.openWinterSettings=openStudio;document.getElementById('hud-map').onclick=
 studio.addEventListener('close',()=>{if(studio.open)return;syncPanelState();customization.close();window.labPreviewVisible=false;window.dispatchEvent(new Event('lab:preview'));if(!document.querySelector('dialog[open]'))document.querySelector('#open-settings').focus({preventScroll:true});window.dispatchEvent(new Event('lab:close'));window.labSound?.('close');});
 studio.addEventListener('click',e=>{if(e.target===studio){const r=studio.getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)closeStudio();}const b=e.target.closest('button');if(!b)return;if(b.dataset.studio){selectTab(b.dataset.studio);window.labSound?.('select');}if(b.dataset.light){appearance.light=b.dataset.light;update();window.labSound?.('select');}});
 studio.querySelector('[role=tablist]').addEventListener('keydown',e=>{if(!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;e.preventDefault();const available=tabs.filter(b=>!b.hidden),current=available.indexOf(document.activeElement),index=e.key==='Home'?0:e.key==='End'?available.length-1:(current+(e.key==='ArrowRight'?1:-1)+available.length)%available.length;selectTab(available[index].dataset.studio);available[index].focus();});
-for(const [id,key] of [['light-color','light'],['light-level','brightness']])document.getElementById(id).addEventListener('input',e=>{appearance[key]=key==='light'?e.target.value:Number(e.target.value);update();});
+for(const [id,key] of [['light-color','light'],['light-level','brightness']]){
+ const input=document.getElementById(id),apply=e=>{const value=key==='light'?e.target.value:Number(e.target.value);if(appearance[key]===value)return;appearance[key]=value;update();};
+ // Native colour dialogs may commit with change instead of continuous input.
+ input.addEventListener('input',apply);input.addEventListener('change',apply);
+}
 
 createWorldMap(document.getElementById('island-map'),id=>{closeStudio();const place=mapFacilities.find(p=>p.id===id);if(place?.travelId){window.travelToPlace?.(place.travelId,false);return;}const region=place?.region;window.travelToIsland?.({park:'park',ski:'alpine',spa:'spa',tree:'wish',museum:'philosophy'}[region]);});
 update();
