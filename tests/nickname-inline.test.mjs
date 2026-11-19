@@ -61,7 +61,7 @@ test('inline nickname waits for server confirmation, preserves a failed draft an
  assert.equal(pending[1].name,'새 겨울별');pending[1].resolve({name:'새 겨울별'});await tick();
  assert.equal(form.hidden,true);assert.equal(el['profile-edit'].hidden,false);assert.equal(profile.dataset.editing,'false');
  assert.equal(el['preview-name'].textContent,'새 겨울별');assert.equal(el['self-name'].textContent,'새 겨울별');assert.equal(input.value,'새 겨울별');
- assert.equal(el['profile-status'].textContent,'저장됨');assert.equal(w.localStorage.getItem('winter-visitor-name'),'새 겨울별');assert.notEqual(d.activeElement,input);
+ assert.equal(el['profile-status'].textContent,'','saving closes quietly after the confirmed name is shown');assert.equal(w.localStorage.getItem('winter-visitor-name'),'새 겨울별');assert.notEqual(d.activeElement,input);
  assert.equal(requests.filter(r=>r.url==='/api/name').length,2);
  const reconnected=await fixture(t,{name:'새 겨울별'});
  assert.equal(reconnected.el['preview-name'].textContent,'새 겨울별');assert.equal(reconnected.el['profile-form'].hidden,true);
@@ -104,5 +104,5 @@ test('a save finishing after leaving customization updates the name without stea
  d.querySelector('#studio').dispatchEvent(new w.Event('cancel',{cancelable:true}));assert.equal(passedCancel,true,'an inactive nickname editor must not trap the settings dialog');
  finish({name:'새로운 겨울'});await tick();
  assert.equal(el['preview-name'].textContent,'새로운 겨울');assert.equal(el['profile-form'].hidden,true);assert.equal(d.activeElement,otherControl);
- ui.open();assert.equal(el['profile-form'].hidden,true);assert.equal(el['profile-status'].textContent,'저장됨');
+ ui.open();assert.equal(el['profile-form'].hidden,true);assert.equal(el['profile-status'].textContent,'','reopening must not show a stale success label');
 });
