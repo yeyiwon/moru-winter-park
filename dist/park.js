@@ -184,7 +184,14 @@ function endTreeFrame(restore=true){if(!restore||still())cameraTransition.cancel
 function interruptTreeCamera(){if(!cameraTransition.active)return;if(wishShot){cameraPolicy.beginTree({yaw,pitch,distance});wishShot.aim.copy(target);}cameraTransition.cancel();}
 window.addEventListener('lab:tree-open',frameTree);
 window.addEventListener('lab:tree-frame',frameTree);
-window.addEventListener('lab:wish-arrived',()=>endTreeFrame());
+// Arriving ornaments leave the editing view alone; only closing the dock ends it.
+window.addEventListener('lab:wish-submitted',()=>{
+ if(!wishShot)return;
+ cameraTransition.cancel();
+ // Hold the visible distance, including collision recovery, not the wider goal.
+ distance=camera.position.distanceTo(orbitFocus);
+ cameraPolicy.beginTree({yaw,pitch,distance});wishShot.aim.copy(target);
+});
 window.addEventListener('lab:tree-closed',e=>endTreeFrame(e.detail?.restore!==false));
 window.addEventListener('lab:room',()=>endTreeFrame(false));
 window.addEventListener('lab:session-ended',()=>{experience.cancel();clear();endTreeFrame(false);});

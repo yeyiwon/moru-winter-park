@@ -1,0 +1,31 @@
+{
+  "revision": "dfc0b772a4a80be8456a582d8b00841f93ed1e53",
+  "officialUrl": "https://moru-winter-park.vercel.app/",
+  "sites": {
+    "version": 62,
+    "id": "appgdep_6afeec4c925c8191ae94f076682bb97b",
+    "status": "succeeded",
+    "envRevision": 4
+  },
+  "vercel": {
+    "id": "dpl_38prfVeLQX9GppmicobKGHeW9bWx",
+    "status": "READY",
+    "aliases": [
+      "moru-winter-park.vercel.app",
+      "moru-winter-park-yeyiwons-projects.vercel.app",
+      "moru-winter-park-git-main-yeyiwons-projects.vercel.app"
+    ]
+  },
+  "cloudflare": "Unchanged from v46",
+  "databaseMigrations": false,
+  "productionWrites": "Anonymous test guest session join/leave only; no wishes, ornaments, profiles or shows created",
+  "local": {
+    "automatedTests": 494,
+    "sourceModules": 269,
+    "browserChecks": 50,
+    "regressionChecks": 15,
+    "inlineButtonChecks": 8
+  },
+  "productionBrowserChecks": 36,
+  "physicalDevices": "UNKNOWN"
+}

@@ -1,0 +1,233 @@
+{
+  "checks": [
+    {
+      "name": "desktop decoration 1 saved",
+      "ok": true,
+      "details": {
+        "status": 200
+      }
+    },
+    {
+      "name": "desktop decoration 1 holds view and permits next",
+      "ok": true,
+      "details": {
+        "baseline": {
+          "camera": {
+            "yaw": 0.33,
+            "pitch": 0.48,
+            "distance": 16.5,
+            "fov": 50,
+            "context": null,
+            "manualYaw": false,
+            "revision": 0,
+            "treeOffset": 0,
+            "rendered": {
+              "yaw": 0.33,
+              "pitch": 0.45799039999999996,
+              "distance": 16.941120104372597,
+              "fov": 50
+            },
+            "focus": {
+              "x": -11.30496,
+              "y": 2.199296,
+              "z": 74.34752
+            },
+            "eye": {
+              "x": -6.381056036128599,
+              "y": 9.689753038806705,
+              "z": 88.72283820500472
+            },
+            "aim": {
+              "x": -11.30496,
+              "y": 2.199296,
+              "z": 74.34752
+            }
+          },
+          "player": {
+            "x": -12,
+            "y": 0.95,
+            "z": 74,
+            "yaw": 3.141592653589793,
+            "mode": "",
+            "speed": 0,
+            "gesture": "",
+            "heldItem": "",
+            "balloonTone": -1,
+            "balloonStyle": "classic",
+            "roast": 0
+          }
+        },
+        "after": {
+          "camera": {
+            "yaw": 0.33,
+            "pitch": 0.48,
+            "distance": 16.5,
+            "fov": 50,
+            "context": null,
+            "manualYaw": false,
+            "revision": 0,
+            "treeOffset": 0,
+            "rendered": {
+              "yaw": 0.33,
+              "pitch": 0.45799039999999996,
+              "distance": 16.941120104372597,
+              "fov": 50
+            },
+            "focus": {
+              "x": -11.30496,
+              "y": 2.199296,
+              "z": 74.34752
+            },
+            "eye": {
+              "x": -6.3810560361286,
+              "y": 9.6897530388067,
+              "z": 88.72283820500472
+            },
+            "aim": {
+              "x": -11.30496,
+              "y": 2.199296,
+              "z": 74.34752
+            }
+          },
+          "player": {
+            "x": -12,
+            "y": 0.95,
+            "z": 74,
+            "yaw": 3.141592653589793,
+            "mode": "",
+            "speed": 0,
+            "gesture": "",
+            "heldItem": "",
+            "balloonTone": -1,
+            "balloonStyle": "classic",
+            "roast": 0
+          },
+          "open": true,
+          "canAdd": true
+        }
+      }
+    },
+    {
+      "name": "desktop only explicit close restores exploration view",
+      "ok": true
+    },
+    {
+      "name": "mobile decoration 1 saved",
+      "ok": true,
+      "details": {
+        "status": 200
+      }
+    },
+    {
+      "name": "mobile decoration 1 holds view and permits next",
+      "ok": true,
+      "details": {
+        "baseline": {
+          "camera": {
+            "yaw": 0.33,
+            "pitch": 0.48,
+            "distance": 16.5,
+            "fov": 50,
+            "context": null,
+            "manualYaw": false,
+            "revision": 0,
+            "treeOffset": 0,
+            "rendered": {
+              "yaw": 0.33,
+              "pitch": 0.464606133203125,
+              "distance": 16.85183199088938,
+              "fov": 50
+            },
+            "focus": {
+              "x": -11.513877890625,
+              "y": 1.9590404257812501,
+              "z": 74.2430610546875
+            },
+            "eye": {
+              "x": -6.632005690335433,
+              "y": 9.509852919857387,
+              "z": 88.4956676916682
+            },
+            "aim": {
+              "x": -11.513877890625,
+              "y": 1.9590404257812501,
+              "z": 74.2430610546875
+            }
+          },
+          "player": {
+            "x": -12,
+            "y": 0.95,
+            "z": 74,
+            "yaw": 3.141592653589793,
+            "mode": "",
+            "speed": 0,
+            "gesture": "",
+            "heldItem": "",
+            "balloonTone": -1,
+            "balloonStyle": "classic",
+            "roast": 0
+          }
+        },
+        "after": {
+          "camera": {
+            "yaw": 0.33,
+            "pitch": 0.48,
+            "distance": 16.5,
+            "fov": 50,
+            "context": null,
+            "manualYaw": false,
+            "revision": 0,
+            "treeOffset": 0,
+            "rendered": {
+              "yaw": 0.33,
+              "pitch": 0.464606133203125,
+              "distance": 16.85183199088938,
+              "fov": 50
+            },
+            "focus": {
+              "x": -11.513877890625,
+              "y": 1.9590404257812501,
+              "z": 74.2430610546875
+            },
+            "eye": {
+              "x": -6.632005690335432,
+              "y": 9.509852919857387,
+              "z": 88.4956676916682
+            },
+            "aim": {
+              "x": -11.513877890625,
+              "y": 1.9590404257812501,
+              "z": 74.2430610546875
+            }
+          },
+          "player": {
+            "x": -12,
+            "y": 0.95,
+            "z": 74,
+            "yaw": 3.141592653589793,
+            "mode": "",
+            "speed": 0,
+            "gesture": "",
+            "heldItem": "",
+            "balloonTone": -1,
+            "balloonStyle": "classic",
+            "roast": 0
+          },
+          "open": true,
+          "canAdd": true
+        }
+      }
+    },
+    {
+      "name": "mobile only explicit close restores exploration view",
+      "ok": true
+    },
+    {
+      "name": "no browser errors",
+      "ok": true,
+      "details": []
+    }
+  ],
+  "errors": [],
+  "physicalMobile": false
+}

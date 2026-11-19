@@ -1,0 +1,699 @@
+{
+  "checks": [
+    {
+      "name": "desktop map shares settings shell and header alignment",
+      "ok": true,
+      "details": [
+        {
+          "tab": "map",
+          "panel": {
+            "x": 240,
+            "y": 70,
+            "width": 800,
+            "height": 660
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 261,
+            "y": 135,
+            "width": 758,
+            "height": 44
+          },
+          "padding": "16px 20px",
+          "gap": "12px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(10px) saturate(1.2)"
+        },
+        {
+          "tab": "activities",
+          "panel": {
+            "x": 240,
+            "y": 70,
+            "width": 800,
+            "height": 660
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 261,
+            "y": 135,
+            "width": 758,
+            "height": 44
+          },
+          "padding": "16px 20px",
+          "gap": "12px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(10px) saturate(1.2)"
+        },
+        {
+          "tab": "light",
+          "panel": {
+            "x": 240,
+            "y": 70,
+            "width": 800,
+            "height": 660
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 261,
+            "y": 135,
+            "width": 758,
+            "height": 44
+          },
+          "padding": "16px 20px",
+          "gap": "12px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(10px) saturate(1.2)"
+        },
+        {
+          "tab": "fluff",
+          "panel": {
+            "x": 240,
+            "y": 70,
+            "width": 800,
+            "height": 660
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 261,
+            "y": 135,
+            "width": 758,
+            "height": 44
+          },
+          "padding": "16px 20px",
+          "gap": "12px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(10px) saturate(1.2)"
+        },
+        {
+          "tab": "audio",
+          "panel": {
+            "x": 240,
+            "y": 70,
+            "width": 800,
+            "height": 660
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 261,
+            "y": 135,
+            "width": 758,
+            "height": 44
+          },
+          "padding": "16px 20px",
+          "gap": "12px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(10px) saturate(1.2)"
+        },
+        {
+          "tab": "social",
+          "panel": {
+            "x": 240,
+            "y": 70,
+            "width": 800,
+            "height": 660
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 261,
+            "y": 135,
+            "width": 758,
+            "height": 44
+          },
+          "padding": "16px 20px",
+          "gap": "12px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(10px) saturate(1.2)"
+        }
+      ]
+    },
+    {
+      "name": "desktop saved nickname returns without success label",
+      "ok": true
+    },
+    {
+      "name": "desktop failed save retains input and clear error",
+      "ok": true
+    },
+    {
+      "name": "mobile map shares settings shell and header alignment",
+      "ok": true,
+      "details": [
+        {
+          "tab": "map",
+          "panel": {
+            "x": 10,
+            "y": 12,
+            "width": 370,
+            "height": 820
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 23,
+            "y": 71,
+            "width": 344,
+            "height": 44
+          },
+          "padding": "12px",
+          "gap": "10px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(8px) saturate(1.2)"
+        },
+        {
+          "tab": "activities",
+          "panel": {
+            "x": 10,
+            "y": 12,
+            "width": 370,
+            "height": 820
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 23,
+            "y": 71,
+            "width": 344,
+            "height": 44
+          },
+          "padding": "12px",
+          "gap": "10px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(8px) saturate(1.2)"
+        },
+        {
+          "tab": "light",
+          "panel": {
+            "x": 10,
+            "y": 12,
+            "width": 370,
+            "height": 820
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 23,
+            "y": 71,
+            "width": 344,
+            "height": 44
+          },
+          "padding": "12px",
+          "gap": "10px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(8px) saturate(1.2)"
+        },
+        {
+          "tab": "fluff",
+          "panel": {
+            "x": 10,
+            "y": 12,
+            "width": 370,
+            "height": 820
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 23,
+            "y": 71,
+            "width": 344,
+            "height": 44
+          },
+          "padding": "12px",
+          "gap": "10px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(8px) saturate(1.2)"
+        },
+        {
+          "tab": "audio",
+          "panel": {
+            "x": 10,
+            "y": 12,
+            "width": 370,
+            "height": 820
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 23,
+            "y": 71,
+            "width": 344,
+            "height": 44
+          },
+          "padding": "12px",
+          "gap": "10px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(8px) saturate(1.2)"
+        },
+        {
+          "tab": "social",
+          "panel": {
+            "x": 10,
+            "y": 12,
+            "width": 370,
+            "height": 820
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 23,
+            "y": 71,
+            "width": 344,
+            "height": 44
+          },
+          "padding": "12px",
+          "gap": "10px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(8px) saturate(1.2)"
+        }
+      ]
+    },
+    {
+      "name": "mobile saved nickname returns without success label",
+      "ok": true
+    },
+    {
+      "name": "mobile failed save retains input and clear error",
+      "ok": true
+    },
+    {
+      "name": "no browser exceptions",
+      "ok": true,
+      "details": []
+    }
+  ],
+  "panels": [
+    {
+      "label": "desktop",
+      "panels": [
+        {
+          "tab": "map",
+          "panel": {
+            "x": 240,
+            "y": 70,
+            "width": 800,
+            "height": 660
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 261,
+            "y": 135,
+            "width": 758,
+            "height": 44
+          },
+          "padding": "16px 20px",
+          "gap": "12px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(10px) saturate(1.2)"
+        },
+        {
+          "tab": "activities",
+          "panel": {
+            "x": 240,
+            "y": 70,
+            "width": 800,
+            "height": 660
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 261,
+            "y": 135,
+            "width": 758,
+            "height": 44
+          },
+          "padding": "16px 20px",
+          "gap": "12px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(10px) saturate(1.2)"
+        },
+        {
+          "tab": "light",
+          "panel": {
+            "x": 240,
+            "y": 70,
+            "width": 800,
+            "height": 660
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 261,
+            "y": 135,
+            "width": 758,
+            "height": 44
+          },
+          "padding": "16px 20px",
+          "gap": "12px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(10px) saturate(1.2)"
+        },
+        {
+          "tab": "fluff",
+          "panel": {
+            "x": 240,
+            "y": 70,
+            "width": 800,
+            "height": 660
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 261,
+            "y": 135,
+            "width": 758,
+            "height": 44
+          },
+          "padding": "16px 20px",
+          "gap": "12px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(10px) saturate(1.2)"
+        },
+        {
+          "tab": "audio",
+          "panel": {
+            "x": 240,
+            "y": 70,
+            "width": 800,
+            "height": 660
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 261,
+            "y": 135,
+            "width": 758,
+            "height": 44
+          },
+          "padding": "16px 20px",
+          "gap": "12px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(10px) saturate(1.2)"
+        },
+        {
+          "tab": "social",
+          "panel": {
+            "x": 240,
+            "y": 70,
+            "width": 800,
+            "height": 660
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 261,
+            "y": 135,
+            "width": 758,
+            "height": 44
+          },
+          "padding": "16px 20px",
+          "gap": "12px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(10px) saturate(1.2)"
+        }
+      ]
+    },
+    {
+      "label": "mobile",
+      "panels": [
+        {
+          "tab": "map",
+          "panel": {
+            "x": 10,
+            "y": 12,
+            "width": 370,
+            "height": 820
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 23,
+            "y": 71,
+            "width": 344,
+            "height": 44
+          },
+          "padding": "12px",
+          "gap": "10px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(8px) saturate(1.2)"
+        },
+        {
+          "tab": "activities",
+          "panel": {
+            "x": 10,
+            "y": 12,
+            "width": 370,
+            "height": 820
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 23,
+            "y": 71,
+            "width": 344,
+            "height": 44
+          },
+          "padding": "12px",
+          "gap": "10px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(8px) saturate(1.2)"
+        },
+        {
+          "tab": "light",
+          "panel": {
+            "x": 10,
+            "y": 12,
+            "width": 370,
+            "height": 820
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 23,
+            "y": 71,
+            "width": 344,
+            "height": 44
+          },
+          "padding": "12px",
+          "gap": "10px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(8px) saturate(1.2)"
+        },
+        {
+          "tab": "fluff",
+          "panel": {
+            "x": 10,
+            "y": 12,
+            "width": 370,
+            "height": 820
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 23,
+            "y": 71,
+            "width": 344,
+            "height": 44
+          },
+          "padding": "12px",
+          "gap": "10px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(8px) saturate(1.2)"
+        },
+        {
+          "tab": "audio",
+          "panel": {
+            "x": 10,
+            "y": 12,
+            "width": 370,
+            "height": 820
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 23,
+            "y": 71,
+            "width": 344,
+            "height": 44
+          },
+          "padding": "12px",
+          "gap": "10px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(8px) saturate(1.2)"
+        },
+        {
+          "tab": "social",
+          "panel": {
+            "x": 10,
+            "y": 12,
+            "width": 370,
+            "height": 820
+          },
+          "head": {
+            "x": 0,
+            "y": 0,
+            "width": 0,
+            "height": 0
+          },
+          "tabs": {
+            "x": 23,
+            "y": 71,
+            "width": 344,
+            "height": 44
+          },
+          "padding": "12px",
+          "gap": "10px",
+          "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+          "border": "1px solid rgba(255, 255, 255, 0.52)",
+          "shadow": "rgba(255, 255, 255, 0.5) 0px 1px 0px 0px inset, rgba(255, 255, 255, 0.08) 0px -1px 0px 0px inset, rgba(6, 23, 40, 0.14) 0px 12px 32px 0px",
+          "blur": "blur(8px) saturate(1.2)"
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "physicalMobile": false
+}

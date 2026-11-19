@@ -1,0 +1,179 @@
+{
+  "at": "2026-11-19T12:32:47.700Z",
+  "revision": "dfc0b772a4a80be8456a582d8b00841f93ed1e53",
+  "physicalMobile": false,
+  "checks": [
+    {
+      "name": "official release matches verified commit",
+      "ok": true,
+      "details": {
+        "revision": "dfc0b772a4a80be8456a582d8b00841f93ed1e53"
+      }
+    },
+    {
+      "name": "deployed asset social.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset park.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset winter-world.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset camera-policy.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset camera-clearance.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset carousel-model.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset shared-tree.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset ornament-preview.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset fantasy-vfx.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset fireworks-request.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset customization.css",
+      "ok": true
+    },
+    {
+      "name": "deployed asset resort-ui-v43.css",
+      "ok": true
+    },
+    {
+      "name": "deployed asset index.html",
+      "ok": true
+    },
+    {
+      "name": "desktop enters live shared world",
+      "ok": true
+    },
+    {
+      "name": "desktop receives realtime socket frames",
+      "ok": true
+    },
+    {
+      "name": "desktop chat send stays borderless",
+      "ok": true,
+      "details": {
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)",
+        "shadow": "none"
+      }
+    },
+    {
+      "name": "desktop history only visible in composer",
+      "ok": true
+    },
+    {
+      "name": "desktop history hidden during exploration",
+      "ok": true
+    },
+    {
+      "name": "desktop nickname save has no extra frame",
+      "ok": true
+    },
+    {
+      "name": "desktop tree name is concise",
+      "ok": true
+    },
+    {
+      "name": "desktop tree dock uses actual 3D thumbnails",
+      "ok": true
+    },
+    {
+      "name": "desktop closing tree restores previous zoom",
+      "ok": true,
+      "details": {
+        "before": 16.5,
+        "after": 16.5
+      }
+    },
+    {
+      "name": "desktop guest administrator API denied",
+      "ok": true
+    },
+    {
+      "name": "mobile enters live shared world",
+      "ok": true
+    },
+    {
+      "name": "mobile receives realtime socket frames",
+      "ok": true
+    },
+    {
+      "name": "mobile chat send stays borderless",
+      "ok": true,
+      "details": {
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)",
+        "shadow": "none"
+      }
+    },
+    {
+      "name": "mobile history only visible in composer",
+      "ok": true
+    },
+    {
+      "name": "mobile history hidden during exploration",
+      "ok": true
+    },
+    {
+      "name": "mobile nickname save has no extra frame",
+      "ok": true
+    },
+    {
+      "name": "mobile tree name is concise",
+      "ok": true
+    },
+    {
+      "name": "mobile tree dock uses actual 3D thumbnails",
+      "ok": true
+    },
+    {
+      "name": "mobile closing tree restores previous zoom",
+      "ok": true,
+      "details": {
+        "before": 16.5,
+        "after": 16.5
+      }
+    },
+    {
+      "name": "mobile guest administrator API denied",
+      "ok": true
+    },
+    {
+      "name": "admin route shows owner entry",
+      "ok": true
+    },
+    {
+      "name": "no browser or 5xx errors",
+      "ok": true,
+      "details": {
+        "errors": [],
+        "http5xx": []
+      }
+    }
+  ],
+  "errors": [],
+  "consoleErrors": [],
+  "http5xx": []
+}
