@@ -35,6 +35,27 @@ test('personal chat hiding does not remove the other player from the world',asyn
 
 async function eventually(check){for(let i=0;i<100;i++){if(check())return;await new Promise(resolve=>setTimeout(resolve,5));}assert.ok(check(),'expected asynchronous recovery');}
 
+test('leaving a ride drains the seated pose before deleting the seat and resumes standing updates',async t=>{
+ let finishPose,releases=0;const modes=[],reservation={kind:'ferris',cabin:0,seat:0,startedAt:Date.now()};
+ const {w,d}=await fixture(t,{fetch:async(url,init)=>{
+  if(url==='/api/access')return{admin:false};
+  if(url==='/api/ride'&&init.method==='DELETE'){releases++;return{ok:true};}
+  if(url==='/api/presence'){
+   const mode=JSON.parse(init.body).mode||'';modes.push(mode);
+   if(mode==='ferris')return new Promise(resolve=>{finishPose=resolve;});
+  }
+  return{people:[],count:1,rideSeats:[],serverTime:Date.now()};
+ }});
+ w.labRideReservation=reservation;w.labPlayerState={x:0,y:20,z:0,yaw:0,mode:'ferris'};
+ d.dispatchEvent(new w.Event('visibilitychange'));await eventually(()=>finishPose);
+ const release=w.releaseRide();w.labPlayerState={x:0,y:.95,z:30,yaw:0,mode:''};
+ d.dispatchEvent(new w.Event('visibilitychange'));await tick();assert.equal(releases,0,'in-flight seated pose must retain its reservation');
+ assert.equal(w.releaseRide(),release,'repeated exit shares one release');
+ finishPose({people:[],count:1,rideSeats:[{...reservation,id:'guest'}],serverTime:Date.now()});
+ await release;assert.equal(releases,1);d.dispatchEvent(new w.Event('visibilitychange'));await eventually(()=>modes.at(-1)==='');
+ assert.equal(w.labRideReservation,null);assert.equal(w.labSocialJoined,true);
+});
+
 test('a dining lease expired during mobile sleep wakes once and resumes presence while a panel pauses rendering',async t=>{
  let expired=false,releases=0,expirationEvents=0;const modes=[],reservation={kind:'dining',cabin:0,seat:1,startedAt:Date.now()-25000};
  const {w,d,mod}=await fixture(t,{fetch:async(url,init)=>{

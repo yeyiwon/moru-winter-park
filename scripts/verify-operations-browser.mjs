@@ -52,11 +52,15 @@ try{
   await a.locator('.interaction-exit-control').click();await a.waitForFunction(()=>!labPlayerState.mode);
  }
  await a.evaluate(()=>travelToIsland('park'));
+ // Inspect persistent chat history, not the 6.5s transient bubble. Network state
+ // polling must also work while the receiver's render loop is in a hidden tab.
+ await b.bringToFront();await b.locator('#chat-toggle').click();
  const response=await a.request.post(origin+'/api/chat',{headers:{Origin:origin},data:{message:'실시간 공유 확인'}});check('chat persisted',response.ok());
- await b.waitForFunction(()=>document.querySelector('#chat-log').textContent.includes('실시간 공유 확인'),null,{timeout:12000});check('chat visible on other device',true);
+ await b.waitForFunction(()=>document.querySelector('#chat-log').textContent.includes('실시간 공유 확인'),null,{timeout:12000,polling:100});check('chat visible on other device',true);
+ await b.evaluate(()=>closeWinterChat());await b.waitForFunction(()=>!document.body.classList.contains('chat-typing'),null,{polling:100});
  check('guest admin API denied',(await a.request.get(origin+'/api/operations')).status()===403);
  await a.evaluate(()=>openWinterSettings('activities'));await a.locator('#firework-request').click();await a.waitForFunction(()=>!!labFireworks?.id);
- const show=await a.evaluate(()=>labFireworks);await b.waitForFunction(id=>labFireworks?.id===id,show.id,{timeout:15000});check('same server countdown and seed',await b.evaluate(s=>labFireworks.seed===s.seed&&labFireworks.startsAt===s.startsAt,show));
+ const show=await a.evaluate(()=>labFireworks);await b.waitForFunction(id=>labFireworks?.id===id,show.id,{timeout:15000,polling:100});check('same server countdown and seed',await b.evaluate(s=>labFireworks.seed===s.seed&&labFireworks.startsAt===s.startsAt,show));
  await a.screenshot({path:out+'/desktop-activities.png'});
  await b.bringToFront();await b.evaluate(()=>openWinterSettings('fluff'));await b.screenshot({path:out+'/mobile-customization.png'});
  const overflow=await b.evaluate(()=>({page:document.documentElement.scrollWidth>innerWidth,dialog:(()=>{const r=document.querySelector('#studio').getBoundingClientRect();return r.left<0||r.right>innerWidth||r.top<0||r.bottom>innerHeight+1;})()}));check('mobile panel inside viewport',!overflow.page&&!overflow.dialog,overflow);

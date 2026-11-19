@@ -52,7 +52,7 @@ form.addEventListener('submit',async e=>{e.preventDefault();const button=form.qu
 let syncing=null,nextSync=0,lastSent=0,lastMoving=false,remoteMoving=false,appearanceSaving=false;const presenceCache=createPresenceCache();
 function acceptPresence(data){window.labServerOffset=data.serverTime-Date.now();window.labFireworks=mergeFireworkShow(window.labFireworks,data.fireworks);window.dispatchEvent(new CustomEvent('lab:fireworks',{detail:window.labFireworks}));window.labRideSeats=data.rideSeats||[];if(window.labRideReservation&&!window.labRideSeats.some(s=>s.id===window.labGuestId))window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));const list=presenceCache.merge(data.people,data.farBucket);remoteMoving=list.some(p=>!p.distant&&p.speed>.1);showPeople(list);status.textContent='접속 중 · '+data.count+'명';}
 const realtime=createRealtimeClient({request,pose:()=>{if(!window.labPlayerState)return null;const pose={...window.labPlayerState,gesture:gesture||encodeActivity(window.labPlayerState)};gesture='';return pose;},onSnapshot:acceptPresence,onStatus:message=>{if(message)status.textContent=message;},onCheckpoint:()=>{if(Date.now()-lastSent>600)void sync(true);}});
-function sync(force=false){if(syncing)return force?syncing.then(()=>sync(true)):syncing;if(appearanceSaving||!joined||joining||!window.labPlayerState)return Promise.resolve();syncing=performSync().finally(()=>{syncing=null;});return syncing;}
+function sync(force=false){if(releasingRide)return force?releasingRide.then(()=>sync(true)):Promise.resolve();if(syncing)return force?syncing.then(()=>sync(true)):syncing;if(appearanceSaving||!joined||joining||!window.labPlayerState)return Promise.resolve();syncing=performSync().finally(()=>{syncing=null;});return syncing;}
 window.saveWinterAppearance=async look=>{
  if(!joined||joining)throw Error('공간에 연결한 뒤 다시 저장해 주세요.');
  if(appearanceSaving)throw Error('외형을 저장하고 있어요.');
@@ -138,8 +138,15 @@ $('#profile-form').addEventListener('submit',async e=>{e.preventDefault();const 
 const visualViewport=window.visualViewport;function keyboardLayout(){const bottom=visualViewport?Math.max(0,innerHeight-visualViewport.height-visualViewport.offsetTop):0;document.documentElement.style.setProperty('--keyboard',bottom+'px');}visualViewport?.addEventListener('resize',keyboardLayout);visualViewport?.addEventListener('scroll',keyboardLayout);chatInput.addEventListener('focus',()=>{document.body.classList.add('chat-typing');window.dispatchEvent(new Event('lab:pause'));keyboardLayout();});chatInput.addEventListener('blur',keyboardLayout);window.addEventListener('online',()=>{if(!joined)initialize();else sync();});
 
 window.reserveRide=async (kind,benchId,seat)=>{await ensureChatSession();await releasingRide;await sync(true);const data=await request('ride',{kind,benchId,seat});window.labServerOffset=data.serverTime-Date.now();window.labRideReservation=data.reservation;return data.reservation;};
-let releasingRide=Promise.resolve();
-window.releaseRide=()=>{window.labRideReservation=null;releasingRide=fetch('/api/ride',{method:'DELETE',headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(8000)}).catch(()=>{});return releasingRide;};
+let releasingRide=null;
+window.releaseRide=()=>{
+ window.labRideReservation=null;if(releasingRide)return releasingRide;
+ // A seated pose already in flight still needs its server reservation. Drain it
+ // before releasing the seat; pause new checkpoints until exit has completed.
+ const pendingPose=syncing;
+ releasingRide=(async()=>{await pendingPose;await fetch('/api/ride',{method:'DELETE',headers:{'Content-Type':'application/json'},signal:AbortSignal.timeout(8000)}).catch(()=>{});})().finally(()=>{releasingRide=null;nextSync=0;});
+ return releasingRide;
+};
 
 window.addEventListener('pagehide',event=>{if(!event.persisted){clearInterval(presenceTimer);clearInterval(chatFadeTimer);realtime.dispose();}});
 
