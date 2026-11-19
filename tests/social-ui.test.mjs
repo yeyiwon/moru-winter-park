@@ -21,7 +21,7 @@ test('admin path requires server owner identity and never joins an unauthenticat
 test('public chat and explicit nickname editing preserve one session; owner leaving does not gate guests',async t=>{
  let joins=0,name='눈꽃';const {w,d}=await fixture(t,{fetch:async(url,init)=>{const b=init.body?JSON.parse(init.body):{};if(url==='/api/access')return{admin:false,session:{id:'guest',name,room:'winter-plaza'}};if(url==='/api/join'){joins++;return{id:'guest',name,room:'winter-plaza'};}if(url==='/api/name'){name=b.name;return{name};}if(url==='/api/chat')return{name,message:b.message,at:Date.now()};return{people:[],count:1};}});
  assert.equal(joins,1);assert.equal(w.labSocialJoined,true);d.querySelector('#profile-name').value='모루';d.querySelector('#profile-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await tick();assert.equal(d.querySelector('#self-name').textContent,'모루');assert.equal(d.querySelector('#profile-form').hidden,true);
- d.querySelector('#chat-toggle').click();d.querySelector('#chat-input').value='함께 겨울';d.querySelector('#chat-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await tick();assert.match(d.querySelector('#chat-log').textContent,/함께 겨울/);assert.equal(d.body.classList.contains('chat-typing'),false);assert.equal(w.labSocialJoined,true);
+ d.querySelector('#chat-toggle').click();assert.equal(d.querySelector('#chat-form').hidden,false);assert.equal(d.activeElement,d.querySelector('#chat-input'));assert.ok(d.body.classList.contains('chat-typing'));d.querySelector('#chat-input').value='함께 겨울';d.querySelector('#chat-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await tick();assert.match(d.querySelector('#chat-log').textContent,/함께 겨울/);assert.equal(d.body.classList.contains('chat-typing'),false);assert.equal(w.labSocialJoined,true);
 });
 test('failed public bootstrap exposes retry and a blocked session never silently rejoins',async t=>{
  let deny=false;const {w,d}=await fixture(t,{fetch:async url=>{if(url==='/api/access')return{admin:false};if(url==='/api/join')return{id:'guest',name:'눈꽃',room:'winter-plaza'};return deny?{status:403,data:{error:'이용 제한'}}:{people:[],count:1};}});
@@ -39,7 +39,7 @@ test('a dining lease expired during mobile sleep wakes once and resumes presence
  let expired=false,releases=0,expirationEvents=0;const modes=[],reservation={kind:'dining',cabin:0,seat:1,startedAt:Date.now()-25000};
  const {w,d,mod}=await fixture(t,{fetch:async(url,init)=>{
   if(url==='/api/access')return{admin:false,session:{id:'guest',room:'winter-plaza',name:'손님'}};
-  if(url==='/api/ride'){if(init.method==='DELETE'){releases++;return{ok:true};}assert.equal(JSON.parse(init.body).seat,1);return{reservation,serverTime:Date.now()};}
+  if(url==='/api/ride'){if(init.method==='DELETE'){releases++;return{ok:true};}assert.equal(JSON.parse(init.body).seat,undefined);return{reservation,serverTime:Date.now()};}
   if(url==='/api/presence'){
    const mode=JSON.parse(init.body).mode||'';modes.push(mode);
    if(expired&&mode==='dining')return{status:409,data:{code:'RIDE_RESERVATION_EXPIRED',error:'좌석이 만료됐어요.'}};
@@ -49,7 +49,7 @@ test('a dining lease expired during mobile sleep wakes once and resumes presence
  }});
  const module=await mod(path.join(root,'winter-experience.js'));await module.evaluate();
  const experience=module.namespace.createWinterExperience({rides:{},destinations:[],rideChair:{visible:false}},{equip(){}},()=>{});
- w.labPlayerState={x:412,y:.95,z:3.7,yaw:Math.PI};experience.show('interior-dining');d.querySelector('#place-actions button[data-seat="1"]').click();
+ w.labPlayerState={x:412,y:.95,z:3.7,yaw:Math.PI};experience.show('interior-dining');d.querySelector('#place-actions button').click();
  await eventually(()=>experience.active&&w.labRideReservation);
  w.labPlayerState=experience.update(0,{x:0,z:0});assert.equal(w.labPlayerState.mode,'dining');
  // No render frames run while this panel owns input. The production wake event

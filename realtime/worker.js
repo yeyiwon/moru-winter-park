@@ -1,7 +1,7 @@
 import {boundedRequest} from '../server/request-body.js';
 import {verifyTicket,verifyRPC} from './auth.js';
 import {RealtimeWorld} from './world.js';
-export default{fetch(request,env){const path=new URL(request.url).pathname;if(!['/connect','/rpc'].includes(path))return new Response('Not found',{status:404});return env.WORLD.get(env.WORLD.idFromName('winter-plaza')).fetch(request);}};
+export default{fetch(request,env){const path=new URL(request.url).pathname;if(path==='/health'&&request.method==='GET')return Response.json({ok:true,service:'winterlight-realtime',revision:env.RELEASE_REVISION||'local'},{headers:{'Cache-Control':'no-store'}});if(!['/connect','/rpc'].includes(path))return new Response('Not found',{status:404});return env.WORLD.get(env.WORLD.idFromName('winter-plaza')).fetch(request);}};
 export class WinterWorld{
  constructor(ctx,env){this.ctx=ctx;this.env=env;this.nonces=new Map();this.world=new RealtimeWorld({restore:ctx.getWebSockets()});ctx.blockConcurrencyWhile(async()=>{const saved=await ctx.storage.get('shared');if(saved){this.world.rpc(saved);this.world.revoked=new Map(saved.revoked||[]);this.sharedJSON=JSON.stringify(saved);}});}
  async fetch(request){

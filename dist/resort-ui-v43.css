@@ -126,3 +126,16 @@ body.chat-typing :is(#place-card,#ride-hud,#emote-panel){visibility:hidden!impor
 #studio .studio-tabs{justify-content:flex-start;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
 #studio .studio-tabs button{flex-shrink:0}
 #studio:has(#pane-activities:not([hidden])) .studio-saved{visibility:hidden}
+
+.chat-close svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round}
+.chat-entry{grid-template-columns:minmax(0,1fr) 44px 44px}
+@media(max-width:650px),(pointer:coarse){
+ body.chat-typing :is(#chat-toggle,#emote-toggle,#joystick,.touch-actions,#hud-map){visibility:hidden!important;pointer-events:none!important}
+ #chat-form .chat-entry{grid-template-columns:minmax(0,1fr) 44px 44px;gap:0;padding:0 2px 0 12px;border-radius:16px}
+ #chat-form .chat-entry button{width:44px;min-width:44px;height:44px;min-height:44px;padding:12px;border:0;background:transparent;box-shadow:none}
+ #chat-form .chat-entry button svg{width:18px;height:18px}
+ body.chat-typing #chat-log{padding-right:13px;bottom:calc(82px + env(safe-area-inset-bottom) + var(--keyboard,0px))}
+}
+
+/* World projection owns the vertical anchor; bottom anchoring caused a height feedback loop. */
+#place-card{bottom:auto;height:max-content}

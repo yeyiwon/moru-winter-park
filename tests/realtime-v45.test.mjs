@@ -8,6 +8,7 @@ function connect(url,ticket){return new Promise((resolve,reject)=>{const ws=new 
 function send(ws,b){return new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('snapshot timeout')),4000);ws.once('message',raw=>{clearTimeout(timer);resolve(JSON.parse(raw));});ws.send(JSON.stringify(b));});}
 test('real Cloudflare runtime: authenticated sockets, sequence validation, persistence-free motion, shared show and revoke',async t=>{
  const f=await realtimeFixture(t),a=f.guest(),b=f.guest();
+ const health=await f.mf.dispatchFetch(new URL('/health',f.url));assert.equal(health.status,200);assert.equal((await health.json()).service,'winterlight-realtime');
  assert.equal((await f.mf.dispatchFetch(new URL('/connect',f.url),{headers:{Upgrade:'websocket',Origin:'https://untrusted.invalid'}})).status,403);
  assert.equal((await f.mf.dispatchFetch(new URL('/connect',f.url),{headers:{Upgrade:'websocket',Origin:'http://127.0.0.1','Sec-WebSocket-Protocol':'winter-v1,auth.forged'}})).status,401);const sa=await f.call(a,'join',{});await f.call(b,'join',{});
  const ta=await f.call(a,'realtime',{}),tb=await f.call(b,'realtime',{});assert.equal(ta.status,200,JSON.stringify(ta.data));

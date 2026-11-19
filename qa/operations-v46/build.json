@@ -1,0 +1,22 @@
+[
+  {
+    "script": "check",
+    "exit": 0
+  },
+  {
+    "script": "build",
+    "exit": 0
+  },
+  {
+    "script": "build:vercel",
+    "exit": 0
+  },
+  {
+    "script": "build:realtime",
+    "exit": 0
+  },
+  {
+    "script": "test:budget",
+    "exit": 0
+  }
+]

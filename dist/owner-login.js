@@ -21,3 +21,9 @@ export function bindOwnerLogin(request){
   catch(error){document.querySelector('#invite-description').textContent=error.message;delete button.dataset.busy;}
  });
 }
+
+// Keep provider authentication available until its real owner round trip has
+// been confirmed; offer the canonical front door without redirecting callbacks.
+if(location.hostname.endsWith('.chatgpt.site')&&!location.pathname.startsWith('/admin')){
+ const link=document.createElement('a');link.className='official-world-link';link.href=parkOrigin+'/';link.textContent='WINTERLIGHT 공식 주소로 이동';document.querySelector('#pane-social')?.prepend(link);
+}

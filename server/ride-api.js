@@ -14,26 +14,27 @@ export async function rideAPI(request,DB,self,now){
  const bench=kind==='bench'?benches.find(b=>b.id===benchId):null;if(kind==='bench'&&(!bench||(self.region||'outdoors')!==bench.region))return json({error:'이 공간의 벤치를 선택하세요.'},400);
  if(kind==='dining'&&self.region!=='ryokan')return json({error:'료칸의 오마카세 카운터에서 이용해 주세요.'},400);
  const exact=kind==='bench'||kind==='dining',expectedCabin=bench?bench.cabin:0;
- if(exact&&(!Number.isInteger(requestedSeat)||requestedSeat<0||requestedSeat>=(kind==='dining'?3:2)))return json({error:'앉고 싶은 자리를 먼저 선택해 주세요.',code:'seat_required'},400);
+ if(exact&&requestedSeat!==undefined&&(!Number.isInteger(requestedSeat)||requestedSeat<0||requestedSeat>=(kind==='dining'?3:2)))return json({error:'앉고 싶은 자리를 먼저 선택해 주세요.',code:'invalid_seat'},400);
  await DB.prepare('DELETE FROM ride_seats WHERE expires_at<=?').bind(now).run();
  const readExisting=()=>DB.prepare('SELECT room,kind,cabin,seat,started_at AS startedAt FROM ride_seats WHERE visitor=?').bind(self.id).first();
- const respondExisting=existing=>existing.room===self.room&&existing.kind===kind&&(!exact||existing.cabin===expectedCabin&&existing.seat===requestedSeat)?json({reservation:{kind:existing.kind,cabin:existing.cabin,seat:existing.seat,startedAt:existing.startedAt},serverTime:now}):json({error:'먼저 이용 중인 자리에서 일어난 뒤 다른 자리를 선택해 주세요.',code:'already_seated'},409);
+ const respondExisting=existing=>existing.room===self.room&&existing.kind===kind&&(!exact||existing.cabin===expectedCabin&&(requestedSeat===undefined||existing.seat===requestedSeat))?json({reservation:{kind:existing.kind,cabin:existing.cabin,seat:existing.seat,startedAt:existing.startedAt},serverTime:now}):json({error:'먼저 이용 중인 자리에서 일어난 뒤 다른 자리를 선택해 주세요.',code:'already_seated'},409);
  const existing=await readExisting();if(existing)return respondExisting(existing);
  const entrance=kind==='dining'?diningEntrance:bench?benchAccess(bench):kind==='ferris'?ferrisDimensions.entrance:kind==='lift'?resortDestinations.find(p=>p.id==='ski'):upperLiftEntry;
- if(exact?!canReachSharedSeat(sharedSeatChoices(kind,benchId).find(s=>s.seat===requestedSeat),self):Math.hypot(self.x-entrance.x,self.z-entrance.z)>9)return json({error:exact?'선택한 자리 가까이에서 앉아 주세요.':'승강장 가까이에서 탑승해 주세요.'},400);
- if(kind==='dining'){
-   // MAX is evaluated inside the same write as the seat claim. Simultaneous
-   // requests therefore cannot make the single chef serve two people at once.
-   const result=await DB.prepare("INSERT INTO ride_seats(room,kind,cabin,seat,visitor,started_at,expires_at) SELECT ?,'dining',0,?,?,MAX(?,COALESCE((SELECT MAX(started_at)+? FROM ride_seats WHERE room=? AND kind='dining'),?)),? ON CONFLICT DO NOTHING").bind(self.room,requestedSeat,self.id,now,diningServiceSlot,self.room,now,now+20000).run();
+ const choices=exact?sharedSeatChoices(kind,benchId):[];
+ if(exact?!choices.some(choice=>(requestedSeat===undefined||choice.seat===requestedSeat)&&canReachSharedSeat(choice,self)):Math.hypot(self.x-entrance.x,self.z-entrance.z)>9)return json({error:exact?'선택한 자리 가까이에서 앉아 주세요.':'승강장 가까이에서 탑승해 주세요.'},400);
+ if(exact){
+  // The database unique key decides the winner. Retry other seats if another
+  // visitor claims a candidate between reading availability and writing it.
+  const order=requestedSeat===undefined?choices.map(c=>c.seat):[requestedSeat];
+  for(let i=order.length-1;i>0;i--){const j=crypto.getRandomValues(new Uint32Array(1))[0]%(i+1);[order[i],order[j]]=[order[j],order[i]];}
+  for(const seat of order){
+   const result=kind==='dining'
+    ?await DB.prepare("INSERT INTO ride_seats(room,kind,cabin,seat,visitor,started_at,expires_at) SELECT ?,'dining',0,?,?,MAX(?,COALESCE((SELECT MAX(started_at)+? FROM ride_seats WHERE room=? AND kind='dining'),?)),? ON CONFLICT DO NOTHING").bind(self.room,seat,self.id,now,diningServiceSlot,self.room,now,now+20000).run()
+    :await DB.prepare('INSERT INTO ride_seats(room,kind,cabin,seat,visitor,started_at,expires_at) VALUES(?,?,?,?,?,?,?) ON CONFLICT DO NOTHING').bind(self.room,kind,bench.cabin,seat,self.id,now,now+20000).run();
    if(result.meta?.changes){const reservation=await DB.prepare('SELECT kind,cabin,seat,started_at AS startedAt FROM ride_seats WHERE visitor=?').bind(self.id).first();return json({reservation,serverTime:now});}
    const claimed=await readExisting();if(claimed)return respondExisting(claimed);
-   return json({error:'선택한 자리에 다른 손님이 앉아 있어요. 다른 자리를 선택해 주세요.',code:'seat_occupied'},409);
- }
- if(bench){
-  const result=await DB.prepare('INSERT INTO ride_seats(room,kind,cabin,seat,visitor,started_at,expires_at) VALUES(?,?,?,?,?,?,?) ON CONFLICT DO NOTHING').bind(self.room,kind,bench.cabin,requestedSeat,self.id,now,now+20000).run();
-  if(result.meta?.changes)return json({reservation:{kind,cabin:bench.cabin,seat:requestedSeat,startedAt:now},serverTime:now});
-  const claimed=await readExisting();if(claimed)return respondExisting(claimed);
-  return json({error:'선택한 자리에 다른 손님이 앉아 있어요. 다른 자리를 선택해 주세요.',code:'seat_occupied'},409);
+  }
+  return json({error:'지금은 빈자리가 없어요. 잠시 후 다시 이용해 주세요.',code:'seat_occupied'},409);
  }
  const seats=await listRideSeats(DB,self.room,now),pairs=seats.filter(s=>s.kind===kind&&(!bench||s.cabin===bench.cabin)&&(bench||s.startedAt>now-(kind==='ferris'?10000:1500)));
  const candidates=[...new Set(pairs.map(s=>s.cabin))];let empty=bench?bench.cabin:kind==='ferris'?ferrisCabinAtStation(now):now;if(!bench&&kind!=='ferris')while(seats.some(s=>s.kind===kind&&s.cabin===empty))empty++;if(!candidates.includes(empty))candidates.push(empty);

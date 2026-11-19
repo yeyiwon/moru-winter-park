@@ -11,7 +11,7 @@ import {createFrameMetrics} from '../dist/frame-metrics.js';
 import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 test('precache supports versioned CSS and modules offline before an online cache hit',async()=>{
- const handlers={},entries=new Map(),origin='https://park.test/',cache={addAll:async paths=>{for(const path of paths)entries.set(new URL(path,origin).href,new Response(path));}};
+ const handlers={},entries=new Map(),origin='https://park.test/',cache={match:async request=>entries.get(request.url)?.clone(),addAll:async paths=>{for(const path of paths)entries.set(new URL(path,origin).href,new Response(path));}};
  const context={URL,Request,Response,Promise,Set,fetch:async()=>{throw Error('offline');},self:{location:{href:origin+'sw.js',origin:new URL(origin).origin},addEventListener:(name,fn)=>handlers[name]=fn,skipWaiting:async()=>{}},caches:{open:async()=>cache,match:async request=>entries.get(request.url)?.clone()}};
  vm.runInNewContext(await readFile(new URL('../dist/sw.js',import.meta.url),'utf8'),context);let pending;handlers.install({waitUntil:p=>pending=p});await pending;
  for(const path of ['style.css?v=winter27','glass.css?v=winter27','navigation-worker.js','park.js?winter30']){handlers.fetch({request:new Request(origin+path),respondWith:p=>pending=p});const response=await pending;assert.equal(response.status,200,path);}

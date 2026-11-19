@@ -1,0 +1,184 @@
+{
+  "at": "2026-11-19T09:32:34.641Z",
+  "physicalMobile": false,
+  "checks": [
+    {
+      "name": "fixed joystick ring, moving knob and full diagonal speed",
+      "ok": true,
+      "details": {
+        "speed": 4.035363779225723
+      }
+    },
+    {
+      "name": "chat owns space without overlapping HUD icons",
+      "ok": true,
+      "details": {
+        "icons": [
+          "hidden",
+          "hidden",
+          "hidden",
+          "hidden"
+        ],
+        "box": {
+          "x": 14,
+          "y": 786,
+          "width": 362,
+          "height": 46,
+          "top": 786,
+          "right": 376,
+          "bottom": 832,
+          "left": 14
+        },
+        "send": {
+          "x": 285,
+          "y": 787,
+          "width": 44,
+          "height": 44,
+          "top": 787,
+          "right": 329,
+          "bottom": 831,
+          "left": 285
+        }
+      }
+    },
+    {
+      "name": "nickname editor preserves panel dimensions",
+      "ok": true
+    },
+    {
+      "name": "mobile preview is larger and fur-length control removed",
+      "ok": true
+    },
+    {
+      "name": "tree crown visible above decoration dock",
+      "ok": true,
+      "details": {
+        "x": 4.922474073883643e-15,
+        "y": 0.70871293886101,
+        "eye": {
+          "x": -49.27638735766077,
+          "y": 20.72770337763489,
+          "z": 55.36180632116966
+        }
+      }
+    },
+    {
+      "name": "upper-canopy tap saves ornament",
+      "ok": true,
+      "details": {
+        "height": 24.968149439021648
+      }
+    },
+    {
+      "name": "upper-canopy placement is not restricted to lower branches",
+      "ok": true
+    },
+    {
+      "name": "wish submission closes composer",
+      "ok": true,
+      "details": ""
+    },
+    {
+      "name": "wish list shows real ornament-rendered thumbnail",
+      "ok": true
+    },
+    {
+      "name": "tree close restores unmodified user view",
+      "ok": true
+    },
+    {
+      "name": "manual drag can look up at sky without camera going underground",
+      "ok": true,
+      "details": {
+        "yaw": 0.33,
+        "pitch": -0.8400000000000001,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 1,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": -0.8391068319062348,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        },
+        "eye": {
+          "x": 3.1715287701543398,
+          "y": 2.7772668115464523,
+          "z": 33.25926573747584
+        },
+        "aim": {
+          "x": 0,
+          "y": 13.67676999776289,
+          "z": 24
+        }
+      }
+    },
+    {
+      "name": "tree bench has one automatic sit action",
+      "ok": true,
+      "details": [
+        "앉기"
+      ]
+    },
+    {
+      "name": "nearby action no longer changes height each frame",
+      "ok": true,
+      "details": [
+        {
+          "x": 148.8984375,
+          "y": 302.40625,
+          "width": 92.203125,
+          "height": 74.59375
+        },
+        {
+          "x": 148.8984375,
+          "y": 279.40625,
+          "width": 92.203125,
+          "height": 74.59375
+        },
+        {
+          "x": 148.8984375,
+          "y": 280.40625,
+          "width": 92.203125,
+          "height": 74.59375
+        },
+        {
+          "x": 148.8984375,
+          "y": 281.40625,
+          "width": 92.203125,
+          "height": 74.59375
+        },
+        {
+          "x": 148.8984375,
+          "y": 281.40625,
+          "width": 92.203125,
+          "height": 74.59375
+        },
+        {
+          "x": 148.8984375,
+          "y": 281.40625,
+          "width": 92.203125,
+          "height": 74.59375
+        }
+      ]
+    },
+    {
+      "name": "automatic bench reservation from real UI",
+      "ok": true
+    },
+    {
+      "name": "no browser exceptions",
+      "ok": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

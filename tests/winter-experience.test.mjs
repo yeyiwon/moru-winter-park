@@ -14,7 +14,7 @@ function setup(t){const dom=new JSDOM(fs.readFileSync(new URL('../dist/index.htm
 test('tree decoration is available around the entire plaza, with its prompt near the visitor',t=>{
  setup(t);let opened=0;window.addEventListener('lab:tree-open',()=>opened++);
  const winter={rides:resortRides,destinations:[{id:'tree',name:'소원 트리',...treeLayout.arrival}],rideChair:{visible:false}},e=createWinterExperience(winter,{equip(){}},()=>{});
- for(let i=0;i<12;i++){const angle=i*Math.PI/6,x=treeLayout.x+Math.cos(angle)*20,z=treeLayout.z+Math.sin(angle)*20;e.proximity(x,z);assert.equal(document.querySelector('#place-card').hidden,false);const nearBench=benchInteractions.some(b=>!b.room&&Math.hypot(b.x-x,b.z-z)<b.r);assert.equal(document.querySelector('#place-actions button').getAttribute('aria-label'),nearBench?'왼쪽 자리 앉기':'트리 꾸미기');assert.ok(Math.hypot(e.anchor.x-x,e.anchor.z-z)<3);if(!nearBench)document.querySelector('#place-actions button').click();}
+ for(let i=0;i<12;i++){const angle=i*Math.PI/6,x=treeLayout.x+Math.cos(angle)*20,z=treeLayout.z+Math.sin(angle)*20;e.proximity(x,z);assert.equal(document.querySelector('#place-card').hidden,false);const nearBench=benchInteractions.some(b=>!b.room&&Math.hypot(b.x-x,b.z-z)<b.r);assert.equal(document.querySelector('#place-actions button').getAttribute('aria-label'),nearBench?'앉기':'트리 꾸미기');assert.ok(Math.hypot(e.anchor.x-x,e.anchor.z-z)<3);if(!nearBench)document.querySelector('#place-actions button').click();}
  assert.ok(opened>0&&opened<=12);e.proximity(treeLayout.x+40,treeLayout.z);assert.equal(document.querySelector('#place-card').hidden,true);
 });
 test('marshmallow stays in hand, toasts at the fire, survives walking and can be eaten',t=>{
@@ -94,25 +94,25 @@ test('sparkler comes from the existing kiosk, stays carried while walking and is
  const {e,click}=setup(t);e.show('sparkler');click();assert.equal(e.heldItem,'sparkler');e.update(.1,{x:1,z:1});assert.equal(e.heldItem,'sparkler');assert.equal(e.active,false);assert.equal(document.querySelector('#place-card').hidden,true);e.show('coffee');click();assert.equal(e.heldItem,'coffee');
 });
 
-test('tree benches offer exact left and right seats without decoration actions',t=>{
- const {e}=setup(t);for(const b of benchInteractions.filter(b=>b.id.startsWith('tree-bench-'))){e.proximity(b.x,b.z);const actions=[...document.querySelectorAll('#place-actions button')];assert.equal(actions.length,2);assert.equal(actions[0].getAttribute('aria-label'),'왼쪽 자리 앉기');assert.equal(actions[1].getAttribute('aria-label'),'오른쪽 자리 앉기');assert.deepEqual(actions.map(button=>button.dataset.seat),['0','1']);}
+test('tree benches expose one automatic seating action without duplicate tree prompts',t=>{
+ const {e}=setup(t);for(const b of benchInteractions.filter(b=>b.id.startsWith('tree-bench-'))){e.proximity(b.x,b.z);const actions=[...document.querySelectorAll('#place-actions button')];assert.equal(actions.length,1);assert.equal(actions[0].getAttribute('aria-label'),'앉기');assert.equal(actions[0].querySelector('kbd').textContent,'E');}
 });
 
-test('dining choice uses the clicked physical seat, marks occupied places and never reserves from disabled keys',async t=>{
+test('dining automatically accepts the server seat and does not expose left/right keys',async t=>{
  const {e}=setup(t),calls=[];window.labGuestId='self';window.labRideSeats=[{id:'other',kind:'dining',cabin:0,seat:1}];
- window.reserveRide=async(kind,benchId,seat)=>{calls.push({kind,benchId,seat});return{kind,cabin:0,seat,startedAt:Date.now()};};
- e.show('interior-dining');const occupied=document.querySelector('#place-actions [data-seat="1"]');assert.equal(occupied.disabled,true);assert.match(occupied.textContent,/이용 중/);
+ window.reserveRide=async(kind,benchId,seat)=>{calls.push({kind,benchId,seat});return{kind,cabin:0,seat:2,startedAt:Date.now()};};
+ e.show('interior-dining');assert.equal(document.querySelectorAll('#place-actions button').length,1);
  window.dispatchEvent(new window.KeyboardEvent('keydown',{code:'KeyF'}));assert.equal(calls.length,0);
- document.querySelector('#place-actions [data-seat="2"]').click();await new Promise(resolve=>setTimeout(resolve,0));
- assert.deepEqual(calls,[{kind:'dining',benchId:undefined,seat:2}]);assert.equal(e.active,true);const pose=e.update(0,{});assert.equal(pose.x,414);assert.equal(pose.z,2.1);
+ document.querySelector('#place-actions button').click();await new Promise(resolve=>setTimeout(resolve,0));
+ assert.deepEqual(calls,[{kind:'dining',benchId:undefined,seat:undefined}]);assert.equal(e.active,true);assert.equal(e.update(0,{}).x,414);
 });
 
-test('a raced seat reports another-place selection and never silently sits elsewhere',async t=>{
- const {e}=setup(t),calls=[];window.labGuestId='self';window.labRideSeats=[];
- window.reserveRide=async(kind,benchId,seat)=>{calls.push(seat);if(seat===0){const error=Error('선택한 자리에 다른 손님이 앉아 있어요. 다른 자리를 선택해 주세요.');error.code='seat_occupied';throw error;}return{kind,cabin:0,seat,startedAt:Date.now()};};
- e.show('interior-dining');document.querySelector('#place-actions [data-seat="0"]').click();await new Promise(resolve=>setTimeout(resolve,0));
- assert.deepEqual(calls,[0]);assert.equal(e.active,false);assert.equal(document.querySelector('#place-card').hidden,false);assert.match(document.querySelector('#place-description').textContent,/다른 자리/);assert.equal(document.querySelector('#place-actions [data-seat="0"]').disabled,true);
- document.querySelector('#place-actions [data-seat="2"]').click();await new Promise(resolve=>setTimeout(resolve,0));assert.deepEqual(calls,[0,2]);assert.equal(e.update(0,{}).x,414);
+test('a full facility reports the failure, permits retry and disables duplicate pending claims',async t=>{
+ const {e}=setup(t);let calls=0;window.labGuestId='self';window.labRideSeats=[];
+ window.reserveRide=async kind=>{calls++;if(calls===1){const error=Error('빈자리가 없어요.');error.code='seat_occupied';throw error;}return{kind,cabin:0,seat:2,startedAt:Date.now()};};
+ e.show('interior-dining');document.querySelector('#place-actions button').click();document.querySelector('#place-actions button').click();await new Promise(resolve=>setTimeout(resolve,0));
+ assert.equal(calls,1);assert.equal(e.active,false);assert.match(document.querySelector('#place-description').textContent,/빈자리/);
+ document.querySelector('#place-actions button').click();await new Promise(resolve=>setTimeout(resolve,0));assert.equal(calls,2);assert.equal(e.active,true);
 });
 
 test('seat hit planes distinguish chairs and reject other rooms, distant visitors and parallel rays',()=>{

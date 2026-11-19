@@ -83,3 +83,10 @@ test('interaction targets are pickable without writing visible trigger rectangle
   assert.ok(ray.intersectObject(target,false).length>0,'hidden material preserves click detection');
  }
 });
+
+test('real canopy branches provide upper-tree pick surfaces separately from invisible facility triggers',()=>{
+ assert.ok(world.winter.treeTargets.length>0);
+ for(const target of world.winter.treeTargets){assert.equal(target.userData.action,'tree');assert.equal(target.material.visible,true);assert.ok(!world.winter.interactive.includes(target));}
+ const ray=new T.Raycaster(new T.Vector3(-40,23,80),new T.Vector3(1,0,0));
+ const hit=ray.intersectObjects(world.winter.treeTargets,false)[0];assert.ok(hit&&hit.point.y>20);
+});

@@ -1,0 +1,53 @@
+{
+  "at": "2026-11-19T09:51:07.768Z",
+  "checks": [
+    {
+      "name": "health is public and exposes no credentials",
+      "ok": true
+    },
+    {
+      "name": "unsigned server RPC is denied",
+      "ok": true
+    },
+    {
+      "name": "forged guest ticket is denied",
+      "ok": true
+    },
+    {
+      "name": "unapproved browser origin is denied",
+      "ok": true
+    },
+    {
+      "name": "preflight Worker has no live users",
+      "ok": true
+    },
+    {
+      "name": "ten authenticated sockets share one world",
+      "ok": true
+    },
+    {
+      "name": "movement reaches another client",
+      "ok": true
+    },
+    {
+      "name": "server-authorized chat and appearance updates propagate",
+      "ok": true
+    },
+    {
+      "name": "server revocation closes only the selected session",
+      "ok": true
+    },
+    {
+      "name": "all preflight sockets are cleaned up",
+      "ok": true
+    }
+  ],
+  "productionWorldConnected": false,
+  "remainingConnections": 0,
+  "handlerP95Ms": 0,
+  "network": {
+    "samples": 83,
+    "p50": 99.55404099999942,
+    "p95": 101.21704200000022
+  }
+}

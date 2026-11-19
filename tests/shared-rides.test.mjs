@@ -29,5 +29,14 @@ test('exact bench choice is atomic, retryable and never changes to the other sea
  const responses=await Promise.all(['exact-a','exact-b','exact-c'].map(id=>claim(id,1)));assert.equal(responses.filter(r=>r.status===200).length,1);assert.equal(responses.filter(r=>r.status===409).length,2);
  const [winner]=await listRideSeats(DB,'exact-bench-room',now);assert.equal(winner.seat,1);assert.equal((await claim(winner.id,1)).status,200);assert.equal((await claim(winner.id,0)).status,409);
  const next=await claim('exact-other',0);assert.equal(next.status,200);assert.equal((await next.json()).reservation.seat,0);
- for(const seat of [undefined,null,-1,2,'0'])assert.equal((await claim('invalid-bench-'+seat,seat)).status,400);
+ for(const seat of [null,-1,2,'0'])assert.equal((await claim('invalid-bench-'+seat,seat)).status,400);
+});
+
+test('automatic seats fill free places concurrently, retry idempotently and preserve the other guest',async()=>{
+ const bench=benches.find(b=>b.id==='tree-bench-0')||benches[0],spot=benchAccess(bench),self=id=>({id,room:'auto-bench-room',region:bench.region,...spot});
+ const claim=id=>rideAPI(new Request('https://winter.test/api/ride',{method:'POST',body:JSON.stringify({kind:'bench',benchId:bench.id})}),DB,self(id),now);
+ const responses=await Promise.all(['auto-a','auto-b','auto-c'].map(claim));assert.equal(responses.filter(r=>r.status===200).length,2);assert.equal(responses.filter(r=>r.status===409).length,1);
+ const rows=await listRideSeats(DB,'auto-bench-room',now);assert.equal(new Set(rows.map(s=>s.seat)).size,2);for(const row of rows){const retry=await claim(row.id);assert.equal((await retry.json()).reservation.seat,row.seat);}
+ await rideAPI(new Request('https://winter.test/api/ride',{method:'DELETE'}),DB,self(rows[0].id),now);assert.equal((await claim('auto-new')).status,200);
+ assert.ok((await listRideSeats(DB,'auto-bench-room',now)).some(s=>s.id===rows[1].id));
 });

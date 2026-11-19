@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as T from '../dist/vendor/three.module.js';
-import {cameraDefaults,createCameraPolicy,smoothCameraAngle,followCameraHeight,cameraSubjectFocus,cameraOrbitPosition,constrainCameraFocusToRoom,constrainCameraToRoom,constrainCameraToTerrain} from '../dist/camera-policy.js';
+import {cameraDefaults,createCameraPolicy,smoothCameraAngle,followCameraHeight,cameraSubjectFocus,cameraOrbitPosition,cameraOrbitFocus,constrainCameraFocusToRoom,constrainCameraToRoom,constrainCameraToTerrain} from '../dist/camera-policy.js';
 import {activityCameraView} from '../dist/activity-camera.js';
 import {interiorRooms} from '../dist/interior-layout.js';
 import {canStandAt} from '../dist/movement.js';
@@ -114,4 +114,13 @@ test('world-up orbit keeps horizon roll zero and explicit reset restores one fix
  cameraOrbitPosition(focus,policy.view(),camera.position);camera.up.set(0,1,0);camera.lookAt(focus);camera.updateMatrixWorld();
  const right=new T.Vector3().setFromMatrixColumn(camera.matrixWorld,0);near(right.y,0);
  policy.reset();assert.deepEqual(viewFields(policy.view()),viewFields(cameraDefaults));policy.setContext('ryokan');policy.zoom(7);policy.reset();near(policy.view().distance,15);near(policy.view().pitch,.65);near(policy.view().fov,50);
+});
+
+test('upward orbit keeps the eye above the ground and reaches the fireworks sky',()=>{
+ const policy=createCameraPolicy();policy.orbit(0,-1000);const view=policy.view(),subject={x:0,y:1.31,z:0},aim=cameraOrbitFocus(subject,view),eye=cameraOrbitPosition(aim,view);
+ near(view.pitch,-.95);near(eye.y,subject.y);assert.ok(aim.y>eye.y+10);const before={...eye};constrainCameraToTerrain(aim,eye,()=>0);assert.deepEqual(eye,before);
+});
+test('whole-canopy framing is temporary, with direct user control taking priority',()=>{
+ const policy=createCameraPolicy(),before={...policy.view()};policy.beginTree({yaw:1,pitch:.1,distance:48});near(policy.view().distance,48);policy.endTree();assert.deepEqual({...policy.view()},before);
+ policy.beginTree({yaw:1,pitch:.1,distance:48});policy.orbit(20,-30);const manual={...policy.view()};policy.endTree();assert.deepEqual({...policy.view()},manual);
 });

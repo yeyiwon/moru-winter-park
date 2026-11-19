@@ -124,8 +124,8 @@ test('competing requests claim only the selected dining chair and never spill in
  const different=await claim(seats[0].id,{seat:0});assert.equal(different.status,409);assert.equal(different.data.code,'already_seated');
  const other=await claim('chooses-left',{seat:0});assert.equal(other.status,200);assert.equal(other.data.reservation.seat,0);
  for(const seat of [-1,3,1.5,'1',null])assert.equal((await claim('invalid-'+seat,{seat})).status,400);
- const missing=await rideAPI(new Request('https://winter.test/api/ride',{method:'POST',body:JSON.stringify({kind:'dining'})}),DB,{id:'missing',room:'dining-room',region:'ryokan',...diningEntrance},base);assert.equal(missing.status,400);
- assert.deepEqual((await listRideSeats(DB,'dining-room',base)).map(r=>r.seat).sort(),[0,2]);
+ const missing=await rideAPI(new Request('https://winter.test/api/ride',{method:'POST',body:JSON.stringify({kind:'dining'})}),DB,{id:'missing',room:'dining-room',region:'ryokan',...diningEntrance},base);assert.equal(missing.status,200);assert.equal((await missing.json()).reservation.seat,1);
+ assert.deepEqual((await listRideSeats(DB,'dining-room',base)).map(r=>r.seat).sort(),[0,1,2]);
 });
 
 test('dining requires the ryokan counter and cannot replace an existing facility reservation',async t=>{

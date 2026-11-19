@@ -1,5 +1,7 @@
 name: Verify retained world and operations
 on:
+  push:
+    branches: [main, codex/official-ui-v46]
   pull_request:
   workflow_dispatch:
 permissions:

@@ -1,12 +1,12 @@
 import fs from 'node:fs/promises';import {pathToFileURL} from 'node:url';
 const {chromium}=await import(pathToFileURL(process.env.PLAYWRIGHT_PATH||'/tmp/winter-browser-qa/node_modules/playwright-core/index.mjs'));
-const origin='http://127.0.0.1:4189',owner='http://127.0.0.1:4190',out='qa/operations-v45';await fs.mkdir(out,{recursive:true});
+const origin='http://127.0.0.1:4189',owner='http://127.0.0.1:4190',out=process.env.QA_OUTPUT||'qa/operations-v46';await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true,args:['--disable-background-timer-throttling','--disable-renderer-backgrounding']});
 const report={at:new Date().toISOString(),browser:browser.version(),physicalMobile:false,errors:[],consoleErrors:[],httpErrors:[],expectedNetworkFaults:[],checks:[]};
 const check=(name,ok,details)=>{report.checks.push({name,ok,...(details?{details}:{})});if(!ok)throw Error(name);};
 const offlinePages=new WeakSet();
 async function pageFor(options={}){const context=await browser.newContext({viewport:{width:1280,height:800},serviceWorkers:'block',...options}),page=await context.newPage();page.on('pageerror',error=>report.errors.push(error.message));page.on('console',message=>{if(message.type()!=='error')return;const error={text:message.text(),url:message.location().url};if(offlinePages.has(page)&&/ERR_INTERNET_DISCONNECTED/.test(error.text))report.expectedNetworkFaults.push(error);else report.consoleErrors.push(error);});page.on('response',response=>{if(response.status()>=400)report.httpErrors.push({path:new URL(response.url()).pathname,status:response.status()});});return page;}
-async function enter(page,url){await page.goto(url,{waitUntil:'domcontentloaded',timeout:120000});await page.waitForFunction(()=>window.labSocialJoined&&document.body.classList.contains('world-ready'),null,{timeout:120000});}
+async function enter(page,url){await page.goto(url,{waitUntil:'domcontentloaded',timeout:120000});await page.waitForFunction(()=>window.labSocialJoined&&document.body.classList.contains('world-ready'),null,{timeout:120000});await page.locator('#world-loading').waitFor({state:'hidden',timeout:30000});}
 try{
  const a=await pageFor(),b=await pageFor({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true});
  await enter(a,origin);await enter(b,origin);await a.waitForFunction(()=>document.querySelectorAll('#visitor-labels > .visitor-label').length>=1,null,{timeout:20000});
@@ -14,13 +14,18 @@ try{
  await a.keyboard.down('KeyD');await a.waitForTimeout(1300);await a.keyboard.up('KeyD');
  const pos=await a.evaluate(()=>({...labPlayerState}));await b.waitForTimeout(1000);
  check('walking updates through WebSocket',Math.abs(pos.x)>.1,pos);
+ // CDP touch dispatch does not focus a background page as mouse/keyboard do.
+ // A real phone remains visible; background tabs intentionally release input.
+ await b.bringToFront();
  const joy=await b.locator('#joystick').boundingBox(),touch=await b.context().newCDPSession(b);
  const center={x:joy.x+joy.width/2,y:joy.y+joy.height/2,id:1};
  await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[center]});
  await touch.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{...center,x:center.x+95,y:center.y-70}]});await b.waitForTimeout(700);
- check('mobile joystick beyond rim keeps full walking input',await b.evaluate(()=>labPlayerState.speed>4&&labPlayerState.speed<4.5));
+ const touchState=await b.evaluate(()=>({pose:labPlayerState,hidden:document.hidden,body:document.body.className,active:document.querySelector('#joystick').classList.contains('active'),knob:document.querySelector('.joystick-stick').style.transform}));
+ check('mobile joystick beyond rim keeps full walking input',touchState.pose.speed>4&&touchState.pose.speed<4.5,touchState);
  await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await b.waitForTimeout(500);
  check('mobile touch release stops movement',await b.evaluate(()=>labPlayerState.speed<.1));
+ await a.bringToFront();
  for(const [place,mode]of [['ferris','ferris'],['ski','lift']]){
   await a.evaluate(id=>travelToPlace(id),place);await a.locator('#place-actions button').first().click();
   await a.waitForFunction(m=>labPlayerState.mode===m,mode,{timeout:15000});await a.waitForTimeout(2500);

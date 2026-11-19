@@ -4,7 +4,7 @@ const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 const angleDelta=(to,from)=>Math.atan2(Math.sin(to-from),Math.cos(to-from));
 
 export function createCameraPolicy(){
- let requested={yaw:cameraDefaults.yaw,pitch:cameraDefaults.pitch,distance:cameraDefaults.distance},manualYaw=false,context=null,outside=null,mode='',skiAuto=false,treeOffset=0,revision=0;
+ let requested={yaw:cameraDefaults.yaw,pitch:cameraDefaults.pitch,distance:cameraDefaults.distance},manualYaw=false,context=null,outside=null,mode='',skiAuto=false,treeOffset=0,treeView=null,revision=0;
  const indoorViews=new Map(),resolved={...cameraDefaults,automaticYaw:false};
  const copy=()=>({view:{...requested},manualYaw});
  function restore(saved){requested={...saved.view};manualYaw=saved.manualYaw;}
@@ -18,28 +18,31 @@ export function createCameraPolicy(){
  return {
   orbit(dx,dy,renderedYaw=requested.yaw){
    if(!Number.isFinite(dx)||!Number.isFinite(dy))return;
+   if(treeView){requested={...requested,...treeView};treeView=null;treeOffset=0;}
    if(dx){if(skiAuto)requested.yaw=renderedYaw;manualYaw=true;skiAuto=false;requested.yaw-=dx*.004;}
-   requested.pitch=clamp(requested.pitch+dy*.003,.08,1.08);revision++;
+   requested.pitch=clamp(requested.pitch+dy*.003,-.95,1.08);revision++;
   },
   zoom(amount,renderedDistance){
    if(!Number.isFinite(amount))return;
+   if(treeView){requested={...requested,...treeView};treeView=null;treeOffset=0;}
    if(treeOffset){requested.distance=Number.isFinite(renderedDistance)?renderedDistance:requested.distance+treeOffset;treeOffset=0;}
-   requested.distance=clamp(requested.distance+amount,context?5.5:8,context?24:48);revision++;
+   requested.distance=clamp(requested.distance+amount,context?5.5:8,context?24:64);revision++;
   },
-  reset(){requested={yaw:context?cameraDefaults.interiorYaw:cameraDefaults.yaw,pitch:context?cameraDefaults.interiorPitch:cameraDefaults.pitch,distance:context?cameraDefaults.interiorDistance:cameraDefaults.distance};manualYaw=false;skiAuto=mode==='ski';treeOffset=0;revision++;},
+  reset(){requested={yaw:context?cameraDefaults.interiorYaw:cameraDefaults.yaw,pitch:context?cameraDefaults.interiorPitch:cameraDefaults.pitch,distance:context?cameraDefaults.interiorDistance:cameraDefaults.distance};manualYaw=false;skiAuto=mode==='ski';treeOffset=0;treeView=null;revision++;},
   setContext(next){
    next=next||null;if(next===context)return;
    if(context)indoorViews.set(context,copy());else outside=copy();
    if(next){const saved=indoorViews.get(next);if(saved)restore(saved);else{requested={yaw:cameraDefaults.interiorYaw,pitch:cameraDefaults.interiorPitch,distance:cameraDefaults.interiorDistance};manualYaw=false;}}
    else if(outside){restore(outside);outside=null;}
-   context=next;mode='';skiAuto=false;treeOffset=0;
+   context=next;mode='';skiAuto=false;treeOffset=0;treeView=null;
   },
   setMode,
-  beginTree(){if(!context)treeOffset=Math.min(3,requested.distance*.16);},
-  endTree(){treeOffset=0;},
+  beginTree(framing){if(!context){if(framing)treeView={yaw:framing.yaw,pitch:framing.pitch,distance:clamp(framing.distance,8,64)};else treeOffset=Math.min(3,requested.distance*.16);}},
+  endTree(){treeOffset=0;treeView=null;},
   view({mode:next=mode,heading=0,renderedYaw=requested.yaw}={}){
    setMode(next,renderedYaw);
    Object.assign(resolved,requested,{distance:requested.distance+treeOffset,fov:cameraDefaults.fov,automaticYaw:mode==='ski'&&skiAuto});
+   if(treeView)Object.assign(resolved,treeView);
    if(resolved.automaticYaw&&Number.isFinite(heading))resolved.yaw=heading+Math.PI;
    return resolved;
   },
@@ -71,6 +74,10 @@ export function cameraSubjectFocus(position,{groundY=position.y,mode='',view=nul
  // A look-ahead focus can put the camera in front of the skier when terrain
  // retracts the viewing ray. Keep the rider centred and use yaw for direction.
  return out;
+}
+
+export function cameraOrbitFocus(subject,view,out={}){
+ out.x=subject.x;out.z=subject.z;out.y=subject.y+Math.max(0,-Math.sin(view.pitch)*view.distance);return out;
 }
 
 export function cameraOrbitPosition(focus,view,out={}){

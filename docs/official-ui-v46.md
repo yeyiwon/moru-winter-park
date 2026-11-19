@@ -1,0 +1,48 @@
+# v46 공식 주소·모바일 조작 안정화 — 2026-11-19
+
+현재 작업 상태: 로컬 회귀 및 별도 Cloudflare 서버 사전 검증 완료. 운영 전환 결과는 별도 배포 기록으로 구분한다.
+
+- 공식 사용자 주소는 `https://moru-winter-park.vercel.app/`, 관리자 진입은 `/admin`. Sites는 기존 DB·API·소유자 인증을 유지한다. 실제 소유자 인증 왕복을 확인하기 전까지 기존 Sites 로그인 경로를 삭제하거나 강제 리다이렉트하지 않는다.
+- 사용자가 새 고정비를 거절하여 Render 서버는 만들지 않는다. 이후 사용자가 새 Cloudflare 계정을 준비했다. 무료 플랜 연결·검증·전환 전까지 기존 HTTP 연결과 **동시 접속 12명**을 유지한다. 저장소의 별도 실시간 Worker 구현과 로컬 100명 검증을 운영 수용량으로 표시하지 않는다.
+- 모바일 조이스틱의 원은 고정하고 손잡이만 움직인다. 전체 반경·원 밖 입력·대각선 정규화·달리기/카메라 조작은 유지한다.
+- 커마의 복실함 조절만 제거한다. 몸통·털·꼬리의 외형/저장 데이터는 유지한다. 모바일 미리보기 확대, 닉네임 입력 영역, 낮은 대비 스크롤바, 채팅 44px 터치 영역을 정리한다.
+- 트리/벤치 안내는 근접 우선순위와 이탈 여유를 적용한다. 좌석은 별도 선택 화면 없이 서버가 빈 좌석을 원자적으로 배정한다.
+- 트리 전체와 상단이 보이는 임시 시야를 적용하고 닫을 때 이전 시야로 복귀한다. 직접 조작은 자동 시야보다 우선한다. 수동 시야는 하늘을 볼 수 있다.
+- 기존 트리 가지의 클릭 대상 누락을 복구했다. 소원 목록은 실제 장식 Geometry와 기존 월드 renderer로 한 프레임에 하나씩 썸네일을 만들고 최대 64개를 캐시한다. 추가 WebGL renderer는 없다.
+- 30초 초기화 지연 안내 후 실제 준비가 완료돼도 입력을 가리던 로딩 오류를 복구했다. 실제 초기화 예외는 재시도를 유지한다.
+- 폐기된 햄버거 메뉴를 참조하여 채팅이 열리지 않던 오류를 제거했다. 채팅을 여는 동안 주변 조작 아이콘을 숨기고 닫힘 애니메이션 후 복구한다.
+- 배포 자산을 하나의 검증된 캐시 묶음으로 설치한다. 살아 있는 탭 중간에 다른 릴리스의 모듈을 섞지 않는다. `/admin/`에서도 루트 기준 자산을 불러온다.
+
+## 데이터와 검증 원칙
+
+운영 D1의 19개 테이블·211행을 비공개 파일로 내보내고, 별도 SQLite에서 0000–0016 구조로 복원한 뒤 0017 적용 및 행 수 보존을 확인했다. 페이지 단위 export이며 원자적 시점 복구 스냅샷은 아니다. 운영 데이터와 비밀 값은 Git에 포함하지 않는다.
+
+PC/모바일 화면 검사는 Mac Chrome과 터치 화면 에뮬레이션이다. 물리 Windows·iPhone·Android, 실제 GPU 메모리, 운영 장시간 최대 접속 성능은 **UNKNOWN**이다. 로컬 owner fixture는 실제 소유자의 로그인 성공을 입증하지 않는다.
+
+[브라우저 검사](../qa/operations-v46/browser.json) · [추가 UI 검사](../qa/operations-v46/ui.json)
+
+## 최종 사전 검증
+
+- 전체 자동 테스트 **487/487 PASS**. 이후 상태 확인 경로·캐시 보강의 집중 검사 **8/8 PASS**.
+- source 검사, Worker·Vercel·realtime build 및 기존 용량 예산 PASS. 독립 TypeScript/lint 스크립트는 없으며 기존 `check`를 사용했다.
+- PC/터치 브라우저 운영 검사 **17/17**, 추가 UI 검사 **15/15**, 실제 Service Worker 오프라인 검사 **4/4** PASS. 콘솔/WebGL 오류 0.
+- Sites Worker에 포함된 자산과 Vercel 자산 **233/233 바이트 일치**. README 같은 제작 문서가 캐시 ID를 달리 만들던 문제와 브랜드 빌드가 `/admin/`의 `<base href="/">`를 지우던 문제를 해결했다.
+- Cloudflare 사전 검사 **10/10 PASS**: 10개 실제 WSS 연결, 잘못된 Origin/서명 차단, 이동·서버 승인 채팅/외형 전달, 단일 세션 철회, 연결 0개로 정리. 네트워크 왕복 83표본 p50 99.55ms / p95 101.22ms. 아직 실제 운영 이용자의 장시간 수용량 측정은 아니다.
+- 무료 SQLite Durable Objects로 `winterlight-realtime`을 준비했다. 유료 플랜 전환·Render 서버 생성 없음. 공식 방문 주소는 Vercel 한 곳이며 Worker는 내부 통신 주소다. 무료 일일 한도 소진 시 연결 실패가 발생할 수 있으므로 무제한 서비스로 안내하지 않는다. [Cloudflare 무료 한도](https://developers.cloudflare.com/durable-objects/platform/pricing/).
+
+## 동일 조건 렌더링 비교
+
+Mac M2 / Chrome, medium / 고정 DPR 1, 구간별 6초. 모바일은 390×844 터치 에뮬레이션이며 실제 휴대폰 성능이 아니다. 기준 소스 `88762f5`. 새로운 시각 효과·지형 변경 없음.
+
+| 구간 | 평균 FPS 전 → 후 | p95 프레임(ms) 전 → 후 | Draw Calls 전 → 후 | Triangles 전 → 후 |
+|---|---:|---:|---:|---:|
+| PC 광장 | 59.67 → 60.00 | 16.8 → 16.8 | 536 → 535 | 3.55M → 3.54M |
+| PC 트리 | 60.00 → 60.00 | 16.8 → 16.8 | 586 → 587 | 4.36M → 4.36M |
+| 모바일 화면 광장 | 60.00 → 60.00 | 16.8 → 16.7 | 298 → 296 | 2.24M → 2.22M |
+| 모바일 화면 트리 | 60.00 → 60.00 | 16.8 → 16.7 | 343 → 343 | 2.99M → 2.99M |
+
+PC 첫 수정 후 측정은 빌드와 겹쳐 54.50 FPS였으며 원본을 그대로 보관했다. 위 표는 다른 무거운 작업을 멈춘 재측정이다. 한 번씩의 짧은 샘플이므로 일반적인 FPS 향상을 주장하지 않는다. 준비 시간 PC 9.20→4.52초, 모바일 화면 5.03→7.09초로 변동하며 캐시·실행 편차가 있어 로딩 개선율은 UNKNOWN. 장식 미리보기 재사용 render target으로 texture 수가 1개 늘고 geometry 수는 동일하다. GPU 실제 메모리/물리 기기/장시간 다인 성능 UNKNOWN.
+
+[자산 비교](../qa/operations-v46/artifact-parity.json) · [캐시 검사](../qa/operations-v46/cache-browser.json) · [Cloudflare 사전 검사](../qa/operations-v46/cloudflare-preflight.json) · [PC 재측정](../qa/operations-v46/profile-after-desktop-repeat.json)
+
+[모바일 트리](../qa/operations-v46/mobile-tree.png) · [커마](../qa/operations-v46/mobile-customization.png) · [채팅](../qa/operations-v46/mobile-chat.png) · [변경 전 광장](../qa/operations-v46/profile-before-desktop-plaza.png) · [변경 후 광장](../qa/operations-v46/profile-after-desktop-repeat-plaza.png)

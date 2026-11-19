@@ -45,8 +45,8 @@
 #studio #preview-name{min-width:0;max-width:190px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
 #studio #pane-fluff #profile-form{display:block}
 #studio #pane-fluff #profile-form[hidden],#studio #profile-edit[hidden]{display:none}
-#studio .wardrobe-profile .profile-entry{height:44px;min-height:44px;grid-template-columns:minmax(0,1fr) 44px 44px;gap:2px;padding:0;border:0;border-bottom:1px solid var(--ui-edge);border-radius:0;background:transparent;box-shadow:none}
-#studio .wardrobe-profile .profile-entry:focus-within{border-color:var(--ui-selected-edge);background:transparent}
+#studio .wardrobe-profile .profile-entry{height:44px;min-height:44px;grid-template-columns:minmax(0,1fr) 44px 44px;gap:2px;padding:0 4px 0 10px;border:1px solid var(--ui-edge);border-radius:14px;background:var(--ui-field);box-shadow:inset 0 1px 0 #ffffff12}
+#studio .wardrobe-profile .profile-entry:focus-within{border-color:var(--ui-selected-edge);background:var(--ui-field)}
 #studio .wardrobe-profile .profile-entry input{font-size:16px;height:44px;min-height:44px;padding:0 4px;color:var(--ui-ink)}
 #studio .wardrobe-profile .profile-entry button{width:44px;min-width:44px;height:44px;min-height:44px;padding:0;border-radius:10px}
 #studio .wardrobe-profile #profile-cancel{color:var(--ui-muted)}
@@ -68,7 +68,7 @@
 #studio #wardrobe-reset{flex:.8;background:transparent;border-color:transparent}
 #studio #pane-fluff button:disabled{opacity:.45;cursor:default}
 @media(max-width:650px){
- #studio #pane-fluff:not([hidden]){grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(130px,min(25dvh,200px)) minmax(0,1fr) auto;gap:10px}
+ #studio #pane-fluff:not([hidden]){grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(190px,min(34dvh,280px)) minmax(0,1fr) auto;gap:10px}
  #studio #pane-fluff .fluff-stage{grid-column:1;grid-row:1;display:flex;padding:0}
  #studio #pane-fluff .fluff-controls{grid-column:1;grid-row:2;padding:0}
  #studio .wardrobe-actions{grid-row:3;flex-wrap:wrap;gap:4px;padding-top:8px}

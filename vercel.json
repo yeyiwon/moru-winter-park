@@ -10,6 +10,14 @@
     {
       "source": "/api/:path*",
       "destination": "/api/proxy?route=:path*"
+    },
+    {
+      "source": "/admin",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/admin/",
+      "destination": "/index.html"
     }
   ],
   "redirects": [

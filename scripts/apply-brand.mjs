@@ -11,6 +11,7 @@ const revision = BRAND.revision;
 if (!/^[a-z0-9-]+$/.test(revision)) throw Error('Use a stable, URL-safe brand asset revision.');
 const socialImage = new URL(BRAND.assets.socialImage, url).href + '?v=' + revision;
 const metadata = `<meta charset="UTF-8">
+<base href="/">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <!-- brand:metadata:start -->
 <meta name="theme-color" content="${escape(BRAND.colors.white)}">

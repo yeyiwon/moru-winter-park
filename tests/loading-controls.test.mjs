@@ -16,3 +16,14 @@ test('emote menu cancels prior input and closes on selection, outside touch or E
  const dom=new JSDOM('<body><canvas></canvas></body>',{runScripts:'outside-only'}),w=dom.window,d=w.document;let resets=0,emotion='';w.addEventListener('lab:pause',()=>resets++);w.addEventListener('lab:emote',e=>emotion=e.detail);w.eval(fs.readFileSync(new URL('../dist/emotes.js',import.meta.url),'utf8'));
  const button=d.querySelector('#emote-toggle'),panel=d.querySelector('#emote-panel');button.click();assert.equal(panel.hidden,false);assert.equal(d.body.classList.contains('emote-open'),true);assert.equal(resets,1);panel.querySelector('[aria-label=하트]').click();assert.equal(emotion,'heart');assert.equal(panel.hidden,true);assert.equal(d.body.classList.contains('emote-open'),false);button.click();d.querySelector('canvas').dispatchEvent(new w.Event('pointerdown',{bubbles:true}));assert.equal(panel.hidden,true);button.click();w.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape'}));assert.equal(panel.hidden,true);dom.window.close();
 });
+test('slow preparation recovers after its deadline but a genuine startup error stays visible',()=>{
+ for(const recoverable of [true,false]){
+  const dom=new JSDOM(html,{runScripts:'outside-only',pretendToBeVisual:true}),w=dom.window;w.matchMedia=()=>({matches:false});
+  for(const file of ['luminous-loading.js','loading-backdrop.js','loading-state.js'])w.eval(fs.readFileSync(new URL('../dist/'+file,import.meta.url),'utf8').replaceAll('export ','').replace(/^import .*;\n/gm,''));
+  w.labLoading.complete('connection');w.labLoading.error('late preparation',{canRecover:recoverable});
+  for(const stage of ['world','interiors','frame'])w.labLoading.complete(stage);
+  const loader=w.document.querySelector('#world-loading');assert.equal(loader.classList.contains('loaded'),recoverable);
+  if(recoverable){loader.dispatchEvent(new w.Event('transitionend'));assert.equal(loader.hidden,true);}else assert.equal(loader.hidden,false);
+  dom.window.close();
+ }
+});
