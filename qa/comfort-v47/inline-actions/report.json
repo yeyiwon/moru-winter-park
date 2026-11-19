@@ -1,0 +1,102 @@
+{
+  "checks": [
+    {
+      "name": "desktop #profile-save enabled",
+      "ok": true,
+      "details": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "shadow": "none",
+        "outline": "0px",
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "name": "desktop #profile-save hover",
+      "ok": true,
+      "details": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "shadow": "none",
+        "outline": "0px",
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "name": "desktop #chat-form [type=submit] enabled",
+      "ok": true,
+      "details": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "shadow": "none",
+        "outline": "0px",
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "name": "desktop #chat-form [type=submit] hover",
+      "ok": true,
+      "details": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "shadow": "none",
+        "outline": "0px",
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "name": "mobile #profile-save enabled",
+      "ok": true,
+      "details": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "shadow": "none",
+        "outline": "0px",
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "name": "mobile #profile-save hover",
+      "ok": true,
+      "details": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "shadow": "none",
+        "outline": "0px",
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "name": "mobile #chat-form [type=submit] enabled",
+      "ok": true,
+      "details": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "shadow": "none",
+        "outline": "0px",
+        "width": 44,
+        "height": 44
+      }
+    },
+    {
+      "name": "mobile #chat-form [type=submit] hover",
+      "ok": true,
+      "details": {
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "0px",
+        "shadow": "none",
+        "outline": "0px",
+        "width": 44,
+        "height": 44
+      }
+    }
+  ],
+  "errors": [],
+  "physicalMobile": false
+}
