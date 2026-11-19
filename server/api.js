@@ -1,6 +1,6 @@
 import {quizGenerationAPI} from './quiz-generation.js';
 import {fireworksAPI,readFireworkShow} from './fireworks.js';
-import {benchPoseValid} from '../dist/bench-layout.js';
+import {sharedRestPoseValid} from '../dist/ride-seats.js';
 import {validateNickname} from '../dist/nickname.js';
 import {regionAPI} from './region-api.js';
 import {operationsAPI,maintainSessions,recordServerError,readWorldSettings} from './operations.js';
@@ -72,8 +72,9 @@ export async function handleAPI(request,env){
  }
  if(path==='/api/presence'&&request.method==='POST'){
   const raw=await request.text();if(raw.length>2048)return json({error:'요청이 너무 큽니다.'},413);const b=JSON.parse(raw);
-  const benchReservation=['rest','tea','sauna'].includes(b.mode)?await env.DB.prepare('SELECT kind,cabin,seat FROM ride_seats WHERE visitor=? AND expires_at>?').bind(id,now).first():null;
-  const benchOK=benchPoseValid(benchReservation,b);
+  const benchReservation=['rest','tea','sauna','dining'].includes(b.mode)?await env.DB.prepare('SELECT kind,cabin,seat FROM ride_seats WHERE visitor=? AND expires_at>?').bind(id,now).first():null;
+  const benchOK=sharedRestPoseValid(benchReservation,b);
+  if(b.mode==='dining'&&!benchOK)return json({error:'좌석 예약을 확인해 주세요.'},409);
   const restOK=b.mode==='rest'&&Object.values(restSeats).some(p=>Math.hypot(b.x-p.x,b.z-p.z)<.15&&Math.abs(b.y-p.y)<.15);
   const groundOK=canStandAt(b.x,b.z)&&b.y>=surfaceHeight(b.x,b.z)+.5&&b.y<=surfaceHeight(b.x,b.z)+3;
   if(!Number.isFinite(b.x)||!Number.isFinite(b.z)||!Number.isFinite(b.yaw)||!Number.isFinite(b.y)||!(interiorPositionValid(b.x,b.y,b.z)||groundOK||restOK||benchOK||amusementPositionValid(b.x,b.y,b.z,b.mode)||spaPositionValid(b.x,b.y,b.z,b.mode)||resortRidePosition(b.x,b.y,b.z,b.mode)))return json({error:'이동 위치를 확인해 주세요.'},400);

@@ -2,22 +2,23 @@ export const isTextInput=element=>!!element?.closest?.('input,textarea,select,[c
 export function worldInputBlocked(doc=document){
  return doc.hidden||doc.body.matches('.invite-gate,.quiz-open,.studio-open,.chat-typing,.menu-open')||isTextInput(doc.activeElement)||!!doc.querySelector('dialog[open]:not([data-nonmodal])');
 }
-// Pointer lock is optional and entered only by the explicit menu action.
-export function createMouseLook({canvas,button,status,locked=()=>false,onOrbit,doc=document,win=window}){
- const bindings=[];const listen=(target,type,fn,options)=>{target.addEventListener(type,fn,options);bindings.push([target,type,fn,options]);};
+// A click on the game starts relative mouse look; UI and Escape always release it.
+export function createMouseLook({canvas,status,locked=()=>false,onOrbit,onTap=()=>false,doc=document,win=window}){
+ const bindings=[];const fail=()=>{canvas.dataset.mouseDrag='true';status.textContent='드래그로 시점을 돌릴 수 있어요.';};const listen=(target,type,fn,options)=>{target.addEventListener(type,fn,options);bindings.push([target,type,fn,options]);};
  const exit=()=>{if(doc.pointerLockElement===canvas)doc.exitPointerLock?.();};
- const update=()=>{const active=doc.pointerLockElement===canvas;button.setAttribute('aria-pressed',String(active));doc.body.classList.toggle('mouse-look',active);};
- listen(button,'click',async()=>{
-  const menu=doc.querySelector('#park-menu');if(menu)menu.open=false;doc.body.classList.remove('menu-open');button.blur();
-  if(locked())return;
-  if(!canvas.requestPointerLock){status.textContent='이 브라우저에서는 드래그로 시점을 돌릴 수 있어요.';return;}
-  try{await canvas.requestPointerLock();status.textContent='Esc로 자유시점을 종료합니다.';}catch{status.textContent='시점 잠금을 시작하지 못했습니다. 드래그로 계속 이용할 수 있어요.';}
+ const update=()=>{const active=doc.pointerLockElement===canvas;doc.body.classList.toggle('mouse-look',active);if(active){delete canvas.dataset.mouseDrag;}if(active)status.textContent='마우스로 둘러보기 · Esc로 커서 해제';};
+ listen(canvas,'click',async e=>{
+  if(e.pointerType==='touch'||e.pointerType==='pen'||locked()||!canvas.requestPointerLock||canvas.dataset.mouseDrag)return;
+  const active=doc.pointerLockElement===canvas,r=canvas.getBoundingClientRect(),point=active?{clientX:r.left+r.width/2,clientY:r.top+r.height/2}:e;
+  if(onTap(point)||active)return;
+  canvas.focus({preventScroll:true});
+  try{await canvas.requestPointerLock();}catch{fail();}
  });
  listen(doc,'mousemove',e=>{if(doc.pointerLockElement===canvas&&!locked())onOrbit(e.movementX,e.movementY);});
- listen(doc,'pointerlockchange',update);listen(doc,'pointerlockerror',()=>{status.textContent='드래그로 시점을 돌릴 수 있어요.';update();});
+ listen(doc,'pointerlockchange',update);listen(doc,'pointerlockerror',()=>{fail();update();});
  listen(win,'keydown',e=>{if(e.code==='Escape'&&doc.pointerLockElement===canvas){e.preventDefault();e.stopImmediatePropagation();exit();}},{capture:true});
- for(const event of ['lab:pause','lab:open','blur','pagehide'])listen(win,event,exit);
- listen(doc,'visibilitychange',()=>{if(doc.hidden)exit();});
+ for(const event of ['lab:pause','lab:open','lab:tree-open','blur','pagehide'])listen(win,event,exit);
+ listen(doc,'visibilitychange',()=>{if(doc.hidden)exit();});listen(doc,'focusin',e=>{if(isTextInput(e.target))exit();});
  return{exit,dispose(){exit();for(const args of bindings)args[0].removeEventListener(...args.slice(1));}};
 }
 // Pointer ownership keeps camera drags, joystick movement and UI taps independent.
@@ -50,7 +51,7 @@ export function createTouchControls({canvas,joystick,jumpButton,brakeButton,runB
  listen(runButton,'click',e=>{own(e);if(e.detail===0&&!e.pointerType&&runId===null&&!blocked()&&mode==='walk')setRunning(!sprinting);});
  listen(brakeButton,'pointerdown',e=>{own(e);if(!['ski','skate'].includes(mode)||blocked()||brakeId!==null)return;brakeId=e.pointerId;brakeButton.setPointerCapture(brakeId);braking=true;brakeButton.classList.add('active');});
  for(const event of ['pointerup','pointercancel','lostpointercapture'])listen(brakeButton,event,e=>{if(e.pointerId===brakeId)releaseBrake();});
- listen(canvas,'pointerdown',e=>{if(locked()||document.pointerLockElement===canvas)return;e.preventDefault();document.activeElement?.blur();canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===1){tapStart={x:e.clientX,y:e.clientY};moved=false;}else{moved=true;pinch=distance();}});
+ listen(canvas,'pointerdown',e=>{if(e.pointerType==='mouse'&&canvas.requestPointerLock&&!canvas.dataset.mouseDrag)return;if(locked()||document.pointerLockElement===canvas)return;e.preventDefault();document.activeElement?.blur();canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size===1){tapStart={x:e.clientX,y:e.clientY};moved=false;}else{moved=true;pinch=distance();}});
  function distance(){const [a,b]=[...pointers.values()];return a&&b?Math.hypot(a.x-b.x,a.y-b.y):0;}
  listen(canvas,'pointermove',e=>{const previous=pointers.get(e.pointerId);if(!previous||locked()||document.pointerLockElement===canvas)return;e.preventDefault();const dx=e.clientX-previous.x,dy=e.clientY-previous.y;pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pointers.size>1){const next=distance();if(pinch>0)onZoom((pinch-next)*.07);pinch=next;moved=true;}else{if(tapStart&&Math.hypot(e.clientX-tapStart.x,e.clientY-tapStart.y)>7)moved=true;if(moved)onOrbit(dx,dy);}});
  listen(canvas,'pointerup',e=>{if(!pointers.has(e.pointerId))return;const tap=pointers.size===1&&!moved&&!locked()&&document.pointerLockElement!==canvas;pointers.delete(e.pointerId);pinch=0;if(tap)onTap(e);if(!pointers.size)tapStart=null;});

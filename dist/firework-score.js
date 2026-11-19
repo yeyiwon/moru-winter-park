@@ -1,5 +1,5 @@
 // Shared score, independent of rendering. Only id/start/seed/state travel over the network.
-export const fireworkConfig=Object.freeze({duration:74,leadMs:3000,cooldownMs:12000,auto:false,intervalMs:15*60000});
+export const fireworkConfig=Object.freeze({duration:74,leadMs:10000,cooldownMs:12000,auto:false,intervalMs:15*60000});
 export const fireworkPatterns=['chrysanthemum','peony','willow','ring','glitter'];
 export function fireworkRandom(seed){let state=seed>>>0||1;return()=>{state=(Math.imul(state,1664525)+1013904223)>>>0;return state/4294967296;};}
 export function createFireworkScore(seed=1){

@@ -1,3 +1,5 @@
+import {diningFacility,diningSeats} from '../dist/dining-seats.js';
+import {sharedRestPoseValid} from '../dist/ride-seats.js';
 import {canStandAt} from '../dist/movement.js';
 import {benches,benchAccess,benchPoseValid} from '../dist/bench-layout.js';
 import {alpineShift,resortRides,liftLayout} from '../dist/resort-layout.js';
@@ -14,11 +16,20 @@ test('authoritative ferris coordinates match both actual model sockets throughou
 test('two bench places are authoritative, room-local, renewable and released independently',async()=>{
  const bench=benches.find(b=>b.id==='park-bench-0'),spot=benchAccess(bench);
  const claim=(id,changes={})=>rideAPI(new Request('https://winter.test/api/ride',{method:'POST',body:JSON.stringify({kind:'bench',benchId:bench.id})}),DB,{id,room:'bench-room',region:'outdoors',...spot,...changes},now);
- const [a,b,c]=await Promise.all(['sit-a','sit-b','sit-c'].map(id=>claim(id)));assert.equal(a.status,200);assert.equal(b.status,200);assert.equal(c.status,409);
+ const ids=['sit-a','sit-b','sit-c'],responses=await Promise.all(ids.map(id=>claim(id))),accepted=responses.map((r,i)=>({r,id:ids[i]})).filter(v=>v.r.status===200),rejected=ids[responses.findIndex(r=>r.status===409)];assert.equal(accepted.length,2);assert.ok(rejected);const [a,b]=accepted.map(v=>v.r);
  const aa=(await a.json()).reservation,bb=(await b.json()).reservation;assert.notEqual(aa.seat,bb.seat);const pa=sharedSeatPose(aa,now),pb=sharedSeatPose(bb,now);assert.ok(Math.hypot(pa.x-pb.x,pa.z-pb.z)>1.8);assert.ok(benchPoseValid(aa,pa));assert.equal(benchPoseValid(aa,{...pa,x:pa.x+1}),false);
  assert.equal((await claim('far',{x:100,z:100})).status,400);assert.equal((await claim('wrong-room',{region:'museum'})).status,400);
- await rideAPI(new Request('https://winter.test/api/ride',{method:'DELETE'}),DB,{id:'sit-a'},now);assert.equal((await claim('sit-c')).status,200);assert.ok((await listRideSeats(DB,'bench-room',now)).some(p=>p.id==='sit-b'));
+ await rideAPI(new Request('https://winter.test/api/ride',{method:'DELETE'}),DB,{id:accepted[0].id},now);assert.equal((await claim(rejected)).status,200);assert.ok((await listRideSeats(DB,'bench-room',now)).some(p=>p.id===accepted[1].id));
 });
 test.after(()=>fs.rmSync(temp,{recursive:true,force:true}));
 
 test('every shared bench has a walkable approach outside furniture collisions',()=>{for(const b of benches){const p=benchAccess(b);assert.ok(canStandAt(p.x,p.z),b.id);}});
+
+test('omakase assigns only its three free stools atomically, preserves positions and releases',async()=>{
+ const claim=(id,changes={},time=now)=>rideAPI(new Request('https://winter.test/api/ride',{method:'POST',body:JSON.stringify({kind:'dining',benchId:diningFacility.id})}),DB,{...diningFacility,id,room:'dining-room',...changes},time);
+ const guests=['dining-a','dining-b','dining-c','dining-d'];const responses=await Promise.all(guests.map(id=>claim(id)));
+ assert.deepEqual(responses.map(r=>r.status).sort(),[200,200,200,409]);const loser=guests[responses.findIndex(r=>r.status===409)],winner=guests[responses.findIndex(r=>r.status===200)];const seats=await Promise.all(responses.filter(r=>r.status===200).map(async r=>(await r.json()).reservation));assert.equal(new Set(seats.map(s=>s.cabin)).size,3);
+ for(const seat of seats){const pose=sharedSeatPose(seat,now);assert.ok(diningSeats.some(s=>s.x===pose.x&&s.z===pose.z));assert.ok(sharedRestPoseValid(seat,pose));assert.equal(sharedRestPoseValid(seat,{...pose,x:pose.x+2}),false);assert.equal(sharedRestPoseValid(seat,{...pose,mode:'rest'}),false);}
+ assert.equal((await claim('wrong-dining',{region:'museum'})).status,400);assert.equal((await claim('far-dining',{x:400,z:10})).status,400);
+ await rideAPI(new Request('https://winter.test/api/ride',{method:'DELETE'}),DB,{id:winner},now);assert.equal((await claim(loser)).status,200);assert.equal((await claim('expired-dining',{},now+21000)).status,200);
+});

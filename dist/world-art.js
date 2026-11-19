@@ -1,3 +1,4 @@
+import {finishSteps} from './startup-work.js';
 import {buildMuseumLandmark} from './museum-world.js';
 import {pathRoutes} from './path-routes.js';
 import {postOffice} from './retreat-layout.js';
@@ -9,7 +10,8 @@ import {createAuroraLandmarks} from './aurora-landmarks.js';
 import * as THREE from './vendor/three.module.js';
 import {islands,landforms,landDistance,bridges,bridgeHalfWidth,bridgeHeight,exhibits,surfaceHeight} from './world-layout.js';
 
-export function buildArchipelago(api){
+export function buildArchipelago(api){return finishSteps(buildArchipelagoSteps(api));}
+export function* buildArchipelagoSteps(api){
   const {scene,mesh,ball,cylinder,box,rod,torus,halo,M,glowMap}=api;
   let seed=619;const rand=()=>{seed=(seed*16807)%2147483647;return(seed-1)/2147483646;};
   const gold=M('#c9ab76',.28,.72),ivory=M('#b6bac4',.62,.1),bark=M('#36454b'),green=M('#315d57'),dark=M('#283743');
@@ -17,7 +19,7 @@ export function buildArchipelago(api){
   const aurora=createAuroraLandmarks(api);
   function noiseTexture(){const c=document.createElement('canvas');c.width=c.height=128;const ctx=c.getContext('2d');ctx.fillStyle='#d4d6d7';ctx.fillRect(0,0,128,128);for(let i=0;i<8;i++){const x=(i*47)%128,y=(i*67)%128,g=ctx.createRadialGradient(x,y,0,x,y,46);g.addColorStop(0,'#9aa6ad30');g.addColorStop(1,'#9aa6ad00');ctx.fillStyle=g;ctx.fillRect(0,0,128,128);}const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2,2);return t;}
   const grain=noiseTexture();
-  buildConnectedTerrain(scene);
+  buildConnectedTerrain(scene);yield;
   // Bowed timber and warm stone share the exact walking profile used by navigation.
   const deckMaterial=M('#927657',.88,0),edgeMaterial=M('#675340',.88,0),bridgeSnow=M('#e2e9e6',1,0),bridgeStone=M('#cbbba7',.94,0),bridgeRose=M('#edb7c5',.84,0);
   const lanternGlass=new THREE.MeshStandardMaterial({color:'#fff0cb',emissive:'#ffbd74',emissiveIntensity:.6,roughness:.35,metalness:.04});
@@ -32,7 +34,7 @@ export function buildArchipelago(api){
    for(const [y,r]of [[1.49,.18],[1.73,.25],[1.91,.19]]){const ring=torus(r,.018,gold,0,y,0,g);ring.rotation.x=Math.PI/2;}
    cylinder(.09,.28,.17,edgeMaterial,0,2.02,0,g,8);cylinder(.065,.22,.09,bridgeSnow,0,2.1,0,g,8);ball(gold,0,2.17,0,.055,g);
   }
-  for(const [a,b] of bridges){const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz),ux=dx/len,uz=dz/len,start=a.r-1,end=len-b.r+1;
+  for(const [a,b] of bridges){yield;const dx=b.x-a.x,dz=b.z-a.z,len=Math.hypot(dx,dz),ux=dx/len,uz=dz/len,start=a.r-1,end=len-b.r+1;
    const at=(d,side=0)=>new THREE.Vector3(a.x+ux*d+uz*side,bridgeHeight(a.x+ux*d,a.z+uz*d),a.z+uz*d-ux*side),yaw=Math.atan2(ux,uz),span=end-start;
    for(let d=start;d<end;d+=.35){const p=at(d);planks.push({p,yaw,tilt:Math.cos((d-start)/span*Math.PI)*Math.min(.7,span*.025)*Math.PI/span});}
    const count=Math.max(2,Math.ceil(span/1.75));
@@ -87,16 +89,16 @@ export function buildArchipelago(api){
     for(let i=0;i<5;i++){const a=i*2.4+rand()*.5,lobe=mesh(canopyGeo,M(color,.96,0),dx+Math.cos(a)*height*.17*scale,height*dy+(rand()-.4)*height*.18,dz+Math.sin(a)*height*.16*scale,g);lobe.scale.set(height*.16*scale,height*.14*scale,height*.16*scale);}}
     return g;
   }
-  const museum=buildMuseumLandmark(scene);
+  yield;const museum=buildMuseumLandmark(scene);yield;
   const strings=[];
   // The old clock, gear wheels and decorative boats are intentionally removed.
   // Designed promenades and planted borders replace random grass and pebble rings.
   const soil=M('#2a3938',1),bedStone=M('#606771',.8);
   const promenade=createSnowPaths({root:scene,stone:[M('#a3adae',1,0),M('#adb6b4',1,0),M('#a7afac',1,0)],snow:bridgeSnow,heightAt:surfaceHeight,contains:(x,z)=>landforms.some(form=>landDistance(x,z,form)<-.25),deferBuild:true});
   // Keep the original blurred snow-path material; only connect its authored routes.
-  for(const route of pathRoutes)promenade(route.points,route.width);
+  for(const route of pathRoutes){promenade(route.points,route.width);yield;}
 
-  promenade.flush();
+  yield* promenade.flushSteps();
   function planter(parent,x,z,rx,rz,color){const base=cylinder(1,1.03,.19,bedStone,x,.1,z,parent,40);base.scale.set(rx,1,rz);const inside=cylinder(.91,.91,.035,soil,x,.21,z,parent,40);inside.scale.set(rx,1,rz);const bloom=M(color,.92,0),foliage=M('#4b6d64',.98,0);for(const [dx,dz,scale] of [[-.38,.08,.48],[.16,-.24,.6],[.45,.26,.35]]){const bush=mesh(canopyGeo,foliage,x+dx*rx,.37,z+dz*rz,parent);bush.scale.set(rx*scale,.26,rz*scale);}for(const [dx,dz,h] of [[-.43,-.15,.65],[-.12,.34,.61],[.23,-.39,.71],[.54,.12,.62],[.02,-.01,.78]]){const fx=x+dx*rx,fz=z+dz*rz;rod([fx,.22,fz],[fx,h,fz],.014,foliage,parent);for(let j=0;j<5;j++){const a=j*Math.PI*2/5,petal=ball(bloom,fx+Math.cos(a)*.075,h,fz+Math.sin(a)*.075,.069,parent);petal.scale.set(1,.45,.9);}ball(ivory,fx,h+.025,fz,.038,parent);}}
   // Soft environmental reflections on brass and glass; no external texture downloads.
   const envCanvas=document.createElement('canvas');envCanvas.width=512;envCanvas.height=256;const ctx=envCanvas.getContext('2d'),grad=ctx.createLinearGradient(0,0,0,256);grad.addColorStop(0,'#293754');grad.addColorStop(.45,'#a7b8cd');grad.addColorStop(.52,'#677e9b');grad.addColorStop(1,'#172b30');ctx.fillStyle=grad;ctx.fillRect(0,0,512,256);const env=new THREE.CanvasTexture(envCanvas);env.mapping=THREE.EquirectangularReflectionMapping;env.colorSpace=THREE.SRGBColorSpace;scene.environment=env;scene.environmentIntensity=.35;

@@ -1,3 +1,4 @@
+import {finishSteps} from './startup-work.js';
 import * as T from './vendor/three.module.js';
 
 // Every branch writes into one field, so junctions are a union rather than stacked strips.
@@ -22,11 +23,12 @@ export function createSnowPaths({root,snow,heightAt=()=>.09,contains=()=>true,de
    const alpha=f*f*(3-2*f),k=key(ix,iz),old=field.get(k);if(!old||alpha>old.alpha)field.set(k,{ix,iz,alpha});
   }
  }
- function rebuild(){
+ function rebuild(){return finishSteps(rebuildSteps());}
+ function* rebuildSteps(){
   const cells=new Set();for(const v of field.values())for(const [dx,dz]of [[0,0],[-1,0],[0,-1],[-1,-1]])cells.add(key(v.ix+dx,v.iz+dz));
   const pos=[],colors=[],alpha=[],uv=[],index=[],vertices=new Map();
   function vertex(ix,iz){const k=key(ix,iz);if(vertices.has(k))return vertices.get(k);const id=vertices.size,x=ix*step,z=iz*step;vertices.set(k,id);pos.push(x,heightAt(x,z)+.012,z);alpha.push(field.get(k)?.alpha||0);const tone=.98+.02*Math.sin(x*.71+z*.43)*Math.sin(z*.93-x*.17);colors.push(tone,tone,tone);uv.push(x*.1,z*.1);return id;}
-  for(const cell of cells){const [ix,iz]=cell.split('/').map(Number);if(![[0,0],[1,0],[0,1],[1,1]].every(([dx,dz])=>contains((ix+dx)*step,(iz+dz)*step)))continue;const a=vertex(ix,iz),b=vertex(ix+1,iz),c=vertex(ix,iz+1),d=vertex(ix+1,iz+1);index.push(a,c,b,b,c,d);}
+  let count=0;for(const cell of cells){if(++count%128===0)yield;const [ix,iz]=cell.split('/').map(Number);if(![[0,0],[1,0],[0,1],[1,1]].every(([dx,dz])=>contains((ix+dx)*step,(iz+dz)*step)))continue;const a=vertex(ix,iz),b=vertex(ix+1,iz),c=vertex(ix,iz+1),d=vertex(ix+1,iz+1);index.push(a,c,b,b,c,d);}
   const geometry=new T.BufferGeometry();geometry.setAttribute('position',new T.Float32BufferAttribute(pos,3));geometry.setAttribute('uv',new T.Float32BufferAttribute(uv,2));geometry.setAttribute('color',new T.Float32BufferAttribute(colors,3));geometry.setAttribute('trailAlpha',new T.Float32BufferAttribute(alpha,1));geometry.setIndex(index);geometry.computeVertexNormals();geometry.computeBoundingSphere();walk.geometry.dispose();walk.geometry=geometry;
  }
  function pave(points,width=2.6){
@@ -36,5 +38,5 @@ export function createSnowPaths({root,snow,heightAt=()=>.09,contains=()=>true,de
   for(let i=1;i<=count;i++){const p=curve.getPointAt(i/count);stamp(previous,p,width/2);samples.push({x:p.x,z:p.z,r:width/2+.12});previous=p;}
   if(!deferBuild)rebuild();return curve;
  }
- pave.flush=rebuild;return pave;
+ pave.flush=rebuild;pave.flushSteps=rebuildSteps;return pave;
 }

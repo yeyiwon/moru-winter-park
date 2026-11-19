@@ -9,9 +9,14 @@ test('world input follows UI and text focus, never platform or touch capabilitie
 test('free-look is explicit, releases on UI/Escape/blur, never relocks, and removes listeners',async t=>{
  const dom=new JSDOM('<body><details id="park-menu"><button id="start"></button></details><output></output><canvas></canvas></body>',{pretendToBeVisual:true});t.after(()=>dom.window.close());const win=dom.window,doc=win.document,canvas=doc.querySelector('canvas'),button=doc.querySelector('button'),status=doc.querySelector('output');let locks=0,orbit=0,blocked=false;
  canvas.requestPointerLock=async()=>{locks++;doc.pointerLockElement=canvas;doc.dispatchEvent(new win.Event('pointerlockchange'));};doc.exitPointerLock=()=>{doc.pointerLockElement=null;doc.dispatchEvent(new win.Event('pointerlockchange'));};
- const control=createMouseLook({canvas,button,status,doc,win,locked:()=>blocked,onOrbit:(x,y)=>orbit+=x+y});assert.equal(locks,0);button.click();await Promise.resolve();assert.equal(doc.pointerLockElement,canvas);
+ const control=createMouseLook({canvas,button,status,doc,win,locked:()=>blocked,onOrbit:(x,y)=>orbit+=x+y});assert.equal(locks,0);canvas.click();await Promise.resolve();assert.equal(doc.pointerLockElement,canvas);
  doc.dispatchEvent(Object.assign(new win.Event('mousemove'),{movementX:4,movementY:2}));assert.equal(orbit,6);blocked=true;doc.dispatchEvent(Object.assign(new win.Event('mousemove'),{movementX:8,movementY:2}));assert.equal(orbit,6);blocked=false;
  win.dispatchEvent(new win.Event('lab:pause'));assert.equal(doc.pointerLockElement,null);win.dispatchEvent(new win.Event('lab:close'));assert.equal(locks,1);
- button.click();await Promise.resolve();win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Escape',cancelable:true}));assert.equal(doc.pointerLockElement,null);
- button.click();await Promise.resolve();win.dispatchEvent(new win.Event('blur'));assert.equal(doc.pointerLockElement,null);control.dispose();button.click();assert.equal(locks,3);
+ canvas.click();await Promise.resolve();win.dispatchEvent(new win.KeyboardEvent('keydown',{code:'Escape',cancelable:true}));assert.equal(doc.pointerLockElement,null);
+ canvas.click();await Promise.resolve();win.dispatchEvent(new win.Event('blur'));assert.equal(doc.pointerLockElement,null);control.dispose();canvas.click();assert.equal(locks,3);
+});
+
+test('a denied pointer lock enables drag fallback and a tree tap does not lock the cursor',async t=>{
+ const dom=new JSDOM('<body><canvas></canvas><output></output></body>',{pretendToBeVisual:true});t.after(()=>dom.window.close());const win=dom.window,doc=win.document,canvas=doc.querySelector('canvas');let locks=0,tree=true;
+ canvas.requestPointerLock=async()=>{locks++;throw Error('Denied');};const control=createMouseLook({canvas,status:doc.querySelector('output'),doc,win,onOrbit(){},onTap:()=>tree});canvas.click();assert.equal(locks,0);tree=false;canvas.click();await Promise.resolve();assert.equal(canvas.dataset.mouseDrag,'true');canvas.click();assert.equal(locks,1);control.dispose();
 });

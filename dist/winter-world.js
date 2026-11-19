@@ -1,19 +1,21 @@
+import {finishSteps} from './startup-work.js';
 import {skiMapDestinations} from './resort-layout.js';
 import {buildFestivalPlaza} from './festival-plaza.js';
 import {treeBenches} from './bench-layout.js';
 import {buildWinterBench} from './winter-bench.js';
 import {createTreeTopper} from './tree-topper.js';
-import {mergeMeshGeometry,spatialBatchKey} from './mesh-batch.js';
+import {mergeMeshGeometry,mergeMeshGeometrySteps,spatialBatchKey} from './mesh-batch.js';
 import {treeLayout,treeShift} from './tree-layout.js';
 import {createTreeAtmosphere} from './tree-atmosphere.js';
 import {createSnowPaths} from './snow-path.js';
-import {buildAlpineResort} from './alpine-resort.js';
+import {buildAlpineResortSteps} from './alpine-resort.js';
 import {buildSpaResort} from './spa-resort.js';
 import {resortRides,resortDestinations,resortObstacles} from './resort-layout.js';
 import * as THREE from './vendor/three.module.js';
 
 // Shared winter landmarks, including a dedicated tree island.
-export function buildWinterWorld(api){
+export function buildWinterWorld(api){return finishSteps(buildWinterWorldSteps(api));}
+export function* buildWinterWorldSteps(api){
  const hitMaterial=new THREE.MeshBasicMaterial({visible:false,colorWrite:false,depthTest:false,transparent:true,opacity:0,depthWrite:false});
  const {scene,mesh,ball,cylinder,box,rod,torus,halo,M}=api;
  const root=new THREE.Group();root.name='winter-places';scene.add(root);
@@ -28,7 +30,7 @@ export function buildWinterWorld(api){
  function lantern(g,x,y,z){const frame=new THREE.Group();frame.position.set(x,y,z);g.add(frame);box(.36,.08,.36,brass,0,0,0,frame);box(.3,.4,.3,candle,0,.24,0,frame);for(const xx of [-.17,.17])for(const zz of [-.17,.17])rod([xx,0,zz],[xx,.46,zz],.018,brass,frame);cylinder(0,.28,.18,brass,0,.55,0,frame,4).rotation.y=Math.PI/4;halo(0,.25,0,'#ffcc85',1.4,frame);}
  function rug(g,w,d,x,z,mat){box(w,.045,d,mat,x,.13,z,g);for(const side of [-1,1])for(let i=0;i<14;i++)rod([x-w/2+i*w/13,.15,z+side*d/2],[x-w/2+i*w/13,.15,z+side*(d/2+.1)],.012,ivory,g);}
  function star(g,x,y,z,r){const s=new THREE.Shape();for(let i=0;i<10;i++){const a=i*Math.PI/5+Math.PI/2,v=i%2?r*.43:r;i?s.lineTo(Math.cos(a)*v,Math.sin(a)*v):s.moveTo(Math.cos(a)*v,Math.sin(a)*v);}s.closePath();return mesh(new THREE.ExtrudeGeometry(s,{depth:.08,bevelEnabled:true,bevelSize:.025,bevelThickness:.025,bevelSegments:2}),candle,x,y,z,g);}
- function fir(g,x,z,h,decorated=false){
+ function* fir(g,x,z,h,decorated=false){
   cylinder(.16,.42,h*.88,cedar,x,h*.44,z,g,12);
   // Each bough is a curved, serrated fan. Frost follows its upper ridge so the
   // branch silhouette remains visible, rather than reading as white oval dots.
@@ -49,6 +51,7 @@ export function buildWinterWorld(api){
   }
   const layers=decorated?30:8;
   for(let layer=0;layer<layers;layer++){
+   yield;
    const t=layer/(layers-1),y=3+t*h*.79,r=h*.286*(1-t*.94),branches=decorated?18:8;
    // A narrow, hidden core supports the branch whorls without exposed cone tiers.
    cylinder(.04,r*.32,h*.085,pine[layer%3],x,y+h*.025,z,g,16);
@@ -92,21 +95,25 @@ export function buildWinterWorld(api){
  }
  const tree=place(treeLayout.x,treeLayout.z,'winter-tree'),treeAtmosphere=createTreeAtmosphere(tree,{capacity:900});treeAtmosphere.addTree({height:32,hero:true});moving.add(treeAtmosphere.root);
 
- const treePaths=createSnowPaths({root,stone:[M('#a1aaac',.98,0)],snow,heightAt:()=>.115});treePaths([[treeLayout.x,treeLayout.z+19],[treeLayout.x,treeLayout.z+15],[treeLayout.x,treeLayout.z+11]],3);cylinder(9.1,9.25,.16,darkStone,0,.08,0,tree,80);cylinder(9,9.1,.06,snow,0,.18,0,tree,80);fir(tree,0,0,32,true);
+ const treePaths=createSnowPaths({root,stone:[M('#a1aaac',.98,0)],snow,heightAt:()=>.115});treePaths([[treeLayout.x,treeLayout.z+19],[treeLayout.x,treeLayout.z+15],[treeLayout.x,treeLayout.z+11]],3);cylinder(9.1,9.25,.16,darkStone,0,.08,0,tree,80);cylinder(9,9.1,.06,snow,0,.18,0,tree,80);yield* fir(tree,0,0,32,true);
+ yield;
  treePaths(Array.from({length:33},(_,i)=>[treeLayout.x+Math.cos(i/32*Math.PI*2)*11.2,treeLayout.z+Math.sin(i/32*Math.PI*2)*11.2]),3.2);
  const festivalPlaza=buildFestivalPlaza(tree);
  for(const p of treeBenches){tree.add(buildWinterBench({...p,x:p.x-treeLayout.x,z:p.z-treeLayout.z}));}
 
  for(let i=0;i<28;i++){const a=i*2.399,r=7.7+(i%3)*.45,w=.5+rand()*.6,h=.4+rand()*.65,x=Math.cos(a)*r,z=Math.sin(a)*r;const gift=new THREE.Group();gift.position.set(x,.2,z);gift.rotation.y=a;tree.add(gift);box(w,h,w*.85,[berry,cedarLight,pine[1],ivory][i%4],0,h/2,0,gift);box(w+.015,.035,w*.85+.015,ribbon,0,h*.78,0,gift);box(.07,h+.02,w*.85+.025,ribbon,0,h/2,0,gift);for(const side of [-1,1]){const loop=torus(.08,.015,brass,side*.07,h+.04,0,gift);loop.scale.y=.6;loop.rotation.x=.3;}}
- target(tree,'tree',0,14,0,18,28,18);
+ // Use the actual branch geometry as the click surface, not a box around the tree.
+ tree.traverse(o=>{if(o.isMesh&&!o.isInstancedMesh&&pine.includes(o.material)){o.userData.action='tree';o.userData.winter=true;}});
+ yield;
 
- const mountain=buildAlpineResort(api),retreat=buildSpaResort(api),rides=resortRides,rideChair=mountain.rideChair;
+ const mountain=yield* buildAlpineResortSteps(api);yield;const retreat=buildSpaResort(api),rides=resortRides,rideChair=mountain.rideChair;yield;
 
 
  // Batch static geometry by material; retain moving chairs, steam and hit targets.
- root.updateMatrixWorld(true);const groups=new Map();root.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||o.userData.snowTrail||Array.isArray(o.material)||moving.has(o))return;let parent=o.parent;while(parent&&parent!==root){if(moving.has(parent))return;parent=parent.parent;}if(!o.geometry.attributes.normal||!o.geometry.attributes.uv)return;const key=o.material.uuid+':'+spatialBatchKey(o);if(!groups.has(key))groups.set(key,{material:o.material,items:[]});groups.get(key).items.push(o);});
- for(const {material,items} of groups.values()){if(items.length<2)continue;const geo=mergeMeshGeometry(items);for(const item of items)item.removeFromParent();mesh(geo,material,0,0,0,root);}
+ root.updateMatrixWorld(true);const groups=new Map();root.traverse(o=>{if(!o.isMesh||o.isInstancedMesh||o.userData.snowTrail||Array.isArray(o.material)||moving.has(o))return;let parent=o.parent;while(parent&&parent!==root){if(moving.has(parent))return;parent=parent.parent;}if(!o.geometry.attributes.normal||!o.geometry.attributes.uv)return;const key=o.material.uuid+':'+spatialBatchKey(o)+':'+(o.userData.action||'');if(!groups.has(key))groups.set(key,{material:o.material,items:[]});groups.get(key).items.push(o);});
+ for(const {material,items} of groups.values()){if(items.length<2)continue;const geo=yield* mergeMeshGeometrySteps(items);for(const item of items)item.removeFromParent();const batch=mesh(geo,material,0,0,0,root);if(items[0].userData.action==='tree'){batch.userData.action='tree';batch.userData.winter=true;}yield;}
+ const treeTargets=[];root.traverse(o=>{if(o.isMesh&&o.userData.action==='tree')treeTargets.push(o);});
  const destinations=[{id:'tree',name:'겨울의 큰 트리',...treeLayout.arrival,kind:'tree',view:{distance:42,yaw:-1.25,pitch:.12,lookHeight:12}},...resortDestinations,...skiMapDestinations.filter(p=>p.mapOnly)];
  const obstacles=[{x:treeLayout.x,z:treeLayout.z,r:treeLayout.radius},...resortObstacles,...treeBenches.map(p=>({...p,r:2.1}))];
- return{setQuality(value){retreat.setQuality(value);mountain.setQuality(value);festivalPlaza.setQuality(value);treeAtmosphere.setQuality(value);},root,interactive:[...interactive,...mountain.interactive,...retreat.interactive],destinations,obstacles,rides,rideChair,dynamic:[...moving],update(t,still){for(const topper of toppers)topper.update(t,still);treeAtmosphere.update(t,still);ribbonTime.value=still?0:t;festivalPlaza.update(t,still);mountain.update(t,still);retreat.update(t,still);if(still)return;for(const s of steam){const v=(t*.15+s.phase)%1;s.puff.position.set(s.x+Math.sin(t*.45+s.phase)*.25,.55+v*2.2,s.z);s.puff.scale.setScalar(1.1+v*1.3);s.puff.material.opacity=Math.sin(v*Math.PI)*.09;}for(const {g,offset,a,b}of chairs){const v=(t*.035+offset)%1;g.position.lerpVectors(a,b,v);g.rotation.z=Math.sin(t*.8+offset)*.025;}}};
+ return{setQuality(value){retreat.setQuality(value);mountain.setQuality(value);festivalPlaza.setQuality(value);treeAtmosphere.setQuality(value);},root,treeTargets,interactive:[...interactive,...mountain.interactive,...retreat.interactive],destinations,obstacles,rides,rideChair,dynamic:[...moving],update(t,still){for(const topper of toppers)topper.update(t,still);treeAtmosphere.update(t,still);ribbonTime.value=still?0:t;festivalPlaza.update(t,still);mountain.update(t,still);retreat.update(t,still);if(still)return;for(const s of steam){const v=(t*.15+s.phase)%1;s.puff.position.set(s.x+Math.sin(t*.45+s.phase)*.25,.55+v*2.2,s.z);s.puff.scale.setScalar(1.1+v*1.3);s.puff.material.opacity=Math.sin(v*Math.PI)*.09;}for(const {g,offset,a,b}of chairs){const v=(t*.035+offset)%1;g.position.lerpVectors(a,b,v);g.rotation.z=Math.sin(t*.8+offset)*.025;}}};
 }

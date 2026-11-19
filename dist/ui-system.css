@@ -198,3 +198,17 @@ header .world-meta{left:50%;transform:translateX(-50%);justify-content:center;te
 #studio .studio-section-title #owner-signin{margin:0 0 0 auto;min-height:44px;display:inline-flex;align-items:center;padding:0 2px;font-size:11px;font-weight:400;line-height:1.4;color:var(--ui-text);text-decoration:none;border:0;background:none;white-space:nowrap;opacity:.8}
 #studio .studio-section-title #owner-signin:hover{opacity:1}
 #studio .studio-section-title #owner-signin[hidden],#studio:has(#pane-social[hidden]) .studio-section-title #owner-signin{display:none}
+
+/* Contextual show notice, not a persistent camera control. */
+#firework-notice{position:fixed;z-index:45;top:calc(76px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:12px;max-width:calc(100vw - 32px);padding:4px 6px 4px 14px;border:1px solid var(--ui-edge);border-radius:16px;background:var(--ui-field);backdrop-filter:blur(8px);color:var(--ui-ink);font-size:12px}
+#firework-notice[hidden],body.studio-open #firework-notice,body.quiz-open #firework-notice,body.chat-typing #firework-notice{display:none}
+#firework-notice button{flex:none;min-height:44px;padding:8px 10px;border:0;border-radius:10px;background:var(--ui-selected);color:inherit;font:inherit}
+#quick-quiz .quiz-result strong{display:flex;align-items:center;justify-content:center;gap:8px;font-size:16px;line-height:1.5;animation:quiz-feedback .22s ease-out}
+#quick-quiz .quiz-result strong svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+#quick-quiz.quiz-wrong .quiz-result{animation:none}
+#quick-quiz .quiz-options button.wrong{background:#eac9bd1a;border-color:#dfbfb86b}
+#quick-quiz .quiz-options button.correct{background:#c8e3d222;border-color:#c8e3d285}
+#quick-quiz.quiz-correct .quiz-result strong{color:#def1e7;text-shadow:0 0 12px #c8e3d21a}
+@keyframes quiz-feedback{from{opacity:0;transform:translateY(3px)}to{opacity:1;transform:none}}
+@media(prefers-reduced-motion:reduce){#quick-quiz .quiz-result strong{animation:none}}
+body.still #quick-quiz .quiz-result strong,body.reduce-flash #quick-quiz .quiz-result strong{animation:none}
