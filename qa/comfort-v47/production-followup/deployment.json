@@ -1,0 +1,56 @@
+{
+  "revision": "657581e7085d8fc2c3c0401e69d9d5ddec987791",
+  "runtimeChange": "d895b567de93a951805dde709f5c4129a8c54af9",
+  "officialUrl": "https://moru-winter-park.vercel.app/",
+  "github": {
+    "branch": "main",
+    "ciRun": 44528661412,
+    "ciStatus": "success",
+    "ciDurationSeconds": 510
+  },
+  "vercel": {
+    "id": "dpl_Ad3i46kBys9KUoxytxRJiVyR4YWp",
+    "status": "READY",
+    "officialAliasVerified": true
+  },
+  "sites": {
+    "version": 63,
+    "versionId": "appgprj_6af6f606ab648191855ab9bd44c334fd~appgver_7d4d1a35755c8191a28317d99ad06855",
+    "deploymentId": "appgdep_6afef26ad3508191944e24d24976d959",
+    "status": "succeeded",
+    "envRevision": 4
+  },
+  "health": {
+    "httpStatus": 200,
+    "ok": true,
+    "multiplayer": true,
+    "revision": "657581e7085d8fc2c3c0401e69d9d5ddec987791",
+    "transport": "websocket-configured"
+  },
+  "verification": {
+    "sourceModules": 269,
+    "unitPassed": 494,
+    "unitTotal": 494,
+    "productionPassed": 41,
+    "productionTotal": 41,
+    "assetsMatched": 14,
+    "consoleErrors": 0,
+    "browserExceptions": 0,
+    "http5xx": 0,
+    "localContinuousTree": 15,
+    "localEarlyRegistration": 7,
+    "localSettingsAndNickname": 7
+  },
+  "physicalMobile": "UNKNOWN",
+  "physicalWindows": "UNKNOWN",
+  "gpuMemory": "UNKNOWN",
+  "longDurationProduction": "UNKNOWN",
+  "cloudflareChanged": false,
+  "databaseMigration": false,
+  "paidServiceAdded": false,
+  "productionMutations": "Temporary test guests joined, renamed themselves, and left. No existing player profiles, wishes, decorations or shows were edited.",
+  "initialCiFailure": {
+    "run": 44527389206,
+    "cause": "Two existing nickname integration assertions still expected the removed success label; updated assertions retain all saving/error/focus behavior checks."
+  }
+}

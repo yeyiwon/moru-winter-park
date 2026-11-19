@@ -2,6 +2,8 @@
 
 ## v47 운영 확인
 
+최신 운영 소스 `657581e`: GitHub main, Vercel `dpl_Ad3i46kBys9KUoxytxRJiVyR4YWp` READY, Sites 63 succeeded. 공식 주소의 release와 API revision 일치, 운영 브라우저 41/41 PASS. [후속 배포 기록](release-v47-followup.md).
+
 v47 1차 운영 소스 `dfc0b77`: 저장·전송의 개별 버튼 테두리 제거, UI 간격·채팅 표시·트리 시점 복귀 및 `트리` 명칭 반영. 실제 운영 브라우저 36/36 PASS, 오류 0건. 후속 요청으로 닉네임 저장 완료 문구 제거, 모바일 지도 정렬 통일, 닫기 전까지 트리 꾸미기 시야 유지를 적용했다. [배포 및 검증 기록](release-v47-production.md).
 
 실행 소스 `0fe286b8e25ddab2315c5b3a2df0d55b6f78d663`: GitHub main, Sites 61, Vercel production, 무료 Cloudflare 실시간 서버에 반영했다. 전체 489개 자동 검사·17개 원격 브라우저 검사·20개 실제 운영 검사 PASS. 사용자가 공식 `/admin` 로그인 후 관리 화면을 확인했다. 기존 소원·장식·소유자 데이터 보존. 실물 Windows/iOS/Android와 운영 장시간 성능은 UNKNOWN이다.
