@@ -53,6 +53,9 @@ test('leaving a ride drains the seated pose before deleting the seat and resumes
  assert.equal(w.releaseRide(),release,'repeated exit shares one release');
  finishPose({people:[],count:1,rideSeats:[{...reservation,id:'guest'}],serverTime:Date.now()});
  await release;assert.equal(releases,1);d.dispatchEvent(new w.Event('visibilitychange'));await eventually(()=>modes.at(-1)==='');
+ // The fetch stub records the request before its response callbacks settle.
+ // Drain those microtasks before fixture cleanup closes the document.
+ await tick();
  assert.equal(w.labRideReservation,null);assert.equal(w.labSocialJoined,true);
 });
 
