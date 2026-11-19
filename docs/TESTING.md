@@ -1,6 +1,8 @@
 # v52 최종 통합 검사
 
-완곡 실제 재생, PC/모바일 화면 공연, 6회 재진입 리소스, 공유 공연·중도 입장·게스트 권한, 실제 58초 활강과 스키/보드 점프, 지도/역 접근, 투명도 fallback·강제 다크 색상표·제목·닫기 정렬을 검사했다. 실제 Windows/Edge·Galaxy·iPhone Safari는 UNKNOWN. [상세 증거](release-v52.md#검증과-성능). 최종 `npm run check` 296개 모듈, `npm test` 532개 전부 통과. 오디오 활성화 차단/복구·공연 중 일반 BGM 음소거도 포함한다. 10/25/50/100명 localhost WebSocket 부하 모두 성공률 100%. TypeScript와 Lint 별도 명령은 이 JavaScript 프로젝트에 없다. 빌드와 운영 확인 결과는 DEPLOYMENT에 기록한다.
+완곡 실제 재생, PC/모바일 화면 공연, 6회 재진입 리소스, 공유 공연·중도 입장·게스트 권한, 실제 58초 활강과 스키/보드 점프, 지도/역 접근, 투명도 fallback·강제 다크 색상표·제목·닫기 정렬을 검사했다. 실제 Windows/Edge·Galaxy·iPhone Safari는 UNKNOWN. [상세 증거](release-v52.md#검증과-성능). 최종 `npm run check` 296개 모듈, `npm test` 532개 전부 통과. 오디오 활성화 차단/복구·공연 중 일반 BGM 음소거도 포함한다. 10/25/50/100명 localhost WebSocket 부하 모두 성공률 100%. TypeScript와 Lint 별도 명령은 이 JavaScript 프로젝트에 없다. Worker·Vercel·realtime 빌드와 용량 검사를 모두 통과했다. 운영 57개 확인과 실제 공연 동기화 결과는 [DEPLOYMENT](DEPLOYMENT.md)에 기록했다.
+
+운영 SHA `b360198`의 [GitHub Actions 전체 검사](https://github.com/yeyiwon/moru-winter-park/actions/runs/44631325693)도 성공했다. 로컬 532개 검사와 별도로 Linux의 공개 접속·실시간 이동·터치·좌석·채팅·관리자·재접속 브라우저 검사까지 통과했다. 기존 pinned Actions의 Node 20 런타임 강제 Node 24 전환 경고가 있으나 실패는 없었다.
 
 ---
 

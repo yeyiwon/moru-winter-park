@@ -1,6 +1,32 @@
-# v52 통합 배포 기록
+# v52 운영 배포 완료 — 2026-11-20
 
-사용자가 v48–52 수정본의 GitHub main·기존 Sites API·Vercel 공식 주소·Cloudflare 실시간 서버 운영 반영을 명시적으로 요청했다. 같은 소스와 검증된 결과물을 사용하며 기존 데이터와 환경 변수를 보존한다. 배포 전 최종 검사 중이며, 실제 배포 상태·커밋·데이터 비교는 아래 v52 결과에 기록한다. [릴리스 범위](release-v52.md). 이전 “보류” 표시는 당시 버전의 이력이다.
+공식 주소: **https://moru-winter-park.vercel.app/** · 관리자: **https://moru-winter-park.vercel.app/admin**
+
+| 대상 | 확인 결과 |
+| --- | --- |
+| GitHub main / 운영 소스 | `b36019878199e24a4cca614c51ab92c97b880dbb` |
+| 기능 구현 커밋 | `402de606dd875859ba5f728b24a561ccfe5fb289` |
+| Sites | 버전 **64**, `appgdep_6aff7b7bd14c81918612b2f753246344`, succeeded |
+| Vercel | `dpl_JC8ehiY222rBNLHnVqjCfSeAMF6b`, READY, 공식 도메인 연결 |
+| Cloudflare realtime | `winterlight-realtime`, version `ef7af036-cb20-4b3f-afcb-ea05a489079c` |
+| 버전 일치 | frontend release.json / API health / realtime health 모두 같은 운영 소스 SHA |
+| 환경 설정 | 기존 Sites env revision **4** 및 realtime secret·allowed origins 유지 |
+
+API·실시간 서버를 먼저 갱신하고 main push로 기존 Vercel Git 배포를 완료했다. 새로운 유료 서비스나 도메인은 추가하지 않았다. 앞선 대용량 스크린샷 업로드는 한 번당 64MiB 소스 제한에 걸려 기록 커밋을 나눠 해결했다. 실패한 업로드가 운영을 변경하지는 않았다.
+
+## 배포 후 실제 확인
+
+[GitHub Actions 44631325693](https://github.com/yeyiwon/moru-winter-park/actions/runs/44631325693) **성공**: 같은 운영 SHA의 전체 자동 검사·3종 빌드·용량·실시간 부하·Linux 브라우저 멀티플레이/반응형까지 통과했다.
+
+- 공식 주소 PC / 390×844 touch 화면: **57개 확인 통과**. 로딩·실시간 입장, 배포 파일 해시, 두 음원 Range 206 / audio-mpeg, 저장과 재접속, 제목·닉네임·전송·색상표, 지도 이동·트리 3D 장식·카메라 복귀, 관리자 진입, 게스트 권한 차단. 브라우저/console/HTTP 5xx 각각 0. [실행 결과](../qa/platform-v52/production/report.json).
+- 실제 Cloudflare WebSocket의 이동·채팅·공연 공유, 세 번째 늦은 입장, 전체 125.048초 공연 종료와 종료 +15분 제한 확인. [원본 측정](../qa/platform-v52/production-sync/sync.json), [완료된 측정 재검증](../qa/platform-v52/production-sync/validated.json).
+- 원본 공연 검사의 마지막 좌표 비교는 JSON 완전 일치여서 걷기 감쇠의 **4.85×10⁻¹¹m** 차이를 실패로 표시했다. 소스·운영 데이터를 바꾸지 않고 완료된 측정을 10⁻⁶m 허용 오차로 재검증했다. 원본 실패 기록을 삭제하지 않았다. 카메라 yaw/pitch/distance와 플레이어 위치는 유지됐다.
+- 실제 운영 곤돌라: PC·모바일 화면의 두 게스트가 같은 객실의 다른 좌석으로 정상까지 이동, 채팅 전달, summit 하차와 예약 해제 통과. [운영 동승 결과](../qa/platform-v52/production-transport/integration.json).
+- 기존 소원 **7/7**, 장식 **135/135**, 퀴즈 기록 **5/5**, 관리자 **1/1**의 원본 행 내용이 그대로 남았다. 검사 시 장식 총수는 새로 추가된 것을 포함해 144개였다. 전체 DB 백업을 만들었다는 뜻은 아니다. [데이터 비교·배포 증거](../qa/platform-v52/deployment.json).
+- Vercel error/fatal 로그 없음. Sites 로그의 두 항목은 자동 crawler의 미제공 `robots.txt` / `sitemap.xml` 404였고 Worker 실행 outcome은 정상이다. 애플리케이션 exception 또는 5xx는 확인되지 않았다.
+- 실제 Windows/Edge·Galaxy·iPhone Safari 하드웨어, 수 시간 연속 실행·발열은 **UNKNOWN**. Mac Chrome과 브라우저 설정/화면/그래픽 기능 에뮬레이션만 수행했다. 실제 소유자 인증은 사용자가 앞서 확인했으며 이번에는 fresh guest 진입과 로컬 소유자 UI/권한을 재검증했다.
+
+배포 후 문서·측정 기록은 `codex/v52-release-verification` 브랜치에 보관한다. 이 브랜치는 운영 코드를 바꾸지 않으며, 운영 main/Sites/Vercel/realtime은 위 동일 SHA를 유지한다. [릴리스 전체 범위](release-v52.md). 아래 “보류”는 과거 버전 당시의 상태다.
 
 ---
 

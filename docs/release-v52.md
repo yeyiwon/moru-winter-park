@@ -72,4 +72,4 @@ Mac Chrome, PC 1280×800 high 및 390×844 touch/medium에서 측정했다. 실�
 
 기존 D1을 유지하고 `0018_gondola_seats`는 기존 좌석을 복사하여 곤돌라 0–5 좌석만 허용 범위를 확장한다. 소원·장식·관리자 테이블을 초기화하지 않는다. 기존 Cloudflare 실시간 Worker와 Sites API, Vercel frontend를 같은 검증 커밋으로 맞춘다. 방문자 주소는 **https://moru-winter-park.vercel.app/** 하나다.
 
-배포 전 소원 7개·장식 135개·퀴즈 기록 5개·소유자 1개를 읽기 전용으로 비교용 보관했다. 전체 DB backup을 만들었다는 의미는 아니다. 이전 Sites 63 / Vercel 운영 배포 및 기존 schema와 호환되는 rollback 경로를 보존한다. 실제 배포 식별자와 데이터 비교 결과는 배포 확인 후 기록한다.
+배포 전 소원 7개·장식 135개·퀴즈 기록 5개·소유자 1개를 읽기 전용으로 비교용 보관했다. 전체 DB backup을 만들었다는 의미는 아니다. 이전 Sites 63 / Vercel 운영 배포 및 기존 schema와 호환되는 rollback 경로를 보존한다. Sites 64 / Vercel production / Cloudflare realtime을 같은 소스 `b360198`로 운영 반영했다. 배포 식별자·공식 주소 검증·기존 데이터 보존 결과는 [DEPLOYMENT](DEPLOYMENT.md)에 기록했다.

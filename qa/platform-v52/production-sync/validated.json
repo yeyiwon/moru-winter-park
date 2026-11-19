@@ -1,0 +1,49 @@
+{
+  "passed": true,
+  "checks": [
+    {
+      "name": "real WebSocket snapshots, movement and chat",
+      "ok": true
+    },
+    {
+      "name": "same music, show ID and seed",
+      "ok": true
+    },
+    {
+      "name": "castle and firework timeline share server time",
+      "ok": true
+    },
+    {
+      "name": "late join keeps current show",
+      "ok": true
+    },
+    {
+      "name": "guest admin forbidden",
+      "ok": true
+    },
+    {
+      "name": "camera unchanged during and after show",
+      "ok": true
+    },
+    {
+      "name": "all clients finish",
+      "ok": true
+    },
+    {
+      "name": "cooldown starts at actual end",
+      "ok": true
+    },
+    {
+      "name": "no forced player movement (1 micrometre tolerance)",
+      "ok": true
+    },
+    {
+      "name": "no browser errors",
+      "ok": true
+    }
+  ],
+  "positionDeltaMetres": 4.8473721355452936e-11,
+  "originalRun": "sync.json",
+  "originalAssertion": "Error: Watching moved the player\n    at file:///private/tmp/winter-v52-production-sync.mjs:37:96",
+  "explanation": "The original harness compared floating point positions by exact JSON equality after walking. Its only failure was a 4.8e-11 metre residual. Revalidated the completed original recording with 1e-6 metre tolerance; no runtime code or production data changed."
+}

@@ -1,0 +1,81 @@
+{
+  "at": "2026-11-19T22:47:40.551Z",
+  "commit": "b36019878199e24a4cca614c51ab92c97b880dbb",
+  "officialUrl": "https://moru-winter-park.vercel.app/",
+  "github": "https://github.com/yeyiwon/moru-winter-park/commit/b36019878199e24a4cca614c51ab92c97b880dbb",
+  "sites": {
+    "version": 64,
+    "deployment": "appgdep_6aff7b7bd14c81918612b2f753246344",
+    "status": "succeeded",
+    "envSetRevision": 4
+  },
+  "vercel": {
+    "id": "dpl_JC8ehiY222rBNLHnVqjCfSeAMF6b",
+    "status": "READY",
+    "target": "production"
+  },
+  "realtime": {
+    "name": "winterlight-realtime",
+    "version": "ef7af036-cb20-4b3f-afcb-ea05a489079c",
+    "health": 200,
+    "revision": "b36019878199e24a4cca614c51ab92c97b880dbb"
+  },
+  "dataComparison": {
+    "quiz_journal": {
+      "before": 5,
+      "after": 5,
+      "originalRowsUnchanged": true
+    },
+    "space_owner": {
+      "before": 1,
+      "after": 1,
+      "originalRowsUnchanged": true
+    },
+    "wishes": {
+      "before": 7,
+      "after": 7,
+      "originalRowsUnchanged": true
+    },
+    "tree_decorations": {
+      "before": 135,
+      "after": 144,
+      "originalRowsUnchanged": true
+    }
+  },
+  "serverErrors": {
+    "vercelErrorFatal": 0,
+    "sitesExceptions": 0,
+    "sitesCrawler404": [
+      "/robots.txt",
+      "/sitemap.xml"
+    ]
+  },
+  "localChecks": {
+    "syntaxModules": 296,
+    "testsPassed": 532,
+    "testsFailed": 0,
+    "build": "PASS",
+    "buildVercel": "PASS",
+    "buildRealtime": "PASS",
+    "artifactBudget": "PASS"
+  },
+  "physicalDevices": {
+    "Windows": "UNKNOWN",
+    "Android": "UNKNOWN",
+    "iPhone": "UNKNOWN"
+  },
+  "productionChecks": {
+    "ui": 57,
+    "uiFailed": 0,
+    "consoleErrors": 0,
+    "http5xx": 0,
+    "showSync": "PASS: completed original measurement revalidated with numerical tolerance",
+    "gondolaTwoGuests": "PASS: same cabin, different seats, real summit arrival, chat, reservation release",
+    "ciRun": "https://github.com/yeyiwon/moru-winter-park/actions/runs/44631325693"
+  },
+  "githubCI": {
+    "runId": 44631325693,
+    "conclusion": "success",
+    "headSha": "b36019878199e24a4cca614c51ab92c97b880dbb"
+  }
+}

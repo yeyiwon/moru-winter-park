@@ -1,6 +1,6 @@
 # v52 최적화 기록
 
-`winter-fireworks.js` 고정 TypedArray 직접 갱신·짧은 trail, `castle-show.js` 불필요한 상승 입자 삭제·빔 한 배치, `firework-music.js` 하나의 스트리밍 요소와 선택적 사전 로딩. `mountain-terrain.js`는 역 주변에만 높은 지형 분할을 적용한다. `color-swatches.js`는 값 변경 시에만 64px 색을 그린다. 새로운 production dependency 없음. [원인·변경 파일·실측](release-v52.md).
+`winter-fireworks.js` 고정 TypedArray 직접 갱신·짧은 trail, `castle-show.js` 불필요한 상승 입자 삭제·빔 한 배치, `firework-music.js` 하나의 스트리밍 요소와 선택적 사전 로딩. `mountain-terrain.js`는 역 주변에만 높은 지형 분할을 적용한다. `color-swatches.js`는 값 변경 시에만 64px 색을 그린다. 새로운 production dependency 없음. 운영 배포 후 원본 MP3 Range 스트리밍·실시간 동기화·설산 동승을 재검증했다. [운영 기록](DEPLOYMENT.md). [원인·변경 파일·실측](release-v52.md).
 
 ---
 

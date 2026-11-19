@@ -1,0 +1,558 @@
+{
+  "environment": "macOS Chrome, desktop and touch emulation, official production WebSocket; physical mobile UNKNOWN",
+  "socketFrames": 516,
+  "poseSnapshots": 513,
+  "movement": true,
+  "chat": true,
+  "before": [
+    {
+      "show": {
+        "id": "1d5f2e98-5480-422f-a95f-95be651103b6",
+        "startsAt": 1795105626076,
+        "endsAt": 1795105700076,
+        "nextRequestAt": 1795106600076,
+        "seed": 4090601819,
+        "state": "finished",
+        "revision": 1
+      },
+      "sampledAt": 1795128313958,
+      "clock": 1795128313706.9,
+      "renderAge": 0,
+      "castleAge": 22687.626199951173,
+      "castleMode": 0,
+      "castleRegions": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "active": false,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 3.932382462052252,
+          "y": 1.4,
+          "z": 22.653061218108117
+        },
+        "eye": {
+          "x": 7.219299320873981,
+          "y": 6.680794248634289,
+          "z": 32.24920202541307
+        },
+        "aim": {
+          "x": 3.932382462052252,
+          "y": 1.4,
+          "z": 22.653061218108117
+        }
+      },
+      "position": {
+        "x": 3.9323826745538017,
+        "z": 22.653061145321054
+      }
+    },
+    {
+      "show": {
+        "id": "1d5f2e98-5480-422f-a95f-95be651103b6",
+        "startsAt": 1795105626076,
+        "endsAt": 1795105700076,
+        "nextRequestAt": 1795106600076,
+        "seed": 4090601819,
+        "state": "finished",
+        "revision": 1
+      },
+      "sampledAt": 1795128313956,
+      "clock": 1795128313792.7122,
+      "renderAge": 0,
+      "castleAge": 22687.33108203125,
+      "castleMode": 0,
+      "castleRegions": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "active": false,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        },
+        "eye": {
+          "x": 4.742504595646483,
+          "y": 9.019356396434468,
+          "z": 37.84572346482426
+        },
+        "aim": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        }
+      },
+      "position": {
+        "x": 0,
+        "z": 24
+      }
+    }
+  ],
+  "server": {
+    "id": "08c47f63-c574-4767-8317-dd9789cd135b",
+    "musicId": "joyful-piano-orchestra",
+    "duration": 125.04816326530612,
+    "timelineVersion": 52,
+    "startsAt": 1795128324006,
+    "endsAt": 1795128449054.1633,
+    "nextRequestAt": 1795129349054.1633,
+    "seed": 767295837,
+    "state": "scheduled",
+    "revision": 1
+  },
+  "playing": [
+    {
+      "show": {
+        "id": "08c47f63-c574-4767-8317-dd9789cd135b",
+        "musicId": "joyful-piano-orchestra",
+        "duration": 125.04816326530612,
+        "timelineVersion": 52,
+        "startsAt": 1795128324006,
+        "endsAt": 1795128449054.1633,
+        "nextRequestAt": 1795129349054.1633,
+        "seed": 767295837,
+        "state": "playing",
+        "revision": 1
+      },
+      "sampledAt": 1795128328078,
+      "clock": 1795128327833.7,
+      "renderAge": 3.815300048828125,
+      "castleAge": 3.815300048828125,
+      "castleMode": 0,
+      "castleRegions": [
+        0.6000000238418579,
+        0.18000000715255737,
+        0.18000000715255737,
+        0.30000001192092896,
+        0.1599999964237213,
+        0.550000011920929,
+        0.3499999940395355,
+        0.6000000238418579,
+        0.5,
+        0.30000001192092896
+      ],
+      "active": true,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 3.932382674599661,
+          "y": 1.4,
+          "z": 22.653061145305355
+        },
+        "eye": {
+          "x": 8.674887270246142,
+          "y": 9.019356396434462,
+          "z": 36.49878461012961
+        },
+        "aim": {
+          "x": 3.932382674599661,
+          "y": 1.4,
+          "z": 22.653061145305355
+        }
+      },
+      "position": {
+        "x": 3.9323826745996615,
+        "z": 22.65306114530535
+      }
+    },
+    {
+      "show": {
+        "id": "08c47f63-c574-4767-8317-dd9789cd135b",
+        "musicId": "joyful-piano-orchestra",
+        "duration": 125.04816326530612,
+        "timelineVersion": 52,
+        "startsAt": 1795128324006,
+        "endsAt": 1795128449054.1633,
+        "nextRequestAt": 1795129349054.1633,
+        "seed": 767295837,
+        "state": "scheduled",
+        "revision": 1
+      },
+      "sampledAt": 1795128328085,
+      "clock": 1795128327884,
+      "renderAge": 3.86310009765625,
+      "castleAge": 3.86310009765625,
+      "castleMode": 0,
+      "castleRegions": [
+        0.6000000238418579,
+        0.18000000715255737,
+        0.18000000715255737,
+        0.30000001192092896,
+        0.1599999964237213,
+        0.550000011920929,
+        0.3499999940395355,
+        0.6000000238418579,
+        0.5,
+        0.30000001192092896
+      ],
+      "active": true,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        },
+        "eye": {
+          "x": 4.742504595646483,
+          "y": 9.019356396434468,
+          "z": 37.84572346482426
+        },
+        "aim": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        }
+      },
+      "position": {
+        "x": 0,
+        "z": 24
+      }
+    }
+  ],
+  "adminDenied": 403,
+  "lateJoin": {
+    "show": {
+      "id": "08c47f63-c574-4767-8317-dd9789cd135b",
+      "musicId": "joyful-piano-orchestra",
+      "duration": 125.04816326530612,
+      "timelineVersion": 52,
+      "startsAt": 1795128324006,
+      "endsAt": 1795128449054.1633,
+      "nextRequestAt": 1795129349054.1633,
+      "seed": 767295837,
+      "state": "playing",
+      "revision": 1
+    },
+    "sampledAt": 1795128353132,
+    "clock": 1795128352987.4,
+    "renderAge": 28.96889990234375,
+    "castleAge": 28.96889990234375,
+    "castleMode": 1,
+    "castleRegions": [
+      0.5,
+      0.6499999761581421,
+      0.3799999952316284,
+      0.3499999940395355,
+      0.23000000417232513,
+      0.699999988079071,
+      0.5,
+      0.8500000238418579,
+      0.5,
+      0.5
+    ],
+    "active": true,
+    "camera": {
+      "yaw": 0.33,
+      "pitch": 0.48,
+      "distance": 16.5,
+      "fov": 50,
+      "context": null,
+      "manualYaw": false,
+      "revision": 0,
+      "treeOffset": 0,
+      "rendered": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50
+      },
+      "focus": {
+        "x": 0,
+        "y": 1.4,
+        "z": 24
+      },
+      "eye": {
+        "x": 4.742504595646483,
+        "y": 9.019356396434468,
+        "z": 37.84572346482426
+      },
+      "aim": {
+        "x": 0,
+        "y": 1.4,
+        "z": 24
+      }
+    },
+    "position": {
+      "x": 0,
+      "z": 24
+    }
+  },
+  "after": [
+    {
+      "show": {
+        "id": "08c47f63-c574-4767-8317-dd9789cd135b",
+        "musicId": "joyful-piano-orchestra",
+        "duration": 125.04816326530612,
+        "timelineVersion": 52,
+        "startsAt": 1795128324006,
+        "endsAt": 1795128449054.1633,
+        "nextRequestAt": 1795129349054.1633,
+        "seed": 767295837,
+        "state": "finished",
+        "revision": 1
+      },
+      "sampledAt": 1795128452702,
+      "clock": 1795128452451.8,
+      "renderAge": 125.03130004882813,
+      "castleAge": 128.41519995117187,
+      "castleMode": 4,
+      "castleRegions": [
+        0.800000011920929,
+        0.699999988079071,
+        0.699999988079071,
+        0.6000000238418579,
+        0.25999999046325684,
+        0.8500000238418579,
+        0.6499999761581421,
+        0.8999999761581421,
+        0.800000011920929,
+        0.75
+      ],
+      "active": false,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 3.932382674599661,
+          "y": 1.4,
+          "z": 22.653061145305355
+        },
+        "eye": {
+          "x": 8.674887270246142,
+          "y": 9.019356396434462,
+          "z": 36.49878461012961
+        },
+        "aim": {
+          "x": 3.932382674599661,
+          "y": 1.4,
+          "z": 22.653061145305355
+        }
+      },
+      "position": {
+        "x": 3.9323826745996615,
+        "z": 22.65306114530535
+      }
+    },
+    {
+      "show": {
+        "id": "08c47f63-c574-4767-8317-dd9789cd135b",
+        "musicId": "joyful-piano-orchestra",
+        "duration": 125.04816326530612,
+        "timelineVersion": 52,
+        "startsAt": 1795128324006,
+        "endsAt": 1795128449054.1633,
+        "nextRequestAt": 1795129349054.1633,
+        "seed": 767295837,
+        "state": "finished",
+        "revision": 1
+      },
+      "sampledAt": 1795128452653,
+      "clock": 1795128452583.6,
+      "renderAge": 125.03310595703125,
+      "castleAge": 128.56080004882813,
+      "castleMode": 4,
+      "castleRegions": [
+        0.800000011920929,
+        0.699999988079071,
+        0.699999988079071,
+        0.6000000238418579,
+        0.25999999046325684,
+        0.8500000238418579,
+        0.6499999761581421,
+        0.8999999761581421,
+        0.800000011920929,
+        0.75
+      ],
+      "active": false,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        },
+        "eye": {
+          "x": 4.742504595646483,
+          "y": 9.019356396434468,
+          "z": 37.84572346482426
+        },
+        "aim": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        }
+      },
+      "position": {
+        "x": 0,
+        "z": 24
+      }
+    },
+    {
+      "show": {
+        "id": "08c47f63-c574-4767-8317-dd9789cd135b",
+        "musicId": "joyful-piano-orchestra",
+        "duration": 125.04816326530612,
+        "timelineVersion": 52,
+        "startsAt": 1795128324006,
+        "endsAt": 1795128449054.1633,
+        "nextRequestAt": 1795129349054.1633,
+        "seed": 767295837,
+        "state": "finished",
+        "revision": 1
+      },
+      "sampledAt": 1795128452662,
+      "clock": 1795128452306.9841,
+      "renderAge": 125.03760009765625,
+      "castleAge": 128.28794995117187,
+      "castleMode": 4,
+      "castleRegions": [
+        0.800000011920929,
+        0.699999988079071,
+        0.699999988079071,
+        0.6000000238418579,
+        0.25999999046325684,
+        0.8500000238418579,
+        0.6499999761581421,
+        0.8999999761581421,
+        0.800000011920929,
+        0.75
+      ],
+      "active": false,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        },
+        "eye": {
+          "x": 4.742504595646483,
+          "y": 9.019356396434468,
+          "z": 37.84572346482426
+        },
+        "aim": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        }
+      },
+      "position": {
+        "x": 0,
+        "z": 24
+      }
+    }
+  ],
+  "failure": "Error: Watching moved the player\n    at file:///private/tmp/winter-v52-production-sync.mjs:37:96",
+  "errors": []
+}

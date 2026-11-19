@@ -1,4 +1,6 @@
-# WINTERLIGHT v52 — 완곡 공연·설산·기기별 UI
+# WINTERLIGHT v52 — 운영 반영 완료
+
+공식 주소: **https://moru-winter-park.vercel.app/** · 운영 소스 `b360198`.
 
 사용자가 제공한 두 곡을 서버에서 동일 확률로 선택해 전체 길이로 공연한다. 성 구역별 조명과 둥근 불꽃, 1분 설산, 승강장/경사, Windows 투명도 fallback과 강제 다크 색상표, 설정 제목·채팅·관리자 정렬을 통합했다. [변경·실측·스크린샷](docs/release-v52.md) · [음원 출처](docs/show-music-v52.md) · [검사](docs/TESTING.md) · [배포](docs/DEPLOYMENT.md). 아래는 이전 버전 이력이다.
 
