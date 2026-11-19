@@ -6,7 +6,7 @@
 - loadingTreePath()를 직접 가져와 원본 경로와 600:540 비율 유지. 정적 로고·공유 카드·파비콘·앱 아이콘을 모두 같은 트리로 갱신. 결정형 대체 로고와 거절된 이름 후보 제거.
 - 실버·아이스 블루, 작은 대문자(PC 14px / 모바일 13px, weight 500), 부제 없음. 로딩 애니메이션 자체 유지.
 - 공유 메타데이터·manifest·CSS와 서비스 워커 캐시를 silver-tree-v1으로 갱신.
-- [변경·검증·배포 기록](docs/brand-silver-blue.md).
+- Sites 54 succeeded / Vercel READY. 양쪽 운영 HTTP 11/11 PASS, 공유 PNG 1200×630·45,581 B 원본 일치. [변경·검증·배포 기록](docs/brand-silver-blue.md).
 
 ## v45 — 2026-11-19 · 직접 시야 조작과 UI 정리 (운영 반영)
 

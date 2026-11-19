@@ -1,0 +1,130 @@
+{
+  "origin": "https://moru-winter-park.vercel.app",
+  "checked_at_utc": "2026-11-19T06:54:09.637744+00:00",
+  "authentication": "anonymous public HTTP",
+  "expected_source_directory": "/workspace/scratch/4bce338b713b/winter-brand-simple/web-dist",
+  "revision": "silver-tree-v1",
+  "passed": true,
+  "check_count": 11,
+  "checks": [
+    {
+      "path": "/",
+      "ok": true,
+      "status": 200,
+      "content_type": "text/html",
+      "bytes": 22486,
+      "title": "WINTERLIGHT"
+    },
+    {
+      "path": "/brand/og-image.png?v=silver-tree-v1",
+      "ok": true,
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 45581,
+      "sha256": "6b488e9f6437351cb7826667786f259dd56c00dc509dc26d202d7f6ab256c55c",
+      "expected_sha256": "6b488e9f6437351cb7826667786f259dd56c00dc509dc26d202d7f6ab256c55c",
+      "expected_bytes": 45581,
+      "dimensions": [
+        1200,
+        630
+      ],
+      "expected_dimensions": [
+        1200,
+        630
+      ]
+    },
+    {
+      "path": "/brand/logo-compact.svg?v=silver-tree-v1",
+      "ok": true,
+      "status": 200,
+      "content_type": "image/svg+xml",
+      "bytes": 1866,
+      "sha256": "7419f7ca5c041034604e44ff5e54d41fa1cb1df05fe4b70101adc1bf50205498",
+      "expected_sha256": "7419f7ca5c041034604e44ff5e54d41fa1cb1df05fe4b70101adc1bf50205498",
+      "expected_bytes": 1866
+    },
+    {
+      "path": "/brand/favicon.svg?v=silver-tree-v1",
+      "ok": true,
+      "status": 200,
+      "content_type": "image/svg+xml",
+      "bytes": 1999,
+      "sha256": "d1afd78cb48469b3aa38c28d7cfae8bc10566e516b7cb8da145e9c3154ac8081",
+      "expected_sha256": "d1afd78cb48469b3aa38c28d7cfae8bc10566e516b7cb8da145e9c3154ac8081",
+      "expected_bytes": 1999
+    },
+    {
+      "path": "/site.webmanifest?v=silver-tree-v1",
+      "ok": true,
+      "status": 200,
+      "content_type": "application/manifest+json",
+      "bytes": 573,
+      "sha256": "2a7e59c19b836274d83b291a9b000c7b800fb63b9e8685eb998d21cfb201adaa",
+      "expected_sha256": "2a7e59c19b836274d83b291a9b000c7b800fb63b9e8685eb998d21cfb201adaa",
+      "expected_bytes": 573
+    },
+    {
+      "path": "/brand.css?v=silver-tree-v1",
+      "ok": true,
+      "status": 200,
+      "content_type": "text/css",
+      "bytes": 806,
+      "sha256": "e21ea886c73fb2da0cef1486f0bd2c3c3a163882a13fe177fff84a23d4ddf6bb",
+      "expected_sha256": "e21ea886c73fb2da0cef1486f0bd2c3c3a163882a13fe177fff84a23d4ddf6bb",
+      "expected_bytes": 806
+    },
+    {
+      "path": "/luminous-loading.js?v=silver-tree-v1",
+      "ok": true,
+      "status": 200,
+      "content_type": "application/javascript",
+      "bytes": 4078,
+      "sha256": "4edec15e2ddffb0f6692b9e3e5ed57a3d50386e4ab1bff19b9e09860e7ab7f9c",
+      "expected_sha256": "4edec15e2ddffb0f6692b9e3e5ed57a3d50386e4ab1bff19b9e09860e7ab7f9c",
+      "expected_bytes": 4078
+    },
+    {
+      "path": "/brand/preview.html?v=silver-tree-v1",
+      "ok": true,
+      "status": 200,
+      "content_type": "text/html",
+      "bytes": 4426,
+      "sha256": "3a32f821aaad9d4f451d97b0971a0d9a5582a4a4dd55a3050625c07290744f89",
+      "expected_sha256": "3a32f821aaad9d4f451d97b0971a0d9a5582a4a4dd55a3050625c07290744f89",
+      "expected_bytes": 4426
+    },
+    {
+      "path": "/sw.js",
+      "ok": true,
+      "status": 200,
+      "content_type": "application/javascript",
+      "bytes": 4656,
+      "sha256": "8380c4618d659f21bfd0aa6959a051e1827024a37c9b2b2e10c50a407f6f5ecf",
+      "expected_sha256": "8380c4618d659f21bfd0aa6959a051e1827024a37c9b2b2e10c50a407f6f5ecf",
+      "expected_bytes": 4656
+    },
+    {
+      "path": "/api/health",
+      "ok": true,
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 30,
+      "health": {
+        "ok": true,
+        "multiplayer": true
+      }
+    },
+    {
+      "path": "/api/access",
+      "ok": true,
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 110,
+      "access": {
+        "worldId": "winter-plaza",
+        "inviteRequired": true,
+        "sessionIsNull": true
+      }
+    }
+  ]
+}

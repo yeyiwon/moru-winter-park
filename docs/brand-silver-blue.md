@@ -31,3 +31,12 @@
 최종 검증 결과·배포 ID는 `qa/brand-silver/`에 기록한다. 전체 게임과 실물 모바일, 외부 메신저 캐시는 이번 브랜드 작업에서 새로 검증한 것으로 주장하지 않는다. 공개 GitHub 연결의 쓰기 권한 403은 기존 별도 동기화 제한이며, 기존 Sites 소스 저장과 Vercel 파일 배포를 사용한다.
 
 최종 로컬 검증: Worker·Vercel build PASS, 기존 로딩·입력 검사 3/3 PASS. 6개 SVG의 트리 경로가 원본 문자열과 전부 일치함을 확인했다. OG PNG를 직접 열어 최종 모양을 확인했다. 정적 용량 22,646,442 B / 25,165,824 B, 코드 gzip 1,012,787 B / 1,280,000 B로 예산 검사 PASS.
+
+## 최종 운영 반영 완료
+
+- 소스: `01f00c60d9cb180704fde97ed27dbb6a6fe22fcf`.
+- Sites: 버전 54, deployment `appgdep_6afe9cb2e8e481918ca62ef842309219`, succeeded.
+- Vercel: `dpl_141ESF8WAfkspfe1XKsQMGRRD67D`, READY, 기존 `moru-winter-park.vercel.app` alias 정상.
+- 양쪽 운영 HTTP 각각 11/11 PASS. WINTERLIGHT 제목, 원본 트리 로고·파비콘·CSS·manifest·로딩 모듈·미리보기·서비스 워커의 응답을 확인했다. 1200×630 공유 PNG는 45,581 B이며 로컬 준비본 SHA256과 일치한다.
+- API health와 기존 초대 보호 응답도 읽기 검사 통과. 방문자 데이터에 쓰기 작업 없음.
+- Vercel 빌드에서 공개 저장소의 고정 baseline 168파일 복원 및 237개 원본 소스 해시 검증 성공. 라우팅·환경 변수·도메인·Git 연결 설정은 변경하지 않았다.

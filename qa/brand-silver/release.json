@@ -1,0 +1,30 @@
+{
+  "source_commit": "01f00c60d9cb180704fde97ed27dbb6a6fe22fcf",
+  "source_tree_sha256": "acab5cc52a3bd0078ce64f68e2e0a3f68ad45511ccc87ab647e393cf375bb4ce",
+  "sites": {
+    "project_id": "appgprj_6af6f606ab648191855ab9bd44c334fd",
+    "version": 54,
+    "version_id": "appgprj_6af6f606ab648191855ab9bd44c334fd~appgver_0fa76aaf61148191a2a7daf13f319a9a",
+    "deployment_id": "appgdep_6afe9cb2e8e481918ca62ef842309219",
+    "status": "succeeded",
+    "url": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+    "http_checks_passed": 11
+  },
+  "vercel": {
+    "project_id": "prj_mbioBXlMSNwfJ8MWNaRMi2Lsm8I0",
+    "deployment_id": "dpl_141ESF8WAfkspfe1XKsQMGRRD67D",
+    "status": "READY",
+    "alias_error": null,
+    "url": "https://moru-winter-park.vercel.app",
+    "baseline_files_restored": 168,
+    "exact_source_files_verified": 237,
+    "payload_file_count": 72,
+    "http_checks_passed": 11
+  },
+  "name": "WINTERLIGHT",
+  "name_status": "confirmed by user",
+  "revision": "silver-tree-v1",
+  "logo": "Original loadingTreePath() unchanged geometry and aspect ratio, static",
+  "runtime_settings": "unchanged",
+  "production_http_verification": "PASS 11/11 on each origin"
+}

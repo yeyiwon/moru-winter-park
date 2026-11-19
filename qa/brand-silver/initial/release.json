@@ -22,5 +22,5 @@
   "name_status": "No replacement selected; HIBERNA and NIVIS rejected and removed from preview",
   "palette": "silver and ice blue",
   "runtime_settings": "unchanged",
-  "production_http_verification": "pending"
+  "production_http_verification": "PASS 11/11 on each origin"
 }
