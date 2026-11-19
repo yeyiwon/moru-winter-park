@@ -4,12 +4,12 @@ import {decorationIcon,validDecorationColor} from './decorations.js';
 const cache=new Map(),pending=new Map();
 export function showOrnamentPreview(node,kind,color='#e5bb6b'){
  color=validDecorationColor(color)?color:'#e5bb6b';
- const key=kind+color;node.dataset.ornamentPreview=key;
- node.innerHTML=decorationIcon(kind);node.style.color=color;
- const show=url=>{if(node.dataset.ornamentPreview!==key)return;const image=document.createElement('img');image.alt='';image.width=image.height=96;image.src=url;image.className='ornament-thumbnail';node.replaceChildren(image);};
+ const key=kind+color;if(node.dataset.ornamentPreview===key)return;node.dataset.ornamentPreview=key;
+ if(!node.querySelector('img'))node.innerHTML=decorationIcon(kind);node.style.color=color;
+ const show=url=>{if(node.dataset.ornamentPreview!==key)return;const image=document.createElement('img');image.alt='';image.width=image.height=96;image.src=url;image.className='ornament-thumbnail';image.dataset.ornamentKey=key;node.replaceChildren(image);};
  if(cache.has(key)){show(cache.get(key));return;}
  if(!pending.has(key))pending.set(key,{kind,color,callbacks:[]});
- pending.get(key).callbacks.push(show);
+ pending.get(key).callbacks.push({node,apply:show});
 }
 
 // Render only requested thumbnails, one per display frame, on the existing
@@ -28,7 +28,11 @@ export function createOrnamentPreviews(renderer,ornaments){
  return {
   update(){
    if(disposed||!pending.size)return;
-   const [key,job]=pending.entries().next().value;pending.delete(key);
+   let key,job;
+   // Native colour pickers can emit dozens of drafts before the next frame.
+   // Drop superseded requests before any synchronous GPU readback.
+   while(pending.size){[key,job]=pending.entries().next().value;pending.delete(key);job.callbacks=job.callbacks.filter(({node})=>node.isConnected&&node.dataset.ornamentPreview===key);if(job.callbacks.length)break;job=null;}
+   if(!job)return;
    if(!ornaments.meshes[job.kind])return;
    body.geometry=ornaments.meshes[job.kind].geometry;frame.geometry=ornaments.frames[job.kind].geometry;
    jewel.color.set(job.color);jewel.emissive.set(job.color);
@@ -36,7 +40,7 @@ export function createOrnamentPreviews(renderer,ornaments){
    try{
     renderer.setRenderTarget(target);renderer.setClearColor(0,0);renderer.autoClear=true;renderer.render(scene,camera);renderer.readRenderTargetPixels(target,0,0,96,96,pixels);
     for(let y=0;y<96;y++)rgba.data.set(pixels.subarray((95-y)*384,(96-y)*384),y*384);
-    ctx.putImageData(rgba,0,0);const url=canvas.toDataURL('image/png');cache.set(key,url);if(cache.size>64)cache.delete(cache.keys().next().value);for(const apply of job.callbacks)apply(url);
+    ctx.putImageData(rgba,0,0);const url=canvas.toDataURL('image/png');cache.set(key,url);if(cache.size>64)cache.delete(cache.keys().next().value);for(const {apply} of job.callbacks)apply(url);
    }finally{renderer.setRenderTarget(previous);renderer.setClearColor(clear,alpha);renderer.autoClear=auto;}
   },
   dispose(){disposed=true;pending.clear();cache.clear();target.dispose();jewel.dispose();gold.dispose();}

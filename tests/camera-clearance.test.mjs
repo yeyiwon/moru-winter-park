@@ -18,3 +18,21 @@ test('activity changes do not bypass collision recovery and pre-constrained rays
  camera.position.set(0,1,16.5);guard.update(camera,focus,[wall],1/60,{mode:'carousel',maxRecoverySpeed:3.5});assert.ok(camera.position.distanceTo(focus)-previous<=3.5/60+1e-9);
  for(const shortened of [.5,1,3]){camera.position.set(0,1,shortened);guard.update(camera,focus,[],1/60,{mode:'carousel',maxRecoverySpeed:3.5});assert.ok(camera.position.distanceTo(focus)<=shortened+1e-9,'room/terrain distance must never be expanded by clearance');}
 });
+
+
+test('main tree foliage never collapses walking camera while a solid wall still does',()=>{
+ const guard=createCameraClearance(),camera=new T.PerspectiveCamera(),focus=new T.Vector3(0,1,0),material=new T.MeshStandardMaterial();
+ const foliage=new T.Mesh(new T.BoxGeometry(3,5,2),material);foliage.userData.cameraFoliage=true;foliage.position.set(0,1,3);foliage.updateMatrixWorld(true);
+ camera.position.set(0,1,16.5);guard.update(camera,focus,[foliage],1/60,{mode:'walk'});assert.equal(camera.position.z,16.5);assert.equal(guard.fadedCount,1);
+ const wall=new T.Mesh(new T.BoxGeometry(4,6,.3),material);wall.position.set(0,1,10);wall.updateMatrixWorld(true);
+ for(let i=0;i<4;i++){camera.position.set(0,1,16.5);guard.update(camera,focus,[foliage,wall],1/60,{mode:'walk'});}
+ assert.ok(camera.position.z<10);assert.equal(wall.material,material);guard.reset();assert.equal(foliage.material,material);
+});
+
+
+test('carousel structures beyond the seat fade without collapsing the wider view',()=>{
+ const guard=createCameraClearance(),camera=new T.PerspectiveCamera(),focus=new T.Vector3(0,3,0),material=new T.MeshStandardMaterial();
+ const column=new T.Mesh(new T.BoxGeometry(.5,6,.5),material);column.position.set(0,3,9);column.userData={rideCameraFade:true,cameraFadeMode:'carousel'};column.updateMatrixWorld(true);
+ camera.position.set(0,3,24);guard.update(camera,focus,[column],1/60,{mode:'carousel',minDistance:4.2});assert.equal(camera.position.z,24);assert.equal(guard.fadedCount,1);
+ guard.reset();camera.position.set(0,3,24);guard.update(camera,focus,[column],1/60,{mode:'walk'});assert.ok(camera.position.z<9);assert.equal(guard.fadedCount,0);
+});

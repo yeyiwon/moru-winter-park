@@ -10,9 +10,12 @@
 #self-label b,#visitor-labels .visitor-label>b{color:var(--ui-world-label);background:transparent;border-color:transparent;text-shadow:0 1px 4px #0b2034c7;backdrop-filter:none;-webkit-backdrop-filter:none}
 .speech-bubble,#self-bubble,#visitor-labels .speech-bubble{color:var(--ui-ink);background:var(--ui-hud);border-color:var(--ui-rim);box-shadow:var(--ui-shadow);text-shadow:var(--ui-text-shadow);backdrop-filter:none;-webkit-backdrop-filter:none}
 #chat-log{color:var(--ui-world-label);text-shadow:0 1px 5px #0b2034e6}
+#chat-log[hidden],body:not(.chat-typing) #chat-log{display:none!important}
+#chat-log p{animation:none}
+#chat-log .chat-hide{font:inherit;font-size:10px;color:inherit;background:none;border:0;padding:4px 7px;opacity:.65}
 #chat-log b{color:var(--ui-world-label)}
-body.chat-typing #chat-log{color:var(--ui-ink);background:var(--ui-hud);border:1px solid var(--ui-rim);border-radius:14px;padding:9px 13px;box-shadow:var(--ui-shadow);text-shadow:var(--ui-text-shadow)}
-body.chat-typing #chat-log b{color:var(--ui-accent)}
+body.chat-typing #chat-log{color:var(--ui-world-label);background:none;border:0;border-radius:0;padding:4px 8px;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none;text-shadow:0 1px 5px #0b2034e6}
+body.chat-typing #chat-log b{color:var(--ui-world-label)}
 #chat-status:not(:empty){display:table;max-width:100%;padding:5px 10px;border-radius:10px;background:var(--ui-hud);color:var(--ui-danger);text-shadow:var(--ui-text-shadow)}
 #place-card h2,#ride-label{color:var(--ui-world-label);text-shadow:0 1px 5px #0b2034e6}
 #place-actions button,#ski-controls button{color:var(--ui-ink);background:var(--ui-hud);border:1px solid var(--ui-rim);box-shadow:var(--ui-shadow);text-shadow:var(--ui-text-shadow);backdrop-filter:none;-webkit-backdrop-filter:none}
@@ -31,16 +34,16 @@ body.chat-typing #chat-log b{color:var(--ui-accent)}
 #pane-audio #master-mute{font-size:12px;min-height:44px}
 
 /* The general status belongs to the toolbar, fireworks status to its own row. */
-#admin-panel{width:min(560px,calc(100vw - 24px))}
+#admin-panel{width:min(600px,calc(100vw - 24px))}
 #admin-panel .panel-heading{margin:0;min-height:44px}
 #admin-panel .panel-heading h2{font-size:16px;line-height:1.4;font-weight:550}
-#admin-panel .panel-scroll{display:flex;flex-direction:column;gap:0;font-size:13px;line-height:1.5}
-#admin-panel .admin-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-bottom:8px}
+#admin-panel .panel-scroll{display:flex;flex-direction:column;gap:12px;font-size:13px;line-height:1.5}
+#admin-panel .admin-toolbar{display:flex;align-items:center;justify-content:flex-end;gap:12px;margin-bottom:0}
 #admin-panel .admin-toolbar output{flex:1;min-width:0;margin:0;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
 #admin-panel .admin-toolbar output:empty{display:none}
 #admin-panel button{min-height:44px;padding:8px 11px;font-size:12px;line-height:1.35}
-#admin-panel .admin-section{border:0;border-bottom:1px solid var(--ui-edge);margin:0;padding:0;background:transparent}
-#admin-panel .admin-section>summary{display:flex;align-items:center;gap:10px;min-height:48px;padding:8px 0;font-size:13px;font-weight:500;line-height:1.4}
+#admin-panel .admin-section{border:1px solid var(--ui-divider);border-radius:16px;margin:0;padding:0 16px;background:var(--ui-field)}
+#admin-panel .admin-section>summary{display:flex;align-items:center;gap:10px;min-height:56px;padding:12px 0;font-size:13px;font-weight:500;line-height:1.4}
 #admin-panel .admin-section>summary>span:first-child{flex:1;min-width:0}
 #admin-panel .admin-count{flex:none;font-size:11px;font-weight:400;color:var(--ui-muted)}
 #admin-panel .admin-state{display:inline-flex;align-items:center;flex:none;width:auto;max-width:110px;min-height:24px;margin:0;padding:3px 8px;border-radius:8px;background:var(--ui-field);color:var(--ui-muted);font-size:11px;font-weight:400;line-height:1.4}
@@ -72,19 +75,19 @@ dialog[data-nonmodal][data-panel-suspended],body:is(.studio-open,.quiz-open) dia
 body[data-controls=ride] :is(#joystick,.touch-actions),body[data-controls=lift] :is(#joystick,.touch-actions){display:none!important}
 body.chat-typing :is(#place-card,#ride-hud,#emote-panel){visibility:hidden!important;pointer-events:none!important}
 #place-actions{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px}
-#place-actions button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;min-width:0;text-align:center;line-height:1.4}
+#place-actions button{border-radius:10px;display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;min-width:0;text-align:center;line-height:1.4}
 #place-actions .action-label{min-width:0;text-align:center;overflow-wrap:anywhere}
 #chat-form[hidden]{display:none!important}
 
 /* The sole world notice is the brief, server-timed fireworks lead-in. */
-#firework-notice{position:fixed;z-index:25;left:50%;top:calc(76px + env(safe-area-inset-top));transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:10px;max-width:min(360px,calc(100vw - 32px));box-sizing:border-box;padding:10px 16px;border:1px solid var(--ui-rim);border-radius:16px;background:var(--ui-hud);box-shadow:var(--ui-shadow);color:var(--ui-ink);pointer-events:none;font-size:12px;line-height:1.5;text-align:center}
+#firework-notice{position:fixed;z-index:25;left:50%;top:calc(76px + env(safe-area-inset-top));transform:translateX(-50%);display:flex;align-items:center;justify-content:center;gap:10px;width:max-content;max-width:min(360px,calc(100vw - 32px));box-sizing:border-box;padding:10px 16px;border:1px solid var(--ui-rim);border-radius:16px;background:var(--ui-hud);box-shadow:var(--ui-shadow);color:var(--ui-ink);pointer-events:none;font-size:12px;line-height:1.5;text-align:center}
 #firework-notice .firework-notice-countdown{font-variant-numeric:tabular-nums;white-space:nowrap;font-size:12px;color:var(--ui-accent)}
 #firework-notice[hidden],body:is(.studio-open,.quiz-open,.chat-typing) #firework-notice{display:none!important}
 @media(pointer:coarse),(max-width:650px){
  body:not(.invite-gate) #studio{max-height:calc(100dvh - var(--keyboard,0px) - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
  #studio .studio-header{grid-template-rows:44px auto;gap:2px 8px}
  #studio .studio-head>span{font-size:16px}
- #studio .studio-tabs{justify-content:flex-start;gap:2px;overflow-x:auto}
+ #studio .studio-tabs{justify-content:safe center;gap:2px;overflow-x:auto}
  #studio .studio-tabs button{flex:0 0 auto;min-height:44px;font-size:11px;padding:8px 10px}
  #studio .studio-section-title{display:none}
  #admin-panel{padding:12px 16px;max-height:calc(var(--dialog-viewport,100dvh) - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom))}
@@ -123,7 +126,7 @@ body.chat-typing :is(#place-card,#ride-hud,#emote-panel){visibility:hidden!impor
 #pane-activities .studio-public-actions button{justify-content:flex-start;gap:12px;min-height:58px;padding:12px 16px;font-size:13px;border-radius:14px}
 #pane-activities .studio-public-actions button svg{width:21px;height:21px}
 #pane-activities #firework-request-status{margin:-4px 0 4px;padding-left:49px;font-size:11px;line-height:1.5;text-align:left}
-#studio .studio-tabs{justify-content:flex-start;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+#studio .studio-tabs{justify-content:safe center;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
 #studio .studio-tabs button{flex-shrink:0}
 #studio:has(#pane-activities:not([hidden])) .studio-saved{visibility:hidden}
 
@@ -137,5 +140,53 @@ body.chat-typing :is(#place-card,#ride-hud,#emote-panel){visibility:hidden!impor
  body.chat-typing #chat-log{padding-right:13px;bottom:calc(82px + env(safe-area-inset-bottom) + var(--keyboard,0px))}
 }
 
-/* World projection owns the vertical anchor; bottom anchoring caused a height feedback loop. */
-#place-card{bottom:auto;height:max-content}
+/* Keep the one nearby action in a predictable HUD slot, clear of touch controls. */
+#place-card{left:50%!important;top:auto!important;bottom:calc(108px + env(safe-area-inset-bottom));height:max-content;transform:translateX(-50%)}
+@media(pointer:coarse),(max-width:650px){#place-card{bottom:calc(170px + env(safe-area-inset-bottom))}}
+@media(max-height:500px) and (orientation:landscape){#place-card{bottom:calc(108px + env(safe-area-inset-bottom))}}
+
+/* Shared link field: one outline and matched corners, no overflowing copy hitbox. */
+.invite-link-control{grid-template-columns:minmax(0,1fr) 44px;gap:4px;padding:3px 4px 3px 12px;border:1px solid var(--ui-edge);border-radius:14px;background:var(--ui-field);box-shadow:inset 0 1px 0 #ffffff12;min-width:0;width:100%;box-sizing:border-box}
+.invite-link-control :is(#invite-url,#invite-created-url){min-width:0;width:100%;height:44px;min-height:44px;margin:0!important;padding:0 4px!important;border:0!important;border-radius:0;background:transparent!important;box-shadow:none!important;font-size:12px;line-height:1.5;text-overflow:ellipsis}
+.invite-link-control :is(#copy-room,#copy-created-invite){display:grid;place-items:center;min-width:44px;width:44px;height:44px;min-height:44px;margin:0;padding:0;border:0;border-radius:10px;background:transparent;box-shadow:none;color:var(--ui-ink)}
+.invite-link-control button:hover{background:var(--ui-hover)}
+.invite-link-control:focus-within{border-color:var(--ui-selected-edge)}
+#room-share #copy-result{margin:6px 10px 0;font-size:11px}
+#admin-panel .admin-section-body{padding:0 0 16px;min-width:0}
+#admin-panel .operations-metrics{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:0 0 16px}
+#admin-panel .operations-metric{min-width:0;padding:12px 14px;border-radius:12px;background:var(--ui-field)}
+#admin-panel .operations-metric dt{font-size:11px;color:var(--ui-muted);line-height:1.5}
+#admin-panel .operations-metric dd{margin:6px 0 0;font-size:14px;line-height:1.5;text-align:left;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+#admin-panel [data-operations-status]>p{font-size:11px;line-height:1.7;overflow-wrap:anywhere;margin:8px 0;color:var(--ui-muted)}
+#admin-panel [data-world-settings]{display:grid;gap:16px;margin-top:20px;padding-top:18px;border-top:1px solid var(--ui-divider)}
+#admin-panel [data-world-settings] fieldset{margin:0;gap:8px}
+#admin-panel [data-world-settings] legend{padding-bottom:12px}
+#admin-panel [data-world-settings] .check-label{display:flex;align-items:center;gap:10px;min-height:44px;margin:0;padding:8px 12px;border-radius:10px;background:var(--ui-field)}
+#admin-panel [data-world-settings] input[type=checkbox]{appearance:none;flex:none;width:18px;height:18px;min-height:18px;margin:0;padding:0;border:1px solid var(--ui-edge);border-radius:5px;background:transparent;display:grid;place-items:center}
+#admin-panel [data-world-settings] input:checked{background:var(--ui-selected);border-color:var(--ui-selected-edge)}
+#admin-panel [data-world-settings] input:checked:after{content:'';width:8px;height:4px;border-left:1.5px solid currentColor;border-bottom:1.5px solid currentColor;transform:translateY(-1px) rotate(-45deg)}
+#admin-panel .admin-logout{align-self:flex-start;background:transparent;border:0;color:var(--ui-muted);margin-top:4px}
+#admin-panel #invite-form{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:10px 12px}
+#admin-panel #invite-form label{margin:0;grid-column:1/-1}
+#admin-panel #invite-form select{min-width:0;width:100%;min-height:44px;margin:0}
+#admin-panel #invite-result{line-height:1.7;font-size:12px;overflow-wrap:anywhere}
+#admin-panel .invite-list-row{gap:12px;padding:12px 0;line-height:1.6}
+@media(max-width:380px){#admin-panel .operations-metrics{gap:8px}#admin-panel .operations-metric{padding:10px}#studio .studio-tabs{gap:0}#studio .studio-tabs button{padding-inline:7px}}
+
+/* Tree feedback is independent of the dock: messages never resize its grid. */
+#tree-status{position:fixed;z-index:26;top:calc(76px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);width:max-content;max-width:calc(100vw - 32px);box-sizing:border-box;margin:0;padding:10px 16px;border:1px solid var(--ui-rim);border-radius:16px;background:var(--ui-hud);color:var(--ui-ink);box-shadow:var(--ui-shadow);font-size:12px;line-height:1.5;text-align:center;pointer-events:none}
+#tree-status[hidden],body:is(.studio-open,.quiz-open,.chat-typing) #tree-status,body:has(#tree-status:not([hidden])) #firework-notice{display:none!important}
+#tree-tools .tree-palette [data-kind]{height:64px;min-height:64px;grid-template-rows:34px 13px}
+#tree-tools .tree-palette .ornament-choice,.wish-shapes .ornament-choice{display:block;width:34px;height:34px;margin:auto;line-height:0}
+#tree-tools .tree-palette .ornament-choice svg,.wish-shapes .ornament-choice svg{width:34px;height:34px}
+.glass-panel .wish-shapes button{grid-template-rows:34px 16px;min-height:68px}
+@media(max-height:500px){#tree-tools .tree-palette [data-kind]{height:48px;min-height:48px;grid-template-rows:24px 12px}#tree-tools .tree-palette .ornament-choice{width:24px;height:24px}}
+
+/* Notices alone use a darker translucent lens for legibility over bright snow. */
+:is(#tree-status,#firework-notice,#world-notice){background:rgba(24,35,54,.7);color:#fff8ef;border:1px solid rgba(231,240,255,.22);box-shadow:inset 0 1px 0 rgba(255,255,255,.1),0 6px 24px rgba(8,17,32,.16);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);text-shadow:0 1px 2px #08112066}
+#firework-notice .firework-notice-countdown{color:#f2deac}
+#chat-form .chat-entry{display:grid;grid-template-columns:minmax(0,1fr) 44px 44px;align-items:center;gap:2px;padding:2px 4px 2px 12px}
+#chat-form .chat-entry button{display:grid;place-items:center;box-sizing:border-box;width:44px;min-width:44px;height:44px;min-height:44px;padding:0;border:0;border-radius:10px;background:transparent;box-shadow:none}
+#chat-form .chat-entry button[type=submit]{background:var(--ui-selected)}
+#chat-form .chat-entry button svg{width:18px;height:18px;stroke-width:1.6}
+#chat-form .chat-entry .chat-close{font:500 11px/1 var(--ui-font);color:var(--ui-muted)}

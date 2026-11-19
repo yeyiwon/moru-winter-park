@@ -133,5 +133,8 @@ export function buildCarousel({sculpted=true}={}){
 #include <colorspace_fragment>
 }`}));sparkles.name='carousel-travelling-star-glints';sparkles.userData.cameraIgnore=true;root.add(sparkles);
  function update(time,still=false){if(still||!Number.isFinite(time))return;sparkleTime.value=time;palette.light.color.set('#ffe5ad').multiplyScalar(1.7+.15*Math.sin(time*.55));rotor.rotation.y=-time*.10;horses.forEach((horse,i)=>horse.position.y=carouselDimensions.bobBase+Math.sin(time*1.05+i*Math.PI*.5)*carouselDimensions.bobAmplitude);}
+ // A seated rider can look through the ride's own posts, horses and canopy.
+ // Only intersecting meshes fade; nearby buildings still constrain the camera.
+ root.traverse(object=>{if(object.isMesh&&!object.userData.cameraIgnore)Object.assign(object.userData,{rideCameraFade:true,cameraFadeMode:'carousel'});});
  root.userData.asset='authored-swept-equine-carousel';root.updateMatrixWorld(true);return{root,rotor,seats,horses,update,setQuality(value){sparkleGeometry.setDrawRange(0,value==='low'?24:value==='medium'?48:80);},dimensions:carouselDimensions};
 }

@@ -6,7 +6,7 @@ import {createLightingThemeManager} from './lighting-theme.js';
 import {mountMuseumPuzzle} from './museum-puzzle.js';
 import './world-settings.js';
 import {interiorDoors,museumGalleries} from './district-layout.js';
-import {cameraDefaults,createCameraPolicy,smoothCameraAngle,followCameraHeight,cameraSubjectFocus,cameraOrbitPosition,cameraOrbitFocus,constrainCameraFocusToRoom,constrainCameraToRoom,constrainCameraToTerrain} from './camera-policy.js';
+import {createCameraTransition,cameraDefaults,createCameraPolicy,smoothCameraAngle,followCameraHeight,cameraSubjectFocus,cameraOrbitPosition,cameraOrbitFocus,constrainCameraFocusToRoom,constrainCameraToRoom,constrainCameraToTerrain} from './camera-policy.js';
 import {createNavigationClient} from './navigation-client.js';
 import {createFrameMetrics} from './frame-metrics.js';
 import {disposeOwnedScene} from './scene-resources.js';
@@ -27,7 +27,7 @@ import {createActivityReactions} from './activity-reactions.js';
 import {createPlazaSnowman} from './plaza-snowman.js';
 import {createMoveMarker} from './move-marker.js';
 import {createPreviewOrbit} from './preview-orbit.js';
-import {placePrompt,createLabelLayout} from './world-labels.js';
+import {createLabelLayout} from './world-labels.js';
 import {createSkiTrails} from './ski-trails.js';
 import {createOrnamentPreviews} from './ornament-preview.js';
 import {createSharedTree} from './shared-tree.js';
@@ -63,8 +63,7 @@ const glowCanvas=document.createElement('canvas');glowCanvas.width=glowCanvas.he
 const shadow=new T.Mesh(new T.PlaneGeometry(2.2,1.8),new T.MeshBasicMaterial({map:new T.CanvasTexture(glowCanvas),transparent:true,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.105;scene.add(shadow);
 // The resolved app preference honors an explicit full-motion choice on every OS.
 let still=()=>document.body.classList.contains('still'),paused=()=>transitioning||worldInputBlocked();
-const cameraPolicy=createCameraPolicy();let watchingFireworks=false;
-window.addEventListener('lab:watch-fireworks',()=>{if(activeInterior){window.labToast?.('야외에서 밤하늘을 바라봐 주세요.');return;}watchingFireworks=true;endTreeFrame();});
+const cameraPolicy=createCameraPolicy(),cameraTransition=createCameraTransition();
 let target=new T.Vector3(fluff.position.x,fluff.position.y+cameraDefaults.focusHeight,fluff.position.z),yaw=cameraDefaults.yaw,pitch=cameraDefaults.pitch,distance=cameraDefaults.distance,route=[],destination=null,phase=0,velocity=new T.Vector2(),jump=0,jumpVelocity=0,land=0,time=0,nearby=null,regionTimer,region='';
 const keys=new Set(),directions={KeyW:[0,-1],ArrowUp:[0,-1],KeyS:[0,1],ArrowDown:[0,1],KeyA:[-1,0],ArrowLeft:[-1,0],KeyD:[1,0],ArrowRight:[1,0]},joy=new T.Vector2(),gate=createDiscoveryGate(750);let shown=null;
 const navigation=createNavigationClient(findPath),physics=createSimulationClock(),playerState=createPlayerState();let simulationView=null;
@@ -87,9 +86,9 @@ function tapSeat(e){
 }
 function tapWorld(e){if(tapSeat(e))return;if(activeInterior&&!paused()){const r=canvas.getBoundingClientRect();ray.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);const floor=new T.Plane(new T.Vector3(0,1,0),-surfaceHeight(fluff.position.x,fluff.position.z));if(ray.ray.intersectPlane(floor,point))moveTo(point.x,point.z);return;}if(!paused()){const r=canvas.getBoundingClientRect();ray.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);if(Math.hypot(fluff.position.x+6.5,fluff.position.z-3)<5&&ray.intersectObject(snowman.root,true).length){snowman.interact(time);pointer=null;return;}if(sharedTree.readAt(ray)){pointer=null;return;}const fixtureHit=ray.intersectObjects(world.interactive.concat(world.winter.treeTargets),false)[0];if(fixtureHit){if(fixtureHit.object.userData.winter){if(fixtureHit.object.userData.action==='tree'&&window.treeDecorationActive?.()){window.placeTreeDecoration(fixtureHit.point);pointer=null;return;}const hit=fixtureHit.object.userData;const bath=hit.action==='onsen'?onsenEntrances[hit.activity||'bath']:null;const p=bath?{id:'onsen',...bath.access}:world.winter.destinations.find(p=>p.id===hit.action);if(p&&(p.id==='tree'?Math.hypot(fluff.position.x-treeLayout.x,fluff.position.z-treeLayout.z)<30:Math.hypot(p.x-fluff.position.x,p.z-fluff.position.z)<5))experience.show(p.id,hit.activity);else if(p)moveTo(p.x,p.z);}else if(fixtureHit.object.userData.action==='sound')window.openSoundExperiment?.();else window.openWorldExperiment?.();}else if(ray.intersectObject(fluff,true).length){if(!experience.useHeldItem())startJump();}else{const fixture=world.markers.find(m=>ray.intersectObject(m.root,true).length);if(fixture)moveTo(fixture.door.x,fixture.door.z);else if(ray.ray.intersectPlane(plane,point))moveTo(point.x,point.z);}}pointer=null;};
 const touchControls=createTouchControls({canvas,joystick,jumpButton:document.querySelector('#jump-button'),brakeButton:document.querySelector('#brake-button'),runButton:document.querySelector('#run-button'),locked:paused,onMove:(x,y)=>{joy.set(x,y);route=[];navigation.cancel();},onOrbit:orbitCamera,onZoom:zoomCamera,onTap:tapWorld,onJump:startJump});
-function orbitCamera(dx,dy){watchingFireworks=false;cameraPolicy.orbit(dx,dy,yaw);}
-function zoomCamera(amount){watchingFireworks=false;cameraPolicy.zoom(amount,distance);}
-window.resetWinterCamera=()=>{watchingFireworks=false;cameraPolicy.reset();endTreeFrame();backgroundDirty=true;};
+function orbitCamera(dx,dy){interruptTreeCamera();cameraPolicy.orbit(dx,dy,yaw);}
+function zoomCamera(amount){interruptTreeCamera();cameraPolicy.zoom(amount,distance);}
+window.resetWinterCamera=()=>{cameraPolicy.reset();endTreeFrame();backgroundDirty=true;};
 window.addEventListener('lab:camera-reset',()=>window.resetWinterCamera());
 window.addEventListener('keydown',event=>{
  if(event.code!=='KeyR'||event.repeat||event.isComposing||event.metaKey||event.ctrlKey||event.altKey||event.defaultPrevented||paused()||document.querySelector('dialog[open]:not([data-nonmodal])')||event.target.closest?.('input,textarea,select,[contenteditable=true]'))return;
@@ -102,7 +101,7 @@ async function moveTo(x,z){if(experience.active&&!experience.wake())return;route
 window.travelToIsland=id=>{const island=islands.find(r=>r.id===id);if(!island||island.hidden)return;experience.cancel();setInterior(null);placePlayer(island.spawn,Math.atan2(island.x-island.spawn.x,island.z-island.spawn.z));window.dismissParkDiscovery();ripple(island.spawn.x,island.spawn.z);window.labSound?.('travel');document.body.classList.add('has-walked');};
 function publishPlayerPose(){window.labPlayerState={x:fluff.position.x,y:fluff.position.y,z:fluff.position.z,yaw:fluff.rotation.y,mode:'',speed:0};}
 function setInterior(id){cameraClearance.reset();cameraPolicy.setContext(id);if(id&&!activeInterior)for(const o of exteriorNodes)exteriorVisibility.set(o,o.visible);const leaving=activeInterior&&!id;activeInterior=id;window.labInterior=id;interiors.setActive(id);for(const o of exteriorNodes){if(id)o.visible=false;else if(leaving)o.visible=exteriorVisibility.get(o)??true;}document.body.classList.toggle('inside-room',!!id);}
-function placePlayer(p,yawValue){endTreeFrame(false);cameraClearance.reset();clear();jump=jumpVelocity=0;fluff.position.set(p.x,.86+surfaceHeight(p.x,p.z),p.z);fluff.rotation.y=yawValue;publishPlayerPose();cameraPolicy.setMode('',yaw);snapCameraToPlayer();}
+function placePlayer(p,yawValue){endTreeFrame(false);cameraTransition.cancel();cameraClearance.reset();clear();jump=jumpVelocity=0;fluff.position.set(p.x,.86+surfaceHeight(p.x,p.z),p.z);fluff.rotation.y=yawValue;publishPlayerPose();cameraPolicy.setMode('',yaw);snapCameraToPlayer();}
 async function transitionRoom(change,name='겨울 공원'){if(transitioning)return;transitioning=true;clear();experience.cancel();roomFade.setAttribute('aria-label',name+' 준비 중');roomLoader.start();roomFade.setAttribute('aria-hidden','false');roomFade.classList.add('active');try{
  // Give the overlay a paint before building an uncached room; no invented progress/delay.
  await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));await change();
@@ -147,7 +146,7 @@ function positionCamera(mode='',dt=0){
  if(activeInterior)constrainCameraToRoom(orbitFocus,camera.position,interiorRooms[activeInterior]);
  else constrainCameraToTerrain(orbitFocus,camera.position,surfaceHeight,mode==='ski'?12:8);
  scene.updateMatrixWorld();
- cameraClearance.update(camera,orbitFocus,activeInterior?interiors.occluders:wishShot?treeCameraOccluders:world.occluders,dt,{mode:activeInterior||(wishShot?'tree':mode)||'walk',maxRecoverySpeed:wishShot?18:3.5,minDistance:mode==='ferris'?4:['carousel','lift'].includes(mode)?4.2:2.5});
+ cameraClearance.update(camera,orbitFocus,activeInterior?interiors.occluders:wishShot||cameraTransition.active?treeCameraOccluders:world.occluders,dt,{mode:activeInterior||(wishShot||cameraTransition.active?'tree':mode)||'walk',maxRecoverySpeed:wishShot||cameraTransition.active?24:3.5,minDistance:mode==='ferris'?4:['carousel','lift'].includes(mode)?4.2:2.5});
  if(activeInterior)interiors.setCamera(camera.position);
  camera.up.set(0,1,0);camera.lookAt(orbitFocus);
 }
@@ -172,17 +171,20 @@ window.addEventListener('lab:onsen-end',clear);
 let wishShot=null,treeCameraSession=null;
 function frameTree(){
  if(activeInterior||treeCameraSession)return;
- treeCameraSession=true;cameraClearance.reset();
+ treeCameraSession=true;
  if(still())return;
- const p=fluff.position;
+ cameraTransition.begin(target,{yaw,pitch,distance});
  // Fit the real canopy above the compact decoration dock, keeping the player's
  // viewing side. The same orbit control remains available throughout editing.
  wishShot={aim:new T.Vector3(treeLayout.x,15.2,treeLayout.z)};
  const aspect=innerWidth/innerHeight,halfFov=Math.tan(cameraDefaults.fov*Math.PI/360);
- cameraPolicy.beginTree({yaw:Math.atan2(p.x-treeLayout.x,p.z-treeLayout.z),pitch:.10,distance:Math.max(17/(halfFov*.78),10.5/(halfFov*aspect*.88))});clear();
+ cameraPolicy.beginTree({yaw,pitch:.10,distance:Math.max(17/(halfFov*.78),10.5/(halfFov*aspect*.88))});clear();
 }
-function endTreeFrame(){if(treeCameraSession)cameraClearance.reset();wishShot=null;treeCameraSession=null;cameraPolicy.endTree();}
+function endTreeFrame(restore=true){if(!restore||still())cameraTransition.cancel();if(treeCameraSession&&restore&&!still())cameraTransition.begin(target,{yaw,pitch,distance});wishShot=null;treeCameraSession=null;cameraPolicy.endTree();}
+function interruptTreeCamera(){if(!cameraTransition.active)return;if(wishShot){cameraPolicy.beginTree({yaw,pitch,distance});wishShot.aim.copy(target);}cameraTransition.cancel();}
 window.addEventListener('lab:tree-open',frameTree);
+window.addEventListener('lab:tree-frame',frameTree);
+window.addEventListener('lab:wish-arrived',()=>endTreeFrame());
 window.addEventListener('lab:tree-closed',e=>endTreeFrame(e.detail?.restore!==false));
 window.addEventListener('lab:room',()=>endTreeFrame(false));
 window.addEventListener('lab:session-ended',()=>{experience.cancel();clear();endTreeFrame(false);});
@@ -201,13 +203,14 @@ let animationFrame;function animate(now){animationFrame=requestAnimationFrame(an
  cameraSubjectFocus(fluff.position,{groundY:.86+surfaceHeight(next.x,next.z),mode:ride?.mode,view:ride?.view,heading},cameraAim);
  if(wishShot){if(walking||ride||still())endTreeFrame();else cameraAim.copy(wishShot.aim);}
  const view={...cameraPolicy.view({mode:ride?.mode,heading,renderedYaw:yaw})},followBlend=1-Math.exp(-dt*9);
- if(watchingFireworks){const show=window.labFireworks;if(walking||ride||activeInterior||!show||show.state==='stopped'||serverNow()>show.startsAt+74000)watchingFireworks=false;else{cameraAim.y=Math.max(cameraAim.y,52);view.yaw=Math.atan2(fluff.position.x,fluff.position.z+140);view.pitch=.16;view.distance=34;}}
+ if(cameraTransition.step(cameraAim,view,dt)){target.copy(cameraAim);yaw=view.yaw;pitch=view.pitch;distance=view.distance;}else{
  for(const axis of ['x','z']){const change=(cameraAim[axis]-target[axis])*followBlend;target[axis]+=wishShot?T.MathUtils.clamp(change,-dt*14,dt*14):change;}
  target.y=wishShot?target.y+T.MathUtils.clamp((cameraAim.y-target.y)*(1-Math.exp(-dt*4)),-dt*10,dt*10):followCameraHeight(target.y,cameraAim.y,dt,ride?.mode);
  if(!ride&&!wishShot)target.y=Math.max(target.y,surfaceHeight(target.x,target.z)+.7);
  yaw=smoothCameraAngle(yaw,view.yaw,dt,{automatic:view.automaticYaw});
  pitch+=T.MathUtils.clamp((view.pitch-pitch)*(1-Math.exp(-dt*9)),-dt*.8,dt*.8);
  distance+=T.MathUtils.clamp((view.distance-distance)*(1-Math.exp(-dt*7)),-dt*(wishShot?16:8),dt*(wishShot?16:8));
+ }
  positionCamera(ride?.mode,dt);
  camera.getWorldDirection(soundForward);window.labAudio?.updateWorld({...window.labPlayerState,speed:ride?.speed||0,lean:ride?.lean,brake:ride?.brake},{x:camera.position.x,y:camera.position.y,z:camera.position.z,fx:soundForward.x,fy:soundForward.y,fz:soundForward.z});
 
@@ -216,7 +219,7 @@ let animationFrame;function animate(now){animationFrame=requestAnimationFrame(an
  skiTrails.update({x:next.x,z:next.z,yaw:fluff.rotation.y,speed:ride?.speed||0,lean:ride?.lean||0,brake:ride?.brake,gear:companion.gear,active:skiing,time,dt,still:still()});sharedTree.update(next.x,next.z,time,still());reactions.update({gesture:experience.gesture,mode:ride?.mode,x:next.x,y:fluff.position.y,z:next.z,yaw:fluff.rotation.y,time,dt,still:still()});snowman.root.visible=!activeInterior;snowman.update(time,still(),next);footprints.update(time);if(walking&&!jump&&!activeInterior)footprints.walk(next.x,next.z,fluff.rotation.y,travel,time);moveMarker.update(dt,still());
  camera.updateMatrixWorld();companion.setViewDetail(projectedCharacterHeight(camera,fluff.position,innerHeight));
  if(!bubble.hidden){const remaining=Number(bubble.dataset.until)-Date.now();bubble.style.opacity=String(Math.max(0,Math.min(1,remaining/700)));if(remaining<=0)bubble.hidden=true;}screen.copy(fluff.position).add(new T.Vector3(0,companion.nameHeight??1.05,0)).project(camera);selfLabel.hidden=screen.z>1||screen.z< -1||!document.querySelector('#self-name').textContent;const ownScreen=selfLayout.fit((screen.x*.5+.5)*innerWidth,(-screen.y*.5+.5)*innerHeight-6,innerWidth,innerHeight);selfLabel.style.transform=`translate(${ownScreen.x}px,${ownScreen.y}px) translate(-50%,-100%)`;const selfBounds=selfLabel.hidden?null:ownScreen.bounds;visitors.update(dt,time,camera,selfBounds);
- if(now>=nextProximityCheck){experience.proximity(next.x,next.z);nextProximityCheck=now+100;}const hint=experience.anchor,prompt=document.querySelector('#place-card');if(hint&&!prompt.hidden){screen.set(hint.x,hint.y,hint.z).project(camera);const avoid=selfBounds;const layout=placePrompt({x:(screen.x*.5+.5)*innerWidth,y:(-screen.y*.5+.5)*innerHeight,width:prompt.offsetWidth,height:prompt.offsetHeight,viewportWidth:innerWidth,viewportHeight:innerHeight,avoid});prompt.style.left=Math.round(layout.x)+'px';prompt.style.top=Math.round(layout.y)+'px';prompt.style.visibility=screen.z>1||screen.z< -1?'hidden':'visible';}
+ if(now>=nextProximityCheck){experience.proximity(next.x,next.z);nextProximityCheck=now+100;}const hint=experience.anchor,prompt=document.querySelector('#place-card');if(hint&&!prompt.hidden)prompt.style.visibility='visible';
  const close=experience.active||!prompt.hidden||window.treeDecorationActive?.()?null:world.markers.reduce((best,r)=>{const d=Math.hypot(next.x-r.door.x,next.z-r.door.z);return d<2.8&&(!best||d<best.d)?{r,d}:best;},null);nearby=close?.r||null;const eligible=gate.update(nearby?.id||null,now);if(eligible!==shown){shown=eligible;window.showParkDiscovery?.(eligible?{...nearby,cat:nearby.id}:null);}
  if(nearby){screen.set(nearby.door.x,2.2,nearby.door.z).project(camera);const card=document.querySelector('#discovery-card');card.style.setProperty('--anchor-x',T.MathUtils.clamp((screen.x*.5+.5)*innerWidth,165,innerWidth-165)+'px');card.style.setProperty('--anchor-y',T.MathUtils.clamp((-screen.y*.5+.5)*innerHeight-45,135,innerHeight-150)+'px');}
  if(now>=nextRegionCheck){nextRegionCheck=now+1000;const door=world.winter.destinations.find(p=>p.id==='sauna'),near=door&&Math.hypot(next.x-door.x,next.z-door.z)<38;interiors.maintain(now,near);if(near&&!interiors.rooms.ryokan&&!interiorPrefetch){const prepare=()=>{interiorPrefetch=null;interiors.ensure('ryokan');};interiorPrefetch=window.requestIdleCallback?window.requestIdleCallback(prepare,{timeout:1500}):setTimeout(prepare,0);}}

@@ -1,5 +1,9 @@
 # v46 운영 반영 완료 — 2026-11-19
 
+## v47 — 장식 색상 미리보기 큐
+
+빠른 색상 입력의 중간 GPU 썸네일 요청을 버리고 현재 선택만 그린다. 기존 3D 이미지는 새 결과가 올 때까지 유지한다. 자동 검사 100회 입력 → GPU 1회, 실제 Chrome 최종 이미지 PC 599ms/모바일 화면 496ms(100ms polling 포함). FPS 개선율·실물 모바일 수치는 UNKNOWN. [변경 및 검증](ui-camera-comfort-v47.md).
+
 실행 소스 `0fe286b8e25ddab2315c5b3a2df0d55b6f78d663`: GitHub main, Sites 61, Vercel production, 무료 Cloudflare 실시간 서버에 반영했다. 전체 489개 자동 검사·17개 원격 브라우저 검사·20개 실제 운영 검사 PASS. 사용자가 공식 `/admin` 로그인 후 관리 화면을 확인했다. 기존 소원·장식·소유자 데이터 보존. 실물 Windows/iOS/Android와 운영 장시간 성능은 UNKNOWN이다.
 
 [최종 배포·검증 기록](release-v46-production.md). 이 문서는 운영 후 증거 브랜치에 보관하며, 아래는 이전 작업 이력이다.

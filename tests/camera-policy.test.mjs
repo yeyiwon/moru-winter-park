@@ -14,7 +14,7 @@ const direction=(point,focus)=>new T.Vector3(point.x-focus.x,point.y-focus.y,poi
 test('walking, facilities and gestures retain manual view instead of supplying camera presets',()=>{
  const policy=createCameraPolicy();policy.orbit(35,44);policy.zoom(2);
  const before=viewFields(policy.view());
- for(const mode of ['', 'summit','carousel','ferris','lift','bath','tea','dining','view','sauna','ski',''])assert.deepEqual(viewFields(policy.view({mode,heading:2.1})),before,mode);
+ for(const mode of ['', 'summit','ferris','lift','bath','tea','dining','view','sauna','ski',''])assert.deepEqual(viewFields(policy.view({mode,heading:2.1})),before,mode);
  for(const kind of ['eat','drink','bubble','wave','warm','roast','tea','dining','rest','skate']){
   const metadata=activityCameraView(kind,{yaw:3,mobile:true});assert.equal(metadata.keepUserView,true);
   for(const key of ['yaw','pitch','distance','fov'])assert.equal(metadata[key],undefined);
@@ -123,4 +123,31 @@ test('upward orbit keeps the eye above the ground and reaches the fireworks sky'
 test('whole-canopy framing is temporary, with direct user control taking priority',()=>{
  const policy=createCameraPolicy(),before={...policy.view()};policy.beginTree({yaw:1,pitch:.1,distance:48});near(policy.view().distance,48);policy.endTree();assert.deepEqual({...policy.view()},before);
  policy.beginTree({yaw:1,pitch:.1,distance:48});policy.orbit(20,-30);const manual={...policy.view()};policy.endTree();assert.deepEqual({...policy.view()},manual);
+});
+
+
+test('tree framing and return interpolate focus and lens on one reversible timeline',async()=>{
+ const {createCameraTransition}=await import('../dist/camera-policy.js');
+ const transition=createCameraTransition(),start={x:-12,y:1.4,z:74},end={x:0,y:15.2,z:80},startView={yaw:.33,pitch:.48,distance:16.5},endView={yaw:.33,pitch:.1,distance:47};
+ for(const [a,b,av,bv] of [[start,end,startView,endView],[end,start,endView,startView]]){
+  transition.begin(a,av);let previous={...a},previousDistance=av.distance;
+  for(let i=0;i<120;i++){
+   const focus={...b},view={...bv};assert.equal(transition.step(focus,view,1/60),true);
+   assert.ok(Math.hypot(focus.x-previous.x,focus.y-previous.y,focus.z-previous.z)<.4);
+   assert.ok(Math.abs(view.distance-previousDistance)<.5);
+   assert.equal(view.yaw,.33,'framing keeps the current viewing side');
+   assert.ok(Math.abs((focus.y-a.y)/(b.y-a.y)-(view.distance-av.distance)/(bv.distance-av.distance))<1e-8);
+   previous=focus;previousDistance=view.distance;
+  }
+  transition.step({...b},{...bv},.01);assert.equal(transition.active,false);
+ }
+ transition.begin(start,startView);transition.cancel();assert.equal(transition.step({...end},{...endView},1),false);
+});
+
+
+test('carousel has a wider low-angle view, permits free orbit and restores untouched view on exit',()=>{
+ const policy=createCameraPolicy(),before=viewFields(policy.view());const ride=viewFields(policy.view({mode:'carousel'}));
+ near(ride.distance,24);near(ride.pitch,.16);near(ride.yaw,before.yaw);near(ride.fov,before.fov);
+ assert.deepEqual(viewFields(policy.view({mode:''})),before);
+ policy.view({mode:'carousel'});policy.orbit(20,20);policy.zoom(2);const manual=viewFields(policy.view());assert.ok(manual.distance>24);assert.ok(manual.yaw!==before.yaw);assert.deepEqual(viewFields(policy.view({mode:''})),manual);
 });

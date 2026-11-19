@@ -100,18 +100,28 @@ function finishChat(){chatForm.hidden=true;document.body.classList.remove('chat-
 function closeChat(){chatToggle.setAttribute('aria-expanded','false');chatInput.blur();if(!chatForm.animate||matchMedia('(prefers-reduced-motion: reduce)').matches||document.body.classList.contains('still')){finishChat();return;}chatMotion?.cancel();const motion=chatForm.animate([{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(10px)'}],{duration:160,easing:'ease-in'});chatMotion=motion;motion.finished.then(()=>{if(chatMotion===motion){finishChat();chatMotion=null;}}).catch(()=>{});}
 window.closeWinterChat=()=>{if(!chatForm.hidden)closeChat();};
 chatToggle.onclick=()=>chatForm.hidden?openChat():closeChat();
-const chatClose=document.createElement('button');chatClose.type='button';chatClose.className='chat-close';chatClose.setAttribute('aria-label','채팅 닫기');chatClose.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m7 7 10 10M17 7 7 17"/></svg>';chatClose.onclick=closeChat;chatForm.querySelector('.chat-entry').append(chatClose);
+const chatClose=document.createElement('button');chatClose.type='button';chatClose.className='chat-close';chatClose.setAttribute('aria-label','채팅 닫기');chatClose.textContent='닫기';chatClose.onclick=closeChat;chatForm.querySelector('.chat-entry').append(chatClose);
 window.addEventListener('keydown',e=>{if(e.isComposing||document.body.classList.contains('studio-open')||document.body.classList.contains('quiz-open'))return;if(e.key==='Escape'&&!chatForm.hidden){closeChat();return;}if(e.key==='Enter'&&e.target!==chatInput&&!e.target.closest?.('input,textarea,button,a,summary')){e.preventDefault();openChat();}});
 function renderRecent(){
  const now=Date.now();while(recentChats.length&&(recentChats[0].at<now-600000||recentChats.length>50))recentChats.shift();
- chatLog.replaceChildren();for(const item of (chatForm.hidden&&matchMedia('(pointer:coarse)').matches?recentChats.slice(-2):recentChats)){if(blocked.has(item.sender)||hiddenChats.has(item.sender)||chatForm.hidden&&item.at<now-6500)continue;const row=document.createElement('p'),author=document.createElement('b');author.textContent=item.name+' ';row.append(author,document.createTextNode(item.message));row.dataset.expires=String(item.at+6500);if(item.sender&&item.sender!==window.labGuestId){const report=document.createElement('button');report.className='chat-report';report.setAttribute('aria-label',item.name+' 메시지 신고');report.textContent='신고';report.hidden=chatForm.hidden;report.onclick=()=>window.dispatchEvent(new CustomEvent('lab:report',{detail:{type:'chat',id:item.sender}}));const hide=document.createElement('button');hide.className='chat-hide';hide.textContent='숨김';hide.setAttribute('aria-label',item.name+' 채팅 숨김');hide.hidden=chatForm.hidden;hide.onclick=()=>{hiddenChats.add(item.sender);renderRecent();};row.append(hide,report);}chatLog.append(row);}chatLog.scrollTop=chatLog.scrollHeight;
+ // Keep history for the composer; exploration uses the character's speech bubble.
+ const wasHidden=chatLog.hidden,scrollTop=chatLog.scrollTop,atEnd=chatLog.scrollHeight-chatLog.clientHeight-scrollTop<24;
+ chatLog.hidden=chatForm.hidden;if(chatLog.hidden)return;
+ chatLog.replaceChildren();
+ for(const item of recentChats){
+  if(blocked.has(item.sender)||hiddenChats.has(item.sender))continue;
+  const row=document.createElement('p'),author=document.createElement('b');author.textContent=item.name+' ';row.append(author,document.createTextNode(item.message));
+  if(item.sender&&item.sender!==window.labGuestId){const hide=document.createElement('button');hide.className='chat-hide';hide.textContent='숨김';hide.setAttribute('aria-label',item.name+' 채팅 숨김');hide.onclick=()=>{hiddenChats.add(item.sender);renderRecent();};row.append(hide);}
+  chatLog.append(row);
+ }
+ chatLog.scrollTop=wasHidden||atEnd?chatLog.scrollHeight:scrollTop;
 }
 function record(name,message,key,sender=''){if(seenChats.has(key))return;seenChats.add(key);if(seenChats.size>300)seenChats.delete(seenChats.values().next().value);recentChats.push({name,message,key,sender,at:Date.now()});renderRecent();}
 async function ensureChatSession(){if(joined)return;if(joining){await joining;return;}throw Error('공간에 연결한 뒤 이용해 주세요.');}
-chatForm.addEventListener('submit',async e=>{e.preventDefault();if(e.isComposing)return;const message=chatInput.value.trim();if(!message)return;const send=chatForm.querySelector('[type=submit]');send.disabled=true;try{await ensureChatSession();const data=await request('chat',{message});chatInput.value='';chatStatus.textContent='';setName(data.name);record(data.name,data.message,'self:'+data.at);selfBubble.textContent=data.message;selfBubble.dataset.until=String(Date.now()+6500);selfBubble.hidden=false;closeChat();}catch(err){chatStatus.textContent=err.message;}finally{send.disabled=false;}});
+chatForm.addEventListener('submit',async e=>{e.preventDefault();if(e.isComposing)return;const message=chatInput.value.trim();if(!message)return;const send=chatForm.querySelector('[type=submit]');send.disabled=true;try{await ensureChatSession();const data=await request('chat',{message});chatInput.value='';chatStatus.textContent='';setName(data.name);record(data.name,data.message,'self:'+data.at,window.labGuestId);selfBubble.textContent=data.message;selfBubble.dataset.until=String(Date.now()+6500);selfBubble.style.opacity='1';selfBubble.hidden=false;closeChat();}catch(err){chatStatus.textContent=err.message;}finally{send.disabled=false;}});
 window.addEventListener('lab:visitors',e=>{for(const p of e.detail)if(p.chat&&Date.now()-p.chatAt<6500&&!blocked.has(p.id)&&!hiddenChats.has(p.id))record(p.name,p.chat,p.id+':'+p.chatAt,p.id);});
 window.isVisitorBlocked=id=>blocked.has(id);window.isChatHidden=id=>blocked.has(id)||hiddenChats.has(id);people.addEventListener('click',e=>{const b=e.target.closest('[data-block-visitor]');if(!b)return;blocked.add(b.dataset.blockVisitor);b.closest('li')?.remove();sync();});
-const chatFadeTimer=setInterval(()=>{if(!chatForm.hidden)return;for(const row of chatLog.children){const remaining=Number(row.dataset.expires)-Date.now();row.style.opacity=String(Math.max(0,Math.min(1,remaining/700)));if(remaining<=0)row.remove();}},150);
+
 window.joinSharedActivity=ensureChatSession;window.sharedRoom=()=>room;
 async function initialize(){try{
  await finishOwnerLogin(request);const access=await request('access');if(await continueOwnerLogin(request,access))return;admin=access.admin;window.labAdmin=admin;$('#owner-signin').hidden=admin;$('#tab-social').hidden=false;$('#admin-invite').hidden=!admin;document.body.classList.toggle('world-owner',admin);
@@ -148,6 +158,6 @@ window.releaseRide=()=>{
  return releasingRide;
 };
 
-window.addEventListener('pagehide',event=>{if(!event.persisted){clearInterval(presenceTimer);clearInterval(chatFadeTimer);realtime.dispose();}});
+window.addEventListener('pagehide',event=>{if(!event.persisted){clearInterval(presenceTimer);realtime.dispose();}});
 
 window.changeWinterRegion=async region=>{await window.joinSharedActivity();await sync(true);let data;try{data=await request('region',{region});}catch(e){if(e.status!==409)throw e;await new Promise(r=>setTimeout(r,550));await sync(true);data=await request('region',{region});}nextSync=0;return data;};

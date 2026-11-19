@@ -167,7 +167,7 @@ test('guest controls request a show, avoid interrupting editors and never replay
  d.body.classList.add('studio-open');view.button.click();await flush();
  assert.equal(requests,1);assert.equal(view.button.disabled,true);assert.equal(view.notice.hidden,true);
  d.body.classList.remove('studio-open');w.dispatchEvent(new w.Event('lab:close'));
- assert.equal(view.notice.hidden,false);assert.match(view.notice.textContent,/10초/);
+ assert.equal(view.notice.hidden,false);assert.match(view.notice.textContent,/10초/);assert.equal(view.notice.querySelector('button'),null,'notice cannot take over the camera');
  now=show.startsAt+5000;d.dispatchEvent(new w.Event('visibilitychange'));await flush();
  assert.equal(view.notice.hidden,false);assert.equal(view.notice.querySelector('.firework-notice-countdown').textContent,'');assert.match(view.button.textContent,/진행 중/);
  w.dispatchEvent(new w.CustomEvent('lab:fireworks',{detail:{...show,state:'stopped',revision:2}}));

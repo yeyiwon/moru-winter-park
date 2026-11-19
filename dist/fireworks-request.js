@@ -34,8 +34,8 @@ export function installFireworkRequests({win=window,doc=document,now=serverNow}=
  button.setAttribute('aria-describedby',status.id);actions.append(button,status);
  const notice=doc.createElement('div');notice.id='firework-notice';notice.hidden=true;notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');notice.setAttribute('aria-atomic','false');
  const noticeText=doc.createElement('span');noticeText.className='firework-notice-text';noticeText.textContent='잠시 후 불꽃놀이가 시작돼요';
- const countdown=doc.createElement('span');countdown.className='firework-notice-countdown';countdown.setAttribute('aria-hidden','true');const watch=doc.createElement('button');watch.type='button';watch.textContent='불꽃놀이 보기';watch.onclick=()=>{viewedShow=show?.id;win.dispatchEvent(new win.Event('lab:watch-fireworks'));notice.hidden=true;};notice.append(noticeText,countdown,watch);doc.body.append(notice);
- const label=button.querySelector('span');let show=win.labFireworks||null,viewedShow=null,busy=false,timer=0,refreshing=null,error='',errorUntil=0,disposed=false;
+ const countdown=doc.createElement('span');countdown.className='firework-notice-countdown';countdown.setAttribute('aria-hidden','true');notice.append(noticeText,countdown);doc.body.append(notice);
+ const label=button.querySelector('span');let show=win.labFireworks||null,busy=false,timer=0,refreshing=null,error='',errorUntil=0,disposed=false;
  const listeners=[];
  const listen=(target,event,fn)=>{target.addEventListener(event,fn);listeners.push(()=>target.removeEventListener(event,fn));};
  const format=s=>Math.floor(s/60)+':'+String(s%60).padStart(2,'0');
@@ -51,7 +51,7 @@ export function installFireworkRequests({win=window,doc=document,now=serverNow}=
   // Only a future scheduled start produces an announcement. Resuming a tab or
   // closing an editor after the start cannot replay a stale countdown.
   const announce=joined&&!doc.hidden&&!doc.body.classList.contains('studio-open')&&(state.phase==='playing'||state.phase==='scheduled'&&state.remaining<=Math.ceil(fireworkConfig.leadMs/1000));
-  notice.hidden=!announce||viewedShow===show?.id;if(announce){text(noticeText,state.phase==='playing'?'밤하늘에 불꽃놀이가 펼쳐지고 있어요':'잠시 후 불꽃놀이가 시작돼요');text(countdown,state.phase==='scheduled'?state.remaining+'초':'');}
+  notice.hidden=!announce;if(announce){text(noticeText,state.phase==='playing'?'밤하늘에 불꽃놀이가 펼쳐지고 있어요':'잠시 후 불꽃놀이가 시작돼요');text(countdown,state.phase==='scheduled'?state.remaining+'초':'');}
   if(joined&&!doc.hidden&&(state.phase!=='idle'||time<errorUntil))timer=win.setTimeout(refresh,1000);
  }
  function receive(incoming){

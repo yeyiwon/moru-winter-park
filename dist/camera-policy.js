@@ -3,8 +3,28 @@ export const cameraDefaults=Object.freeze({yaw:.33,pitch:.48,distance:16.5,fov:5
 const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 const angleDelta=(to,from)=>Math.atan2(Math.sin(to-from),Math.cos(to-from));
 
+// A temporary composition must move its focus and lens together. Independent
+// easing made the view pivot around the tree while the zoom was still catching up.
+export function createCameraTransition(){
+ let from=null,elapsed=0;
+ return{
+  get active(){return !!from;},
+  begin(focus,view){from={focus:{...focus},view:{...view}};elapsed=0;},
+  cancel(){from=null;},
+  step(focus,view,dt){
+   if(!from)return false;
+   elapsed+=Math.max(0,dt);const t=Math.min(1,elapsed/2),blend=t*t*t*(t*(t*6-15)+10);
+   for(const key of ['x','y','z'])focus[key]=from.focus[key]+(focus[key]-from.focus[key])*blend;
+   for(const key of ['pitch','distance'])view[key]=from.view[key]+(view[key]-from.view[key])*blend;
+   view.yaw=from.view.yaw+angleDelta(view.yaw,from.view.yaw)*blend;
+   if(t===1)from=null;
+   return true;
+  }
+ };
+}
+
 export function createCameraPolicy(){
- let requested={yaw:cameraDefaults.yaw,pitch:cameraDefaults.pitch,distance:cameraDefaults.distance},manualYaw=false,context=null,outside=null,mode='',skiAuto=false,treeOffset=0,treeView=null,revision=0;
+ let requested={yaw:cameraDefaults.yaw,pitch:cameraDefaults.pitch,distance:cameraDefaults.distance},manualYaw=false,context=null,outside=null,mode='',skiAuto=false,treeOffset=0,treeView=null,revision=0,carouselManual=false;
  const indoorViews=new Map(),resolved={...cameraDefaults,automaticYaw:false};
  const copy=()=>({view:{...requested},manualYaw});
  function restore(saved){requested={...saved.view};manualYaw=saved.manualYaw;}
@@ -13,28 +33,29 @@ export function createCameraPolicy(){
   // An automatic ski heading becomes the neutral viewing side on dismount.
   // Explicit user yaw is never rewritten by an activity transition.
   if(mode==='ski'&&skiAuto&&!manualYaw&&Number.isFinite(renderedYaw))requested.yaw=renderedYaw;
-  mode=next;skiAuto=mode==='ski'&&!manualYaw;
+  mode=next;carouselManual=false;skiAuto=mode==='ski'&&!manualYaw;
  }
+ function adoptCarouselView(){if(mode!=='carousel'||carouselManual)return;requested.distance=Math.max(24,requested.distance);requested.pitch=Math.min(.16,requested.pitch);carouselManual=true;}
  return {
   orbit(dx,dy,renderedYaw=requested.yaw){
-   if(!Number.isFinite(dx)||!Number.isFinite(dy))return;
+   if(!Number.isFinite(dx)||!Number.isFinite(dy))return;adoptCarouselView();
    if(treeView){requested={...requested,...treeView};treeView=null;treeOffset=0;}
    if(dx){if(skiAuto)requested.yaw=renderedYaw;manualYaw=true;skiAuto=false;requested.yaw-=dx*.004;}
    requested.pitch=clamp(requested.pitch+dy*.003,-.95,1.08);revision++;
   },
   zoom(amount,renderedDistance){
-   if(!Number.isFinite(amount))return;
+   if(!Number.isFinite(amount))return;adoptCarouselView();
    if(treeView){requested={...requested,...treeView};treeView=null;treeOffset=0;}
    if(treeOffset){requested.distance=Number.isFinite(renderedDistance)?renderedDistance:requested.distance+treeOffset;treeOffset=0;}
    requested.distance=clamp(requested.distance+amount,context?5.5:8,context?24:64);revision++;
   },
-  reset(){requested={yaw:context?cameraDefaults.interiorYaw:cameraDefaults.yaw,pitch:context?cameraDefaults.interiorPitch:cameraDefaults.pitch,distance:context?cameraDefaults.interiorDistance:cameraDefaults.distance};manualYaw=false;skiAuto=mode==='ski';treeOffset=0;treeView=null;revision++;},
+  reset(){requested={yaw:context?cameraDefaults.interiorYaw:cameraDefaults.yaw,pitch:context?cameraDefaults.interiorPitch:cameraDefaults.pitch,distance:context?cameraDefaults.interiorDistance:cameraDefaults.distance};manualYaw=false;carouselManual=false;skiAuto=mode==='ski';treeOffset=0;treeView=null;revision++;},
   setContext(next){
    next=next||null;if(next===context)return;
    if(context)indoorViews.set(context,copy());else outside=copy();
    if(next){const saved=indoorViews.get(next);if(saved)restore(saved);else{requested={yaw:cameraDefaults.interiorYaw,pitch:cameraDefaults.interiorPitch,distance:cameraDefaults.interiorDistance};manualYaw=false;}}
    else if(outside){restore(outside);outside=null;}
-   context=next;mode='';skiAuto=false;treeOffset=0;treeView=null;
+   context=next;mode='';carouselManual=false;skiAuto=false;treeOffset=0;treeView=null;
   },
   setMode,
   beginTree(framing){if(!context){if(framing)treeView={yaw:framing.yaw,pitch:framing.pitch,distance:clamp(framing.distance,8,64)};else treeOffset=Math.min(3,requested.distance*.16);}},
@@ -42,6 +63,7 @@ export function createCameraPolicy(){
   view({mode:next=mode,heading=0,renderedYaw=requested.yaw}={}){
    setMode(next,renderedYaw);
    Object.assign(resolved,requested,{distance:requested.distance+treeOffset,fov:cameraDefaults.fov,automaticYaw:mode==='ski'&&skiAuto});
+   if(mode==='carousel'&&!carouselManual){resolved.distance=Math.max(24,requested.distance);resolved.pitch=Math.min(.16,requested.pitch);}
    if(treeView)Object.assign(resolved,treeView);
    if(resolved.automaticYaw&&Number.isFinite(heading))resolved.yaw=heading+Math.PI;
    return resolved;

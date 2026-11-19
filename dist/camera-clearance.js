@@ -19,8 +19,9 @@ export function createCameraClearance(){
      if(hit.distance>length+.25)break;
      const o=hit.object,materials=Array.isArray(o.material)?o.material:[o.material];
      if(materials.every(m=>m.isShaderMaterial||m.opacity<.05))continue;
-     // Only tagged cabin panels and lift supports dissolve; shared scene materials stay untouched.
-     if((o.userData.ferrisCameraFade||o.userData.rideCameraFade&&(!o.userData.cameraFadeMode||o.userData.cameraFadeMode===mode))&&(mode==='lift'||hit.distance<minDistance+1.2)){obscuring.add(o);continue;}
+     // Foliage and tagged cabin panels dissolve in the viewing ray; walls still
+     // constrain the camera. Clone only the obscuring mesh, never shared materials.
+     if(o.userData.cameraFoliage||(o.userData.ferrisCameraFade||o.userData.rideCameraFade&&(!o.userData.cameraFadeMode||o.userData.cameraFadeMode===mode))&&(['lift','carousel'].includes(mode)||hit.distance<minDistance+1.2)){obscuring.add(o);continue;}
      limit=Math.min(limit,Math.max(.8,hit.distance-.42));break;
     }
    }
