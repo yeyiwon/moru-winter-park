@@ -1,0 +1,130 @@
+{
+  "origin": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+  "checked_at_utc": "2026-11-19T06:48:03.356199+00:00",
+  "authentication": "Sites owner verification",
+  "expected_source_directory": "/workspace/scratch/4bce338b713b/winter-brand-simple/web-dist",
+  "revision": "silver-blue-v1",
+  "passed": true,
+  "check_count": 11,
+  "checks": [
+    {
+      "path": "/",
+      "ok": true,
+      "status": 200,
+      "content_type": "text/html",
+      "bytes": 22482,
+      "title": "WINTERLIGHT"
+    },
+    {
+      "path": "/brand/og-image.png?v=silver-blue-v1",
+      "ok": true,
+      "status": 200,
+      "content_type": "image/png",
+      "bytes": 16245,
+      "sha256": "1d1000065fca636d33f74ef7615b628cdf343d690cf90191fb59185911525148",
+      "expected_sha256": "1d1000065fca636d33f74ef7615b628cdf343d690cf90191fb59185911525148",
+      "expected_bytes": 16245,
+      "dimensions": [
+        1200,
+        630
+      ],
+      "expected_dimensions": [
+        1200,
+        630
+      ]
+    },
+    {
+      "path": "/brand/logo-compact.svg?v=silver-blue-v1",
+      "ok": true,
+      "status": 200,
+      "content_type": "image/svg+xml",
+      "bytes": 1922,
+      "sha256": "15d45f589d784e9316c0b5176471d0a212ca2bbe5078157e8178354fedd6b6d5",
+      "expected_sha256": "15d45f589d784e9316c0b5176471d0a212ca2bbe5078157e8178354fedd6b6d5",
+      "expected_bytes": 1922
+    },
+    {
+      "path": "/brand/favicon.svg?v=silver-blue-v1",
+      "ok": true,
+      "status": 200,
+      "content_type": "image/svg+xml",
+      "bytes": 2050,
+      "sha256": "e2225512879a6e7ac242d0c850f00cf956b9e3298ca600fd5e412258cc776e08",
+      "expected_sha256": "e2225512879a6e7ac242d0c850f00cf956b9e3298ca600fd5e412258cc776e08",
+      "expected_bytes": 2050
+    },
+    {
+      "path": "/site.webmanifest?v=silver-blue-v1",
+      "ok": true,
+      "status": 200,
+      "content_type": "application/manifest+json",
+      "bytes": 573,
+      "sha256": "2a7e59c19b836274d83b291a9b000c7b800fb63b9e8685eb998d21cfb201adaa",
+      "expected_sha256": "2a7e59c19b836274d83b291a9b000c7b800fb63b9e8685eb998d21cfb201adaa",
+      "expected_bytes": 573
+    },
+    {
+      "path": "/brand.css?v=silver-blue-v1",
+      "ok": true,
+      "status": 200,
+      "content_type": "text/css",
+      "bytes": 806,
+      "sha256": "e21ea886c73fb2da0cef1486f0bd2c3c3a163882a13fe177fff84a23d4ddf6bb",
+      "expected_sha256": "e21ea886c73fb2da0cef1486f0bd2c3c3a163882a13fe177fff84a23d4ddf6bb",
+      "expected_bytes": 806
+    },
+    {
+      "path": "/luminous-loading.js?v=silver-blue-v1",
+      "ok": true,
+      "status": 200,
+      "content_type": "text/javascript",
+      "bytes": 4078,
+      "sha256": "4edec15e2ddffb0f6692b9e3e5ed57a3d50386e4ab1bff19b9e09860e7ab7f9c",
+      "expected_sha256": "4edec15e2ddffb0f6692b9e3e5ed57a3d50386e4ab1bff19b9e09860e7ab7f9c",
+      "expected_bytes": 4078
+    },
+    {
+      "path": "/brand/preview.html?v=silver-blue-v1",
+      "ok": true,
+      "status": 200,
+      "content_type": "text/html",
+      "bytes": 4478,
+      "sha256": "c565916807d48917b7183df1810ec2ce1b6d867b33fb1cefd57c989c6877b367",
+      "expected_sha256": "c565916807d48917b7183df1810ec2ce1b6d867b33fb1cefd57c989c6877b367",
+      "expected_bytes": 4478
+    },
+    {
+      "path": "/sw.js",
+      "ok": true,
+      "status": 200,
+      "content_type": "text/javascript",
+      "bytes": 4656,
+      "sha256": "14c56d4f24029cff91d290700975e5027932084a8ac3a8cfd50eef929470eb1d",
+      "expected_sha256": "14c56d4f24029cff91d290700975e5027932084a8ac3a8cfd50eef929470eb1d",
+      "expected_bytes": 4656
+    },
+    {
+      "path": "/api/health",
+      "ok": true,
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 30,
+      "health": {
+        "ok": true,
+        "multiplayer": true
+      }
+    },
+    {
+      "path": "/api/access",
+      "ok": true,
+      "status": 200,
+      "content_type": "application/json",
+      "bytes": 110,
+      "access": {
+        "worldId": "winter-plaza",
+        "inviteRequired": true,
+        "sessionIsNull": true
+      }
+    }
+  ]
+}

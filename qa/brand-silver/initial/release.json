@@ -1,0 +1,26 @@
+{
+  "source_commit": "3afbb03c0b775fcffbe318b8af0fc2756a0b5bc9",
+  "source_tree_sha256": "126301ecb0e560e3d284d3e13458ffa7af1fb69c96451352ab4b5242c0d1c0df",
+  "sites": {
+    "project_id": "appgprj_6af6f606ab648191855ab9bd44c334fd",
+    "version": 53,
+    "version_id": "appgprj_6af6f606ab648191855ab9bd44c334fd~appgver_bdd700a2e0e4819198657ce390121223",
+    "deployment_id": "appgdep_6afe96ca7bb08191a2f690f5c7438c16",
+    "status": "succeeded",
+    "url": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site"
+  },
+  "vercel": {
+    "project_id": "prj_mbioBXlMSNwfJ8MWNaRMi2Lsm8I0",
+    "deployment_id": "dpl_2D5qZ49vuqS3hXoFXKYmNgSHm171",
+    "status": "READY",
+    "alias_error": null,
+    "url": "https://moru-winter-park.vercel.app",
+    "baseline_files_restored": 168,
+    "exact_source_files_verified": 237,
+    "payload_file_count": 72
+  },
+  "name_status": "No replacement selected; HIBERNA and NIVIS rejected and removed from preview",
+  "palette": "silver and ice blue",
+  "runtime_settings": "unchanged",
+  "production_http_verification": "pending"
+}
