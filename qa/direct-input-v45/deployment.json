@@ -1,0 +1,40 @@
+{
+  "sourceCommit": "4b4d12014f5edc0cbeee98035cfbda8673f49831",
+  "sites": {
+    "version": 50,
+    "versionId": "appgprj_6af6f606ab648191855ab9bd44c334fd~appgver_cc89757b39a48191a46b70239aab562f",
+    "deploymentId": "appgdep_6afe92980fc48191b113d0df09a5c92a",
+    "status": "succeeded",
+    "url": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site"
+  },
+  "vercel": {
+    "deploymentId": "dpl_GxAUTntqV82aPkmL4wUDtzj5un1P",
+    "status": "READY",
+    "target": "production",
+    "url": "https://moru-winter-park.vercel.app/",
+    "buildUrl": "https://moru-winter-park-kqjl6riae-yeyiwons-projects.vercel.app",
+    "alias": [
+      "moru-winter-park.vercel.app",
+      "moru-winter-park-yeyiwons-projects.vercel.app"
+    ]
+  },
+  "github": {
+    "status": "write permission blocked from prior release",
+    "httpStatus": 403,
+    "repository": "yeyiwon/moru-winter-park"
+  },
+  "migrations": "none",
+  "liveDataMutation": "none",
+  "checks": {
+    "tests": {
+      "passed": 457,
+      "failed": 0
+    },
+    "workerBuild": "PASS",
+    "vercelBuild": "PASS",
+    "staticBudget": "PASS",
+    "restoredOutputFilesMatched": 227,
+    "physicalDevicePerformance": "UNKNOWN",
+    "gpuVisualVerification": "unavailable"
+  }
+}

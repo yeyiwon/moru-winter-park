@@ -4,7 +4,7 @@
 
 ## 상태와 범위
 
-현재 작업 소스에서 직접 카메라 입력, 활동 탭, 음악 제어 정리, 닉네임 인라인 편집을 반영했다. 아래에는 완료된 범위별·관련 통합 자동 검사와 320/390px 브라우저 UI 확인을 기록한다. 최종 전체 회귀 457개와 Worker·Vercel production build, 정적 용량 예산을 통과했다. 운영 배포 결과는 완료 후 아래에 추가한다. 이전 운영 배포 결과는 [v44 배포 기록](release-v44-2026-11-19.md)에 보존한다.
+현재 작업 소스에서 직접 카메라 입력, 활동 탭, 음악 제어 정리, 닉네임 인라인 편집을 반영했다. 아래에는 완료된 범위별·관련 통합 자동 검사와 320/390px 브라우저 UI 확인을 기록한다. 최종 전체 회귀 457개와 Worker·Vercel production build, 정적 용량 예산을 통과했다. Sites 50과 Vercel 운영 배포가 완료됐다. 이전 운영 배포 결과는 [v44 배포 기록](release-v44-2026-11-19.md)에 보존한다.
 
 실물 Windows PC·휴대폰의 조작감, 실제 GPU 렌더링, FPS·프레임 시간·발열·배터리·오디오 연속 재생 성능은 **UNKNOWN**이다. DOM 이벤트 검사는 실물 기기에서의 성능 검증을 대신하지 않는다.
 
@@ -99,8 +99,21 @@ node --experimental-vm-modules --test tests/nickname-inline.test.mjs tests/commu
 - `npm run test:budget`: PASS. 전체 22,542,718 bytes / 25,165,824 상한, 코드 gzip 1,012,736 bytes / 1,280,000 상한. 이는 정적 용량 검사이며 FPS 측정은 아니다.
 - 별도 카메라 모드 JS/CSS를 제거했고 새 렌더러·의존성·프레임별 UI 작업을 추가하지 않았다. 핵심 CSS/JS 쿼리와 서비스 워커 캐시를 `winter45-direct1` / `knowledge-park-v45-direct-input-winterlight-1`로 갱신했다.
 - [모바일 활동 화면](../qa/direct-input-v45/mobile-activities-320.jpg), [음악 화면](../qa/direct-input-v45/mobile-audio-320.jpg), [UI 측정](../qa/direct-input-v45/ui-checks.json).
-- 실제 운영 데이터 변경·DB 마이그레이션은 없다. 배포 상태는 진행 중이다.
+- 실제 운영 데이터 변경·DB 마이그레이션은 없다. Sites와 Vercel 배포 완료.
 
 ## 후속 검증 기록 위치
 
 루트가 실제로 실행한 전체 검사, 양쪽 배포 빌드, 추가 브라우저 QA와 배포 결과를 이 문서에 추가한다. 실기 성능을 측정하게 되면 기종·브라우저·해상도·품질 설정·측정 상황을 함께 적는다. 현재 변경으로 렉이 사라졌다거나 모든 기기에서 동일한 FPS가 나온다고 단정하지 않는다.
+
+## 운영 배포 결과
+
+- 실제 앱 소스 commit: `4b4d12014f5edc0cbeee98035cfbda8673f49831`.
+- Sites **50**, deployment `appgdep_6afe92980fc48191b113d0df09a5c92a`: **succeeded**. URL: https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site/ .
+- Vercel deployment `dpl_GxAUTntqV82aPkmL4wUDtzj5un1P`: **READY**, production alias https://moru-winter-park.vercel.app/ .
+- 배포 패키지 71파일, 고정 공개 baseline 169파일 복원. 실제 Vercel 빌드 로그에서 237개 원본 파일과 runtime 설정 검증을 확인했다. staging 재빌드 웹 출력 227/227 경로·크기·SHA256이 기존 빌드와 일치했다.
+- Vercel 공개 응답 **12/12 핵심 파일 SHA256 일치**. `/api/health` 200(`ok=true`, `multiplayer=true`), `/api/access` 200(`worldId=winter-plaza`, `inviteRequired=true`, 익명 요청 `admin=false`), `/api/quiz-journal` 익명 401.
+- Sites 직접 HTTP 검사기는 실행 환경에서 403을 받았다. 이를 앱 실패나 해시 검증 성공으로 기록하지 않는다. 별도 실제 브라우저에서는 운영 초대 화면을 열어 `winter45-direct1` 스크립트, 활동 탭, 구형 버튼 0개를 확인했다. 인증된 운영 월드의 3D 조작 영상은 확인하지 않았다.
+- 기존 GitHub 통합의 쓰기 403은 계속 남아 있다. 이번 앱 소스와 변경·검증 기록은 Sites 소스 저장소에 보존했고, Vercel에는 검증한 소스를 직접 배포했다. GitHub 자동 배포를 다시 사용할 때는 소스 동기화가 선행되어야 한다.
+- 이번 수정에는 DB 마이그레이션·운영 데이터 변경이 없다. 로컬 UI QA는 분리된 `qa-resort.sqlite`를 사용했다. 임시 모바일 폭 확인 HTML은 배포 전에 제거했다.
+
+증거: [배포 메타데이터](../qa/direct-input-v45/deployment.json) · [Vercel 운영 검사](../qa/direct-input-v45/vercel-production.json) · [Sites 관찰·제약](../qa/direct-input-v45/sites-production.json) · [패키지 검증](../qa/direct-input-v45/vercel-package-validation.json) · [실제 Vercel 빌드 요약](../qa/direct-input-v45/vercel-build-summary.json).
