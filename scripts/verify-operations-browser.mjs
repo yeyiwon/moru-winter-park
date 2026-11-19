@@ -3,7 +3,7 @@ const {chromium}=await import(pathToFileURL(process.env.PLAYWRIGHT_PATH||'/tmp/w
 const origin='http://127.0.0.1:4189',owner='http://127.0.0.1:4190',out=process.env.QA_OUTPUT||'qa/operations-v46';await fs.mkdir(out,{recursive:true});
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true,args:['--disable-background-timer-throttling','--disable-renderer-backgrounding']});
 const report={at:new Date().toISOString(),browser:browser.version(),physicalMobile:false,errors:[],consoleErrors:[],httpErrors:[],expectedNetworkFaults:[],checks:[]};
-const check=(name,ok,details)=>{report.checks.push({name,ok,...(details?{details}:{})});if(!ok)throw Error(name);};
+const check=(name,ok,details)=>{report.checks.push({name,ok,...(details?{details}:{})});if(!ok){console.error('Failed check',name,details);throw Error(name);}};
 const offlinePages=new WeakSet();
 async function pageFor(options={}){const context=await browser.newContext({viewport:{width:1280,height:800},serviceWorkers:'block',...options}),page=await context.newPage();page.on('pageerror',error=>report.errors.push(error.message));page.on('console',message=>{if(message.type()!=='error')return;const error={text:message.text(),url:message.location().url};if(offlinePages.has(page)&&/ERR_INTERNET_DISCONNECTED/.test(error.text))report.expectedNetworkFaults.push(error);else report.consoleErrors.push(error);});page.on('response',response=>{if(response.status()>=400)report.httpErrors.push({path:new URL(response.url()).pathname,status:response.status()});});return page;}
 async function enter(page,url){
@@ -35,10 +35,14 @@ try{
  const joy=await b.locator('#joystick').boundingBox(),touch=await b.context().newCDPSession(b);
  const center={x:joy.x+joy.width/2,y:joy.y+joy.height/2,id:1};
  await touch.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[center]});
- await touch.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{...center,x:center.x+95,y:center.y-70}]});await b.waitForTimeout(700);
+ await touch.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{...center,x:center.x+95,y:center.y-70}]});
+ // Assert the actual accelerated game state, not a fixed wall-clock delay:
+ // software rendering may produce fewer than one simulation frame in 700ms.
+ await b.waitForFunction(()=>window.labPlayerState?.speed>4,null,{timeout:30000});
  const touchState=await b.evaluate(()=>({pose:labPlayerState,hidden:document.hidden,body:document.body.className,active:document.querySelector('#joystick').classList.contains('active'),knob:document.querySelector('.joystick-stick').style.transform}));
  check('mobile joystick beyond rim keeps full walking input',touchState.pose.speed>4&&touchState.pose.speed<4.5,touchState);
- await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});await b.waitForTimeout(500);
+ await touch.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+ await b.waitForFunction(()=>window.labPlayerState?.speed<.1,null,{timeout:30000});
  check('mobile touch release stops movement',await b.evaluate(()=>labPlayerState.speed<.1));
  await a.bringToFront();
  for(const [place,mode]of [['ferris','ferris'],['ski','lift']]){
@@ -63,4 +67,4 @@ try{
  const metrics=await admin.request.get(owner+'/api/operations');const data=await metrics.json();check('admin metrics with authenticated sockets',metrics.ok()&&data.service==='healthy'&&data.realtime.connections>=3,{connections:data.realtime?.connections,service:data.service});
  await admin.screenshot({path:out+'/admin.png'});const stop=await admin.request.post(owner+'/api/fireworks',{headers:{Origin:owner},data:{action:'stop'}});check('owner controls same show',stop.ok());
  check('no browser exceptions',report.errors.length===0,report.errors);check('no unexpected console or shader errors',report.consoleErrors.length===0,report.consoleErrors);
-}finally{await fs.writeFile(out+'/browser.json',JSON.stringify(report,null,2)+'\n');await browser.close();}
+}finally{await fs.writeFile(out+'/browser.json',JSON.stringify(report,null,2)+'\n');console.log('Browser report',JSON.stringify(report));await browser.close();}
