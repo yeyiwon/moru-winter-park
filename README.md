@@ -12,7 +12,9 @@
 
 이전 변경: [v38 커스터마이징·그라데이션·복슬 꼬리·모바일 조작](docs/customization-mobile-v38.md). 저장/취소/초기화, 머리 슬롯 통합, 초대 제목 옆 관리자 로그인, 흐린 실제 장면 로딩과 점프 사운드. Ethereal Winter Ballet을 첫 곡으로 정렬.
 
-개발 미리보기 v44: [공동 체험·개인 지식집·모바일 UI](docs/resort-experience-v44.md). 게스트 불꽃놀이 신청, 중앙 퀴즈·개인 기록, 원하는 자리 선택과 셰프의 순차 서빙, 수족관 움직임, 일정한 기본 시야와 밝은 유리 UI를 반영했습니다. [실내 시야·좌석](docs/seating-and-indoor-view-v44.md), [료칸 디테일](docs/ryokan-craft-v44.md), [천문대 디테일](docs/museum-interior-v44.md)을 함께 보강했습니다. 전체 448개 검사를 통과했으며 실제 GPU·실물 모바일 성능은 UNKNOWN입니다. 운영 배포 상태는 아래 기록과 별도로 구분합니다.
+v44 운영: [공동 체험·개인 지식집·모바일 UI](docs/resort-experience-v44.md). 게스트 불꽃놀이 신청, 중앙 퀴즈·개인 기록, 원하는 자리 선택과 셰프의 순차 서빙, 수족관 움직임, 일정한 기본 시야와 밝은 유리 UI를 반영했습니다. [실내 시야·좌석](docs/seating-and-indoor-view-v44.md), [료칸 디테일](docs/ryokan-craft-v44.md), [천문대 디테일](docs/museum-interior-v44.md)을 함께 보강했습니다. 전체 448개 검사를 통과했으며 실제 GPU·실물 모바일 성능은 UNKNOWN입니다. Sites 48과 기존 Vercel 운영 주소에 반영했습니다. [이번 배포 결과](docs/release-v44-2026-11-19.md).
+
+GitHub 쓰기 연결은 403으로 남아 소스 동기화가 미완료입니다. 현재 운영은 Sites 저장 소스와 Vercel 직접 배포를 사용하며 다음 Git 자동 배포 전에 동기화가 필요합니다.
 
 운영 기록: [성능 측정](docs/PERFORMANCE.md) · [최적화 내역](docs/OPTIMIZATION_LOG.md) · [검증](docs/TESTING.md) · [배포](docs/DEPLOYMENT.md).
 

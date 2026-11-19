@@ -1,3 +1,7 @@
+## 2026-11-19 · v44 운영 반영 확인
+
+Sites48 succeeded, Vercel READY 및 기존 alias 확인. adapter의 실제 Vercel 빌드에서239개 정확한 소스+설정 검증과 baseline170개 복원 성공. 운영 핵심16파일 해시 일치, health200/access200/비승인 quiz-journal401 확인. 실제 브라우저의 초대 화면에서 새로운 투명 글래스 CSS를 확인했다. 기존448개 기능 검사와 모바일 배치 검사를 재사용했다. 새 운영 게스트 쓰기·3D/GPU·실물 기기·장시간 다인 동시 접속을 수행한 것으로 표시하지 않는다. [검증 결과](../qa/release-v44/production-verification.json), [전체 기록](release-v44-2026-11-19.md).
+
 # v44 개발 미리보기 검증 — 2026-11-19
 
 후속 CSS 조정: 흰색 알파를 낮춘 투명 글래스·밝은 전경으로 변경한 뒤 데스크톱 설정·드롭다운·퀴즈와390×844 실제 앱 iframe의 중앙 정렬·투과를 확인했다. 아래448개 검사는 그 전 기능 구현의 결과이며 이번 CSS 조정 때문에 전체 기능 검사를 다시 실행하지는 않았다. [후속 UI 근거](../qa/resort-v44/clear-glass-checks.json), [실제 화면·한계](clear-glass-v44.md).

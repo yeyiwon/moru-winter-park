@@ -1,0 +1,166 @@
+{
+  "checkedAt": "2026-11-19T05:28:27.663185+00:00",
+  "origin": "https://moru-winter-park.vercel.app",
+  "sourceCommit": "21c05e5c3061520f202e984e6c39e2c6fdde0751",
+  "authentication": "anonymous public HTTP",
+  "passed": true,
+  "assets": [
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 22221,
+      "sha256": "10397ceecd291bd5b406ff64dd08d6cd120b08847c15f3fb537a88024b477b0d",
+      "expectedSha256": "10397ceecd291bd5b406ff64dd08d6cd120b08847c15f3fb537a88024b477b0d",
+      "match": true
+    },
+    {
+      "path": "sw.js",
+      "status": 200,
+      "bytes": 4697,
+      "sha256": "5f594ff5e3d0ed5d1884e218a24e32715745df492388fe6193979c01cb1d70e1",
+      "expectedSha256": "5f594ff5e3d0ed5d1884e218a24e32715745df492388fe6193979c01cb1d70e1",
+      "match": true
+    },
+    {
+      "path": "ui-system.css",
+      "status": 200,
+      "bytes": 22696,
+      "sha256": "f0bf952bfcf600b9b46f6027157c92dd27d9a5f8c096adbc439698515934de0d",
+      "expectedSha256": "f0bf952bfcf600b9b46f6027157c92dd27d9a5f8c096adbc439698515934de0d",
+      "match": true
+    },
+    {
+      "path": "resort-ui-v43.css",
+      "status": 200,
+      "bytes": 11584,
+      "sha256": "413fe3218b0adc63f4c419c47a2ef878d38c489540143e25c8dbc25a0ddf78ad",
+      "expectedSha256": "413fe3218b0adc63f4c419c47a2ef878d38c489540143e25c8dbc25a0ddf78ad",
+      "match": true
+    },
+    {
+      "path": "camera-controls.css",
+      "status": 200,
+      "bytes": 3064,
+      "sha256": "c077b3279aa8f8a380e69dec37d541849e281d555b837a5a15fb85b79378f329",
+      "expectedSha256": "c077b3279aa8f8a380e69dec37d541849e281d555b837a5a15fb85b79378f329",
+      "match": true
+    },
+    {
+      "path": "camera-controls.js",
+      "status": 200,
+      "bytes": 4587,
+      "sha256": "85c70dad5bced09c9cfb8d2b76816843c07cd85417cdeaee75880ad8278d9954",
+      "expectedSha256": "85c70dad5bced09c9cfb8d2b76816843c07cd85417cdeaee75880ad8278d9954",
+      "match": true
+    },
+    {
+      "path": "camera-policy.js",
+      "status": 200,
+      "bytes": 5843,
+      "sha256": "8888aa20d8e6469243ef7a784a811d0a0c98d1ceecb26954ff1fa48867780c01",
+      "expectedSha256": "8888aa20d8e6469243ef7a784a811d0a0c98d1ceecb26954ff1fa48867780c01",
+      "match": true
+    },
+    {
+      "path": "quiz-journal.js",
+      "status": 200,
+      "bytes": 12884,
+      "sha256": "bf83ef4e7255d31fd3c26895043611f7d8aa301ff8353c55571b9f1e5d626c6d",
+      "expectedSha256": "bf83ef4e7255d31fd3c26895043611f7d8aa301ff8353c55571b9f1e5d626c6d",
+      "match": true
+    },
+    {
+      "path": "quiz-journal.css",
+      "status": 200,
+      "bytes": 9118,
+      "sha256": "f2a9d6b84336d2aadf67a3431cdf46e8d45a68a1e75ae81adbe9761debc2603d",
+      "expectedSha256": "f2a9d6b84336d2aadf67a3431cdf46e8d45a68a1e75ae81adbe9761debc2603d",
+      "match": true
+    },
+    {
+      "path": "fireworks-request.js",
+      "status": 200,
+      "bytes": 5926,
+      "sha256": "e5dae54365d2dd5349a2c1569c5e6856c0811463ae87e4e1d88bf0241491a1b8",
+      "expectedSha256": "e5dae54365d2dd5349a2c1569c5e6856c0811463ae87e4e1d88bf0241491a1b8",
+      "match": true
+    },
+    {
+      "path": "ryokan-service.js",
+      "status": 200,
+      "bytes": 2194,
+      "sha256": "3be39833992064f60a6975753aedc6be056eea105d2e7a08a25a005ce4dd45a0",
+      "expectedSha256": "3be39833992064f60a6975753aedc6be056eea105d2e7a08a25a005ce4dd45a0",
+      "match": true
+    },
+    {
+      "path": "ryokan-craft.js",
+      "status": 200,
+      "bytes": 4714,
+      "sha256": "7b4d1cc2aef64e4d42f3fee0069bf1947ec995f6e83920414c113fafc534fa89",
+      "expectedSha256": "7b4d1cc2aef64e4d42f3fee0069bf1947ec995f6e83920414c113fafc534fa89",
+      "match": true
+    },
+    {
+      "path": "museum-interior-details.js",
+      "status": 200,
+      "bytes": 9842,
+      "sha256": "7f7f96cc111124e1fc0df80ee696d080e98c364fdad5395d97eabc7d4e32bfb4",
+      "expectedSha256": "7f7f96cc111124e1fc0df80ee696d080e98c364fdad5395d97eabc7d4e32bfb4",
+      "match": true
+    },
+    {
+      "path": "park.js",
+      "status": 200,
+      "bytes": 37072,
+      "sha256": "124c46d0f895b51a9ff4f7712296d4438bd0585a1c5df77a1fa866765fa28e57",
+      "expectedSha256": "124c46d0f895b51a9ff4f7712296d4438bd0585a1c5df77a1fa866765fa28e57",
+      "match": true
+    },
+    {
+      "path": "brand.css",
+      "status": 200,
+      "bytes": 806,
+      "sha256": "b28d8c3d4f4e4b9a79f03403522bb6c245eeaa5a4cb4a9e42ec751fc22db6f6f",
+      "expectedSha256": "b28d8c3d4f4e4b9a79f03403522bb6c245eeaa5a4cb4a9e42ec751fc22db6f6f",
+      "match": true
+    },
+    {
+      "path": "brand/logo-compact.svg",
+      "status": 200,
+      "bytes": 512,
+      "sha256": "49daea134fea997999307849e27f4dd17784c636b82f2a24a01d81ca1ca932a8",
+      "expectedSha256": "49daea134fea997999307849e27f4dd17784c636b82f2a24a01d81ca1ca932a8",
+      "match": true
+    }
+  ],
+  "api": [
+    {
+      "path": "/api/health",
+      "status": 200,
+      "expectedStatus": 200,
+      "ok": true,
+      "health": {
+        "ok": true,
+        "multiplayer": true
+      }
+    },
+    {
+      "path": "/api/access",
+      "status": 200,
+      "expectedStatus": 200,
+      "ok": true,
+      "access": {
+        "worldId": "winter-plaza",
+        "inviteRequired": true,
+        "admin": false
+      }
+    },
+    {
+      "path": "/api/quiz-journal",
+      "status": 401,
+      "expectedStatus": 401,
+      "ok": true
+    }
+  ]
+}

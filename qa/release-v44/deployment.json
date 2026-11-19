@@ -1,0 +1,59 @@
+{
+  "sourceCommit": "21c05e5c3061520f202e984e6c39e2c6fdde0751",
+  "sites": {
+    "version": 48,
+    "id": "appgdep_6afe8762453081918cd3c30abcf611ec",
+    "status": "succeeded",
+    "url": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site"
+  },
+  "vercel": {
+    "id": "dpl_2GrxUwBN3UqhG369598KP4VsbmKo",
+    "state": "READY",
+    "target": "production",
+    "url": "moru-winter-park-3nnvq1xzh-yeyiwons-projects.vercel.app",
+    "alias": [
+      "moru-winter-park.vercel.app",
+      "moru-winter-park-yeyiwons-projects.vercel.app"
+    ],
+    "aliasError": null
+  },
+  "database": {
+    "newTable": "quiz_journal",
+    "checks": [
+      {
+        "table": "wishes",
+        "rowsChecked": 4,
+        "more": false,
+        "unchanged": true
+      },
+      {
+        "table": "tree_decorations",
+        "rowsChecked": 25,
+        "more": true,
+        "unchanged": true
+      },
+      {
+        "table": "ride_seats",
+        "rowsChecked": 0,
+        "more": false,
+        "unchanged": true
+      }
+    ]
+  },
+  "github": {
+    "synced": false,
+    "error": "403 Resource not accessible by integration",
+    "main": "46dc3223bed447ed0eba80aa1a6b83fd09975769"
+  },
+  "browser": {
+    "url": "https://moru-winter-park.vercel.app/",
+    "observed": "WINTERLIGHT invite gate with translucent glass",
+    "backgroundAlpha": [
+      0.22,
+      0.1,
+      0.16
+    ],
+    "blur": 10,
+    "actual3DVerified": false
+  }
+}

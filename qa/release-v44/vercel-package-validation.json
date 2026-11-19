@@ -1,0 +1,63 @@
+{
+  "passed": true,
+  "sourceCommit": "21c05e5c3061520f202e984e6c39e2c6fdde0751",
+  "requestSha256": "38fc916b0584fc95c402c673919bb94e949ea7f16e658c0b945d0810f4410583",
+  "requestBytes": 933942,
+  "inputCount": 240,
+  "exactFileHashCount": 239,
+  "runtimeConfig": "semantically unchanged apart from restore prefix; exact Vercel-added project name accepted",
+  "restoredBaseline": 170,
+  "restoreSource": "local fetch fixture using commit-verified source-snapshot bytes; network fetch not performed",
+  "payloadCount": 72,
+  "largestInline": [
+    {
+      "file": "package-lock.json",
+      "bytes": 68778
+    },
+    {
+      "file": "dist/glass.css",
+      "bytes": 46712
+    },
+    {
+      "file": "release-source-manifest.json",
+      "bytes": 45409
+    },
+    {
+      "file": "dist/companion.js",
+      "bytes": 45385
+    },
+    {
+      "file": "dist/park.js",
+      "bytes": 38744
+    }
+  ],
+  "build": "PASS",
+  "expectedOutputCount": 229,
+  "actualOutputCount": 229,
+  "missing": [],
+  "extra": [],
+  "changed": [],
+  "negativeChecks": [
+    {
+      "case": "reject-inline-tamper",
+      "passed": true
+    },
+    {
+      "case": "reject-runtime-config",
+      "passed": true
+    },
+    {
+      "case": "reject-unsafe-path",
+      "passed": true
+    },
+    {
+      "case": "reject-existing-baseline-tamper",
+      "passed": true
+    },
+    {
+      "case": "reject-remote-hash",
+      "passed": true
+    }
+  ],
+  "deployment": "not invoked"
+}
