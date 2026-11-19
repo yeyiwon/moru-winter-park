@@ -1,0 +1,726 @@
+{
+  "environment": "macOS Chrome 1280x800, live map clicks and walking; no physical Windows/mobile test",
+  "peak": {
+    "pose": {
+      "x": -141.5210304248333,
+      "y": 893.9470095086209,
+      "z": -1896.6,
+      "yaw": 3.141592653589793,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 0,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    "camera": {
+      "yaw": 3.141592653589793,
+      "pitch": 0.62,
+      "distance": 28,
+      "fov": 50,
+      "context": null,
+      "manualYaw": true,
+      "revision": 1,
+      "treeOffset": 0,
+      "rendered": {
+        "yaw": 3.141592653589793,
+        "pitch": 0.62,
+        "distance": 28,
+        "fov": 50
+      },
+      "focus": {
+        "x": -141.5210304248333,
+        "y": 894.397009508621,
+        "z": -1896.6
+      },
+      "eye": {
+        "x": -141.5210304248333,
+        "y": 910.6659940036654,
+        "z": -1919.3885967865508
+      },
+      "aim": {
+        "x": -141.5210304248333,
+        "y": 894.397009508621,
+        "z": -1896.6
+      }
+    }
+  },
+  "walk": [
+    {
+      "x": -79.73315983545481,
+      "y": 0.95,
+      "z": -66.89622882489908,
+      "yaw": 4.341497691572001,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 3.536618792362943,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    {
+      "x": -79.99561442606138,
+      "y": 0.95,
+      "z": -81.75176636038553,
+      "yaw": 3.159257937574829,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 3.327011559291502,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    {
+      "x": -72.29402583889913,
+      "y": 0.95,
+      "z": -81.99087160782882,
+      "yaw": 1.6018325943072411,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 3.573148873439878,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    {
+      "x": -72.0065787436663,
+      "y": 0.95,
+      "z": -94.70892448998879,
+      "yaw": 3.118994999093257,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 3.5591235719365297,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    {
+      "x": -72.00004526887096,
+      "y": 0.95,
+      "z": -82.17917881778783,
+      "yaw": 0.00025264632617595,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 0,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    {
+      "x": -79.75866029460889,
+      "y": 0.95,
+      "z": -82.00540540097421,
+      "yaw": -1.5484025816653753,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 3.288658837480412,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    {
+      "x": -79.99825276170382,
+      "y": 0.95,
+      "z": -67.17780779715774,
+      "yaw": -0.009826239843717633,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 2.8834294444239132,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    {
+      "x": -62.21046200069526,
+      "y": 0.95,
+      "z": -60.08393346896484,
+      "yaw": 1.1913198463142278,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 3.203092521830749,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    {
+      "x": -79.75790695165666,
+      "y": 0.95,
+      "z": -66.90587501662199,
+      "yaw": -1.9416075530908108,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 3.391050790966778,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    {
+      "x": -79.99808668683356,
+      "y": 0.95,
+      "z": -103.70683719249858,
+      "yaw": -3.1350662936539933,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 3.568508315215487,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    {
+      "x": -125.34310877358017,
+      "y": 0.95,
+      "z": -107.97770927825688,
+      "yaw": -1.6647054193297395,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 3.5817326138529517,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    {
+      "x": 378.79999999999995,
+      "y": 307.8450283596036,
+      "z": -975.0736645686151,
+      "yaw": 1.9208312603061067e-16,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 3.4687227157292,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    {
+      "x": 428.50205517896154,
+      "y": 307.8450283596036,
+      "z": -974.8016307388183,
+      "yaw": 1.5653230900761075,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 3.590725594096366,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    {
+      "x": 428.7982600060433,
+      "y": 307.8450283596036,
+      "z": -1018.5430500844163,
+      "yaw": 3.134821032914502,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 3.3754728708359956,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    }
+  ],
+  "leftPrompt": "초급 리프트\nE\n리프트 타기",
+  "prompt": "구름정상 곤돌라\nE\n곤돌라 타기",
+  "actions": [
+    "E곤돌라 타기"
+  ],
+  "boarding": {
+    "pose": {
+      "x": -124.54329245189935,
+      "y": 2.11,
+      "z": -118.14312005791797,
+      "yaw": -1.5406099791646115,
+      "mode": "lift",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 0,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    "reservation": {
+      "kind": "gondola",
+      "cabin": 1795123728000,
+      "seat": 0,
+      "startedAt": 1795123728000
+    }
+  },
+  "middle": {
+    "pose": {
+      "x": 378.79999999999995,
+      "y": 307.8450283596036,
+      "z": -990.8,
+      "yaw": 3.141592653589793,
+      "mode": "",
+      "lean": 0,
+      "tilt": 0,
+      "brake": false,
+      "air": 0,
+      "speed": 0,
+      "gesture": "",
+      "heldItem": "",
+      "balloonTone": -1,
+      "balloonStyle": "classic",
+      "roast": 0
+    },
+    "camera": {
+      "yaw": 3.141592653589793,
+      "pitch": 0.55,
+      "distance": 26,
+      "fov": 50,
+      "context": null,
+      "manualYaw": true,
+      "revision": 6,
+      "treeOffset": 0,
+      "rendered": {
+        "yaw": 3.141592653589793,
+        "pitch": 0.55,
+        "distance": 26,
+        "fov": 50
+      },
+      "focus": {
+        "x": 378.79999999999995,
+        "y": 308.2950283596036,
+        "z": -990.8
+      },
+      "eye": {
+        "x": 378.79999999999995,
+        "y": 321.88489631180073,
+        "z": -1012.9656375735472
+      },
+      "aim": {
+        "x": 378.79999999999995,
+        "y": 308.2950283596036,
+        "z": -990.8
+      }
+    }
+  },
+  "transferCamera": {
+    "yaw": 3.141592653589793,
+    "pitch": 0.55,
+    "distance": 26,
+    "fov": 50,
+    "context": null,
+    "manualYaw": true,
+    "revision": 6,
+    "treeOffset": 0,
+    "rendered": {
+      "yaw": 3.141592653589793,
+      "pitch": 0.55,
+      "distance": 26,
+      "fov": 50
+    },
+    "focus": {
+      "x": 428.7989167994654,
+      "y": 308.2950283596036,
+      "z": -1018.6400406594164
+    },
+    "eye": {
+      "x": 428.7989167994654,
+      "y": 321.8848963118007,
+      "z": -1040.8056782329636
+    },
+    "aim": {
+      "x": 428.7989167994654,
+      "y": 308.2950283596036,
+      "z": -1018.6400406594164
+    }
+  },
+  "transferCameraRange": {
+    "min": 25.999999999999954,
+    "max": 26.000000000000025,
+    "frames": 1764
+  },
+  "transferPrompt": "E\n정상 연결 리프트",
+  "map": [
+    {
+      "id": "ski",
+      "pose": {
+        "x": -72,
+        "y": 0.95,
+        "z": -95,
+        "yaw": 3.141592653589793,
+        "mode": "",
+        "lean": 0,
+        "tilt": 0,
+        "brake": false,
+        "air": 0,
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      },
+      "camera": {
+        "yaw": 3.141592653589793,
+        "pitch": 0.55,
+        "distance": 26,
+        "fov": 50,
+        "context": null,
+        "manualYaw": true,
+        "revision": 6,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 3.141592653589793,
+          "pitch": 0.55,
+          "distance": 26,
+          "fov": 50
+        },
+        "focus": {
+          "x": -72,
+          "y": 1.4,
+          "z": -95
+        },
+        "eye": {
+          "x": -72,
+          "y": 14.989867952197137,
+          "z": -117.16563757354714
+        },
+        "aim": {
+          "x": -72,
+          "y": 1.4,
+          "z": -95
+        }
+      }
+    },
+    {
+      "id": "ski-right-base",
+      "pose": {
+        "x": 72,
+        "y": 0.95,
+        "z": -106,
+        "yaw": 3.141592653589793,
+        "mode": "",
+        "lean": 0,
+        "tilt": 0,
+        "brake": false,
+        "air": 0,
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      },
+      "camera": {
+        "yaw": 0.65,
+        "pitch": 0.32,
+        "distance": 27,
+        "fov": 50,
+        "context": null,
+        "manualYaw": true,
+        "revision": 7,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.65,
+          "pitch": 0.32,
+          "distance": 27,
+          "fov": 50
+        },
+        "focus": {
+          "x": 72,
+          "y": 1.4,
+          "z": -106
+        },
+        "eye": {
+          "x": 87.5105380133998,
+          "y": 9.893297136635182,
+          "z": -85.59688469170199
+        },
+        "aim": {
+          "x": 72,
+          "y": 1.4,
+          "z": -106
+        }
+      }
+    },
+    {
+      "id": "ski-gondola-base",
+      "pose": {
+        "x": -125.63781883847095,
+        "y": 0.95,
+        "z": -108.00546687835524,
+        "yaw": 3.141592653589793,
+        "mode": "",
+        "lean": 0,
+        "tilt": 0,
+        "brake": false,
+        "air": 0,
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      },
+      "camera": {
+        "yaw": 0.65,
+        "pitch": 0.32,
+        "distance": 27,
+        "fov": 50,
+        "context": null,
+        "manualYaw": true,
+        "revision": 8,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.65,
+          "pitch": 0.32,
+          "distance": 27,
+          "fov": 50
+        },
+        "focus": {
+          "x": -125.63781883847095,
+          "y": 1.4,
+          "z": -108.00546687835524
+        },
+        "eye": {
+          "x": -110.12728082507115,
+          "y": 9.893297136635182,
+          "z": -87.60235157005722
+        },
+        "aim": {
+          "x": -125.63781883847095,
+          "y": 1.4,
+          "z": -108.00546687835524
+        }
+      }
+    },
+    {
+      "id": "ski-middle",
+      "pose": {
+        "x": -95,
+        "y": 103.31370747663625,
+        "z": -420.8,
+        "yaw": 3.141592653589793,
+        "mode": "",
+        "lean": 0,
+        "tilt": 0,
+        "brake": false,
+        "air": 0,
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      },
+      "camera": {
+        "yaw": 3.141592653589793,
+        "pitch": 0.55,
+        "distance": 26,
+        "fov": 50,
+        "context": null,
+        "manualYaw": true,
+        "revision": 9,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 3.141592653589793,
+          "pitch": 0.55,
+          "distance": 26,
+          "fov": 50
+        },
+        "focus": {
+          "x": -95,
+          "y": 103.76370747663626,
+          "z": -420.8
+        },
+        "eye": {
+          "x": -95,
+          "y": 117.3535754288334,
+          "z": -442.96563757354716
+        },
+        "aim": {
+          "x": -95,
+          "y": 103.76370747663626,
+          "z": -420.8
+        }
+      }
+    },
+    {
+      "id": "ski-ridge-base",
+      "pose": {
+        "x": 428.79999999999995,
+        "y": 307.8450283596036,
+        "z": -1018.8,
+        "yaw": 3.141592653589793,
+        "mode": "",
+        "lean": 0,
+        "tilt": 0,
+        "brake": false,
+        "air": 0,
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      },
+      "camera": {
+        "yaw": 0.65,
+        "pitch": 0.32,
+        "distance": 27,
+        "fov": 50,
+        "context": null,
+        "manualYaw": true,
+        "revision": 10,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.65,
+          "pitch": 0.32,
+          "distance": 27,
+          "fov": 50
+        },
+        "focus": {
+          "x": 428.79999999999995,
+          "y": 308.2950283596036,
+          "z": -1018.8
+        },
+        "eye": {
+          "x": 444.31053801339976,
+          "y": 316.78832549623877,
+          "z": -998.396884691702
+        },
+        "aim": {
+          "x": 428.79999999999995,
+          "y": 308.2950283596036,
+          "z": -1018.8
+        }
+      }
+    },
+    {
+      "id": "ski-ridge-top",
+      "pose": {
+        "x": -48.5210304248333,
+        "y": 900.95,
+        "z": -1913.6,
+        "yaw": 3.141592653589793,
+        "mode": "",
+        "lean": 0,
+        "tilt": 0,
+        "brake": false,
+        "air": 0,
+        "speed": 0,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      },
+      "camera": {
+        "yaw": 3.141592653589793,
+        "pitch": 0.55,
+        "distance": 26,
+        "fov": 50,
+        "context": null,
+        "manualYaw": true,
+        "revision": 11,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 3.141592653589793,
+          "pitch": 0.55,
+          "distance": 26,
+          "fov": 50
+        },
+        "focus": {
+          "x": -48.5210304248333,
+          "y": 901.4000000000001,
+          "z": -1913.6
+        },
+        "eye": {
+          "x": -48.5210304248333,
+          "y": 914.9898679521972,
+          "z": -1935.765637573547
+        },
+        "aim": {
+          "x": -48.5210304248333,
+          "y": 901.4000000000001,
+          "z": -1913.6
+        }
+      }
+    }
+  ],
+  "render": {
+    "frame": 23770,
+    "calls": 1144,
+    "triangles": 4823968,
+    "points": 20532,
+    "lines": 1539
+  },
+  "errors": []
+}

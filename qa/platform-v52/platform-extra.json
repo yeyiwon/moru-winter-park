@@ -1,0 +1,70 @@
+{
+  "environment": "macOS Chrome, desktop/mobile dimensions and emulated forced dark; physical Windows/Samsung UNKNOWN",
+  "checks": [
+    {
+      "mobile": false,
+      "admin": {
+        "inside": true,
+        "button": {
+          "width": 44,
+          "height": 44
+        },
+        "centerDifference": 0.0078125
+      }
+    },
+    {
+      "mobile": false,
+      "forcedDarkSwatches": [
+        {
+          "color": "#f4eee5",
+          "raster": true
+        },
+        {
+          "color": "#dfc79f",
+          "raster": true
+        },
+        {
+          "color": "#b89c82",
+          "raster": true
+        },
+        {
+          "color": "#8996a6",
+          "raster": true
+        }
+      ]
+    },
+    {
+      "mobile": true,
+      "admin": {
+        "inside": true,
+        "button": {
+          "width": 44,
+          "height": 44
+        },
+        "centerDifference": 0.0078125
+      }
+    },
+    {
+      "mobile": true,
+      "forcedDarkSwatches": [
+        {
+          "color": "#f4eee5",
+          "raster": true
+        },
+        {
+          "color": "#dfc79f",
+          "raster": true
+        },
+        {
+          "color": "#b89c82",
+          "raster": true
+        },
+        {
+          "color": "#8996a6",
+          "raster": true
+        }
+      ]
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,516 @@
+{
+  "environment": "macOS Chrome, desktop and touch emulation, local HTTP presence; no physical mobile or operating WebSocket server validation",
+  "before": [
+    {
+      "show": null,
+      "sampledAt": 1795120790876,
+      "clock": 1795120790877.6,
+      "renderAge": 0,
+      "castleAge": 0,
+      "castleMode": 0,
+      "castleRegions": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "active": false,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        },
+        "eye": {
+          "x": 4.742504595646483,
+          "y": 9.019356396434468,
+          "z": 37.84572346482426
+        },
+        "aim": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        }
+      },
+      "position": {
+        "x": 0,
+        "z": 24
+      }
+    },
+    {
+      "show": null,
+      "sampledAt": 1795120791136,
+      "clock": 1795120791116.6,
+      "renderAge": 0,
+      "castleAge": 0,
+      "castleMode": 0,
+      "castleRegions": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "active": false,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        },
+        "eye": {
+          "x": 4.742504595646483,
+          "y": 9.019356396434468,
+          "z": 37.84572346482426
+        },
+        "aim": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        }
+      },
+      "position": {
+        "x": 0,
+        "z": 24
+      }
+    }
+  ],
+  "server": {
+    "id": "a994588b-03dc-403d-9f9b-ef37294b488e",
+    "startsAt": 1795120801150,
+    "endsAt": 1795120875150,
+    "nextRequestAt": 1795121775150,
+    "seed": 1984950864,
+    "state": "scheduled",
+    "revision": 1
+  },
+  "playing": [
+    {
+      "show": {
+        "id": "a994588b-03dc-403d-9f9b-ef37294b488e",
+        "startsAt": 1795120801150,
+        "endsAt": 1795120875150,
+        "nextRequestAt": 1795121775150,
+        "seed": 1984950864,
+        "state": "playing",
+        "revision": 1
+      },
+      "sampledAt": 1795120805153,
+      "clock": 1795120805153,
+      "renderAge": 3.98960009765625,
+      "castleAge": 3.98960009765625,
+      "castleMode": 0,
+      "castleRegions": [
+        0.6000000238418579,
+        0.18000000715255737,
+        0.18000000715255737,
+        0.30000001192092896,
+        0.1599999964237213,
+        0.550000011920929,
+        0.3499999940395355,
+        0.6000000238418579,
+        0.5,
+        0.30000001192092896
+      ],
+      "active": true,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0,
+          "pitch": 0.049999999999999996,
+          "distance": 260,
+          "fov": 50
+        },
+        "focus": {
+          "x": 0,
+          "y": 95,
+          "z": -42
+        },
+        "eye": {
+          "x": 0,
+          "y": 107.99336297364998,
+          "z": 217.65066732216815
+        },
+        "aim": {
+          "x": 0,
+          "y": 95,
+          "z": -42
+        }
+      },
+      "position": {
+        "x": 0,
+        "z": 24
+      }
+    },
+    {
+      "show": {
+        "id": "a994588b-03dc-403d-9f9b-ef37294b488e",
+        "startsAt": 1795120801150,
+        "endsAt": 1795120875150,
+        "nextRequestAt": 1795121775150,
+        "seed": 1984950864,
+        "state": "playing",
+        "revision": 1
+      },
+      "sampledAt": 1795120805153,
+      "clock": 1795120805153.1,
+      "renderAge": 3.99,
+      "castleAge": 3.99,
+      "castleMode": 0,
+      "castleRegions": [
+        0.6000000238418579,
+        0.18000000715255737,
+        0.18000000715255737,
+        0.30000001192092896,
+        0.1599999964237213,
+        0.550000011920929,
+        0.3499999940395355,
+        0.6000000238418579,
+        0.5,
+        0.30000001192092896
+      ],
+      "active": true,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        },
+        "eye": {
+          "x": 4.742504595646483,
+          "y": 9.019356396434468,
+          "z": 37.84572346482426
+        },
+        "aim": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        }
+      },
+      "position": {
+        "x": 0,
+        "z": 24
+      }
+    }
+  ],
+  "adminDenied": 403,
+  "lateJoin": {
+    "show": {
+      "id": "a994588b-03dc-403d-9f9b-ef37294b488e",
+      "startsAt": 1795120801150,
+      "endsAt": 1795120875150,
+      "nextRequestAt": 1795121775150,
+      "seed": 1984950864,
+      "state": "playing",
+      "revision": 1
+    },
+    "sampledAt": 1795120812111,
+    "clock": 1795120812089.7,
+    "renderAge": 10.93060009765625,
+    "castleAge": 10.93060009765625,
+    "castleMode": 1,
+    "castleRegions": [
+      0.5261865854263306,
+      0.5269229412078857,
+      0.3276267647743225,
+      0.33690670132637024,
+      0.21166937053203583,
+      0.6607200503349304,
+      0.46072009205818176,
+      0.7845334410667419,
+      0.5,
+      0.4476267695426941
+    ],
+    "active": true,
+    "camera": {
+      "yaw": 0.33,
+      "pitch": 0.48,
+      "distance": 16.5,
+      "fov": 50,
+      "context": null,
+      "manualYaw": false,
+      "revision": 0,
+      "treeOffset": 0,
+      "rendered": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50
+      },
+      "focus": {
+        "x": 0,
+        "y": 1.4,
+        "z": 24
+      },
+      "eye": {
+        "x": 4.742504595646483,
+        "y": 9.019356396434468,
+        "z": 37.84572346482426
+      },
+      "aim": {
+        "x": 0,
+        "y": 1.4,
+        "z": 24
+      }
+    },
+    "position": {
+      "x": 0,
+      "z": 24
+    }
+  },
+  "after": [
+    {
+      "show": {
+        "id": "a994588b-03dc-403d-9f9b-ef37294b488e",
+        "startsAt": 1795120801150,
+        "endsAt": 1795120875150,
+        "nextRequestAt": 1795121775150,
+        "seed": 1984950864,
+        "state": "finished",
+        "revision": 1
+      },
+      "sampledAt": 1795120878656,
+      "clock": 1795120878674.4,
+      "renderAge": 73.97989990234375,
+      "castleAge": 77.513,
+      "castleMode": 4,
+      "castleRegions": [
+        0.800000011920929,
+        0.699999988079071,
+        0.699999988079071,
+        0.6000000238418579,
+        0.25999999046325684,
+        0.8500000238418579,
+        0.6499999761581421,
+        0.8999999761581421,
+        0.800000011920929,
+        0.75
+      ],
+      "active": false,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 1,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 0,
+          "y": 1.4000000000000057,
+          "z": 24
+        },
+        "eye": {
+          "x": 4.742504595646483,
+          "y": 9.019356396434475,
+          "z": 37.84572346482426
+        },
+        "aim": {
+          "x": 0,
+          "y": 1.4000000000000057,
+          "z": 24
+        }
+      },
+      "position": {
+        "x": 0,
+        "z": 24
+      }
+    },
+    {
+      "show": {
+        "id": "a994588b-03dc-403d-9f9b-ef37294b488e",
+        "startsAt": 1795120801150,
+        "endsAt": 1795120875150,
+        "nextRequestAt": 1795121775150,
+        "seed": 1984950864,
+        "state": "finished",
+        "revision": 1
+      },
+      "sampledAt": 1795120878657,
+      "clock": 1795120878681.23,
+      "renderAge": 73.9925,
+      "castleAge": 77.52184594726563,
+      "castleMode": 4,
+      "castleRegions": [
+        0.800000011920929,
+        0.699999988079071,
+        0.699999988079071,
+        0.6000000238418579,
+        0.25999999046325684,
+        0.8500000238418579,
+        0.6499999761581421,
+        0.8999999761581421,
+        0.800000011920929,
+        0.75
+      ],
+      "active": false,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        },
+        "eye": {
+          "x": 4.742504595646483,
+          "y": 9.019356396434468,
+          "z": 37.84572346482426
+        },
+        "aim": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        }
+      },
+      "position": {
+        "x": 0,
+        "z": 24
+      }
+    },
+    {
+      "show": {
+        "id": "a994588b-03dc-403d-9f9b-ef37294b488e",
+        "startsAt": 1795120801150,
+        "endsAt": 1795120875150,
+        "nextRequestAt": 1795121775150,
+        "seed": 1984950864,
+        "state": "finished",
+        "revision": 1
+      },
+      "sampledAt": 1795120878667,
+      "clock": 1795120878667.3,
+      "renderAge": 73.98960009765625,
+      "castleAge": 77.50939990234374,
+      "castleMode": 4,
+      "castleRegions": [
+        0.800000011920929,
+        0.699999988079071,
+        0.699999988079071,
+        0.6000000238418579,
+        0.25999999046325684,
+        0.8500000238418579,
+        0.6499999761581421,
+        0.8999999761581421,
+        0.800000011920929,
+        0.75
+      ],
+      "active": false,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        },
+        "eye": {
+          "x": 4.742504595646483,
+          "y": 9.019356396434468,
+          "z": 37.84572346482426
+        },
+        "aim": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        }
+      },
+      "position": {
+        "x": 0,
+        "z": 24
+      }
+    }
+  ],
+  "errors": []
+}

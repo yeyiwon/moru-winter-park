@@ -1,0 +1,144 @@
+{
+  "environment": "macOS Chrome; emulated Windows transparency preference and mobile viewport, not physical devices",
+  "checks": [
+    {
+      "mobile": false,
+      "reduced": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(247, 251, 255)",
+      "titleVisible": true,
+      "title": "CUSTOMIZE\n커스터마이징",
+      "close": {
+        "w": 44,
+        "h": 44
+      },
+      "swatches": [
+        {
+          "color": "#f4eee5",
+          "paint": "none"
+        },
+        {
+          "color": "#dfc79f",
+          "paint": "none"
+        },
+        {
+          "color": "#b89c82",
+          "paint": "none"
+        },
+        {
+          "color": "#8996a6",
+          "paint": "none"
+        }
+      ]
+    },
+    {
+      "mobile": false,
+      "reduced": true,
+      "background": "rgb(238, 245, 250) none repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(38, 59, 80)",
+      "titleVisible": true,
+      "title": "CUSTOMIZE\n커스터마이징",
+      "close": {
+        "w": 44,
+        "h": 44
+      },
+      "swatches": [
+        {
+          "color": "#f4eee5",
+          "paint": "none"
+        },
+        {
+          "color": "#dfc79f",
+          "paint": "none"
+        },
+        {
+          "color": "#b89c82",
+          "paint": "none"
+        },
+        {
+          "color": "#8996a6",
+          "paint": "none"
+        }
+      ]
+    },
+    {
+      "mobile": false,
+      "chat": {
+        "left": 12.754753112792969,
+        "right": -2.943389892578125,
+        "buttonCenterY": 696.5460815429688,
+        "boxCenterY": 696.5460815429688
+      }
+    },
+    {
+      "mobile": true,
+      "reduced": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(247, 251, 255)",
+      "titleVisible": false,
+      "title": "CUSTOMIZE커스터마이징관리자 로그인",
+      "close": {
+        "w": 44,
+        "h": 44
+      },
+      "swatches": [
+        {
+          "color": "#f4eee5",
+          "paint": "none"
+        },
+        {
+          "color": "#dfc79f",
+          "paint": "none"
+        },
+        {
+          "color": "#b89c82",
+          "paint": "none"
+        },
+        {
+          "color": "#8996a6",
+          "paint": "none"
+        }
+      ]
+    },
+    {
+      "mobile": true,
+      "reduced": true,
+      "background": "rgb(238, 245, 250) none repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(38, 59, 80)",
+      "titleVisible": false,
+      "title": "CUSTOMIZE커스터마이징관리자 로그인",
+      "close": {
+        "w": 44,
+        "h": 44
+      },
+      "swatches": [
+        {
+          "color": "#f4eee5",
+          "paint": "none"
+        },
+        {
+          "color": "#dfc79f",
+          "paint": "none"
+        },
+        {
+          "color": "#b89c82",
+          "paint": "none"
+        },
+        {
+          "color": "#8996a6",
+          "paint": "none"
+        }
+      ]
+    },
+    {
+      "mobile": true,
+      "chat": {
+        "left": 12.610000610351562,
+        "right": 4.850006103515625,
+        "buttonCenterY": 819,
+        "boxCenterY": 819
+      }
+    }
+  ],
+  "errors": []
+}

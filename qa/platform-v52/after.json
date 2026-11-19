@@ -1,0 +1,144 @@
+{
+  "environment": "macOS Chrome; emulated Windows transparency preference and mobile viewport, not physical devices",
+  "checks": [
+    {
+      "mobile": false,
+      "reduced": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(247, 251, 255)",
+      "titleVisible": true,
+      "title": "CUSTOMIZE\n커스터마이징",
+      "close": {
+        "w": 44,
+        "h": 44
+      },
+      "swatches": [
+        {
+          "color": "#f4eee5",
+          "raster": true
+        },
+        {
+          "color": "#dfc79f",
+          "raster": true
+        },
+        {
+          "color": "#b89c82",
+          "raster": true
+        },
+        {
+          "color": "#8996a6",
+          "raster": true
+        }
+      ]
+    },
+    {
+      "mobile": false,
+      "reduced": true,
+      "background": "rgb(38, 54, 74) none repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(247, 251, 255)",
+      "titleVisible": true,
+      "title": "CUSTOMIZE\n커스터마이징",
+      "close": {
+        "w": 44,
+        "h": 44
+      },
+      "swatches": [
+        {
+          "color": "#f4eee5",
+          "raster": true
+        },
+        {
+          "color": "#dfc79f",
+          "raster": true
+        },
+        {
+          "color": "#b89c82",
+          "raster": true
+        },
+        {
+          "color": "#8996a6",
+          "raster": true
+        }
+      ]
+    },
+    {
+      "mobile": false,
+      "chat": {
+        "left": 12.610000610351562,
+        "right": 12.610061645507812,
+        "buttonCenterY": 701,
+        "boxCenterY": 701
+      }
+    },
+    {
+      "mobile": true,
+      "reduced": false,
+      "background": "rgba(0, 0, 0, 0) linear-gradient(135deg, rgba(255, 255, 255, 0.22), rgba(236, 248, 255, 0.1) 54%, rgba(239, 237, 255, 0.16)) repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(247, 251, 255)",
+      "titleVisible": true,
+      "title": "CUSTOMIZE\n커스터마이징",
+      "close": {
+        "w": 44,
+        "h": 44
+      },
+      "swatches": [
+        {
+          "color": "#f4eee5",
+          "raster": true
+        },
+        {
+          "color": "#dfc79f",
+          "raster": true
+        },
+        {
+          "color": "#b89c82",
+          "raster": true
+        },
+        {
+          "color": "#8996a6",
+          "raster": true
+        }
+      ]
+    },
+    {
+      "mobile": true,
+      "reduced": true,
+      "background": "rgb(38, 54, 74) none repeat scroll 0% 0% / auto padding-box border-box",
+      "color": "rgb(247, 251, 255)",
+      "titleVisible": true,
+      "title": "CUSTOMIZE\n커스터마이징",
+      "close": {
+        "w": 44,
+        "h": 44
+      },
+      "swatches": [
+        {
+          "color": "#f4eee5",
+          "raster": true
+        },
+        {
+          "color": "#dfc79f",
+          "raster": true
+        },
+        {
+          "color": "#b89c82",
+          "raster": true
+        },
+        {
+          "color": "#8996a6",
+          "raster": true
+        }
+      ]
+    },
+    {
+      "mobile": true,
+      "chat": {
+        "left": 12.610000610351562,
+        "right": 12.610015869140625,
+        "buttonCenterY": 819,
+        "boxCenterY": 819
+      }
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,214 @@
+{
+  "environment": "macOS Chrome 1280x800 / high",
+  "physicalWindowsMobile": "UNKNOWN",
+  "stages": {
+    "off": {
+      "fps": 49.91639004668111,
+      "p95": 33.39999999999782,
+      "calls": [
+        1144,
+        1559
+      ],
+      "triangles": [
+        4852849,
+        8061829
+      ],
+      "memory": {
+        "geometries": 928,
+        "textures": 37
+      },
+      "cue": 0,
+      "regions": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "particles": 0
+    },
+    "opening": {
+      "fps": 53.888944074729416,
+      "p95": 33.30000000000291,
+      "calls": [
+        1148,
+        1560
+      ],
+      "triangles": [
+        4852945,
+        8050165
+      ],
+      "memory": {
+        "geometries": 932,
+        "textures": 37
+      },
+      "cue": 0,
+      "regions": [
+        0.6000000238418579,
+        0.18000000715255737,
+        0.18000000715255737,
+        0.30000001192092896,
+        0.1599999964237213,
+        0.550000011920929,
+        0.3499999940395355,
+        0.6000000238418579,
+        0.5,
+        0.30000001192092896
+      ],
+      "particles": 720
+    },
+    "middle": {
+      "fps": 53.47326336834569,
+      "p95": 33.30000000000291,
+      "calls": [
+        1148,
+        1559
+      ],
+      "triangles": [
+        4852945,
+        8047693
+      ],
+      "memory": {
+        "geometries": 932,
+        "textures": 37
+      },
+      "cue": 2,
+      "regions": [
+        0.699999988079071,
+        0.4000000059604645,
+        0.75,
+        0.6499999761581421,
+        0.20000000298023224,
+        0.47999998927116394,
+        0.6000000238418579,
+        0.5,
+        0.4000000059604645,
+        0.5
+      ],
+      "particles": 720
+    },
+    "golden": {
+      "fps": 49.63831379400052,
+      "p95": 33.400000000001455,
+      "calls": [
+        1148,
+        1560
+      ],
+      "triangles": [
+        4852945,
+        8050165
+      ],
+      "memory": {
+        "geometries": 932,
+        "textures": 37
+      },
+      "cue": 3,
+      "regions": [
+        0.699999988079071,
+        0.44999998807907104,
+        0.44999998807907104,
+        0.3799999952316284,
+        0.1599999964237213,
+        0.6499999761581421,
+        0.44999998807907104,
+        0.699999988079071,
+        0.6499999761581421,
+        0.6499999761581421
+      ],
+      "particles": 720
+    },
+    "finale": {
+      "fps": 46.94249544310839,
+      "p95": 33.400000000001455,
+      "calls": [
+        1148,
+        1584
+      ],
+      "triangles": [
+        4852945,
+        8081765
+      ],
+      "memory": {
+        "geometries": 947,
+        "textures": 37
+      },
+      "cue": 4,
+      "regions": [
+        0.800000011920929,
+        0.699999988079071,
+        0.699999988079071,
+        0.6000000238418579,
+        0.25999999046325684,
+        0.8500000238418579,
+        0.6499999761581421,
+        0.8999999761581421,
+        0.800000011920929,
+        0.75
+      ],
+      "particles": 720
+    }
+  },
+  "repeats": [
+    {
+      "memory": {
+        "geometries": 947,
+        "textures": 37
+      },
+      "active": false,
+      "points": 0,
+      "visible": false
+    },
+    {
+      "memory": {
+        "geometries": 947,
+        "textures": 37
+      },
+      "active": false,
+      "points": 0,
+      "visible": false
+    },
+    {
+      "memory": {
+        "geometries": 947,
+        "textures": 37
+      },
+      "active": false,
+      "points": 0,
+      "visible": false
+    },
+    {
+      "memory": {
+        "geometries": 950,
+        "textures": 37
+      },
+      "active": false,
+      "points": 0,
+      "visible": false
+    },
+    {
+      "memory": {
+        "geometries": 950,
+        "textures": 37
+      },
+      "active": false,
+      "points": 0,
+      "visible": false
+    },
+    {
+      "memory": {
+        "geometries": 950,
+        "textures": 37
+      },
+      "active": false,
+      "points": 0,
+      "visible": false
+    }
+  ],
+  "failure": "Error: Resources grew or effects survived end\n    at file:///Users/yeiwon/Documents/Codex/winter-alpine-v48/scripts/verify-castle-show-v51.mjs:18:218",
+  "errors": []
+}

@@ -1,0 +1,224 @@
+{
+  "environment": "macOS Chrome real MP3/WebAudio streaming; silent test output; full wall-clock duration, no speed change",
+  "tracks": [
+    {
+      "id": "happy-and-magical-dynamic",
+      "expected": 110.68081632653062,
+      "samples": [
+        {
+          "age": 0.002800000000745058,
+          "current": 0,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 10.00289999999851,
+          "current": 10.001995,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 20.003,
+          "current": 20.001088,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 30.0035,
+          "current": 29.959096,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 40.003199999999254,
+          "current": 39.957324,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 50.00330000000074,
+          "current": 49.948342,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 60.003699999999256,
+          "current": 59.942062,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 70.0035,
+          "current": 69.903243,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 80.0035,
+          "current": 79.905079,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 90.00380000000075,
+          "current": 89.82059,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 100.00209999999777,
+          "current": 99.801359,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 110.00159999999777,
+          "current": 109.998567,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        }
+      ],
+      "events": [
+        {
+          "active": true,
+          "at": 0.0030999999977648256
+        },
+        {
+          "active": false,
+          "at": 110.70219999999925
+        }
+      ],
+      "duration": 110.680813,
+      "released": true,
+      "complete": true
+    },
+    {
+      "id": "joyful-piano-orchestra",
+      "expected": 125.04816326530612,
+      "samples": [
+        {
+          "age": 0.003,
+          "current": 0,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 10.003,
+          "current": 10.001995,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 20.003,
+          "current": 20.001088,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 30.003599999997764,
+          "current": 29.959118,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 40.003199999999254,
+          "current": 39.957344,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 50.00330000000074,
+          "current": 49.948396,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 60.003800000000744,
+          "current": 59.942113,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 70.00359999999776,
+          "current": 69.906157,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 80.0035,
+          "current": 79.905101,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 90.00380000000075,
+          "current": 89.82059,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 100.00209999999777,
+          "current": 99.804264,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 110.00280000000075,
+          "current": 109.785359,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 120.002,
+          "current": 120.000399,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        }
+      ],
+      "events": [
+        {
+          "active": true,
+          "at": 0.0030999999977648256
+        },
+        {
+          "active": false,
+          "at": 125.0525
+        }
+      ],
+      "duration": 125.048156,
+      "released": true,
+      "complete": true
+    }
+  ],
+  "done": true,
+  "late": {
+    "at": 36.40601,
+    "paused": false
+  },
+  "errors": []
+}
