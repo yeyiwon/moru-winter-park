@@ -46,6 +46,8 @@ jobs:
             if curl --fail --silent http://127.0.0.1:4190/api/health > /dev/null; then break; fi
             sleep 1
           done
-          node scripts/verify-operations-browser.mjs
+          # Hosted runners have no hardware GPU. Exercise the existing low
+          # preset here; normal-quality visual/performance QA runs separately.
+          QA_RENDER_MODE=low node scripts/verify-operations-browser.mjs
       # Publication stays separate: owner approval, database backup, matching source
       # artifacts and staging smoke checks are required before production activation.
