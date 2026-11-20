@@ -1,0 +1,387 @@
+{
+  "at": "2026-11-20T09:31:57.530Z",
+  "revision": "43c2a219152a455911470ff9720498795fb6379d",
+  "physicalMobile": false,
+  "checks": [
+    {
+      "name": "official release matches verified commit",
+      "ok": true,
+      "details": {
+        "revision": "43c2a219152a455911470ff9720498795fb6379d"
+      }
+    },
+    {
+      "name": "deployed asset activity-state.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset companion.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset winter-experience.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset mobile-ui.css",
+      "ok": true
+    },
+    {
+      "name": "deployed asset luminous-loading.css",
+      "ok": true
+    },
+    {
+      "name": "deployed asset social.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset park.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset park-garden.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset park-layout.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset observatory-guide.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset mountain-layout.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset mountain-terrain.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset alpine-gondola.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset ride-seats.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset shared-tree.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset show-tracks.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset music-catalog.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset winter-music.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset firework-music.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset firework-score.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset castle-show.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset color-swatches.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset fireworks-request.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset ui-system.css",
+      "ok": true
+    },
+    {
+      "name": "deployed asset ui-theme.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset wardrobe.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset wardrobe-icons.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset character-accessories.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset lighting-theme.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset studio.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset resort-ui-v43.css",
+      "ok": true
+    },
+    {
+      "name": "deployed asset index.html",
+      "ok": true
+    },
+    {
+      "name": "streaming range show/love.mp3",
+      "ok": true
+    },
+    {
+      "name": "streaming range show/wedding-entrance.mp3",
+      "ok": true
+    },
+    {
+      "name": "streaming range show/trepak.m4a",
+      "ok": true
+    },
+    {
+      "name": "streaming range waltz-of-snowflakes.mp3",
+      "ok": true
+    },
+    {
+      "name": "streaming range ethereal-winter-ballet-01.mp3",
+      "ok": true
+    },
+    {
+      "name": "streaming range winter-jazz-artmylife.mp3",
+      "ok": true
+    },
+    {
+      "name": "desktop enters live shared world",
+      "ok": true
+    },
+    {
+      "name": "desktop only approved show music and fifth BGM",
+      "ok": true,
+      "details": {
+        "shows": [
+          "love",
+          "wedding-entrance",
+          "trepak"
+        ],
+        "bgm": [
+          "ethereal-winter-ballet-01",
+          "cinematic-christmas-piano-strings-bells",
+          "winter-waltz",
+          "winter-jazz-artmylife",
+          "waltz-of-snowflakes"
+        ]
+      }
+    },
+    {
+      "name": "desktop receives realtime socket frames",
+      "ok": true
+    },
+    {
+      "name": "desktop chat send stays borderless",
+      "ok": true,
+      "details": {
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)",
+        "shadow": "none"
+      }
+    },
+    {
+      "name": "desktop empty history has no floating panel",
+      "ok": true
+    },
+    {
+      "name": "desktop chat has no close text button",
+      "ok": true
+    },
+    {
+      "name": "desktop history hidden during exploration",
+      "ok": true
+    },
+    {
+      "name": "desktop map uses the same settings alignment",
+      "ok": true
+    },
+    {
+      "name": "desktop nickname save has no extra frame",
+      "ok": true
+    },
+    {
+      "name": "desktop saved nickname has no completion label",
+      "ok": true
+    },
+    {
+      "name": "desktop customization saved",
+      "ok": true
+    },
+    {
+      "name": "desktop guest invite and owner controls hidden",
+      "ok": true
+    },
+    {
+      "name": "desktop settings title restored",
+      "ok": true
+    },
+    {
+      "name": "desktop colour swatch canvas present",
+      "ok": true
+    },
+    {
+      "name": "desktop customization survives reconnect",
+      "ok": true
+    },
+    {
+      "name": "desktop tree name is concise",
+      "ok": true
+    },
+    {
+      "name": "desktop tree dock uses actual 3D thumbnails",
+      "ok": true
+    },
+    {
+      "name": "desktop closing tree restores previous zoom",
+      "ok": true,
+      "details": {
+        "before": 16.5,
+        "after": 16.5
+      }
+    },
+    {
+      "name": "desktop ski map travel enters existing base",
+      "ok": true
+    },
+    {
+      "name": "desktop guest administrator API denied",
+      "ok": true
+    },
+    {
+      "name": "mobile enters live shared world",
+      "ok": true
+    },
+    {
+      "name": "mobile only approved show music and fifth BGM",
+      "ok": true,
+      "details": {
+        "shows": [
+          "love",
+          "wedding-entrance",
+          "trepak"
+        ],
+        "bgm": [
+          "ethereal-winter-ballet-01",
+          "cinematic-christmas-piano-strings-bells",
+          "winter-waltz",
+          "winter-jazz-artmylife",
+          "waltz-of-snowflakes"
+        ]
+      }
+    },
+    {
+      "name": "mobile receives realtime socket frames",
+      "ok": true
+    },
+    {
+      "name": "mobile chat send stays borderless",
+      "ok": true,
+      "details": {
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)",
+        "shadow": "none"
+      }
+    },
+    {
+      "name": "mobile empty history has no floating panel",
+      "ok": true
+    },
+    {
+      "name": "mobile chat has no close text button",
+      "ok": true
+    },
+    {
+      "name": "mobile history hidden during exploration",
+      "ok": true
+    },
+    {
+      "name": "mobile map uses the same settings alignment",
+      "ok": true
+    },
+    {
+      "name": "mobile nickname save has no extra frame",
+      "ok": true
+    },
+    {
+      "name": "mobile saved nickname has no completion label",
+      "ok": true
+    },
+    {
+      "name": "mobile customization saved",
+      "ok": true
+    },
+    {
+      "name": "mobile guest invite and owner controls hidden",
+      "ok": true
+    },
+    {
+      "name": "mobile settings title restored",
+      "ok": true
+    },
+    {
+      "name": "mobile colour swatch canvas present",
+      "ok": true
+    },
+    {
+      "name": "mobile customization survives reconnect",
+      "ok": true
+    },
+    {
+      "name": "mobile tree name is concise",
+      "ok": true
+    },
+    {
+      "name": "mobile tree dock uses actual 3D thumbnails",
+      "ok": true
+    },
+    {
+      "name": "mobile closing tree restores previous zoom",
+      "ok": true,
+      "details": {
+        "before": 16.5,
+        "after": 16.5
+      }
+    },
+    {
+      "name": "mobile ski map travel enters existing base",
+      "ok": true
+    },
+    {
+      "name": "mobile guest administrator API denied",
+      "ok": true
+    },
+    {
+      "name": "admin route shows owner entry",
+      "ok": true
+    },
+    {
+      "name": "no browser or 5xx errors",
+      "ok": true,
+      "details": {
+        "errors": [],
+        "http5xx": []
+      }
+    }
+  ],
+  "errors": [],
+  "consoleErrors": [],
+  "http5xx": []
+}

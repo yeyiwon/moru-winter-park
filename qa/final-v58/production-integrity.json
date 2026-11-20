@@ -1,0 +1,14 @@
+{
+  "at": "2026-11-20T09:32:20.512Z",
+  "releaseRevision": "43c2a219152a455911470ff9720498795fb6379d",
+  "apiRevision": "43c2a219152a455911470ff9720498795fb6379d",
+  "realtimeRevision": "43c2a219152a455911470ff9720498795fb6379d",
+  "allMatch": true,
+  "thumbnail": {
+    "url": "https://moru-winter-park.vercel.app/brand/og-festival-night-v58.png?v=festival-night-v58",
+    "status": 200,
+    "bytes": 1653169,
+    "sha256": "c120e4cc4605836e3dd880a535f58a29589fd59e99f679715d0dfb8bf06906dc",
+    "match": true
+  }
+}

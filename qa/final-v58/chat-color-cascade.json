@@ -1,0 +1,40 @@
+{
+  "checks": [
+    {
+      "theme": "light",
+      "typing": false,
+      "colors": [
+        "rgb(7, 93, 87)",
+        "rgb(101, 53, 138)"
+      ],
+      "ok": true
+    },
+    {
+      "theme": "light",
+      "typing": true,
+      "colors": [
+        "rgb(7, 93, 87)",
+        "rgb(101, 53, 138)"
+      ],
+      "ok": true
+    },
+    {
+      "theme": "dark",
+      "typing": false,
+      "colors": [
+        "rgb(162, 244, 222)",
+        "rgb(221, 196, 255)"
+      ],
+      "ok": true
+    },
+    {
+      "theme": "dark",
+      "typing": true,
+      "colors": [
+        "rgb(162, 244, 222)",
+        "rgb(221, 196, 255)"
+      ],
+      "ok": true
+    }
+  ]
+}

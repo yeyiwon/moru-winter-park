@@ -13,9 +13,9 @@
 #chat-log[hidden]{display:none!important}
 #chat-log p{animation:none}
 #chat-log .chat-hide{font:inherit;font-size:10px;color:inherit;background:none;border:0;padding:4px 7px;opacity:1}
-#chat-log b{color:var(--ui-ink)}
+#chat-log b:not(.chat-author){color:var(--ui-ink)}
 body.chat-typing #chat-log{color:var(--ui-ink);background:var(--ui-hud);border:1px solid var(--ui-rim);border-radius:14px;padding:8px 12px;box-shadow:var(--ui-shadow);backdrop-filter:none;-webkit-backdrop-filter:none;text-shadow:none}
-body.chat-typing #chat-log b{color:var(--ui-ink)}
+body.chat-typing #chat-log b:not(.chat-author){color:var(--ui-ink)}
 #chat-status:not(:empty){display:table;max-width:100%;padding:5px 10px;border-radius:10px;background:var(--ui-hud);color:var(--ui-danger);text-shadow:var(--ui-text-shadow)}
 #place-card h2,#ride-label{color:var(--ui-world-label);text-shadow:0 1px 5px #0b2034e6}
 #place-actions button,#ski-controls button{color:var(--ui-ink);background:var(--ui-hud);border:1px solid var(--ui-rim);box-shadow:var(--ui-shadow);text-shadow:var(--ui-text-shadow);backdrop-filter:none;-webkit-backdrop-filter:none}

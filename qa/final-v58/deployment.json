@@ -1,0 +1,88 @@
+{
+  "at": "2026-11-20T09:34:00.606Z",
+  "revision": "43c2a219152a455911470ff9720498795fb6379d",
+  "officialUrl": "https://moru-winter-park.vercel.app",
+  "sites": {
+    "id": "appgdep_6b0012fe323881918279677e184d98bb",
+    "project_id": "appgprj_6af6f606ab648191855ab9bd44c334fd",
+    "title": "WINTERLIGHT",
+    "version_id": "appgprj_6af6f606ab648191855ab9bd44c334fd~appgver_ce139619f62481918ff3ae6149a286fb",
+    "type": "publish",
+    "status": "succeeded",
+    "url": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site",
+    "has_mcp": false,
+    "screenshot_asset_pointer": null,
+    "provider_deployment_id": "release---6af7be931a2081919f70b88434d8a181",
+    "failure_message": null,
+    "env_set_revision": 4,
+    "updated_at": "2026-11-20T09:30:18.336679+00:00"
+  },
+  "version": 67,
+  "vercel": {
+    "id": "dpl_Y3Nh1wN8qEYf2LLfmrBYTvUcuAEG",
+    "name": "moru-winter-park",
+    "url": "moru-winter-park-7cs2xcf47-yeyiwons-projects.vercel.app",
+    "type": "LAMBDAS",
+    "state": "READY",
+    "createdAt": 1795167045407,
+    "creator": {
+      "uid": "TdlLixl5yCEDmqs1wNtaWwu6",
+      "username": "yeyiwon"
+    },
+    "project": {
+      "id": "prj_mbioBXlMSNwfJ8MWNaRMi2Lsm8I0",
+      "name": "moru-winter-park",
+      "framework": null
+    },
+    "meta": {
+      "githubCommitRef": "main",
+      "githubCommitSha": "43c2a219152a455911470ff9720498795fb6379d",
+      "githubCommitMessage": "feat: complete public winter metaverse, shared shows and alpine resort stabilization",
+      "githubRepo": "moru-winter-park",
+      "githubOrg": "yeyiwon"
+    },
+    "alias": [
+      "moru-winter-park.vercel.app",
+      "moru-winter-park-yeyiwons-projects.vercel.app",
+      "moru-winter-park-git-main-yeyiwons-projects.vercel.app"
+    ],
+    "target": "production",
+    "regions": [
+      "icn1"
+    ],
+    "buildingAt": 1795167046800,
+    "ready": 1795167087393,
+    "readyState": "READY",
+    "source": "git",
+    "aliasError": null
+  },
+  "cloudflare": {
+    "service": "winterlight-realtime",
+    "version": "988b8d7c-2b8e-48f9-95a1-577954d5e0aa",
+    "revision": "43c2a219152a455911470ff9720498795fb6379d"
+  },
+  "preservation": {
+    "wishes": {
+      "before": 7,
+      "after": 7,
+      "unchanged": 7
+    },
+    "quiz_journal": {
+      "before": 6,
+      "after": 6,
+      "unchanged": 6
+    },
+    "space_owner": {
+      "before": 1,
+      "after": 1,
+      "unchanged": 1
+    },
+    "tree_decorations": {
+      "before": 144,
+      "after": 144,
+      "unchanged": 144
+    }
+  },
+  "noDatabaseMigration": true,
+  "physicalDevicesVerified": false
+}
