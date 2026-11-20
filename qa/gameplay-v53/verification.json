@@ -15,11 +15,11 @@
   "budget": {
     "totals": {
       "files": 251,
-      "allBytes": 34765258,
+      "allBytes": 34765252,
       "codeBytes": 3317056,
       "codeGzipBytes": 1069139,
       "audioBytes": 28324464,
-      "coreBytes": 26507222,
+      "coreBytes": 26507216,
       "showAudioBytes": 8258036
     },
     "limits": {
@@ -74,5 +74,5 @@
   "physicalAndroid": "UNKNOWN",
   "physicalIOS": "UNKNOWN",
   "virtualKeyboardHardware": "UNKNOWN",
-  "deployment": "pending"
+  "deployment": "completed; live verification in production/report.json and deployment.json"
 }

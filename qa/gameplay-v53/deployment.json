@@ -1,0 +1,82 @@
+{
+  "recordedAt": "2026-11-20T03:49:40.462Z",
+  "revision": "8b3b4498dc140b017a833c9ab28ec74f445d7132",
+  "officialURL": "https://moru-winter-park.vercel.app",
+  "adminURL": "https://moru-winter-park.vercel.app/admin",
+  "sites": {
+    "version": 65,
+    "id": "appgdep_6affc26589a8819188273e1a808e02c5",
+    "status": "succeeded",
+    "environmentRevision": 4
+  },
+  "vercel": {
+    "id": "dpl_5Lp9zZnpv2MsHNeYUENHUPT6NkiK",
+    "state": "READY",
+    "aliases": [
+      "moru-winter-park.vercel.app",
+      "moru-winter-park-yeyiwons-projects.vercel.app",
+      "moru-winter-park-git-main-yeyiwons-projects.vercel.app"
+    ]
+  },
+  "realtime": {
+    "name": "winterlight-realtime",
+    "version": "5a6223c2-d637-4770-bf43-f6df7b709648"
+  },
+  "dataPreservation": [
+    {
+      "table": "wishes",
+      "before": 7,
+      "after": 7,
+      "preserved": 7
+    },
+    {
+      "table": "tree_decorations",
+      "before": 144,
+      "after": 144,
+      "preserved": 144
+    },
+    {
+      "table": "quiz_journal",
+      "before": 5,
+      "after": 5,
+      "preserved": 5
+    },
+    {
+      "table": "space_owner",
+      "before": 1,
+      "after": 1,
+      "preserved": 1
+    }
+  ],
+  "runtimeLogs": {
+    "vercelErrorFatal": 0,
+    "sites": [
+      {
+        "path": "/api/realtime",
+        "outcome": "canceled",
+        "requestAgent": "CloudflareBrowserRenderingCrawler"
+      },
+      {
+        "path": "/onsen-waterfall.js",
+        "error": "Network connection lost.",
+        "recheckedBothOrigins": "200, twice each"
+      },
+      {
+        "path": "/sitemap.xml",
+        "status": 404
+      },
+      {
+        "path": "/robots.txt",
+        "status": 404
+      },
+      {
+        "path": "/favicon.ico",
+        "status": 404
+      }
+    ],
+    "note": "Deployment crawler/window events; isolated network disconnect cause not established. No exception or 5xx during official browser smoke."
+  },
+  "physicalWindows": "UNKNOWN",
+  "physicalMobile": "UNKNOWN",
+  "liveOwnerAuthentication": "User-confirmed previously, not repeated by agent"
+}

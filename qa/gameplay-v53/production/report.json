@@ -1,0 +1,301 @@
+{
+  "at": "2026-11-20T03:47:55.924Z",
+  "revision": "8b3b4498dc140b017a833c9ab28ec74f445d7132",
+  "physicalMobile": false,
+  "checks": [
+    {
+      "name": "official release matches verified commit",
+      "ok": true,
+      "details": {
+        "revision": "8b3b4498dc140b017a833c9ab28ec74f445d7132"
+      }
+    },
+    {
+      "name": "deployed asset social.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset park.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset mountain-layout.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset mountain-terrain.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset alpine-gondola.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset ride-seats.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset shared-tree.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset show-tracks.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset firework-music.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset firework-score.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset castle-show.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset color-swatches.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset fireworks-request.js",
+      "ok": true
+    },
+    {
+      "name": "deployed asset ui-system.css",
+      "ok": true
+    },
+    {
+      "name": "deployed asset resort-ui-v43.css",
+      "ok": true
+    },
+    {
+      "name": "deployed asset index.html",
+      "ok": true
+    },
+    {
+      "name": "streaming range show/love.mp3",
+      "ok": true
+    },
+    {
+      "name": "streaming range show/wedding-entrance.mp3",
+      "ok": true
+    },
+    {
+      "name": "streaming range waltz-of-snowflakes.mp3",
+      "ok": true
+    },
+    {
+      "name": "desktop enters live shared world",
+      "ok": true
+    },
+    {
+      "name": "desktop only approved show music and fifth BGM",
+      "ok": true,
+      "details": {
+        "shows": [
+          "love",
+          "wedding-entrance"
+        ],
+        "bgm": [
+          "ethereal-winter-ballet-02",
+          "cinematic-christmas-piano-strings-bells",
+          "winter-waltz",
+          "winter-jazz",
+          "waltz-of-snowflakes"
+        ]
+      }
+    },
+    {
+      "name": "desktop receives realtime socket frames",
+      "ok": true
+    },
+    {
+      "name": "desktop chat send stays borderless",
+      "ok": true,
+      "details": {
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)",
+        "shadow": "none"
+      }
+    },
+    {
+      "name": "desktop empty history has no floating panel",
+      "ok": true
+    },
+    {
+      "name": "desktop chat has no close text button",
+      "ok": true
+    },
+    {
+      "name": "desktop history hidden during exploration",
+      "ok": true
+    },
+    {
+      "name": "desktop map uses the same settings alignment",
+      "ok": true
+    },
+    {
+      "name": "desktop nickname save has no extra frame",
+      "ok": true
+    },
+    {
+      "name": "desktop saved nickname has no completion label",
+      "ok": true
+    },
+    {
+      "name": "desktop customization saved",
+      "ok": true
+    },
+    {
+      "name": "desktop settings title restored",
+      "ok": true
+    },
+    {
+      "name": "desktop colour swatch canvas present",
+      "ok": true
+    },
+    {
+      "name": "desktop customization survives reconnect",
+      "ok": true
+    },
+    {
+      "name": "desktop tree name is concise",
+      "ok": true
+    },
+    {
+      "name": "desktop tree dock uses actual 3D thumbnails",
+      "ok": true
+    },
+    {
+      "name": "desktop closing tree restores previous zoom",
+      "ok": true,
+      "details": {
+        "before": 16.5,
+        "after": 16.5
+      }
+    },
+    {
+      "name": "desktop ski map travel enters existing base",
+      "ok": true
+    },
+    {
+      "name": "desktop guest administrator API denied",
+      "ok": true
+    },
+    {
+      "name": "mobile enters live shared world",
+      "ok": true
+    },
+    {
+      "name": "mobile only approved show music and fifth BGM",
+      "ok": true,
+      "details": {
+        "shows": [
+          "love",
+          "wedding-entrance"
+        ],
+        "bgm": [
+          "ethereal-winter-ballet-02",
+          "cinematic-christmas-piano-strings-bells",
+          "winter-waltz",
+          "winter-jazz",
+          "waltz-of-snowflakes"
+        ]
+      }
+    },
+    {
+      "name": "mobile receives realtime socket frames",
+      "ok": true
+    },
+    {
+      "name": "mobile chat send stays borderless",
+      "ok": true,
+      "details": {
+        "border": "0px",
+        "background": "rgba(0, 0, 0, 0)",
+        "shadow": "none"
+      }
+    },
+    {
+      "name": "mobile empty history has no floating panel",
+      "ok": true
+    },
+    {
+      "name": "mobile chat has no close text button",
+      "ok": true
+    },
+    {
+      "name": "mobile history hidden during exploration",
+      "ok": true
+    },
+    {
+      "name": "mobile map uses the same settings alignment",
+      "ok": true
+    },
+    {
+      "name": "mobile nickname save has no extra frame",
+      "ok": true
+    },
+    {
+      "name": "mobile saved nickname has no completion label",
+      "ok": true
+    },
+    {
+      "name": "mobile customization saved",
+      "ok": true
+    },
+    {
+      "name": "mobile settings title restored",
+      "ok": true
+    },
+    {
+      "name": "mobile colour swatch canvas present",
+      "ok": true
+    },
+    {
+      "name": "mobile customization survives reconnect",
+      "ok": true
+    },
+    {
+      "name": "mobile tree name is concise",
+      "ok": true
+    },
+    {
+      "name": "mobile tree dock uses actual 3D thumbnails",
+      "ok": true
+    },
+    {
+      "name": "mobile closing tree restores previous zoom",
+      "ok": true,
+      "details": {
+        "before": 16.5,
+        "after": 16.5
+      }
+    },
+    {
+      "name": "mobile ski map travel enters existing base",
+      "ok": true
+    },
+    {
+      "name": "mobile guest administrator API denied",
+      "ok": true
+    },
+    {
+      "name": "admin route shows owner entry",
+      "ok": true
+    },
+    {
+      "name": "no browser or 5xx errors",
+      "ok": true,
+      "details": {
+        "errors": [],
+        "http5xx": []
+      }
+    }
+  ],
+  "errors": [],
+  "consoleErrors": [],
+  "http5xx": []
+}

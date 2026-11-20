@@ -1,0 +1,181 @@
+{
+  "environment": "Mac Chrome PC + 390x844 touch emulation; physical Windows/iOS/Android UNKNOWN",
+  "checks": [
+    {
+      "name": "PC Enter opens chat from focused game button",
+      "ok": true
+    },
+    {
+      "name": "sent chat has independent head bubble",
+      "ok": true
+    },
+    {
+      "name": "recent chat remains readable beyond 3 seconds",
+      "ok": true
+    },
+    {
+      "name": "recent chat fades while retaining history",
+      "ok": true
+    },
+    {
+      "name": "history restores",
+      "ok": true
+    },
+    {
+      "name": "two guests reserve different seats in same moving cabin",
+      "ok": true,
+      "data": [
+        {
+          "kind": "gondola",
+          "cabin": 1795146744000,
+          "seat": 0,
+          "startedAt": 1795146746889
+        },
+        {
+          "kind": "gondola",
+          "cabin": 1795146744000,
+          "seat": 1,
+          "startedAt": 1795146746917
+        }
+      ]
+    },
+    {
+      "name": "moving cabin cannot be exited in the air",
+      "ok": true
+    },
+    {
+      "name": "exit begins continuously rather than teleporting",
+      "ok": true,
+      "data": {
+        "before": {
+          "x": -179.06432287673263,
+          "y": 900.9800000000001,
+          "z": -1923.743120057918,
+          "yaw": -1.5406099791646115,
+          "mode": "lift",
+          "lean": 0,
+          "tilt": 0,
+          "brake": false,
+          "air": 0,
+          "speed": 0,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        },
+        "during": {
+          "x": -179.06432287673263,
+          "y": 900.9800000000001,
+          "z": -1923.743120057918,
+          "yaw": -1.5406099791646115,
+          "mode": "lift",
+          "lean": 0,
+          "tilt": 0,
+          "brake": false,
+          "air": 0,
+          "speed": 0,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        }
+      }
+    },
+    {
+      "name": "both guests finish on the station apron",
+      "ok": true
+    },
+    {
+      "name": "ski HUD hides normal joystick and social controls",
+      "ok": true
+    },
+    {
+      "name": "all ski touch targets remain inside viewport",
+      "ok": true,
+      "data": [
+        {
+          "id": "left",
+          "x": 18,
+          "y": 758,
+          "w": 56,
+          "h": 56,
+          "inside": true
+        },
+        {
+          "id": "push",
+          "x": 316,
+          "y": 690,
+          "w": 56,
+          "h": 56,
+          "inside": true
+        },
+        {
+          "id": "right",
+          "x": 86,
+          "y": 758,
+          "w": 56,
+          "h": 56,
+          "inside": true
+        },
+        {
+          "id": "brake",
+          "x": 300,
+          "y": 758,
+          "w": 72,
+          "h": 56,
+          "inside": true
+        },
+        {
+          "id": "jump",
+          "x": 232,
+          "y": 758,
+          "w": 56,
+          "h": 56,
+          "inside": true
+        },
+        {
+          "id": "recover",
+          "x": 18,
+          "y": 702,
+          "w": 70.5,
+          "h": 44,
+          "inside": true
+        }
+      ]
+    },
+    {
+      "name": "ski push launches movement",
+      "ok": true
+    },
+    {
+      "name": "ski jump control responds",
+      "ok": true
+    },
+    {
+      "name": "normal HUD restores after skiing",
+      "ok": true
+    },
+    {
+      "name": "no browser or shader errors",
+      "ok": true,
+      "data": []
+    }
+  ],
+  "errors": [],
+  "seats": [
+    {
+      "kind": "gondola",
+      "cabin": 1795146744000,
+      "seat": 0,
+      "startedAt": 1795146746889
+    },
+    {
+      "kind": "gondola",
+      "cabin": 1795146744000,
+      "seat": 1,
+      "startedAt": 1795146746917
+    }
+  ]
+}

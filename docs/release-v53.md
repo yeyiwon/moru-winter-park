@@ -37,6 +37,7 @@
 - PC Enter, 최근 채팅 3초 이후 표시·fade·기록, 두 명 같은 객실 다른 좌석·공중 하차 방지·연속 하차: [곤돌라 검사](../qa/gameplay-v53/gondola-before-hud-fix.json). 이 원본 결과의 마지막 스키 터치 실패는 후속 수정과 [재검사](../qa/gameplay-v53/gameplay.json)에 별도 기록했다.
 - 성의 정면·좌우·모바일 화면과 6회 재시작 geometry/texture 수 유지: [PC](../qa/gameplay-v53/show/desktop.json), [모바일 화면](../qa/gameplay-v53/show/mobile.json). 수 시간 내구 시험이나 실제 GPU 메모리 byte 측정은 아니다.
 - 요청 문서에 언급한 추가 불꽃 참고 사진 4장은 확보되지 않아 분석 완료로 표시하지 않는다. 제공된 실행 화면과 실제 3D 화면을 기준으로 수정했다.
+- 운영 소스 `8b3b449`의 공식 주소 UI 60개와 곤돌라 동승/스키 터치 15개, 3인 공연/중도 입장/전체 종료 검사를 통과했다. [최종 배포 및 실제 결과](DEPLOYMENT.md).
 - 자동 검사·최종 빌드·부하·배포 결과는 [TESTING](TESTING.md), [PERFORMANCE](PERFORMANCE.md), [DEPLOYMENT](DEPLOYMENT.md)를 따른다.
 
 ## 화면

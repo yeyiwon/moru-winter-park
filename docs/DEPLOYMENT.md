@@ -1,8 +1,29 @@
-# v53 운영 반영 준비
+# v53 운영 반영 — 2026-11-20
 
-공식 주소 **https://moru-winter-park.vercel.app/** 유지. 검증 브랜치 `codex/love-gameplay-v53`, 기준 운영 `b360198`. 최초 합성곡과 이전 공연곡 제거, Love/Wedding Entrance만 활성. [릴리스 범위](release-v53.md).
+공식 주소: **https://moru-winter-park.vercel.app/** · 관리자: **https://moru-winter-park.vercel.app/admin**
 
-배포 전 읽기 전용 비교 기준은 기존 소원 7개·장식 144개·퀴즈 기록 5개·소유자 1개이다. 기존 D1 schema·인증·비밀 설정은 유지한다. 전체 DB backup을 만들었다는 의미는 아니다. 이전 Sites 64/Vercel/Cloudflare 버전을 복구 기준으로 보존한다. 최종 배포 식별자와 실제 확인 결과는 아래에 추가한다.
+| 대상 | 확인 결과 |
+| --- | --- |
+| GitHub main / 운영 소스 | `8b3b4498dc140b017a833c9ab28ec74f445d7132` |
+| 음악·VFX / 조작·지형 구현 | `c68a711` / `e0f909a` |
+| Sites | 버전 **65**, `appgdep_6affc26589a8819188273e1a808e02c5`, succeeded |
+| Vercel | `dpl_5Lp9zZnpv2MsHNeYUENHUPT6NkiK`, READY, 공식 도메인 연결 |
+| Cloudflare realtime | `winterlight-realtime`, version `5a6223c2-d637-4770-bf43-f6df7b709648` |
+| 버전 일치 | frontend release.json / API health / realtime health 모두 운영 SHA 일치 |
+| 환경 설정 | 기존 Sites env revision **4**, realtime secret·allowed origins 유지 |
+
+최초 합성 음악과 이전 공연 파일을 제거하고 **Love / Wedding Entrance**만 활성화했다. Waltz of Snowflakes는 일반 BGM 5번이다. 기존 주소·인증·서버·D1 schema를 유지했고 새로운 유료 서비스는 추가하지 않았다. 배포 직전 활성 공연과 탑승 예약이 없는 것을 확인했다.
+
+## 실제 운영 검사
+
+- 공식 주소 PC / 390×844 touch 화면 **60/60 PASS**: 동일 배포 파일 해시, 세 음원 Range 206 / audio-mpeg, 두 공연곡과 BGM 5번, 로딩·실시간 접속, 닉네임·외형 저장/재접속, UI 정렬·제목·색상표·채팅 전송, 지도·트리 3D 장식·카메라 복귀, 관리자 진입과 게스트 API 403. browser / console / HTTP 5xx 각각 **0**. [원본](../qa/gameplay-v53/production/report.json).
+- 실제 Cloudflare WebSocket 3인: Wedding Entrance **123.245714초** 완곡 타임라인, 동일 ID/seed, 약 10.99초 중도 입장, 위치·채팅 전달, 관리자 403, 카메라·위치 유지와 자연 종료 통과. 521개 socket frame / 511개 pose snapshot, 브라우저 오류 0. [공연 동기화](../qa/gameplay-v53/production-sync/sync.json).
+- 실제 운영 곤돌라 PC·모바일 두 게스트의 같은 객실/다른 좌석, 공중 하차 차단, 문을 지나는 연속 하차와 예약 해제, PC Enter·최근 채팅 유지·기록, 모바일 터치 출발/점프/복귀 **15/15 PASS**, 브라우저·shader 오류 0. [운영 조작 검사](../qa/gameplay-v53/production-gameplay/gameplay.json).
+- 배포 전 원본 소원 **7/7**, 장식 **144/144**, 퀴즈 기록 **5/5**, 소유자 **1/1**의 행 내용이 배포 후 동일하다. 전체 DB backup을 만들었다는 의미는 아니다. [배포·보존 기록](../qa/gameplay-v53/deployment.json).
+- Vercel error/fatal 조회 결과 없음. Sites의 배포 crawler 시간대에는 realtime 요청 취소 1건, 자산 `Network connection lost` 1건, 미제공 robots/sitemap/favicon 404가 있었다. 자산은 공식·API 원점에서 각 2회 200/동일 크기로 재확인했다. 단일 연결 중단의 원인은 확정하지 않으며 브라우저 검사에서는 재현되지 않았다.
+- **실물 Windows/Edge·Galaxy/Samsung Browser·iPhone Safari, 실제 가상 키보드·발열·수 시간 내구 시험은 UNKNOWN**. Mac Chrome과 터치 화면 검증이다. 실제 소유자 로그인은 사용자가 이전 운영에서 확인했고 이번에는 게스트 권한·관리자 진입 경로를 확인했다.
+
+GitHub Actions의 최종 상태는 완료 후 덧붙인다. 배포 후 문서/측정은 `codex/v53-release-verification` 브랜치에 보관하며 실행 SHA는 그대로 유지한다. [전체 변경](release-v53.md).
 
 ---
 
