@@ -1,6 +1,23 @@
-## v59 배포 준비
+# v59 운영 배포 확인 — 2026-11-20
 
-기존 Sites API·Vercel 프런트엔드·Cloudflare 실시간 서버를 유지한다. 전체 장식 삭제는 격리된 테스트 데이터로 검증하며 운영 장식·소원·접속자 데이터를 삭제하지 않는다. 배포 완료 후 세 서비스의 동일 소스 revision, 공식 도메인과 새 로딩 자산 해시를 별도 기록으로 확인한다. 아직 아래 v58 배포 기록이 마지막 완료된 운영 상태다.
+공식 주소: **https://moru-winter-park.vercel.app/** · 기존 화면 갱신: **https://moru-winter-park.vercel.app/refresh.html**
+
+| 대상 | 확인 결과 |
+|---|---|
+| 운영 소스 | `6c9fa62ee9e70539f7b9ee0e2fee164cded86b58` |
+| Sites API | 버전 **72**, `appgdep_6b003e5808e48191aac0c021998a49aa`, succeeded, env revision 4 |
+| Vercel | `dpl_7DXd11urpuu95dhDKHbKbyXCSQJk`, READY, 공식 도메인 연결 |
+| Cloudflare realtime | `66e306ad-35d0-47a7-90d5-6030d1607fd6` |
+| 세 서비스 버전 | 공식 release.json·공식 API·Sites API·realtime health 모두 운영 SHA 일치 |
+| 배포 파일 | 화면·테마·채팅·음악·공연·로딩 및 새 브랜딩 15개 파일이 검증한 빌드와 SHA-256 일치 |
+
+[실제 응답과 파일 해시](../qa/platform-v59/production/integrity.json). 기존 Sites API·Vercel 프런트엔드·Cloudflare 실시간 서버, 환경변수와 데이터를 유지했다. DB migration이나 운영 장식·소원 전체삭제는 실행하지 않았다. 장식 전체삭제 검증에는 격리된 테스트 데이터만 사용했다.
+
+배포 전 전체 **593/593**, 3인 개인 음악·공동 공연 **19/19**, 관리·입장 **15/15** 검사 통과. 최종 깨끗한 빌드의 core 37,361,250 bytes, code gzip 1,183,933 bytes, 공연 음원 10,004,547 bytes로 기존 예산 이내다. [변경과 검증 한계](platform-v59.md). 실물 Windows·Galaxy·iPhone 검증이나 무지연 보장은 포함하지 않는다.
+
+공식 URL의 새 Mac Chrome 프로필에서 실제 3D 입장, 기본 다크·새 로고·실시간 WebSocket·라이트 저장 유지·재접속 신원 유지·인라인 관리 요소·브라우저 예외 없음 **8/8** 확인. [검사 결과](../qa/platform-v59/production/browser.json) · [공식 다크 화면](../qa/platform-v59/production/official-dark.jpg). 운영에서 소유자 로그인이나 실제 전체삭제를 실행한 검사는 아니다.
+
+---
 
 # v58 운영 배포 확인 — 2026-11-20
 

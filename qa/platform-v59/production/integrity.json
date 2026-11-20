@@ -1,0 +1,164 @@
+{
+  "at": "2026-11-20T12:42:50.038Z",
+  "revision": "6c9fa62ee9e70539f7b9ee0e2fee164cded86b58",
+  "checks": [
+    {
+      "name": "same revision https://moru-winter-park.vercel.app/release.json",
+      "ok": true,
+      "details": {
+        "revision": "6c9fa62ee9e70539f7b9ee0e2fee164cded86b58",
+        "apiOrigin": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site"
+      }
+    },
+    {
+      "name": "same revision https://moru-winter-park.vercel.app/api/health",
+      "ok": true,
+      "details": {
+        "ok": true,
+        "multiplayer": true,
+        "revision": "6c9fa62ee9e70539f7b9ee0e2fee164cded86b58",
+        "transport": "websocket-configured"
+      }
+    },
+    {
+      "name": "same revision https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site/api/health",
+      "ok": true,
+      "details": {
+        "ok": true,
+        "multiplayer": true,
+        "revision": "6c9fa62ee9e70539f7b9ee0e2fee164cded86b58",
+        "transport": "websocket-configured"
+      }
+    },
+    {
+      "name": "same revision https://winterlight-realtime.winterlight.workers.dev/health",
+      "ok": true,
+      "details": {
+        "ok": true,
+        "service": "winterlight-realtime",
+        "revision": "6c9fa62ee9e70539f7b9ee0e2fee164cded86b58"
+      }
+    },
+    {
+      "name": "verified artifact index.html",
+      "ok": true,
+      "details": {
+        "bytes": 21774,
+        "sha256": "5d11b63b7b7af8590ecfa3d88672c3169f2e5665fb4ac8e54ec3189bba72e36c"
+      }
+    },
+    {
+      "name": "verified artifact sw.js",
+      "ok": true,
+      "details": {
+        "bytes": 29063,
+        "sha256": "d42d92c443c67ef89d888f862a0ad739e43a896bae1b8229747e9ddebe3deb67"
+      }
+    },
+    {
+      "name": "verified artifact ui-theme.js",
+      "ok": true,
+      "details": {
+        "bytes": 507,
+        "sha256": "9b6683bfd2313c9a1d880c718280730f50620bf7c80dd43031159c657cddaf08"
+      }
+    },
+    {
+      "name": "verified artifact social.js",
+      "ok": true,
+      "details": {
+        "bytes": 20003,
+        "sha256": "f32b11215b4444da5babcf556d03e98301119e61a99bad8146aac0d18d24f4f9"
+      }
+    },
+    {
+      "name": "verified artifact visitors.js",
+      "ok": true,
+      "details": {
+        "bytes": 9151,
+        "sha256": "7fb240514dc0bcd39db81b4a1063934e162c05b929db88612cd405841f2d344d"
+      }
+    },
+    {
+      "name": "verified artifact realtime-client.js",
+      "ok": true,
+      "details": {
+        "bytes": 4016,
+        "sha256": "0223df8421dfa19bf7b6754d9d79e09c758687a9468c7b670c8c1cacdaf62988"
+      }
+    },
+    {
+      "name": "verified artifact community-ui.js",
+      "ok": true,
+      "details": {
+        "bytes": 30213,
+        "sha256": "3aec2cb1efde6ac193aa82f7add28e4a6d1b9f247d6dd3474568884050a977c0"
+      }
+    },
+    {
+      "name": "verified artifact firework-music.js",
+      "ok": true,
+      "details": {
+        "bytes": 2773,
+        "sha256": "4ea97c02f6404b3f3ab71c2eab899533150427c4eba658808970493c70523c10"
+      }
+    },
+    {
+      "name": "verified artifact audio-engine.js",
+      "ok": true,
+      "details": {
+        "bytes": 13865,
+        "sha256": "905f0439809d3df289e33f97c7e5ae500f74a1a1a690d24f932294cf1eed84ac"
+      }
+    },
+    {
+      "name": "verified artifact winter-fireworks.js",
+      "ok": true,
+      "details": {
+        "bytes": 11129,
+        "sha256": "ce3a22d942c82afc5f7851f60e9a79af786b237d542210416d840b4745c0ac28"
+      }
+    },
+    {
+      "name": "verified artifact firework-score.js",
+      "ok": true,
+      "details": {
+        "bytes": 4540,
+        "sha256": "a8f6b25510f115f39024bdcdfc73f64001fca848709ea9d6af64504ec963e2c5"
+      }
+    },
+    {
+      "name": "verified artifact luminous-loading.js",
+      "ok": true,
+      "details": {
+        "bytes": 1408,
+        "sha256": "fb1d86316c04c1d0380cb0369767b2fd07b98479080ec0fe33bffd043f1a2a28"
+      }
+    },
+    {
+      "name": "verified artifact brand/logo-compact-v59.png",
+      "ok": true,
+      "details": {
+        "bytes": 9547,
+        "sha256": "2098859f1338f878b15174c204eba8a532c2de6f7801f2dab2511c08ced833f8"
+      }
+    },
+    {
+      "name": "verified artifact brand/loading-tree-v59.webp",
+      "ok": true,
+      "details": {
+        "bytes": 728558,
+        "sha256": "440498d3c2b08f0417bc898f72f54001bfec93b4c1a3afbefe0f0b9d50706e0a"
+      }
+    },
+    {
+      "name": "verified artifact brand/loading-tree-still-v59.webp",
+      "ok": true,
+      "details": {
+        "bytes": 45760,
+        "sha256": "ec34e5d82b954221403c77e7894a3f45ed799fa7dbe61909b341db567c75cb84"
+      }
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,39 @@
+{
+  "environment": "Mac Chrome actual official URL; fresh profile; not physical Windows/Galaxy/iPhone",
+  "checks": [
+    {
+      "name": "first visit is dark before world readiness",
+      "ok": true
+    },
+    {
+      "name": "new raster branding is actually displayed",
+      "ok": true
+    },
+    {
+      "name": "real WebSocket is connected",
+      "ok": true
+    },
+    {
+      "name": "dark control matches default",
+      "ok": true
+    },
+    {
+      "name": "saved light preference remains before world paint",
+      "ok": true
+    },
+    {
+      "name": "reload preserves visitor identity",
+      "ok": true
+    },
+    {
+      "name": "new inline clear control is present in release",
+      "ok": true
+    },
+    {
+      "name": "no browser exceptions",
+      "ok": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}
