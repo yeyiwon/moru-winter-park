@@ -236,3 +236,11 @@ header .world-meta{left:50%;transform:translateX(-50%);justify-content:center;te
 .ornament-thumbnail{display:block;max-width:100%;width:100%;height:100%;object-fit:contain;pointer-events:none}
 
 .official-world-link{display:block;padding:12px;border:1px solid var(--ui-edge);border-radius:12px;text-align:center;color:var(--ui-ink);margin-bottom:16px}
+
+#show-music-status{align-items:center;gap:20px;padding-bottom:16px;margin-bottom:18px;border-bottom:1px solid var(--ui-edge)}
+#show-music-status>span:last-child{min-width:0;text-align:right}
+#show-music-status strong,#show-music-status small{display:block;overflow-wrap:anywhere}
+#show-music-status strong{font-size:14px;font-weight:500;line-height:1.5}
+#show-music-status small{margin-top:3px;opacity:.65;font-size:12px}
+
+#place-card.guide-card #place-description:not(:empty){display:block;max-width:260px;word-break:keep-all;margin:0 auto 8px;padding:9px 12px;border-radius:10px;background:rgba(15,27,41,.82);color:#edf3f7;font-size:12px;line-height:1.55;text-shadow:none;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}

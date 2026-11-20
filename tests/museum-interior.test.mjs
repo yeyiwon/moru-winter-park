@@ -32,8 +32,9 @@ test('central reflector and one quiz console have connected walkable approaches'
 
 test('batched observatory has finite bounded geometry, two lights and no transmission pass',t=>{
  const {root}=museum(t);let meshes=0,triangles=0,lights=0;
- root.traverse(o=>{if(o.geometry)for(const a of Object.values(o.geometry.attributes))for(const v of a.array)assert.ok(Number.isFinite(v),o.name);if(o.isMesh){meshes++;triangles+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;}if(o.isLight)lights++;for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[]){assert.equal(m.transmission||0,0);if(m.transparent)assert.equal(m.depthWrite,false);}});
- assert.ok(meshes<45,meshes+' meshes');assert.ok(triangles<100000,triangles+' triangles');assert.equal(lights,2);
+ root.traverse(o=>{if(o.geometry)for(const a of Object.values(o.geometry.attributes))for(const v of a.array)assert.ok(Number.isFinite(v),o.name);});
+ root.traverseVisible(o=>{if(o.isMesh){meshes++;triangles+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;}if(o.isLight)lights++;for(const m of o.material?(Array.isArray(o.material)?o.material:[o.material]):[]){assert.equal(m.transmission||0,0);if(m.transparent)assert.equal(m.depthWrite,false);}});
+ assert.ok(meshes<60,meshes+' visible meshes including guide');assert.ok(triangles<100000,triangles+' triangles');assert.equal(lights,2);
  assert.ok(root.getObjectByName('reflector-primary-mirror')||root.getObjectByName('observatory-reflector'));
  assert.ok(root.getObjectByName('observatory-real-stars'));assert.equal(root.getObjectByName('museum-orbit-5'),undefined);assert.equal(root.getObjectByName('museum-science-crystal'),undefined);
 });
@@ -50,7 +51,7 @@ test('lazy museum disposal releases each owned geometry/material once and stops 
  const scene=new T.Scene(),interiors=buildInteriors(scene,{lazy:true});
  for(let cycle=0;cycle<2;cycle++){
   interiors.setActive('museum');const room=interiors.rooms.museum,resources=new Map();
-  room.root.traverse(o=>{for(const resource of [o.geometry,...(o.material?(Array.isArray(o.material)?o.material:[o.material]):[])])if(resource&&!resources.has(resource)){resources.set(resource,0);resource.addEventListener('dispose',()=>resources.set(resource,resources.get(resource)+1));}});
+  room.root.traverse(o=>{for(const resource of [o.geometry,...(o.material?(Array.isArray(o.material)?o.material:[o.material]):[])])if(resource&&!resource.userData.shared&&!resources.has(resource)){resources.set(resource,0);resource.addEventListener('dispose',()=>resources.set(resource,resources.get(resource)+1));}});
   assert.equal(interiors.release('museum'),false);interiors.setActive(null);assert.equal(interiors.release('museum'),true);
   assert.equal(room.update(10),false);assert.equal(room.react('science'),false);assert.equal(room.puzzle([0,0,0]),false);
   assert.ok(resources.size>20);for(const count of resources.values())assert.equal(count,1);

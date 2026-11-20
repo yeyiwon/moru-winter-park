@@ -4,7 +4,7 @@
   "scripts": {
     "test": "node --experimental-vm-modules --test --test-concurrency=4 tests/*.test.mjs",
     "build": "node scripts/apply-brand.mjs && node scripts/build-brand-preview.mjs && node scripts/bake-paths.mjs && node scripts/build-worker.mjs",
-    "dev": "node scripts/dev-server.mjs",
+    "dev": "node --watch --watch-preserve-output scripts/dev-server.mjs",
     "db:generate": "drizzle-kit generate",
     "build:vercel": "node scripts/apply-brand.mjs && node scripts/build-brand-preview.mjs && node scripts/bake-paths.mjs && node scripts/build-vercel.mjs",
     "test:budget": "node scripts/check-performance-budget.mjs",

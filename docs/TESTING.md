@@ -1,3 +1,7 @@
+# v55 천문대·공연 검사
+
+실제 GPU 천문대 8방향 회전·안내 문구·출구 E 조작·중앙 퀴즈·개인 지식집·2인 채팅·터치 카메라·반복 방문 검사와 실제 두 공연 음원의 신호·전환 검사를 수행했다. [상세 결과와 원본](observatory-show-v55.md). 실물 Windows/iOS/Android는 UNKNOWN. 최종 `npm test` **550/550 PASS**, 실패·건너뜀 0, 150.07초. 실제 천문대 20개 및 두 음원 8개 검사 PASS. PC·모바일 화면 공연 4구간, 6회 반복 해제 검사 PASS. 별도 TypeScript/Lint 명령은 없는 JavaScript 프로젝트이며 소스 검사와 세 빌드로 확인한다.
+
 # v54 천문대 검사
 
 `npm test` **548/548 PASS**, 실패·건너뜀 0, 165.96초. 마지막 별빛 재질 조정은 실제 GPU 체험 검사로 다시 검증했다. [원본 체험 결과](../qa/observatory-v54/experience/report.json), [설계·카메라·퀴즈·동기화 범위](observatory-v54.md). Mac Chrome PC와 모바일 터치 화면에서 수행했으며 실물 Windows/Edge·iPhone·Galaxy·수 시간 내구 시험은 UNKNOWN이다. JavaScript 프로젝트로 별도 TypeScript/Lint 명령은 없다. 소스 312개 모듈 검사, 최종 재질의 천문대 집중 검사 10개, 10~100명 부하 검사도 통과했다. 3종 빌드·용량 및 운영 결과는 [배포 기록](DEPLOYMENT.md)에 기록한다.

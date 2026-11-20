@@ -1,0 +1,62 @@
+{
+  "checks": [
+    {
+      "name": "love decoded audible signal and one voice",
+      "ok": true,
+      "data": {
+        "src": "/audio/show/love.mp3",
+        "currentTime": 14.672497,
+        "voices": 1,
+        "background": [
+          0,
+          0
+        ],
+        "rms": 0.09597681708363166,
+        "label": "불꽃놀이 음악LoveAtlasAudio · 공연 중",
+        "notice": "밤하늘에 불꽃놀이가 펼쳐지고 있어요"
+      }
+    },
+    {
+      "name": "love replaces background music",
+      "ok": true
+    },
+    {
+      "name": "love title stays in sound settings",
+      "ok": true
+    },
+    {
+      "name": "wedding-entrance decoded audible signal and one voice",
+      "ok": true,
+      "data": {
+        "src": "/audio/show/wedding-entrance.mp3",
+        "currentTime": 11.074674,
+        "voices": 1,
+        "background": [
+          0,
+          0
+        ],
+        "rms": 0.10555857499530079,
+        "label": "불꽃놀이 음악Wedding EntranceAtlasAudio · 공연 중",
+        "notice": "밤하늘에 불꽃놀이가 펼쳐지고 있어요"
+      }
+    },
+    {
+      "name": "wedding-entrance replaces background music",
+      "ok": true
+    },
+    {
+      "name": "wedding-entrance title stays in sound settings",
+      "ok": true
+    },
+    {
+      "name": "end releases recording and restores background",
+      "ok": true
+    },
+    {
+      "name": "no browser errors",
+      "ok": true,
+      "data": []
+    }
+  ],
+  "errors": []
+}

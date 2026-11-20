@@ -37,8 +37,8 @@ export const castleBeamGroups=Object.freeze(['plaza','wall','gate','window','rea
 export const castleBeamEmitters=Object.freeze(Array.from({length:24},(_,i)=>{
  const pair=Math.floor(i/2)%6,side=i%2?-1:1,laser=i>=12;
  const group=castleBeamGroups[pair];
- const placement={plaza:[side*21,.35,3],wall:[side*19,1,-24],gate:[side*4.9,1.2,-12.6],window:[side*9.8,8.3,-12.65],rear:[side*20,.5,-34],tower:[side*7.2,31.5,-20.5]}[group];
- return {group,position:placement,direction:[side*(pair===4?.55:.25),1,pair<4?.12:-.15],width:laser?.32:pair===0?7.4:pair===1?4.5:pair===2?3.4:5.8,length:laser?130:pair===2?45:90,laser};
+ const placement={plaza:[side*22,.35,8],wall:[side*20,1,-20],gate:[side*4.9,1.2,-7.4],window:[side*9.8,8.3,-11.9],rear:[side*20,.5,-34],tower:[side*7.7,30.5,-20.5]}[group];
+ return {group,position:placement,phase:pair,kind:laser?'laser':pair===2?'wash':[1,3].includes(pair)?'fan':'search',direction:[side*.3,1,pair===4?-.65:.6],width:laser?.12:[1,3].includes(pair)?10:6,length:laser?105:pair===2?12:pair===3?45:75,laser};
 }));
 export function sampleCastleCue(age,out={},musicId){
  const track=showTrack(musicId);

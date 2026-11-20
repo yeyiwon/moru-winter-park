@@ -1,0 +1,27 @@
+{
+  "environment": "macOS Chrome GPU, 1280x800",
+  "camera": {
+    "eye": [
+      0,
+      62,
+      220
+    ],
+    "aim": [
+      0,
+      62,
+      -14
+    ]
+  },
+  "age": "middle cue, ~43-47 seconds, live animation (not identical frames)",
+  "region": {
+    "x": 0,
+    "y": 130,
+    "width": 1280,
+    "height": 420
+  },
+  "threshold": "max(R,G,B) <= 1",
+  "before": 13824,
+  "after": 0,
+  "beforeImage": "diagnose/all.png",
+  "afterImage": "diagnose-fixed/all.png"
+}

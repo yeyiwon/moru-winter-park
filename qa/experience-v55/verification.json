@@ -1,0 +1,27 @@
+{
+  "date": "2026-11-20",
+  "tests": {
+    "command": "npm test",
+    "total": 550,
+    "passed": 550,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 150065.299417
+  },
+  "browser": {
+    "observatory": {
+      "passed": 20,
+      "report": "observatory/report.json"
+    },
+    "actualAudio": {
+      "passed": 8,
+      "report": "audio/report.json"
+    },
+    "showDesktop": "show/desktop.json",
+    "showMobileEmulation": "show/mobile.json",
+    "controlledBefore": "performance/before/report.json",
+    "controlledAfter": "performance/after/report.json"
+  },
+  "physicalWindowsIOSAndroid": "UNKNOWN",
+  "deployment": "pending"
+}

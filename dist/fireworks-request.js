@@ -1,5 +1,6 @@
 import {fireworkConfig} from './firework-score.js';
 import {observeServerTime,serverNow} from './server-clock.js';
+import {showTrack} from './show-tracks.js';
 
 export function fireworkRequestState(show,now){
  if(!show)return {phase:'idle',remaining:0};
@@ -34,6 +35,8 @@ export function installFireworkRequests({win=window,doc=document,now=serverNow}=
  button.setAttribute('aria-describedby',status.id);actions.append(button,status);
  const notice=doc.createElement('div');notice.id='firework-notice';notice.hidden=true;notice.setAttribute('role','status');notice.setAttribute('aria-live','polite');notice.setAttribute('aria-atomic','false');
  const noticeText=doc.createElement('span');noticeText.className='firework-notice-text';noticeText.textContent='잠시 후 불꽃놀이가 시작돼요';
+ const musicInfo=doc.createElement('div');musicInfo.id='show-music-status';musicInfo.className='setting-row';musicInfo.hidden=true;
+ const musicCaption=doc.createElement('span');musicCaption.textContent='불꽃놀이 음악';const musicTitle=doc.createElement('strong'),musicArtist=doc.createElement('small'),musicDetail=doc.createElement('span');musicDetail.append(musicTitle,musicArtist);musicInfo.append(musicCaption,musicDetail);doc.querySelector('#pane-audio')?.prepend(musicInfo);
  const countdown=doc.createElement('span');countdown.className='firework-notice-countdown';countdown.setAttribute('aria-hidden','true');notice.append(noticeText,countdown);doc.body.append(notice);
  const label=button.querySelector('span');let show=win.labFireworks||null,busy=false,timer=0,refreshing=null,error='',errorUntil=0,disposed=false;
  const listeners=[];
@@ -43,6 +46,8 @@ export function installFireworkRequests({win=window,doc=document,now=serverNow}=
  function refresh(){
   win.clearTimeout(timer);timer=0;if(disposed)return;
   const time=now(),state=fireworkRequestState(show,time),joined=!!win.labSocialJoined;
+  const track=showTrack(show?.musicId);musicInfo.hidden=!joined||state.phase!=='playing'||!track;
+  if(!musicInfo.hidden){text(musicTitle,track.title);text(musicArtist,track.artist+' · 공연 중');}
   button.disabled=busy||!joined||state.phase!=='idle';
   text(label,busy?'신청 중…':state.phase==='scheduled'?'곧 시작해요':state.phase==='playing'?'불꽃놀이 진행 중':'불꽃놀이 신청');
   let info=!joined?'공간에 입장하면 신청할 수 있어요.':state.phase==='scheduled'?state.remaining+'초 후 시작':state.phase==='cooldown'?'다음 신청까지 '+format(state.remaining):'';
@@ -99,7 +104,7 @@ export function installFireworkRequests({win=window,doc=document,now=serverNow}=
  listen(win,'pagehide',()=>{win.clearTimeout(timer);notice.hidden=true;});
  listen(win,'pageshow',()=>{refresh();refreshFromServer();});
  refresh();if(win.labSocialJoined)refreshFromServer();
- return {button,notice,refresh,dispose(){disposed=true;win.clearTimeout(timer);listeners.forEach(remove=>remove());button.remove();status.remove();notice.remove();}};
+ return {button,notice,refresh,dispose(){disposed=true;win.clearTimeout(timer);listeners.forEach(remove=>remove());button.remove();status.remove();notice.remove();musicInfo.remove();}};
 }
 
 if(typeof window!=='undefined'&&typeof document!=='undefined')installFireworkRequests();

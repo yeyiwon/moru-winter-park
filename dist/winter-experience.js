@@ -106,11 +106,15 @@ export function createWinterExperience(winter,companion,travel){
   if(id==='tree')place={...place,x:treeLayout.x,z:treeLayout.z,r:26};
   document.querySelector('#place-kind').textContent='';document.querySelector('#place-name').textContent=place.name;
   document.querySelector('#place-description').textContent='';actions.replaceChildren();actionKeys=[];card.dataset.activity=activity;
-  card.classList.toggle('seat-picker',['bench','dining'].includes(place.kind));seatSignature='';
+  card.classList.toggle('guide-card',place.kind==='guide');card.classList.toggle('seat-picker',['bench','dining'].includes(place.kind));seatSignature='';
   if(['carousel','ferris'].includes(id))button('탑승',async()=>{if(boarding)return;cancel();const epoch=boardingEpoch;boarding=true;try{if(id==='ferris'&&window.reserveRide){const claim=await window.reserveRide('ferris');if(epoch!==boardingEpoch){window.releaseRide?.();return;}reservation=claim;}parkRide=id;lifecycle.enter(place);lifecycle.activate();parkSeat=parseInt((window.labGuestId||'00').slice(0,2),16)||0;companion.equip('none');hud.hidden=false;label.textContent=place.name;stopButton.textContent='내리기';card.hidden=true;window.labSound?.('ride');}catch(error){document.querySelector('#place-description').textContent=error.message;}finally{boarding=false;}});
   else if(['bench','dining'].includes(place.kind))renderSeatChoices(place,true);
   else if(place.kind==='exit')button('나가기',()=>window.exitInterior?.());
   else if(place.kind==='quiz-station')button('퀴즈 풀기',()=>{if(Math.hypot(position.x-place.x,position.z-place.z)<=place.r)window.openQuickQuiz?.();});
+  else if(place.kind==='guide'){
+   document.querySelector('#place-description').textContent='별 구경은 잘했어? 밖으로는 옆 문으로 나가면 돼.';
+   button('인사',()=>{document.querySelector('#place-description').textContent='가운데 관측 테이블에서는 오늘의 퀴즈를 풀 수 있어.';window.dispatchEvent(new Event('lab:observatory-greeting'));});
+  }
   else if(place.room)button(place.name,()=>{cancel();lifecycle.enter(place);lifecycle.activate();const mode=['aquarium','view'].includes(place.kind)?'view':place.kind==='dining'?'dining':place.kind==='tea'?'tea':place.kind==='footbath'?'bath':place.kind==='sauna'?'sauna':'rest';rest={...interiorActivityPoses[id],returnPosition:{x:place.x,z:place.z},mode,view:interiorActivityPoses[id].view||activityCameraView(place.kind==='footbath'?'rest':place.kind,{yaw:interiorActivityPoses[id].yaw,mobile:window.innerWidth<650})||{distance:8,pitch:.34,yaw:.25,lookHeight:-.5}};companion.equip('none');card.hidden=true;hud.hidden=false;stopButton.textContent='일어나기';label.textContent='';window.labSound?.(place.kind==='footbath'?'footbath':mode==='tea'?'tea-pour':mode==='dining'?'dining':'rest');});
   else if(id==='ski-gear'){button('스노보드',()=>{window.dispatchEvent(new CustomEvent('lab:equip-winter',{detail:{gear:'board'}}));companion.equip('board');card.hidden=true;});button('스키',()=>{window.dispatchEvent(new Event('lab:equip-winter'));companion.equip('ski');card.hidden=true;});button('장비 해제',()=>{window.dispatchEvent(new Event('lab:unequip-winter'));companion.equip('none');card.hidden=true;});}
   else if(id==='snowman')button('인사',()=>{window.dispatchEvent(new Event('lab:snowman'));card.hidden=true;});

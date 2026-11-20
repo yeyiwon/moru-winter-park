@@ -1,7 +1,7 @@
 {
   "environment": "Node v22.4.1 darwin arm64",
   "measurement": "CPU scene geometry construction; no browser, WebGL or GPU rendering",
-  "sceneConstructionMs": 24005.4,
+  "sceneConstructionMs": 17795.98,
   "meshObjects": 949,
   "materials": 218,
   "triangles": 4457619,

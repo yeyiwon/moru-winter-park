@@ -217,3 +217,15 @@ test('finale retains all overlapping shells, and peers reconstruct identical low
  for(let i=1;i<=6;i++){a.setShow({...state,id:'again-'+i,startsAt:i*100000});a.update(i*100000+67050);a.update(i*100000+74000);assert.equal(a.root.geometry.drawRange.count,0);assert.equal(a.castle.uniforms.showPower.value,0);Object.values(a.root.geometry.attributes).forEach((v,j)=>assert.equal(v.array,buffers[j]));}
  a.dispose();b.dispose();
 });
+
+
+test('playing show title is confined to audio settings and clears at stop or end',async t=>{
+ const dom=new JSDOM('<body><section id="pane-activities"><div id="studio-public-actions"></div></section><section id="pane-audio" hidden></section></body>',{url:'https://winter.test',pretendToBeVisual:true}),w=dom.window,d=w.document;let now=10000;
+ w.labSocialJoined=true;w.fetch=async()=>({ok:true,json:async()=>({show:null})});
+ const ui=installFireworkRequests({win:w,doc:d,now:()=>now});t.after(()=>{ui.dispose();w.close();});await new Promise(r=>setImmediate(r));
+ const show={id:'settings-song',musicId:'wedding-entrance',startsAt:20000,endsAt:143245,state:'scheduled',revision:1};
+ w.dispatchEvent(new w.CustomEvent('lab:fireworks',{detail:show}));const info=d.querySelector('#show-music-status');assert.ok(info.hidden);
+ now=30000;ui.refresh();assert.equal(info.hidden,false);assert.equal(info.closest('section').id,'pane-audio');assert.equal(info.closest('section').hidden,true);assert.match(info.textContent,/Wedding Entrance/);assert.doesNotMatch(ui.notice.textContent,/Wedding Entrance/);
+ now=150000;ui.refresh();assert.equal(info.hidden,true);
+ now=40000;w.dispatchEvent(new w.CustomEvent('lab:fireworks',{detail:{...show,state:'stopped',revision:2}}));assert.equal(info.hidden,true);
+});

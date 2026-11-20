@@ -1,8 +1,7 @@
 import * as T from './vendor/three.module.js';
 import {makeBuilder,mergeFinish} from './architecture-kit.js';
 import {ryokanFinish} from './ryokan-finish.js';
-import {buildWinterBench} from './winter-bench.js';
-import {benches} from './bench-layout.js';
+import {buildObservatoryGuide} from './observatory-guide.js';
 import {observatoryLayout as layout} from './observatory-layout.js';
 import {buildObservatorySky} from './observatory-sky.js';
 const TAU=Math.PI*2;
@@ -37,7 +36,7 @@ function consoleTable(parent,m){
  for(const x of [.85,1.08]){b.mesh(new T.CylinderGeometry(.065,.065,.04,12),m.silver,x,1.39,.18);b.oval(m.warm,x,1.36,-.15,.018,.01,.018);}
  mergeFinish(root);
 }
-export function buildObservatoryInterior(root,benchMaterials){
+export function buildObservatoryInterior(root){
  const m=palette(),b=makeBuilder(root),R=layout.radius,base=layout.domeBase;
  for(const material of [m.stone,m.floor])ryokanFinish(material,'stone');
  const stoneFinish=m.floor.onBeforeCompile;m.floor.onBeforeCompile=shader=>{stoneFinish(shader);shader.fragmentShader=shader.fragmentShader.replace('.76+stone*.4','.94+stone*.09');};m.floor.customProgramCacheKey=()=> 'observatory-polished-stone-v54';
@@ -56,24 +55,29 @@ export function buildObservatoryInterior(root,benchMaterials){
   const foot=b.box(.65,.24,.85,m.stone,x,.2,z);foot.rotation.y=a;
   if(i%2===0){const wash=b.box(.04,2.6,.03,m.light,x-Math.sin(a)*.28,2.2,z-Math.cos(a)*.28);wash.rotation.y=a;}
  }
- // Curved support drum, wide retractable sectors and a clear central oculus.
+ // Retracted panels sit below the sky rim; the entire upper hemisphere stays
+ // open. An opaque interior shutter used to hide one direction of the stars.
  const shellMaterial=m.navy.clone();shellMaterial.side=T.DoubleSide;
- const drum=b.mesh(new T.SphereGeometry(R,96,8,0,TAU,1.36,Math.PI/2-1.36),shellMaterial,0,base,0);drum.name='observatory-dome-drum';
- const shutter=b.mesh(new T.SphereGeometry(R+.04,24,28,-.55,1.1,.24,1.12),shellMaterial,0,base,0);shutter.name='observatory-retracted-shutter';
+ for(let i=0;i<3;i++){const panel=b.mesh(new T.CylinderGeometry(R-.1+i*.06,R-.1+i*.06,.24,64,1,true),shellMaterial,0,base-.6+i*.2,0);panel.name='observatory-parked-shutter';}
  for(const r of [21.8,22.08])b.ring(r,.10,m.brushed,0,base,0);
  b.ring(21.65,.035,m.light,0,base-.08,0);
  for(let j=0;j<8;j++){const a=j/8*TAU,points=Array.from({length:33},(_,i)=>{const t=.24+i/32*(Math.PI/2-.24);return[Math.sin(a)*Math.sin(t)*R,base+Math.cos(t)*R,Math.cos(a)*Math.sin(t)*R];});b.tube(points,.11,m.brushed,root,32);}
  b.ring(Math.sin(.24)*R,.14,m.brushed,0,base+Math.cos(.24)*R,0);
  const ceilingShape=new T.Shape([new T.Vector2(-24,-22),new T.Vector2(24,-22),new T.Vector2(24,22),new T.Vector2(-24,22)]),hole=new T.Path();hole.absarc(0,0,21.97,0,TAU,true);ceilingShape.holes.push(hole);const corners=b.mesh(new T.ShapeGeometry(ceilingShape,64),shellMaterial,0,base,0);corners.rotation.x=-Math.PI/2;
- // West vestibule aligns with the unchanged exterior entrance and shared exit.
- b.box(.15,4.6,4.6,m.black,-23.5,2.35,0);for(const z of [-2.4,2.4])b.box(.22,4.7,.14,m.silver,-23.3,2.4,z);b.box(.2,.05,4.8,m.warm,-23.3,4.75,0);
+ // The recessed double door, sill and warm frame read as a real exit, while
+ // retaining the existing server-validated doorway and outdoor return point.
+ b.box(.18,4.7,4.8,m.black,-23.52,2.42,0);
+ for(const z of [-1.05,1.05]){b.box(.18,4.25,2.02,m.brushed,-23.3,2.25,z);b.box(.04,3.4,1.52,m.navy,-23.18,2.35,z);b.box(.08,.56,.05,m.champagne,-23.05,1.95,Math.sign(z)*.2);}
+ for(const z of [-2.25,2.25]){b.box(.5,4.8,.2,m.silver,-23.15,2.45,z);b.box(.04,4.4,.035,m.warm,-22.88,2.45,z);}
+ b.box(.5,.2,4.7,m.silver,-23.15,4.8,0);b.box(.035,.035,4.35,m.warm,-22.88,4.67,0);b.box(1.4,.04,4.7,m.brushed,-22.8,.1,0);
+ for(const z of [-1.6,1.6])b.box(6,.018,.025,m.warm,-19,.107,z);
+ if(globalThis.document){const canvas=document.createElement('canvas');canvas.width=384;canvas.height=96;const ctx=canvas.getContext('2d');if(ctx){ctx.fillStyle='#152735';ctx.fillRect(0,0,384,96);ctx.fillStyle='#e7dfc9';ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='500 46px sans-serif';ctx.fillText('나가기',192,48);const texture=new T.CanvasTexture(canvas);texture.colorSpace=T.SRGBColorSpace;const sign=b.mesh(new T.PlaneGeometry(1.9,.48),new T.MeshBasicMaterial({map:texture}),-22.86,4.35,0);sign.rotation.y=Math.PI/2;sign.name='observatory-exit-sign';}}
  telescope(root,m);consoleTable(root,m);
- for(const spec of benches.filter(b=>b.region==='museum'))root.add(buildWinterBench({...spec,x:spec.x-600},benchMaterials));
  root.add(new T.HemisphereLight('#bbd0ea','#253547',1.25));const key=new T.PointLight('#c2d7ed',95,45,2);key.position.set(-5,11,7);root.add(key);
  mergeFinish(root);root.traverse(o=>{if(o.isMesh)o.castShadow=false;});
- const sky=buildObservatorySky(root);let disposed=false;
+ const sky=buildObservatorySky(root),guide=buildObservatoryGuide(root);guide.root.traverse(o=>{if(o.isMesh)o.castShadow=false;});let disposed=false;
  return {root,walls:[],doors:[],uniforms:[],sky,atmosphere:{update(){},setQuality(){},dispose(){}},
-  update(t,still){return !disposed&&Number.isFinite(t)&&sky.update(t,still);},setQuality:q=>sky.setQuality(q),setView:(camera,ratio)=>sky.setCamera(camera,ratio),
-  react(){return false;},puzzle(){return false;},dispose(){disposed=true;sky.dispose();}
+  update(t,still,player){if(disposed||!Number.isFinite(t))return false;guide.update(t,still,player);return sky.update(t,still);},setQuality(q){sky.setQuality(q);guide.setQuality(q);},setView:(camera,ratio)=>sky.setCamera(camera,ratio),
+  react(){return false;},puzzle(){return false;},dispose(){disposed=true;guide.dispose();sky.dispose();}
  };
 }

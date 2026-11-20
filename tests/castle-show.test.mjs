@@ -44,3 +44,18 @@ test('removed original score and unknown music IDs never start fallback audio',(
  }
  music.dispose();assert.equal(oscillators,0);assert.equal(elements,0);
 });
+
+test('authored beam sectors clear the castle throughout both recordings and quiet intervals stop light',async()=>{
+ const {sampleCastleLight}=await import('../dist/castle-lighting.js'),castle=buildCastle();castle.root.updateMatrixWorld(true);
+ const ray=new T.Raycaster(),origin=new T.Vector3(),direction=new T.Vector3(),state={};let rays=0;
+ for(let age=0;age<135;age+=3)for(const e of castleBeamEmitters){
+  sampleCastleLight(age,e,{sweep:.8,laser:.8},state);origin.fromArray(e.position);direction.set(state.x,state.y,state.z);ray.set(origin,direction);ray.near=.01;ray.far=e.length;
+  assert.equal(ray.intersectObject(castle.root,true).length,0,`${e.group} at ${age}`);rays++;
+  assert.ok(Number.isFinite(state.level)&&state.level>=0&&state.level<=1);
+  assert.deepEqual(sampleCastleLight(age,e,{sweep:.8,laser:.8},{}),state);
+  assert.equal(sampleCastleLight(age,e,{afterglow:true},{}).level,0);
+  if(e.laser)assert.equal(sampleCastleLight(age,e,{calm:true,laser:1},{}).level,0);
+  assert.equal(sampleCastleLight(6.4,e,{bpm:120,offset:0,laser:1},{}).level,0,'quiet phrase');
+ }
+ assert.ok(rays>1000);castle.dispose();
+});

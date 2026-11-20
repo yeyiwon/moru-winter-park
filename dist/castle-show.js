@@ -1,3 +1,4 @@
+import {sampleCastleLight} from './castle-lighting.js';
 import {showTrack} from './show-tracks.js';
 import * as T from './vendor/three.module.js';
 import {castleLayout} from './castle-layout.js';
@@ -68,34 +69,35 @@ export function createCastleShow(scene){
  const order=[0,1,2,3,4,5,8,9,12,13,22,23,10,11,6,7,14,15,16,17,18,19,20,21];
  for(const [id,index]of order.entries()){
   const e=castleBeamEmitters[index];
-  for(let cross=0;cross<4;cross++){const base=positions.length/3;for(const [u,v]of [[-1,0],[1,0],[-1,1],[1,1]]){
+  for(let cross=0;cross<1;cross++){const base=positions.length/3;for(const [u,v]of [[-1,0],[1,0],[-1,1],[1,1]]){
    positions.push(u,v,cross);uvs.push(u,v);origins.push(...e.position);directions.push(...e.direction);designs.push(id,castleBeamGroups.indexOf(e.group),e.laser?1:0,e.width);extents.push(e.length);
   }indices.push(base,base+1,base+2,base+1,base+3,base+2);}
  }
  const g=new T.BufferGeometry();for(const [name,data,size]of [['position',positions,3],['uv',uvs,2],['origin',origins,3],['direction',directions,3],['design',designs,4],['extent',extents,1]])g.setAttribute(name,new T.Float32BufferAttribute(data,size));g.setIndex(indices);
- const beamUniforms={...uniforms,count:{value:24}};
+ const beamDirections=Array.from({length:24},()=>new T.Vector4()),beamSpreads=new Float32Array(24),lightState={},lightOptions={};
+ const beamUniforms={...uniforms,count:{value:24},beamDirections:{value:beamDirections},beamSpreads:{value:beamSpreads}};
  const material=new T.ShaderMaterial({uniforms:beamUniforms,transparent:true,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending,toneMapped:true,
- vertexShader:`attribute float extent;attribute vec3 origin;attribute vec3 direction;attribute vec4 design;uniform float showTime;uniform float showCalm;uniform float count;uniform float showSweep;uniform float showGroups[6];varying vec2 vUv;varying float strength;varying float laser;varying float group;void main(){
- vUv=uv;laser=design.z;group=design.y;float t=mix(showTime,5.,showCalm),side=sign(origin.x);
- vec3 aim=direction;aim.x+=side*sin(t*.16+group*.8)*showSweep*.48;aim.z+=cos(t*.12+group*.6)*showSweep*.25;aim.x+=side*(group<.5?.3:0.)*showSweep;aim=normalize(aim);
- vec3 across=normalize(cross(aim,vec3(0.,0.,1.))),other=cross(aim,across);
- float width=.04+uv.y*design.w,length=extent;
- vec3 p=origin+aim*(uv.y*length)+(across*cos(position.z*.785398)+other*sin(position.z*.785398))*uv.x*width;
- gl_Position=projectionMatrix*modelViewMatrix*vec4(p,1.);strength=design.x<count?showGroups[int(group)]:0.;
+ vertexShader:`attribute float extent;attribute vec3 origin;attribute vec4 design;uniform float count;uniform vec4 beamDirections[24];uniform float beamSpreads[24];uniform float showGroups[6];varying vec2 vUv;varying float strength;varying float laser;varying float group;varying float fan;varying float viewDistance;void main(){
+ vUv=uv;laser=design.z;group=design.y;int index=int(design.x);vec4 beam=beamDirections[index];vec3 aim=beam.xyz,eye=cameraPosition-(modelMatrix*vec4(origin,1.)).xyz;
+ vec3 across=cross(aim,normalize(eye));if(length(across)<.01)across=cross(aim,vec3(0.,0.,1.));across=normalize(across);
+ fan=laser<.5&&(group==1.||group==3.)?1.:0.;float width=laser>.5?.018+uv.y*design.w:.05+uv.y*design.w*beamSpreads[index];
+ vec3 p=origin+aim*(uv.y*extent)+across*uv.x*width;vec4 mv=modelViewMatrix*vec4(p,1.);viewDistance=length(mv.xyz);
+ gl_Position=projectionMatrix*mv;strength=design.x<count?showGroups[int(group)]*beam.w:0.;
  }`,
- fragmentShader:`uniform float showPower;uniform float showTime;uniform float showCalm;uniform vec3 showPalette[3];uniform float showBeat;uniform float showBeatOffset;uniform float showLaser;varying vec2 vUv;varying float strength;varying float laser;varying float group;void main(){
- float core=mix(exp(-vUv.x*vUv.x*4.)*.075,exp(-abs(vUv.x)*11.)*.55,laser),fade=(1.-smoothstep(.3,1.,vUv.y))*smoothstep(0.,.015,vUv.y);
- float beat=1.-smoothstep(.06,.24,fract((showTime-showBeatOffset)*showBeat)),pulse=mix(.55+.45*pow(.5+.5*sin(showTime*.45+group*1.3),2.),beat*showLaser,laser);
- pulse=mix(pulse,laser>.5?0.:.38,showCalm);
- vec3 tint=mix(showPalette[0],showPalette[2],mod(group,2.)*.7);
- float alpha=core*fade*strength*showPower*pulse;if(alpha<.002)discard;gl_FragColor=vec4(tint*1.6,alpha);
+ fragmentShader:`uniform float showPower;uniform vec3 showPalette[3];varying vec2 vUv;varying float strength;varying float laser;varying float group;varying float fan;varying float viewDistance;void main(){
+ float soft=exp(-vUv.x*vUv.x*5.)*.115;soft+=fan*pow(.5+.5*cos(vUv.x*24.),14.)*.026*(1.-abs(vUv.x));
+ // Interpolated UVs may exceed one by an ulp at the far edge. A negative
+ // fractional power becomes NaN and contaminates HDR bloom with black blocks.
+ float core=mix(soft,exp(-abs(vUv.x)*5.)*.6,laser),fade=pow(clamp(1.-vUv.y,0.,1.),1.25)*smoothstep(0.,.018,vUv.y);
+ float attenuation=1./(1.+pow(viewDistance/420.,2.));vec3 tint=mix(showPalette[0],showPalette[2],mod(group,2.)*.7);
+ float alpha=core*fade*strength*showPower*attenuation;if(!(alpha>.001))discard;gl_FragColor=vec4(tint*1.4,alpha);
 #include <tonemapping_fragment>
 #include <colorspace_fragment>
 }`});
  // Physical ground fixtures anchor the beams; one shared geometry/material batch.
  const fixtureGeo=new T.CylinderGeometry(.3,.42,.35,8),fixtureMat=new T.MeshStandardMaterial({color:'#263442',roughness:.75});
- const groundFixtures=castleBeamEmitters.filter(e=>e.position[1]<2&&!e.laser),fixtures=new T.InstancedMesh(fixtureGeo,fixtureMat,groundFixtures.length),dummy=new T.Object3D();
- groundFixtures.forEach((e,i)=>{dummy.position.set(e.position[0]+castleLayout.x,.18,e.position[2]);dummy.updateMatrix();fixtures.setMatrixAt(i,dummy.matrix);});fixtures.name='show-ground-fixtures';root.add(fixtures);
+ const groundFixtures=castleBeamEmitters.filter(e=>!e.laser),fixtures=new T.InstancedMesh(fixtureGeo,fixtureMat,groundFixtures.length),dummy=new T.Object3D();
+ groundFixtures.forEach((e,i)=>{dummy.position.set(e.position[0]+castleLayout.x,e.position[1]-.1,e.position[2]);dummy.updateMatrix();fixtures.setMatrixAt(i,dummy.matrix);});fixtures.name='show-ground-fixtures';root.add(fixtures);
  const beams=new T.Mesh(g,material);beams.name='castle-laser-fan';beams.frustumCulled=false;root.add(beams);
  // Architectural projection supplies surface sparkle without free-floating ground orbs.
  beams.position.x=castleLayout.x;
@@ -109,5 +111,8 @@ export function createCastleShow(scene){
   uniforms.showMode.value=castleProjectionModes.indexOf(cue.projection);uniforms.showPreviousMode.value=castleProjectionModes.indexOf(previous.projection);uniforms.showMix.value=mix;
   uniforms.showBeat.value=(track?.bpm??cue.beat.bpm)/60;uniforms.showBeatOffset.value=track?.offset??cue.beat.offset;uniforms.showLaser.value=blend(previous.beams.laser,cue.beams.laser,mix);uniforms.showSweep.value=blend(previous.beams.sweep,cue.beams.sweep,mix);
   const tier=cue.quality[quality]||castleShowQuality.medium;beamUniforms.count.value=tier.beams;
+  lightOptions.bpm=track?.bpm??cue.beat.bpm;lightOptions.offset=track?.offset??cue.beat.offset;lightOptions.sweep=uniforms.showSweep.value;lightOptions.laser=uniforms.showLaser.value;lightOptions.calm=still;lightOptions.finale=cue.id==='luminous-finale';lightOptions.afterglow=!!track?.sections.find(s=>age>=s.start&&age<s.end)?.afterglow;
+  for(let i=0;i<order.length;i++){sampleCastleLight(age,castleBeamEmitters[order[i]],lightOptions,lightState);beamDirections[i].set(lightState.x,lightState.y,lightState.z,lightState.level);beamSpreads[i]=lightState.spread;}
+
  },dispose(){restores.forEach(fn=>fn());g.dispose();material.dispose();fixtureGeo.dispose();fixtureMat.dispose();root.removeFromParent();}};
 }
