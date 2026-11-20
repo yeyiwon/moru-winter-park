@@ -40,7 +40,7 @@ Mac Chrome, PC 1440×900 / 터치 화면 390×844, 같은 medium 품질·카메�
 - 자동 검사 548/548 PASS, 실패·건너뜀 0. 별 카탈로그·좌표 변환·유성, 건축·충돌·동선, 한 곳 퀴즈, 기존 시설·입력·권한·저장 회귀 포함.
 - 실제 Mac Chrome GPU에서 PC 입구·홀·천정·별자리·은하수·망원경·퀴즈 접근/열림, 모바일 세로·가로 화면을 촬영했다. CDP 실제 터치 이벤트로 카메라 회전 확인.
 - 두 게스트의 위치·같은 관측 시각·유성 슬롯·채팅·자기 말풍선 확인. 서버 채점과 개인 해설/출처 기록 확인.
-- 세 번 퇴장·자원 해제·재입장 후 해제된 상태의 geometry/texture/program 수가 누적 증가하지 않았다. 이 검사는 수 시간 누수 시험이나 GPU byte 측정을 대신하지 않는다.
+- 세 번 퇴장·자원 해제·재입장 후 해제된 상태의 geometry/texture는 594/21로 일정했고 program은 205→207→207로 두 번째 방문 후 일정했다. 이 검사는 수 시간 누수 시험이나 GPU byte 측정을 대신하지 않는다.
 - 브라우저·shader 오류 0. [체험 검사 원본](../qa/observatory-v54/experience/report.json). [배포·운영 재검증](DEPLOYMENT.md).
 - **UNKNOWN**: 실제 Windows Chrome/Edge, iPhone Safari, Galaxy/Samsung Browser, 모바일 발열·장시간 플레이·GPU 메모리 byte·현장 하늘의 정밀 각거리 오차. 모바일 결과는 Mac에서 실행한 터치 화면 에뮬레이션이다.
 

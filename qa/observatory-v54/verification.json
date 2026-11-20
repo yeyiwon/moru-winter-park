@@ -13,10 +13,14 @@
   },
   "experience": {
     "status": "PASS",
-    "checks": 18,
+    "checks": 17,
     "errors": 0
   },
   "lastChange": "Milky Way shader/artistic density visually rechecked after full tests",
   "physicalWindows": "UNKNOWN",
-  "physicalMobile": "UNKNOWN"
+  "physicalMobile": "UNKNOWN",
+  "targetedTests": {
+    "passed": 10,
+    "failed": 0
+  }
 }

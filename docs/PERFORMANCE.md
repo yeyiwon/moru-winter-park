@@ -9,7 +9,7 @@ Mac Chrome GPU, PC 1440×900 / 모바일 터치 에뮬레이션 390×844, medium
 | 모바일 화면 변경 전 | 60.00 | 16.7ms | 128 | 485,544 |
 | 모바일 화면 변경 후 | 60.00 | 16.8ms | 25 | 254,609 |
 
-[변경 전 원본](../qa/observatory-v54/controlled-before/report.json) · [변경 후 원본](../qa/observatory-v54/controlled-after/report.json). FPS는 화면 갱신율에 제한되어 성능 향상 배수를 산출하지 않는다. Draw Call/Triangles는 마지막 한 프레임이며 주기적 그림자 갱신 여부가 다를 수 있다. GPU 시간·메모리 byte와 실물 Windows/휴대전화 FPS는 UNKNOWN. 세 차례 천문대 해제 후 geometry 594 / texture 21 / program 205로 일정했다. [반복 진입 검사](../qa/observatory-v54/experience/report.json). 최종 별빛 재질에서 다시 측정한 값이다.
+[변경 전 원본](../qa/observatory-v54/controlled-before/report.json) · [변경 후 원본](../qa/observatory-v54/controlled-after/report.json). FPS는 화면 갱신율에 제한되어 성능 향상 배수를 산출하지 않는다. Draw Call/Triangles는 마지막 한 프레임이며 주기적 그림자 갱신 여부가 다를 수 있다. GPU 시간·메모리 byte와 실물 Windows/휴대전화 FPS는 UNKNOWN. 세 차례 천문대 해제 후 geometry 594 / texture 21로 일정했다. shader program 수는 205→207→207로 두 번째 방문 후 일정했다. [반복 진입 검사](../qa/observatory-v54/experience/report.json). 최종 별빛 재질에서 다시 측정한 값이다.
 
 10/25/50/100명 각각 20초의 로컬 실제 WebSocket 부하에서 전달 성공률 100%, 거부·오류 0, p95 왕복 5.01 / 13.95 / 17.43 / 25.64ms였다. 좌석 경쟁·공연 ID 공유·재접속도 통과했다. 운영 최대 인원을 보증하는 시험은 아니다. [원본](../qa/observatory-v54/load.json).
 
