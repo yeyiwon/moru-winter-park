@@ -162,9 +162,10 @@ test('one Enter commits Korean composition and sends exactly once; speaker ident
   return{people:[],count:1};
  }});
  const input=d.querySelector('#chat-input'),toggle=d.querySelector('#chat-toggle'),enter=extra=>input.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true,...extra}));
+ for(const empty of ['', '   ']){toggle.click();input.value=empty;enter({});assert.equal(d.querySelector('#chat-form').hidden,true);assert.equal(sent.length,0);}
  toggle.click();input.value='겨우';input.dispatchEvent(new w.CompositionEvent('compositionstart'));enter({isComposing:true,keyCode:229});assert.equal(sent.length,0);
  input.value='겨울';input.dispatchEvent(new w.CompositionEvent('compositionend',{data:'울'}));input.dispatchEvent(new w.Event('input'));await tick();assert.deepEqual(sent,['겨울']);
- assert.equal(d.querySelector('#chat-log p').dataset.author,'self');assert.match(d.querySelector('.chat-author').textContent,/눈꽃 \(나\)/);
+ assert.equal(d.querySelector('#chat-log p').dataset.author,'self');assert.equal(d.querySelector('.chat-author').textContent.trim(),'눈꽃');
  w.dispatchEvent(new w.CustomEvent('lab:visitors',{detail:[{id:'peer',name:'눈꽃',chat:'같은 이름',chatAt:Date.now()}]}));assert.equal(d.querySelector('#chat-log p:last-child').dataset.author,'peer');
  toggle.click();input.value='완성';input.dispatchEvent(new w.CompositionEvent('compositionstart'));input.dispatchEvent(new w.CompositionEvent('compositionend'));enter({keyCode:229});enter({repeat:true});await tick();assert.deepEqual(sent,['겨울','완성']);
  toggle.click();input.value='취소';input.dispatchEvent(new w.CompositionEvent('compositionstart'));enter({isComposing:true});input.dispatchEvent(new w.CompositionEvent('compositionend'));d.querySelector('#park-canvas').dispatchEvent(new w.Event('pointerdown',{bubbles:true,cancelable:true}));await tick();assert.equal(sent.length,2);

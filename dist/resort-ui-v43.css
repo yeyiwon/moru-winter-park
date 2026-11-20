@@ -254,3 +254,7 @@ body.world-owner:not(.invite-gate) #pane-social>:not(#admin-panel){display:none}
 #chat-log p[data-author=self] .chat-author{color:#075d57;background:rgba(211,246,236,.94)}
 :root[data-ui-theme=dark] #chat-log p .chat-author{color:#ddc4ff;background:rgba(52,36,71,.94)}
 :root[data-ui-theme=dark] #chat-log p[data-author=self] .chat-author{color:#a2f4de;background:rgba(19,57,53,.94)}
+
+/* Short speech stays compact without shrinking its readable text. */
+#self-bubble{min-width:0;padding:6px 12px;line-height:1.4;border-radius:14px!important}
+@media(pointer:coarse),(max-width:650px){#self-bubble{padding:4px 9px;line-height:1.4;border-radius:11px!important}}

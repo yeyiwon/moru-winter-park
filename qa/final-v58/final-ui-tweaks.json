@@ -1,0 +1,90 @@
+{
+  "checks": [
+    {
+      "mobile": false,
+      "theme": "glass",
+      "bubble": {
+        "padding": "6px 12px",
+        "height": 32.1875,
+        "fontSize": "13px"
+      },
+      "ink": "#1b3048",
+      "muted": "#203247",
+      "panel": "linear-gradient(135deg,rgba(249,253,255,.66),rgba(233,244,253,.64) 54%,rgba(241,245,252,.65))",
+      "colors": [
+        "rgb(7, 93, 87)",
+        "rgb(101, 53, 138)"
+      ]
+    },
+    {
+      "mobile": false,
+      "theme": "dark",
+      "bubble": {
+        "padding": "6px 12px",
+        "height": 32.1875,
+        "fontSize": "13px"
+      },
+      "ink": "#f0f6ff",
+      "muted": "#cad6e7",
+      "panel": "linear-gradient(135deg,rgba(23,31,45,.91),rgba(17,25,38,.89))",
+      "colors": [
+        "rgb(162, 244, 222)",
+        "rgb(221, 196, 255)"
+      ]
+    },
+    {
+      "mobile": true,
+      "theme": "glass",
+      "bubble": {
+        "padding": "4px 9px",
+        "height": 25.390625,
+        "fontSize": "11px"
+      },
+      "ink": "#1b3048",
+      "muted": "#203247",
+      "panel": "linear-gradient(135deg,rgba(249,253,255,.66),rgba(233,244,253,.64) 54%,rgba(241,245,252,.65))",
+      "colors": [
+        "rgb(7, 93, 87)",
+        "rgb(101, 53, 138)"
+      ]
+    },
+    {
+      "mobile": true,
+      "theme": "dark",
+      "bubble": {
+        "padding": "4px 9px",
+        "height": 25.390625,
+        "fontSize": "11px"
+      },
+      "ink": "#f0f6ff",
+      "muted": "#cad6e7",
+      "panel": "linear-gradient(135deg,rgba(23,31,45,.91),rgba(17,25,38,.89))",
+      "colors": [
+        "rgb(162, 244, 222)",
+        "rgb(221, 196, 255)"
+      ]
+    }
+  ],
+  "contrast": [
+    {
+      "role": "ink",
+      "backdrop": 0,
+      "ratio": 4.84175332302695
+    },
+    {
+      "role": "ink",
+      "backdrop": 255,
+      "ratio": 12.531963043142044
+    },
+    {
+      "role": "muted",
+      "backdrop": 0,
+      "ratio": 4.704253847427624
+    },
+    {
+      "role": "muted",
+      "backdrop": 255,
+      "ratio": 12.176071647670266
+    }
+  ]
+}

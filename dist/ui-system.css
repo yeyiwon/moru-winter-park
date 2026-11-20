@@ -4,9 +4,9 @@
  color-scheme:only light;
  --ui-font:'Winter Sans','Apple SD Gothic Neo',sans-serif;
  --ui-display:var(--ui-font);
- --ui-ink:#1b3048;--ui-muted:#263b50;--ui-accent:#224c70;--ui-text:var(--ui-ink);
- --panel-glass:linear-gradient(135deg,rgba(249,253,255,.70),rgba(233,244,253,.68) 54%,rgba(241,245,252,.69));
- --ui-glass:var(--panel-glass);--ui-solid:#eef5fa;--ui-solid-ink:#263b50;--ui-popover:rgba(235,245,254,.94);--ui-hud:rgba(237,247,255,.82);
+ --ui-ink:#1b3048;--ui-muted:#203247;--ui-accent:#224c70;--ui-text:var(--ui-ink);
+ --panel-glass:linear-gradient(135deg,rgba(249,253,255,.66),rgba(233,244,253,.64) 54%,rgba(241,245,252,.65));
+ --ui-glass:var(--panel-glass);--ui-solid:#eef5fa;--ui-solid-ink:#263b50;--ui-popover:rgba(235,245,254,.94);--ui-hud:rgba(237,247,255,.76);
  --ui-edge:rgba(52,83,112,.24);--ui-rim:rgba(255,255,255,.7);--ui-divider:rgba(52,83,112,.18);
  --ui-hover:rgba(255,255,255,.52);--ui-selected:rgba(113,155,196,.26);--ui-selected-edge:rgba(48,92,135,.6);
  --ui-field:rgba(255,255,255,.32);--ui-field-strong:rgba(255,255,255,.58);

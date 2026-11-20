@@ -1,0 +1,29 @@
+{
+  "steps": [
+    {
+      "at": "2026-11-20T09:41:21.280Z",
+      "goto": true
+    },
+    {
+      "at": "2026-11-20T09:41:26.733Z",
+      "world": true
+    },
+    {
+      "at": "2026-11-20T09:41:27.272Z",
+      "loaderHidden": true
+    },
+    {
+      "at": "2026-11-20T09:41:27.282Z",
+      "calledEnter": true
+    },
+    {
+      "at": "2026-11-20T09:41:30.287Z",
+      "inside": "museum",
+      "body": "world-ready inside-room",
+      "transition": "",
+      "status": "WASD 또는 터치로 이동하고, 화면을 잡아 돌려 둘러보세요."
+    }
+  ],
+  "errors": [],
+  "passed": true
+}

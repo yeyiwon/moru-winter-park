@@ -129,7 +129,7 @@ function renderRecent(){
  const signature=(editing?'history:':'recent:')+displayed.map(item=>item.key).join('|');
  if(signature!==chatSignature){chatSignature=signature;chatLog.replaceChildren();
   for(const item of displayed){
-   const row=document.createElement('p'),author=document.createElement('b');row.dataset.author=item.sender===window.labGuestId?'self':'peer';author.className='chat-author';author.textContent=item.name+(row.dataset.author==='self'?' (나)':'')+' ';row.append(author,document.createTextNode(item.message));
+   const row=document.createElement('p'),author=document.createElement('b');row.dataset.author=item.sender===window.labGuestId?'self':'peer';author.className='chat-author';author.textContent=item.name+' ';row.append(author,document.createTextNode(item.message));
    if(editing&&item.sender&&item.sender!==window.labGuestId){const hide=document.createElement('button');hide.className='chat-hide';hide.textContent='숨김';hide.setAttribute('aria-label',item.name+' 채팅 숨김');hide.onclick=()=>{hiddenChats.add(item.sender);chatSignature='';renderRecent();};row.append(hide);}
    chatLog.append(row);
   }
@@ -139,7 +139,7 @@ function renderRecent(){
 }
 function record(name,message,key,sender=''){if(seenChats.has(key))return;seenChats.add(key);if(seenChats.size>300)seenChats.delete(seenChats.values().next().value);recentChats.push({name,message,key,sender,at:performance.now()});if(recentChats.length>100)recentChats.shift();renderRecent();}
 async function ensureChatSession(){if(joined)return;if(joining){await joining;return;}throw Error('공간에 연결한 뒤 이용해 주세요.');}
-chatForm.addEventListener('submit',async e=>{e.preventDefault();if(e.isComposing||composing||chatSending)return;const message=chatInput.value.trim();if(!message)return;chatSending=true;const send=chatForm.querySelector('[type=submit]');send.disabled=true;try{await ensureChatSession();const data=await request('chat',{message});chatInput.value='';chatStatus.textContent='';setName(data.name);record(data.name,data.message,window.labGuestId+':'+data.at,window.labGuestId);selfBubble.textContent=data.message;selfBubble.dataset.until=String(Date.now()+6500);selfBubble.style.opacity='1';selfBubble.hidden=false;closeChat();}catch(err){chatStatus.textContent=err.message;}finally{chatSending=false;send.disabled=false;}});
+chatForm.addEventListener('submit',async e=>{e.preventDefault();if(e.isComposing||composing||chatSending)return;const message=chatInput.value.trim();if(!message){closeChat();return;}chatSending=true;const send=chatForm.querySelector('[type=submit]');send.disabled=true;try{await ensureChatSession();const data=await request('chat',{message});chatInput.value='';chatStatus.textContent='';setName(data.name);record(data.name,data.message,window.labGuestId+':'+data.at,window.labGuestId);selfBubble.textContent=data.message;selfBubble.dataset.until=String(Date.now()+6500);selfBubble.style.opacity='1';selfBubble.hidden=false;closeChat();}catch(err){chatStatus.textContent=err.message;}finally{chatSending=false;send.disabled=false;}});
 window.addEventListener('lab:visitors',e=>{for(const p of e.detail)if(p.chat&&serverNow()-p.chatAt<15000&&!blocked.has(p.id)&&!hiddenChats.has(p.id))record(p.name,p.chat,p.id+':'+p.chatAt,p.id);});
 window.isVisitorBlocked=id=>blocked.has(id);window.isChatHidden=id=>blocked.has(id)||hiddenChats.has(id);people.addEventListener('click',e=>{const b=e.target.closest('[data-block-visitor]');if(!b)return;blocked.add(b.dataset.blockVisitor);b.closest('li')?.remove();sync();});
 
