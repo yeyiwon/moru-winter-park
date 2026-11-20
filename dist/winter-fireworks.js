@@ -2,7 +2,7 @@ import * as T from './vendor/three.module.js';
 import {createFireworkScore,fireworkConfig,fireworkRandom,fireworkPatterns} from './firework-score.js';
 import {createCastleShow} from './castle-show.js';
 export const fireworkTrailSamples=6;
-const SPARKS=360,TAILS=fireworkTrailSamples,SLOTS=18;
+const SPARKS=360,TAILS=fireworkTrailSamples,SLOTS=24;
 export function createWinterFireworks(parent,{light=null}={}){
  const capacity=SPARKS*TAILS*SLOTS,geometry=new T.BufferGeometry(),arrays={position:new Float32Array(capacity*3),velocity:new Float32Array(capacity*3),timing:new Float32Array(capacity*4),design:new Float32Array(capacity*4),launch:new Float32Array(capacity*3),color:new Float32Array(capacity*3),spark:new Float32Array(capacity)};
  for(const [name,array]of Object.entries(arrays))geometry.setAttribute(name,new T.BufferAttribute(array,name==='spark'?1:['timing','design'].includes(name)?4:3).setUsage(T.DynamicDrawUsage));
@@ -10,8 +10,8 @@ export function createWinterFireworks(parent,{light=null}={}){
  const material=new T.ShaderMaterial({uniforms,vertexColors:true,transparent:true,depthWrite:false,blending:T.AdditiveBlending,toneMapped:true,
  vertexShader:`attribute vec3 velocity;attribute vec4 timing;attribute vec4 design;attribute vec3 launch;attribute float spark;uniform float clock;uniform float reduced;uniform float pixelRatio;varying vec3 tint;varying float alpha;
  void main(){float age=clock-timing.x-timing.y;float flight=timing.z;float kind=design.x;vec3 p=position;alpha=0.;tint=color;float size=1.;
- if(age>=0.&&age<flight&&spark<1.5){float u=age/flight;p=mix(launch,position,vec3(u,2.*u-u*u,u));alpha=.85*exp(-timing.y*2.4);tint=mix(color,vec3(1.,.94,.8),.65);size=2.1;}
- else if(age>=flight+timing.w&&age<flight+design.z){float t=age-flight-timing.w;float dragRate=kind>1.5&&kind<2.5?.28:.48;float drag=(1.-exp(-t*dragRate))/dragRate;float gravity=kind>1.5&&kind<2.5?1.:1.6;p+=velocity*(drag+timing.w*.58);p.y-=gravity*t*t;p.x+=design.w*t+sin(t*.8+spark*.1)*t*.1;
+ if(age>=0.&&age<flight&&spark<1.5){float u=age/flight;p=mix(launch,position,vec3(u,2.*u-u*u,u));p.x+=sin(u*3.141593)*design.w*8.;p.z+=sin(u*3.141593)*3.;alpha=.85*exp(-timing.y*2.4);tint=mix(color,vec3(1.,.94,.8),.65);size=kind>5.5&&kind<6.5?3.:2.1;}
+ else if(age>=flight+timing.w&&age<flight+design.z){float t=age-flight-timing.w;float dragRate=kind>1.5&&kind<2.5?.28:.48;float drag=(1.-exp(-t*dragRate))/dragRate;float gravity=kind>1.5&&kind<2.5?1.:1.6;p+=velocity*(drag+(kind>7.5?timing.w*.9:timing.w*.58));p.y-=gravity*t*t;if(kind>6.5&&kind<7.5)p.y-=4.5*t*t;p.x+=design.w*t+sin(t*.8+spark*.1)*t*.1;
  float fade=1.-smoothstep(design.z*.42,design.z,t);float twinkle=.72+.28*pow(.5+.5*sin(t*17.+spark*7.1-timing.y*12.),3.);if(kind>3.5&&kind<4.5)twinkle=.4+.6*pow(.5+.5*sin(t*19.+spark*11.7),4.);alpha=smoothstep(0.,.04,t)*fade*twinkle*exp(-timing.y*15.);size=mix(2.1,.6,clamp(timing.y/.13,0.,1.));tint=mix(color,vec3(1.,.82,.46),smoothstep(1.,design.z,t)*(kind>1.5&&kind<2.5?.65:.16));if(spark<.5&&t<.1){p=position;size=4.;alpha*=1.-reduced;}}
  // Tail endpoints die with their heads: no long shower after the burst.
  alpha*=1.-smoothstep(design.z*.55,design.z,clock-timing.x-flight);
@@ -41,10 +41,13 @@ export function createWinterFireworks(parent,{light=null}={}){
     const sample=(spark*73)%SPARKS,a=sample*2.399963,y=1-2*(sample+.5)/SPARKS,r=Math.sqrt(1-y*y),speed=(19+random()*5)*shell.size;let vx=Math.cos(a)*r,vy=y,vz=Math.sin(a)*r;
     if(shell.pattern==='ring'||shell.pattern==='star'){const theta=sample/SPARKS*Math.PI*2,ring=shell.pattern==='star'?.68+.38*Math.cos(theta*5):(sample%2?.85:1.12);vx=Math.cos(theta)*ring;vy=Math.sin(theta)*Math.cos(shell.tilt)*ring;vz=Math.sin(theta)*Math.sin(shell.tilt)*ring+(shell.pattern==='star'?(random()-.5)*.38:0);}
     if(shell.pattern==='willow')vy=Math.abs(vy)*.42+.12;
+    if(shell.pattern==='fountain'){vx*=.5;vz*=.45;vy=.6+random()*.85;}
+    if(shell.pattern==='comet'){vx*=.18;vy*=.18;vz*=.18;}
+    if(shell.pattern==='double'&&spark%3===0){vx*=.65;vy*=.65;vz*=.65;}
     if(shell.pattern==='peony'){const radius=spark%4===0?.48+random()*.12:.85+random()*.15;vx*=radius;vy*=radius;vz*=radius;}
     const life=shell.life*(.88+random()*.12);tint.copy(shellColors[index]).lerp(white,spark%7===0?.48:0);
     for(let tail=0;tail<TAILS;tail++,n++){
-     const k=n*3,j=n*4;arrays.position[k]=shell.x;arrays.position[k+1]=shell.y+shell.height;arrays.position[k+2]=shell.z;arrays.launch[k]=shell.launchX;arrays.launch[k+1]=shell.y;arrays.launch[k+2]=shell.launchZ;arrays.velocity[k]=vx*speed;arrays.velocity[k+1]=vy*speed;arrays.velocity[k+2]=vz*speed;arrays.timing[j]=shell.at;arrays.timing[j+1]=tail*(shell.pattern==='willow'?.032:.022);arrays.timing[j+2]=shell.flight;arrays.timing[j+3]=shell.pattern==='glitter'&&spark%3===0?.55:0;arrays.design[j]=fireworkPatterns.indexOf(shell.pattern);arrays.design[j+1]=.8+random()*.45;arrays.design[j+2]=life;arrays.design[j+3]=shell.wind;arrays.color[k]=tint.r;arrays.color[k+1]=tint.g;arrays.color[k+2]=tint.b;arrays.spark[n]=spark;
+     const k=n*3,j=n*4;arrays.position[k]=shell.x;arrays.position[k+1]=shell.y+shell.height;arrays.position[k+2]=shell.z;arrays.launch[k]=shell.launchX;arrays.launch[k+1]=shell.y;arrays.launch[k+2]=shell.launchZ;arrays.velocity[k]=vx*speed;arrays.velocity[k+1]=vy*speed;arrays.velocity[k+2]=vz*speed;arrays.timing[j]=shell.at;arrays.timing[j+1]=tail*(shell.pattern==='willow'?.032:.022);arrays.timing[j+2]=shell.flight;arrays.timing[j+3]=shell.pattern==='fountain'?random()*.9:shell.pattern==='double'&&spark%3===0?.65:shell.pattern==='glitter'&&spark%3===0?.55:0;arrays.design[j]=fireworkPatterns.indexOf(shell.pattern);arrays.design[j+1]=.8+random()*.45;arrays.design[j+2]=life;arrays.design[j+3]=shell.wind;arrays.color[k]=tint.r;arrays.color[k+1]=tint.g;arrays.color[k+2]=tint.b;arrays.spark[n]=spark;
     }
    }
    for(let puff=0;puff<6&&sn<smokeCount;puff++,sn++){const launch=puff<3,u=(puff+1)/4;smokePosition.set([launch?shell.launchX+(shell.x-shell.launchX)*u:shell.x+(puff-4)*7,launch?shell.y+shell.height*u:shell.y+shell.height,shell.z],sn*3);smokeData.set([shell.at+(launch?shell.flight*u:shell.flight),6,launch?3:10,index+puff],sn*4);smokeColor.set(shellColors[index].toArray(),sn*3);}

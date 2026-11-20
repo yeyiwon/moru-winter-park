@@ -5,4 +5,5 @@ winterTracks.push({id:"snow-globe",title:"Snow Globe",artist:"ondrosik",src:"/au
 const openingTracks=['ethereal-winter-ballet-02','cinematic-christmas-piano-strings-bells','winter-waltz','winter-jazz','wonderful-night'];
 winterTracks.sort((a,b)=>{const ai=openingTracks.indexOf(a.id),bi=openingTracks.indexOf(b.id);return (ai<0?openingTracks.length:ai)-(bi<0?openingTracks.length:bi);});
 
+winterTracks.splice(4,0,{id:'waltz-of-snowflakes',title:'Waltz of Snowflakes',artist:'Grand_Project',src:'/audio/waltz-of-snowflakes.mp3',duration:116.7673469387755,source:'https://pixabay.com/music/modern-classical-waltz-of-snowflakes-442484/',license:'https://pixabay.com/service/license-summary/',licenseName:'Pixabay Content License'});
 export const winterTrack=winterTracks[0];

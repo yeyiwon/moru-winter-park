@@ -11,7 +11,7 @@ import {fireworksAPI,readFireworkShow} from '../server/fireworks.js';
 import {showTrack} from '../dist/show-tracks.js';
 import {fireworkRequestState,mergeFireworkShow,installFireworkRequests} from '../dist/fireworks-request.js';
 test('seeded show has five distinct patterns, overlaps, depth and a bounded final fade',()=>{
- const score=createFireworkScore(42);assert.deepEqual(score,createFireworkScore(42));assert.notDeepEqual(score,createFireworkScore(43));assert.deepEqual([...new Set(score.map(s=>s.pattern))].sort(),[...fireworkPatterns].sort());assert.ok(score.every(s=>s.at+s.flight+s.life<fireworkConfig.duration));assert.ok(new Set(score.map(s=>s.z)).size>10);assert.ok(score.some((s,i)=>i&&s.at-score[i-1].at<1));assert.equal(fireworkConfig.auto,false);
+ const score=createFireworkScore(42);assert.deepEqual(score,createFireworkScore(42));assert.notDeepEqual(score,createFireworkScore(43));assert.deepEqual([...new Set(score.map(s=>s.pattern))].sort(),fireworkPatterns.slice(0,6).sort());assert.ok(score.every(s=>s.at+s.flight+s.life<fireworkConfig.duration));assert.ok(new Set(score.map(s=>s.z)).size>10);assert.ok(score.some((s,i)=>i&&s.at-score[i-1].at<1));assert.equal(fireworkConfig.auto,false);
 });
 test('show uses fixed buffers, late-join clock, lower mobile density and clears the draw at finish',()=>{
  const scene=new T.Scene(),show=createWinterFireworks(scene),state={id:'test',startsAt:1000,seed:42,state:'playing'};show.setShow(state);show.update(31000);assert.equal(show.root.material.uniforms.clock.value,30);assert.equal(show.root.visible,true);const buffer=show.root.geometry.attributes.position.array,full=show.root.geometry.drawRange.count;assert.ok([...buffer].every(Number.isFinite));

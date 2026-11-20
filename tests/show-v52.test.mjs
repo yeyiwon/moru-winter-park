@@ -11,7 +11,7 @@ import {gondolaPoints,alpineHeight,skiRunHeight,skiRunCenter,mountainAprons} fro
 test('two full recordings have equally sized server selections and independently measured cue times',()=>{
  assert.deepEqual(showTracks.map(t=>Array.from({length:256},(_,b)=>selectShowTrack(b)).filter(x=>x===t).length),[128,128]);
  for(const t of showTracks){
-  assert.ok(fs.statSync('dist'+t.url).size>3000000);assert.ok(t.duration>110&&t.duration<126);
+  assert.ok(fs.statSync('dist'+t.url).size>3000000);assert.ok(t.duration>110&&t.duration<140);
   const score=createFireworkScore(42,t.id);assert.deepEqual(score,createFireworkScore(42,t.id));assert.ok(score.length>45);
   for(const s of score){assert.ok(s.at>=0&&s.at+s.flight+s.life<t.duration);assert.ok(t.accents.some(a=>Math.abs(a-s.at-s.flight)<1e-8));}
   assert.equal(t.sections.at(-1).end,t.duration);

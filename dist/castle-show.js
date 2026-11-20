@@ -10,23 +10,31 @@ const projection=`
 uniform float showTime;uniform float showPower;uniform float showCalm;
 uniform vec3 showPalette[3];uniform float showRegions[10];uniform float showMode;uniform float showPreviousMode;uniform float showMix;
 varying vec3 showP;varying float vShowRegion;
-float projectionPattern(float mode,vec3 p,float t){
+float icePattern(vec3 p,float t){
  vec2 frost=p.xy*.72;float crystal=1.;
  for(int i=0;i<3;i++){float a=float(i)*1.047198;crystal=min(crystal,abs(sin(dot(frost,vec2(cos(a),sin(a)))+t*.13)));}
- float ice=(1.-smoothstep(.025,.095,crystal))*(.35+.65*pow(.5+.5*sin(p.y*.22-t*.55),3.));
+ return (1.-smoothstep(.025,.095,crystal))*(.35+.65*pow(.5+.5*sin(p.y*.22-t*.55),3.));
+}
+float archPattern(vec3 p,float t){
  float arch=exp(-abs(length(vec2(p.x,(p.y-7.3)*1.1))-4.6)*6.)*smoothstep(6.8,7.4,p.y);
  arch+=exp(-abs(abs(p.x)-4.65)*8.)*(1.-smoothstep(7.1,7.8,p.y));
- float flow=arch*(.4+.6*pow(.5+.5*sin(p.y*.6+abs(p.x)*.3-t*1.8),5.));
+ return arch*(.4+.6*pow(.5+.5*sin(p.y*.6+abs(p.x)*.3-t*1.8),5.));
+}
+float projectionPattern(float mode,vec3 p,float t){
+ if(mode<.5)return icePattern(p,t);
+ float flow=archPattern(p,t);
+ if(mode<1.5)return flow+.14*icePattern(p,t);
+ if(mode>2.5&&mode<3.5)return pow(.5+.5*sin(atan(p.z+5.,p.x+.00001)*3.+p.y*.6-t*1.7),18.)+.3*flow;
  float aurora=pow(.5+.5*sin(p.y*.32+p.x*.2+sin(p.z*.4+t*.3)*1.1-t*.55),6.);
- float spiral=pow(.5+.5*sin(atan(p.z+5.,p.x+.00001)*3.+p.y*.6-t*1.7),18.);
- vec2 cell=floor(p.xy*.6);vec2 st=fract(p.xy*.6)-.5;float hash=fract(sin(dot(cell,vec2(127.1,311.7)))*43758.5453);
- float stars=exp(-dot(st,st)*100.)*pow(.5+.5*sin(t*1.7+hash*30.),8.);
- if(mode<.5)return ice;if(mode<1.5)return flow+.14*ice;if(mode<2.5)return aurora+.12*flow;if(mode<3.5)return spiral+.3*flow;return stars+flow*.35+aurora*.15;
+ if(mode<2.5)return aurora+.12*flow;
+ vec2 cell=floor(p.xy*.6),st=fract(p.xy*.6)-.5;float hash=fract(sin(dot(cell,vec2(127.1,311.7)))*43758.5453);
+ return exp(-dot(st,st)*100.)*pow(.5+.5*sin(t*1.7+hash*30.),8.)+flow*.35+aurora*.15;
 }
 vec3 castleProjection(float finish){
+ if(showPower<.0001)return vec3(0.);
  float t=mix(showTime,5.,showCalm),r=floor(vShowRegion+.5);
  vec3 tint=showPalette[0];if(mod(r,3.)>.5)tint=showPalette[1];if(mod(r,3.)>1.5)tint=showPalette[2];
- float pattern=mix(projectionPattern(showPreviousMode,showP,t),projectionPattern(showMode,showP,t),showMix);
+ float pattern=projectionPattern(showMode,showP,t);if(showMix<.999)pattern=mix(projectionPattern(showPreviousMode,showP,t),pattern,showMix);
  float breathe=.85+.15*sin(t*.6+r*.9),level=showRegions[int(r)];
  // Low base illumination preserves stone shadows; the moving detail carries the colour.
  float energy=(.065+pattern*.52)*level*breathe;
@@ -69,7 +77,7 @@ export function createCastleShow(scene){
  const material=new T.ShaderMaterial({uniforms:beamUniforms,transparent:true,depthWrite:false,side:T.DoubleSide,blending:T.AdditiveBlending,toneMapped:true,
  vertexShader:`attribute float extent;attribute vec3 origin;attribute vec3 direction;attribute vec4 design;uniform float showTime;uniform float showCalm;uniform float count;uniform float showSweep;uniform float showGroups[6];varying vec2 vUv;varying float strength;varying float laser;varying float group;void main(){
  vUv=uv;laser=design.z;group=design.y;float t=mix(showTime,5.,showCalm),side=sign(origin.x);
- vec3 aim=direction;aim.x+=side*sin(t*.16+group*.8)*showSweep*.48;aim.z+=cos(t*.12+group*.6)*showSweep*.25;aim=normalize(aim);
+ vec3 aim=direction;aim.x+=side*sin(t*.16+group*.8)*showSweep*.48;aim.z+=cos(t*.12+group*.6)*showSweep*.25;aim.x+=side*(group<.5?.3:0.)*showSweep;aim=normalize(aim);
  vec3 across=normalize(cross(aim,vec3(0.,0.,1.))),other=cross(aim,across);
  float width=.04+uv.y*design.w,length=extent;
  vec3 p=origin+aim*(uv.y*length)+(across*cos(position.z*.785398)+other*sin(position.z*.785398))*uv.x*width;
@@ -84,6 +92,10 @@ export function createCastleShow(scene){
 #include <tonemapping_fragment>
 #include <colorspace_fragment>
 }`});
+ // Physical ground fixtures anchor the beams; one shared geometry/material batch.
+ const fixtureGeo=new T.CylinderGeometry(.3,.42,.35,8),fixtureMat=new T.MeshStandardMaterial({color:'#263442',roughness:.75});
+ const groundFixtures=castleBeamEmitters.filter(e=>e.position[1]<2&&!e.laser),fixtures=new T.InstancedMesh(fixtureGeo,fixtureMat,groundFixtures.length),dummy=new T.Object3D();
+ groundFixtures.forEach((e,i)=>{dummy.position.set(e.position[0]+castleLayout.x,.18,e.position[2]);dummy.updateMatrix();fixtures.setMatrixAt(i,dummy.matrix);});fixtures.name='show-ground-fixtures';root.add(fixtures);
  const beams=new T.Mesh(g,material);beams.name='castle-laser-fan';beams.frustumCulled=false;root.add(beams);
  // Architectural projection supplies surface sparkle without free-floating ground orbs.
  beams.position.x=castleLayout.x;
@@ -97,5 +109,5 @@ export function createCastleShow(scene){
   uniforms.showMode.value=castleProjectionModes.indexOf(cue.projection);uniforms.showPreviousMode.value=castleProjectionModes.indexOf(previous.projection);uniforms.showMix.value=mix;
   uniforms.showBeat.value=(track?.bpm??cue.beat.bpm)/60;uniforms.showBeatOffset.value=track?.offset??cue.beat.offset;uniforms.showLaser.value=blend(previous.beams.laser,cue.beams.laser,mix);uniforms.showSweep.value=blend(previous.beams.sweep,cue.beams.sweep,mix);
   const tier=cue.quality[quality]||castleShowQuality.medium;beamUniforms.count.value=tier.beams;
- },dispose(){restores.forEach(fn=>fn());g.dispose();material.dispose();root.removeFromParent();}};
+ },dispose(){restores.forEach(fn=>fn());g.dispose();material.dispose();fixtureGeo.dispose();fixtureMat.dispose();root.removeFromParent();}};
 }
