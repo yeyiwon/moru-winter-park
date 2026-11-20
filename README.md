@@ -1,3 +1,9 @@
+# WINTERLIGHT v53 — 검증 완료 · 운영 반영 준비
+
+공식 주소: **https://moru-winter-park.vercel.app/**. 불꽃놀이는 **Love / Wedding Entrance** 두 곡의 완곡 랜덤 공연으로 바꾸고, 최초 합성 음악과 이전 공연곡을 제거했다. **Waltz of Snowflakes는 BGM 5번**이다. 채팅·이름표·발소리·모바일 스키 입력·곤돌라 연속 승하차·혼합 LOD 지형 경계를 수정했다. [변경과 검증 범위](docs/release-v53.md) · [음원](docs/show-music-v53.md) · [운영 배포 상태](docs/DEPLOYMENT.md). 아래는 이전 이력이다.
+
+---
+
 # WINTERLIGHT v52 — 운영 반영 완료
 
 공식 주소: **https://moru-winter-park.vercel.app/** · 운영 소스 `b360198`.

@@ -1,0 +1,78 @@
+{
+  "recordedAt": "2026-11-20T03:43:41.405550+00:00",
+  "tests": {
+    "passed": 543,
+    "failed": 0,
+    "skipped": 0,
+    "durationMs": 39482.867791
+  },
+  "sourceCheckModules": 305,
+  "builds": {
+    "worker": "PASS",
+    "vercel": "PASS",
+    "realtime": "PASS"
+  },
+  "budget": {
+    "totals": {
+      "files": 251,
+      "allBytes": 34765258,
+      "codeBytes": 3317056,
+      "codeGzipBytes": 1069139,
+      "audioBytes": 28324464,
+      "coreBytes": 26507222,
+      "showAudioBytes": 8258036
+    },
+    "limits": {
+      "coreBytes": 29360128,
+      "showAudioBytes": 8388608,
+      "codeGzipBytes": 1280000
+    },
+    "largest": [
+      {
+        "name": "audio/show/love.mp3",
+        "bytes": 4314174,
+        "gzip": 4304642
+      },
+      {
+        "name": "audio/show/wedding-entrance.mp3",
+        "bytes": 3943862,
+        "gzip": 3934213
+      },
+      {
+        "name": "audio/waltz-of-snowflakes.mp3",
+        "bytes": 3736555,
+        "gzip": 3728590
+      },
+      {
+        "name": "audio/cinematic-christmas-piano-strings-bells.m4a",
+        "bytes": 3274060,
+        "gzip": 3176562
+      },
+      {
+        "name": "audio/moonlight.m4a",
+        "bytes": 2093421,
+        "gzip": 2036036
+      },
+      {
+        "name": "fonts/PretendardVariable.woff2",
+        "bytes": 2057688,
+        "gzip": 2045523
+      },
+      {
+        "name": "audio/ethereal-winter-ballet-02.m4a",
+        "bytes": 1815149,
+        "gzip": 1774853
+      },
+      {
+        "name": "audio/first-snow.m4a",
+        "bytes": 1754877,
+        "gzip": 1716862
+      }
+    ]
+  },
+  "physicalWindows": "UNKNOWN",
+  "physicalAndroid": "UNKNOWN",
+  "physicalIOS": "UNKNOWN",
+  "virtualKeyboardHardware": "UNKNOWN",
+  "deployment": "pending"
+}

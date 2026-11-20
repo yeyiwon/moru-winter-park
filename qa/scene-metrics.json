@@ -1,12 +1,17 @@
 {
   "environment": "Node v22.4.1 darwin arm64",
   "measurement": "CPU scene geometry construction; no browser, WebGL or GPU rendering",
-  "sceneConstructionMs": 5203.49,
+  "sceneConstructionMs": 4830.26,
   "meshObjects": 949,
   "materials": 218,
-  "triangles": 4332139,
+  "triangles": 4457619,
   "renderFPS": null,
   "largestMeshes": [
+    {
+      "name": "alpine-far-ridges",
+      "parent": "streamed-alpine-heightfield",
+      "triangles": 184777
+    },
     {
       "name": "",
       "parent": "",
@@ -61,11 +66,6 @@
       "name": "",
       "parent": "winter-places",
       "triangles": 91296
-    },
-    {
-      "name": "",
-      "parent": "alpine-mountain",
-      "triangles": 88476
     }
   ],
   "browserVisualVerification": "Separate browser checks are documented in docs/urgent-rendering-repair.md; these metrics are CPU-only"

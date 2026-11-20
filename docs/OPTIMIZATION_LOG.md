@@ -1,3 +1,9 @@
+# v53 — 음악·입력·지형 수정
+
+[상세 변경](release-v53.md). 성 shader가 비활성 패턴까지 계산하던 부분을 필요한 모드/전이만 계산하도록 변경. 불꽃 24개 고정 슬롯, 조명 기구 1개 InstancedMesh, 이름표 가림 검사 프레임당 최대 2명. 스트리밍 음악 1개, 발걸음 동시 2개 제한. 혼합 LOD 경계를 실제 높이의 공통 정점으로 연결해 거대한 틈을 제거. 모바일 짧은 탭을 프레임에 전달하고 화면 복귀는 실제 viewport를 확인한다. [실측·제한](PERFORMANCE.md).
+
+---
+
 # v52 최적화 기록
 
 `winter-fireworks.js` 고정 TypedArray 직접 갱신·짧은 trail, `castle-show.js` 불필요한 상승 입자 삭제·빔 한 배치, `firework-music.js` 하나의 스트리밍 요소와 선택적 사전 로딩. `mountain-terrain.js`는 역 주변에만 높은 지형 분할을 적용한다. `color-swatches.js`는 값 변경 시에만 64px 색을 그린다. 새로운 production dependency 없음. 운영 배포 후 원본 MP3 Range 스트리밍·실시간 동기화·설산 동승을 재검증했다. [운영 기록](DEPLOYMENT.md). [원인·변경 파일·실측](release-v52.md).

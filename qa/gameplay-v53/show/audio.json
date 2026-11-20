@@ -1,0 +1,240 @@
+{
+  "environment": "macOS Chrome real MP3/WebAudio streaming; silent test output; full wall-clock duration, no speed change",
+  "tracks": [
+    {
+      "id": "love",
+      "expected": 134.81795918367348,
+      "samples": [
+        {
+          "age": 0.002,
+          "current": 0,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 10.0025,
+          "current": 10.001995,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 20.002,
+          "current": 20.000675,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 30.00229999999702,
+          "current": 29.972489,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 40.00239999999851,
+          "current": 39.812007,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 50.00209999999404,
+          "current": 49.880148,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 60.00169999999553,
+          "current": 59.884407,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 70.00239999999852,
+          "current": 69.852546,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 80.00189999999851,
+          "current": 79.856964,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 90.0025,
+          "current": 89.84648,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 100.0025,
+          "current": 99.943591,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 110.0025,
+          "current": 109.962488,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 120.00229999999702,
+          "current": 119.997477,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 130.00159999999403,
+          "current": 129.932811,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        }
+      ],
+      "events": [
+        {
+          "active": true,
+          "at": 0.0022999999970197676
+        },
+        {
+          "active": false,
+          "at": 134.85259999999403
+        }
+      ],
+      "duration": 134.817938,
+      "released": true,
+      "complete": true
+    },
+    {
+      "id": "wedding-entrance",
+      "expected": 123.24571428571429,
+      "samples": [
+        {
+          "age": 0.0021999999955296516,
+          "current": 0,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 10.00259999999404,
+          "current": 9.999093,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 20.00209999999404,
+          "current": 19.997797,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 30.00229999999702,
+          "current": 29.969596,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 40.00239999999851,
+          "current": 39.80911,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 50.00209999999404,
+          "current": 49.88036,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 60.00169999999553,
+          "current": 59.884507,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 70.00239999999852,
+          "current": 69.852693,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 80.00189999999851,
+          "current": 79.85707,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 90.0025,
+          "current": 89.846696,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 100.0025,
+          "current": 99.943704,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 110.00259999999403,
+          "current": 109.9627,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        },
+        {
+          "age": 120.00229999999702,
+          "current": 119.997707,
+          "paused": false,
+          "ready": 4,
+          "rate": 1
+        }
+      ],
+      "events": [
+        {
+          "active": true,
+          "at": 0.0022999999970197676
+        },
+        {
+          "active": false,
+          "at": 123.25239999999852
+        }
+      ],
+      "duration": 123.245688,
+      "released": true,
+      "complete": true
+    }
+  ],
+  "done": true,
+  "late": {
+    "at": 36.966229,
+    "expected": 37.00119999999553,
+    "paused": false,
+    "ready": 4
+  },
+  "errors": []
+}

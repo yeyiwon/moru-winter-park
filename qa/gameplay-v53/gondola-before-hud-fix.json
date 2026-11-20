@@ -1,0 +1,165 @@
+{
+  "environment": "Mac Chrome PC + 390x844 touch emulation; physical Windows/iOS/Android UNKNOWN",
+  "checks": [
+    {
+      "name": "PC Enter opens chat from focused game button",
+      "ok": true
+    },
+    {
+      "name": "sent chat has independent head bubble",
+      "ok": true
+    },
+    {
+      "name": "recent chat remains readable beyond 3 seconds",
+      "ok": true
+    },
+    {
+      "name": "recent chat fades while retaining history",
+      "ok": true
+    },
+    {
+      "name": "history restores",
+      "ok": true
+    },
+    {
+      "name": "two guests reserve different seats in same moving cabin",
+      "ok": true,
+      "data": [
+        {
+          "kind": "gondola",
+          "cabin": 1795145190333.3335,
+          "seat": 0,
+          "startedAt": 1795145192353
+        },
+        {
+          "kind": "gondola",
+          "cabin": 1795145190333.3335,
+          "seat": 1,
+          "startedAt": 1795145192359
+        }
+      ]
+    },
+    {
+      "name": "moving cabin cannot be exited in the air",
+      "ok": true
+    },
+    {
+      "name": "exit begins continuously rather than teleporting",
+      "ok": true,
+      "data": {
+        "before": {
+          "x": -179.06432287673263,
+          "y": 900.9800000000001,
+          "z": -1923.743120057918,
+          "yaw": -1.5406099791646115,
+          "mode": "lift",
+          "lean": 0,
+          "tilt": 0,
+          "brake": false,
+          "air": 0,
+          "speed": 0,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        },
+        "during": {
+          "x": -179.13419901505316,
+          "y": 900.9800000000001,
+          "z": -1923.7410101116047,
+          "yaw": -1.5406099791645391,
+          "mode": "lift",
+          "lean": 0,
+          "tilt": 0,
+          "brake": false,
+          "air": 0,
+          "speed": 0.5200878027606202,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        }
+      }
+    },
+    {
+      "name": "both guests finish on the station apron",
+      "ok": true
+    },
+    {
+      "name": "ski HUD hides normal joystick and social controls",
+      "ok": true
+    },
+    {
+      "name": "all ski touch targets remain inside viewport",
+      "ok": true,
+      "data": [
+        {
+          "id": "left",
+          "x": 18,
+          "y": 758,
+          "w": 56,
+          "h": 56,
+          "inside": true
+        },
+        {
+          "id": "push",
+          "x": 316,
+          "y": 690,
+          "w": 56,
+          "h": 56,
+          "inside": true
+        },
+        {
+          "id": "right",
+          "x": 86,
+          "y": 758,
+          "w": 56,
+          "h": 56,
+          "inside": true
+        },
+        {
+          "id": "brake",
+          "x": 300,
+          "y": 758,
+          "w": 72,
+          "h": 56,
+          "inside": true
+        },
+        {
+          "id": "jump",
+          "x": 232,
+          "y": 758,
+          "w": 56,
+          "h": 56,
+          "inside": true
+        },
+        {
+          "id": "recover",
+          "x": 18,
+          "y": 702,
+          "w": 70.5,
+          "h": 44,
+          "inside": true
+        }
+      ]
+    }
+  ],
+  "errors": [],
+  "seats": [
+    {
+      "kind": "gondola",
+      "cabin": 1795145190333.3335,
+      "seat": 0,
+      "startedAt": 1795145192353
+    },
+    {
+      "kind": "gondola",
+      "cabin": 1795145190333.3335,
+      "seat": 1,
+      "startedAt": 1795145192359
+    }
+  ],
+  "failure": "locator.tap: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-ski=push]')\u001b[22m\n\u001b[2m    - locator resolved to <button data-ski=\"push\" aria-label=\"밀고 출발 · 가속\">출발</button>\u001b[22m\n\u001b[2m  - attempting tap action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <canvas width=\"390\" tabindex=\"0\" height=\"844\" id=\"park-canvas\" data-engine=\"three.js r170\" aria-label=\"겨울 공간. 산책로 클릭 또는 WASD 이동, M으로 지도 열기.\"></canvas> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying tap action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is visible, enabled and stable\u001b[22m\n\u001b[2m      - scrolling into view if needed\u001b[22m\n\u001b[2m      - done scrolling\u001b[22m\n\u001b[2m      - <canvas width=\"390\" tabindex=\"0\" height=\"844\" id=\"park-canvas\" data-engine=\"three.js r170\" aria-label=\"겨울 공간. 산책로 클릭 또는 WASD 이동, M으로 지도 열기.\"></canvas> intercepts pointer events\u001b[22m\n\u001b[2m    - retrying tap action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    56 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is visible, enabled and stable\u001b[22m\n\u001b[2m       - scrolling into view if needed\u001b[22m\n\u001b[2m       - done scrolling\u001b[22m\n\u001b[2m       - <canvas width=\"390\" tabindex=\"0\" height=\"844\" id=\"park-canvas\" data-engine=\"three.js r170\" aria-label=\"겨울 공간. 산책로 클릭 또는 WASD 이동, M으로 지도 열기.\"></canvas> intercepts pointer events\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at /Users/yeiwon/Documents/Codex/winter-alpine-v48/scripts/verify-gameplay-v53.mjs:24:36"
+}

@@ -1,3 +1,9 @@
+# v53 최종 검사
+
+Mac Chrome PC/터치 화면의 실제 3D·음악·채팅·곤돌라 검증과 스키 입력 재검사를 수행했다. [검증과 실패 후 수정 이력](release-v53.md#검증-범위). 실물 Windows/Galaxy/iPhone 및 실제 가상 키보드 검증은 UNKNOWN. 최종 `npm test` **543/543 PASS**, 실패·건너뜀 0, 39.48초. `npm run check` 305개 JS 모듈, Worker·Vercel·realtime 빌드와 용량 검사를 통과했다. 10/25/50/100명 localhost WebSocket 부하도 각각 15초, 전송 성공률 100%, 거부·오류 0으로 통과했다. [최종 검사 기록](../qa/gameplay-v53/verification.json). 운영 검증은 배포 후 기록한다. JavaScript 프로젝트로 별도 TypeScript/Lint 명령은 없다.
+
+---
+
 # v52 최종 통합 검사
 
 완곡 실제 재생, PC/모바일 화면 공연, 6회 재진입 리소스, 공유 공연·중도 입장·게스트 권한, 실제 58초 활강과 스키/보드 점프, 지도/역 접근, 투명도 fallback·강제 다크 색상표·제목·닫기 정렬을 검사했다. 실제 Windows/Edge·Galaxy·iPhone Safari는 UNKNOWN. [상세 증거](release-v52.md#검증과-성능). 최종 `npm run check` 296개 모듈, `npm test` 532개 전부 통과. 오디오 활성화 차단/복구·공연 중 일반 BGM 음소거도 포함한다. 10/25/50/100명 localhost WebSocket 부하 모두 성공률 100%. TypeScript와 Lint 별도 명령은 이 JavaScript 프로젝트에 없다. Worker·Vercel·realtime 빌드와 용량 검사를 모두 통과했다. 운영 57개 확인과 실제 공연 동기화 결과는 [DEPLOYMENT](DEPLOYMENT.md)에 기록했다.

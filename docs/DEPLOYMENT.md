@@ -1,3 +1,11 @@
+# v53 운영 반영 준비
+
+공식 주소 **https://moru-winter-park.vercel.app/** 유지. 검증 브랜치 `codex/love-gameplay-v53`, 기준 운영 `b360198`. 최초 합성곡과 이전 공연곡 제거, Love/Wedding Entrance만 활성. [릴리스 범위](release-v53.md).
+
+배포 전 읽기 전용 비교 기준은 기존 소원 7개·장식 144개·퀴즈 기록 5개·소유자 1개이다. 기존 D1 schema·인증·비밀 설정은 유지한다. 전체 DB backup을 만들었다는 의미는 아니다. 이전 Sites 64/Vercel/Cloudflare 버전을 복구 기준으로 보존한다. 최종 배포 식별자와 실제 확인 결과는 아래에 추가한다.
+
+---
+
 # v52 운영 배포 완료 — 2026-11-20
 
 공식 주소: **https://moru-winter-park.vercel.app/** · 관리자: **https://moru-winter-park.vercel.app/admin**

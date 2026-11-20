@@ -1,3 +1,19 @@
+# v53 성능 측정
+
+Mac Chrome, PC 1280×800/high, 모바일 화면 390×844/medium. 같은 v53 seed·카메라·구간의 성 표면 shader 계산을 줄이기 전후 비교다.
+
+| 조건 | 평균 FPS 범위 | 구간 중 가장 높은 p95 |
+| --- | --- | --- |
+| desktop-before-shader | 51.34–60.16 FPS | 33.4ms |
+| desktop | 59.51–60.34 FPS | 16.8ms |
+| mobile | 58.35–60.36 FPS | 16.8ms |
+
+PC·모바일 각각 6회 공연 재진입 후 geometry/texture 수 증가 없음. [PC 원본](../qa/gameplay-v53/show/desktop.json) · [이전 계산](../qa/gameplay-v53/show/desktop-before-shader.json) · [모바일 화면](../qa/gameplay-v53/show/mobile.json). 실제 Windows·휴대전화 FPS, GPU 메모리 byte·발열·수 시간 안정성은 UNKNOWN. 새 MP3 BGM 3.74MB 때문에 core 아티팩트 한도를 24→28MiB로 명시 조정했고 코드 gzip 1250KiB·공연 8MiB는 유지한다. 초기 로딩에서 전체 음악을 받는 것은 아니다. 최종 core 26,507,222 bytes / 공연 음원 8,258,036 bytes / 코드 gzip 1,069,139 bytes로 한도 이내다.
+
+실제 localhost WebSocket 10/25/50/100명 각각 15초: 전송 성공률 100%, p95 왕복 **5.81 / 12.78 / 16.72 / 25.35ms**, 재접속·좌석 경쟁·공연 ID 공유 통과. 100명 HTTP 처리 p95 177.37ms. 로컬 합성 부하이며 운영 최대 인원 보증은 아니다. [원본](../qa/gameplay-v53/load.json).
+
+---
+
 # v52 성능 측정
 
 Mac Chrome 실제 활강 57.997초 / 60.02 FPS / p95 16.7ms. 공연 PC 60.16–60.24 FPS, 모바일 화면 에뮬레이션 60.10–60.19 FPS. 실물 Windows·모바일은 UNKNOWN. 최대 불꽃 버퍼 정점 50,400→38,880, 지상 구슬 제거, 음악은 선택한 한 파일만 스트리밍. [조건·비교·반복 리소스 결과](release-v52.md#검증과-성능). 이전 기록은 별도 조건의 역사적 측정이다.

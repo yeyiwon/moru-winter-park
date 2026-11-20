@@ -1,0 +1,101 @@
+{
+  "environment": "Mac Chrome PC + 390x844 touch emulation; physical Windows/iOS/Android UNKNOWN",
+  "checks": [
+    {
+      "name": "PC Enter opens chat from focused game button",
+      "ok": true
+    },
+    {
+      "name": "sent chat has independent head bubble",
+      "ok": true
+    },
+    {
+      "name": "recent chat remains readable beyond 3 seconds",
+      "ok": true
+    },
+    {
+      "name": "recent chat fades while retaining history",
+      "ok": true
+    },
+    {
+      "name": "history restores",
+      "ok": true
+    },
+    {
+      "name": "ski HUD hides normal joystick and social controls",
+      "ok": true
+    },
+    {
+      "name": "all ski touch targets remain inside viewport",
+      "ok": true,
+      "data": [
+        {
+          "id": "left",
+          "x": 18,
+          "y": 758,
+          "w": 56,
+          "h": 56,
+          "inside": true
+        },
+        {
+          "id": "push",
+          "x": 316,
+          "y": 690,
+          "w": 56,
+          "h": 56,
+          "inside": true
+        },
+        {
+          "id": "right",
+          "x": 86,
+          "y": 758,
+          "w": 56,
+          "h": 56,
+          "inside": true
+        },
+        {
+          "id": "brake",
+          "x": 300,
+          "y": 758,
+          "w": 72,
+          "h": 56,
+          "inside": true
+        },
+        {
+          "id": "jump",
+          "x": 232,
+          "y": 758,
+          "w": 56,
+          "h": 56,
+          "inside": true
+        },
+        {
+          "id": "recover",
+          "x": 18,
+          "y": 702,
+          "w": 70.5,
+          "h": 44,
+          "inside": true
+        }
+      ]
+    },
+    {
+      "name": "ski push launches movement",
+      "ok": true
+    },
+    {
+      "name": "ski jump control responds",
+      "ok": true
+    },
+    {
+      "name": "normal HUD restores after skiing",
+      "ok": true
+    },
+    {
+      "name": "no browser or shader errors",
+      "ok": true,
+      "data": []
+    }
+  ],
+  "errors": []
+}
