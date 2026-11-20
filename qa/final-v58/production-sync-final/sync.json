@@ -1,0 +1,576 @@
+{
+  "environment": "macOS Chrome, desktop and touch emulation, official production WebSocket; physical mobile UNKNOWN",
+  "socketFrames": 1668,
+  "poseSnapshots": 1623,
+  "movement": true,
+  "singleEnterChat": true,
+  "chat": true,
+  "chatColors": {
+    "own": "rgb(7, 93, 87)",
+    "peer": "rgb(101, 53, 138)"
+  },
+  "noSelfSuffix": true,
+  "emptyEnterCloses": true,
+  "preview": {
+    "background": "rgba(0, 0, 0, 0)",
+    "fontSize": "12px"
+  },
+  "before": [
+    {
+      "show": {
+        "id": "8cdf9b87-0161-4409-98da-7dfe4a357924",
+        "musicId": "wedding-entrance",
+        "duration": 123.24571428571429,
+        "timelineVersion": 57,
+        "startsAt": 1795167222805,
+        "endsAt": 1795167346050.7144,
+        "nextRequestAt": 1795167646050.7144,
+        "seed": 2564130383,
+        "state": "finished",
+        "revision": 1
+      },
+      "sampledAt": 1795168846477,
+      "clock": 1795168846164.8582,
+      "renderAge": 0,
+      "castleAge": 1623.3468020019532,
+      "castleMode": 0,
+      "castleRegions": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "active": false,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": -6.5,
+          "y": 1.4,
+          "z": 5.2
+        },
+        "eye": {
+          "x": -1.7574954043535174,
+          "y": 9.019356396434468,
+          "z": 19.045723464824263
+        },
+        "aim": {
+          "x": -6.5,
+          "y": 1.4,
+          "z": 5.2
+        }
+      },
+      "position": {
+        "x": -6.5,
+        "z": 5.2
+      }
+    },
+    {
+      "show": {
+        "id": "8cdf9b87-0161-4409-98da-7dfe4a357924",
+        "musicId": "wedding-entrance",
+        "duration": 123.24571428571429,
+        "timelineVersion": 57,
+        "startsAt": 1795167222805,
+        "endsAt": 1795167346050.7144,
+        "nextRequestAt": 1795167646050.7144,
+        "seed": 2564130383,
+        "state": "finished",
+        "revision": 1
+      },
+      "sampledAt": 1795168846480,
+      "clock": 1795168846320.374,
+      "renderAge": 0,
+      "castleAge": 1623.4498120117187,
+      "castleMode": 0,
+      "castleRegions": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "active": false,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        },
+        "eye": {
+          "x": 4.742504595646483,
+          "y": 9.019356396434468,
+          "z": 37.84572346482426
+        },
+        "aim": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        }
+      },
+      "position": {
+        "x": 0,
+        "z": 24
+      }
+    }
+  ],
+  "npcRequest": true,
+  "server": {
+    "id": "7631808c-db1b-4c94-9eb3-7f02d3bbb40c",
+    "musicId": "wedding-entrance",
+    "duration": 123.24571428571429,
+    "timelineVersion": 57,
+    "startsAt": 1795168852112,
+    "endsAt": 1795168975357.7144,
+    "nextRequestAt": 1795169275357.7144,
+    "seed": 3815921649,
+    "state": "scheduled",
+    "revision": 1
+  },
+  "playing": [
+    {
+      "show": {
+        "id": "7631808c-db1b-4c94-9eb3-7f02d3bbb40c",
+        "musicId": "wedding-entrance",
+        "duration": 123.24571428571429,
+        "timelineVersion": 57,
+        "startsAt": 1795168852112,
+        "endsAt": 1795168975357.7144,
+        "nextRequestAt": 1795169275357.7144,
+        "seed": 3815921649,
+        "state": "playing",
+        "revision": 1
+      },
+      "sampledAt": 1795168856352,
+      "clock": 1795168856142,
+      "renderAge": 4.009800048828125,
+      "castleAge": 4.009800048828125,
+      "castleMode": 0,
+      "castleRegions": [
+        0.6000000238418579,
+        0.18000000715255737,
+        0.18000000715255737,
+        0.30000001192092896,
+        0.1599999964237213,
+        0.550000011920929,
+        0.3499999940395355,
+        0.6000000238418579,
+        0.5,
+        0.30000001192092896
+      ],
+      "active": true,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": -6.5,
+          "y": 1.4,
+          "z": 5.2
+        },
+        "eye": {
+          "x": -1.7574954043535174,
+          "y": 9.019356396434468,
+          "z": 19.045723464824263
+        },
+        "aim": {
+          "x": -6.5,
+          "y": 1.4,
+          "z": 5.2
+        }
+      },
+      "position": {
+        "x": -6.5,
+        "z": 5.2
+      }
+    },
+    {
+      "show": {
+        "id": "7631808c-db1b-4c94-9eb3-7f02d3bbb40c",
+        "musicId": "wedding-entrance",
+        "duration": 123.24571428571429,
+        "timelineVersion": 57,
+        "startsAt": 1795168852112,
+        "endsAt": 1795168975357.7144,
+        "nextRequestAt": 1795169275357.7144,
+        "seed": 3815921649,
+        "state": "playing",
+        "revision": 1
+      },
+      "sampledAt": 1795168856307,
+      "clock": 1795168856069.332,
+      "renderAge": 3.9361640625,
+      "castleAge": 3.9361640625,
+      "castleMode": 0,
+      "castleRegions": [
+        0.6000000238418579,
+        0.18000000715255737,
+        0.18000000715255737,
+        0.30000001192092896,
+        0.1599999964237213,
+        0.550000011920929,
+        0.3499999940395355,
+        0.6000000238418579,
+        0.5,
+        0.30000001192092896
+      ],
+      "active": true,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        },
+        "eye": {
+          "x": 4.742504595646483,
+          "y": 9.019356396434468,
+          "z": 37.84572346482426
+        },
+        "aim": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        }
+      },
+      "position": {
+        "x": 0,
+        "z": 24
+      }
+    }
+  ],
+  "settingsMusic": "불꽃놀이 음악Wedding EntranceAtlasAudio · 공연 중",
+  "adminDenied": 403,
+  "lateJoin": {
+    "show": {
+      "id": "7631808c-db1b-4c94-9eb3-7f02d3bbb40c",
+      "musicId": "wedding-entrance",
+      "duration": 123.24571428571429,
+      "timelineVersion": 57,
+      "startsAt": 1795168852112,
+      "endsAt": 1795168975357.7144,
+      "nextRequestAt": 1795169275357.7144,
+      "seed": 3815921649,
+      "state": "playing",
+      "revision": 1
+    },
+    "sampledAt": 1795168936845,
+    "clock": 1795168936851,
+    "renderAge": 84.71939990234375,
+    "castleAge": 84.71939990234375,
+    "castleMode": 3,
+    "castleRegions": [
+      0.699999988079071,
+      0.44999998807907104,
+      0.44999998807907104,
+      0.3799999952316284,
+      0.1599999964237213,
+      0.6499999761581421,
+      0.44999998807907104,
+      0.699999988079071,
+      0.6499999761581421,
+      0.6499999761581421
+    ],
+    "active": true,
+    "camera": {
+      "yaw": 0.33,
+      "pitch": 0.48,
+      "distance": 16.5,
+      "fov": 50,
+      "context": null,
+      "manualYaw": false,
+      "revision": 0,
+      "treeOffset": 0,
+      "rendered": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50
+      },
+      "focus": {
+        "x": 0,
+        "y": 1.4,
+        "z": 24
+      },
+      "eye": {
+        "x": 4.742504595646483,
+        "y": 9.019356396434468,
+        "z": 37.84572346482426
+      },
+      "aim": {
+        "x": 0,
+        "y": 1.4,
+        "z": 24
+      }
+    },
+    "position": {
+      "x": 0,
+      "z": 24
+    }
+  },
+  "after": [
+    {
+      "show": {
+        "id": "7631808c-db1b-4c94-9eb3-7f02d3bbb40c",
+        "musicId": "wedding-entrance",
+        "duration": 123.24571428571429,
+        "timelineVersion": 57,
+        "startsAt": 1795168852112,
+        "endsAt": 1795168975357.7144,
+        "nextRequestAt": 1795169275357.7144,
+        "seed": 3815921649,
+        "state": "finished",
+        "revision": 1
+      },
+      "sampledAt": 1795168978893,
+      "clock": 1795168978812.408,
+      "renderAge": 123.2310439453125,
+      "castleAge": 126.66419799804687,
+      "castleMode": 0,
+      "castleRegions": [
+        0.6000000238418579,
+        0.18000000715255737,
+        0.18000000715255737,
+        0.30000001192092896,
+        0.1599999964237213,
+        0.550000011920929,
+        0.3499999940395355,
+        0.6000000238418579,
+        0.5,
+        0.30000001192092896
+      ],
+      "active": false,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": -6.5,
+          "y": 1.4,
+          "z": 5.2
+        },
+        "eye": {
+          "x": -1.7574954043535174,
+          "y": 9.019356396434468,
+          "z": 19.045723464824263
+        },
+        "aim": {
+          "x": -6.5,
+          "y": 1.4,
+          "z": 5.2
+        }
+      },
+      "position": {
+        "x": -6.5,
+        "z": 5.2
+      }
+    },
+    {
+      "show": {
+        "id": "7631808c-db1b-4c94-9eb3-7f02d3bbb40c",
+        "musicId": "wedding-entrance",
+        "duration": 123.24571428571429,
+        "timelineVersion": 57,
+        "startsAt": 1795168852112,
+        "endsAt": 1795168975357.7144,
+        "nextRequestAt": 1795169275357.7144,
+        "seed": 3815921649,
+        "state": "finished",
+        "revision": 1
+      },
+      "sampledAt": 1795168978893,
+      "clock": 1795168978888.848,
+      "renderAge": 123.160251953125,
+      "castleAge": 126.75656201171876,
+      "castleMode": 0,
+      "castleRegions": [
+        0.6000000238418579,
+        0.18000000715255737,
+        0.18000000715255737,
+        0.30000001192092896,
+        0.1599999964237213,
+        0.550000011920929,
+        0.3499999940395355,
+        0.6000000238418579,
+        0.5,
+        0.30000001192092896
+      ],
+      "active": false,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        },
+        "eye": {
+          "x": 4.742504595646483,
+          "y": 9.019356396434468,
+          "z": 37.84572346482426
+        },
+        "aim": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        }
+      },
+      "position": {
+        "x": 0,
+        "z": 24
+      }
+    },
+    {
+      "show": {
+        "id": "7631808c-db1b-4c94-9eb3-7f02d3bbb40c",
+        "musicId": "wedding-entrance",
+        "duration": 123.24571428571429,
+        "timelineVersion": 57,
+        "startsAt": 1795168852112,
+        "endsAt": 1795168975357.7144,
+        "nextRequestAt": 1795169275357.7144,
+        "seed": 3815921649,
+        "state": "finished",
+        "revision": 1
+      },
+      "sampledAt": 1795168978912,
+      "clock": 1795168978812.768,
+      "renderAge": 123.1740419921875,
+      "castleAge": 126.68361791992187,
+      "castleMode": 0,
+      "castleRegions": [
+        0.6000000238418579,
+        0.18000000715255737,
+        0.18000000715255737,
+        0.30000001192092896,
+        0.1599999964237213,
+        0.550000011920929,
+        0.3499999940395355,
+        0.6000000238418579,
+        0.5,
+        0.30000001192092896
+      ],
+      "active": false,
+      "camera": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50,
+        "context": null,
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.33,
+          "pitch": 0.48,
+          "distance": 16.5,
+          "fov": 50
+        },
+        "focus": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        },
+        "eye": {
+          "x": 4.742504595646483,
+          "y": 9.019356396434468,
+          "z": 37.84572346482426
+        },
+        "aim": {
+          "x": 0,
+          "y": 1.4,
+          "z": 24
+        }
+      },
+      "position": {
+        "x": 0,
+        "z": 24
+      }
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,51 @@
+{
+  "at": "2026-11-20T10:02:05.178Z",
+  "releaseRevision": "6bc3c26d3f99a4ff7e8766b3fb4901d1f312782a",
+  "apiRevision": "6bc3c26d3f99a4ff7e8766b3fb4901d1f312782a",
+  "realtimeRevision": "6bc3c26d3f99a4ff7e8766b3fb4901d1f312782a",
+  "allMatch": false,
+  "files": [
+    {
+      "path": "index.html",
+      "status": 200,
+      "bytes": 21770,
+      "sha256": "aaaca22f2fcfcd8aff80799c0df89274ef7d3b2caf1124942748813808d30b10",
+      "match": false
+    },
+    {
+      "path": "ui-system.css",
+      "status": 200,
+      "bytes": 25387,
+      "sha256": "2a21fd4d452f7824174c0a88c854f789c7d4f774f1aeab70eb9279fcd5da3d32",
+      "match": false
+    },
+    {
+      "path": "social.js",
+      "status": 200,
+      "bytes": 19725,
+      "sha256": "678f789b47d41365f2e333bb8bb39656cbdb24926e3f8cba541105297b65e0a4",
+      "match": false
+    },
+    {
+      "path": "vendor/three.module.js",
+      "status": 200,
+      "bytes": 934327,
+      "sha256": "e43cb3a0a654affa3bed312886b0393ef6d3ad1ffe87860c8bbafaa825af9103",
+      "match": false
+    },
+    {
+      "path": "park.js",
+      "status": 200,
+      "bytes": 39790,
+      "sha256": "48a82a2a3107d443c2bb201583da776f31f8b72eb211d4504472fb7e62ba5aab",
+      "match": false
+    },
+    {
+      "path": "brand/og-festival-night-v58.png",
+      "status": 200,
+      "bytes": 1653169,
+      "sha256": "c120e4cc4605836e3dd880a535f58a29589fd59e99f679715d0dfb8bf06906dc",
+      "match": true
+    }
+  ]
+}

@@ -1,0 +1,518 @@
+{
+  "rows": [
+    {
+      "touch": false,
+      "theme": "glass",
+      "width": 390,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(237, 247, 255, 0.76)",
+        "ringBorder": "rgba(255, 255, 255, 0.7)",
+        "knob": "rgb(34, 76, 112)",
+        "knobBorder": "rgba(255, 255, 255, 0.7)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": false,
+      "theme": "glass",
+      "width": 650,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(237, 247, 255, 0.76)",
+        "ringBorder": "rgba(255, 255, 255, 0.7)",
+        "knob": "rgb(34, 76, 112)",
+        "knobBorder": "rgba(255, 255, 255, 0.7)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": false,
+      "theme": "glass",
+      "width": 700,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(237, 247, 255, 0.76)",
+        "ringBorder": "rgba(255, 255, 255, 0.7)",
+        "knob": "rgb(34, 76, 112)",
+        "knobBorder": "rgba(255, 255, 255, 0.7)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": false,
+      "theme": "glass",
+      "width": 750,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(237, 247, 255, 0.76)",
+        "ringBorder": "rgba(255, 255, 255, 0.7)",
+        "knob": "rgb(34, 76, 112)",
+        "knobBorder": "rgba(255, 255, 255, 0.7)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": false,
+      "theme": "glass",
+      "width": 768,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(237, 247, 255, 0.76)",
+        "ringBorder": "rgba(255, 255, 255, 0.7)",
+        "knob": "rgb(34, 76, 112)",
+        "knobBorder": "rgba(255, 255, 255, 0.7)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": false,
+      "theme": "glass",
+      "width": 820,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(237, 247, 255, 0.76)",
+        "ringBorder": "rgba(255, 255, 255, 0.7)",
+        "knob": "rgb(34, 76, 112)",
+        "knobBorder": "rgba(255, 255, 255, 0.7)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": false,
+      "theme": "glass",
+      "width": 1024,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(237, 247, 255, 0.76)",
+        "ringBorder": "rgba(255, 255, 255, 0.7)",
+        "knob": "rgb(34, 76, 112)",
+        "knobBorder": "rgba(255, 255, 255, 0.7)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": false,
+      "theme": "glass",
+      "width": 1366,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(237, 247, 255, 0.76)",
+        "ringBorder": "rgba(255, 255, 255, 0.7)",
+        "knob": "rgb(34, 76, 112)",
+        "knobBorder": "rgba(255, 255, 255, 0.7)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": false,
+      "theme": "dark",
+      "width": 390,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(20, 29, 43, 0.88)",
+        "ringBorder": "rgba(209, 224, 245, 0.28)",
+        "knob": "rgb(184, 217, 255)",
+        "knobBorder": "rgba(209, 224, 245, 0.28)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": false,
+      "theme": "dark",
+      "width": 650,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(20, 29, 43, 0.88)",
+        "ringBorder": "rgba(209, 224, 245, 0.28)",
+        "knob": "rgb(184, 217, 255)",
+        "knobBorder": "rgba(209, 224, 245, 0.28)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": false,
+      "theme": "dark",
+      "width": 700,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(20, 29, 43, 0.88)",
+        "ringBorder": "rgba(209, 224, 245, 0.28)",
+        "knob": "rgb(184, 217, 255)",
+        "knobBorder": "rgba(209, 224, 245, 0.28)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": false,
+      "theme": "dark",
+      "width": 750,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(20, 29, 43, 0.88)",
+        "ringBorder": "rgba(209, 224, 245, 0.28)",
+        "knob": "rgb(184, 217, 255)",
+        "knobBorder": "rgba(209, 224, 245, 0.28)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": false,
+      "theme": "dark",
+      "width": 768,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(20, 29, 43, 0.88)",
+        "ringBorder": "rgba(209, 224, 245, 0.28)",
+        "knob": "rgb(184, 217, 255)",
+        "knobBorder": "rgba(209, 224, 245, 0.28)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": false,
+      "theme": "dark",
+      "width": 820,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(20, 29, 43, 0.88)",
+        "ringBorder": "rgba(209, 224, 245, 0.28)",
+        "knob": "rgb(184, 217, 255)",
+        "knobBorder": "rgba(209, 224, 245, 0.28)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": false,
+      "theme": "dark",
+      "width": 1024,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(20, 29, 43, 0.88)",
+        "ringBorder": "rgba(209, 224, 245, 0.28)",
+        "knob": "rgb(184, 217, 255)",
+        "knobBorder": "rgba(209, 224, 245, 0.28)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": false,
+      "theme": "dark",
+      "width": 1366,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(20, 29, 43, 0.88)",
+        "ringBorder": "rgba(209, 224, 245, 0.28)",
+        "knob": "rgb(184, 217, 255)",
+        "knobBorder": "rgba(209, 224, 245, 0.28)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": true,
+      "theme": "glass",
+      "width": 390,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(237, 247, 255, 0.76)",
+        "ringBorder": "rgba(255, 255, 255, 0.7)",
+        "knob": "rgb(34, 76, 112)",
+        "knobBorder": "rgba(255, 255, 255, 0.7)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": true,
+      "theme": "glass",
+      "width": 650,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(237, 247, 255, 0.76)",
+        "ringBorder": "rgba(255, 255, 255, 0.7)",
+        "knob": "rgb(34, 76, 112)",
+        "knobBorder": "rgba(255, 255, 255, 0.7)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": true,
+      "theme": "glass",
+      "width": 700,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(237, 247, 255, 0.76)",
+        "ringBorder": "rgba(255, 255, 255, 0.7)",
+        "knob": "rgb(34, 76, 112)",
+        "knobBorder": "rgba(255, 255, 255, 0.7)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": true,
+      "theme": "glass",
+      "width": 750,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(237, 247, 255, 0.76)",
+        "ringBorder": "rgba(255, 255, 255, 0.7)",
+        "knob": "rgb(34, 76, 112)",
+        "knobBorder": "rgba(255, 255, 255, 0.7)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": true,
+      "theme": "glass",
+      "width": 768,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(237, 247, 255, 0.76)",
+        "ringBorder": "rgba(255, 255, 255, 0.7)",
+        "knob": "rgb(34, 76, 112)",
+        "knobBorder": "rgba(255, 255, 255, 0.7)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": true,
+      "theme": "glass",
+      "width": 820,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(237, 247, 255, 0.76)",
+        "ringBorder": "rgba(255, 255, 255, 0.7)",
+        "knob": "rgb(34, 76, 112)",
+        "knobBorder": "rgba(255, 255, 255, 0.7)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": true,
+      "theme": "glass",
+      "width": 1024,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(237, 247, 255, 0.76)",
+        "ringBorder": "rgba(255, 255, 255, 0.7)",
+        "knob": "rgb(34, 76, 112)",
+        "knobBorder": "rgba(255, 255, 255, 0.7)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": true,
+      "theme": "glass",
+      "width": 1366,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(237, 247, 255, 0.76)",
+        "ringBorder": "rgba(255, 255, 255, 0.7)",
+        "knob": "rgb(34, 76, 112)",
+        "knobBorder": "rgba(255, 255, 255, 0.7)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": true,
+      "theme": "dark",
+      "width": 390,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(20, 29, 43, 0.88)",
+        "ringBorder": "rgba(209, 224, 245, 0.28)",
+        "knob": "rgb(184, 217, 255)",
+        "knobBorder": "rgba(209, 224, 245, 0.28)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": true,
+      "theme": "dark",
+      "width": 650,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(20, 29, 43, 0.88)",
+        "ringBorder": "rgba(209, 224, 245, 0.28)",
+        "knob": "rgb(184, 217, 255)",
+        "knobBorder": "rgba(209, 224, 245, 0.28)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": true,
+      "theme": "dark",
+      "width": 700,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(20, 29, 43, 0.88)",
+        "ringBorder": "rgba(209, 224, 245, 0.28)",
+        "knob": "rgb(184, 217, 255)",
+        "knobBorder": "rgba(209, 224, 245, 0.28)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": true,
+      "theme": "dark",
+      "width": 750,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(20, 29, 43, 0.88)",
+        "ringBorder": "rgba(209, 224, 245, 0.28)",
+        "knob": "rgb(184, 217, 255)",
+        "knobBorder": "rgba(209, 224, 245, 0.28)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": true,
+      "theme": "dark",
+      "width": 768,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(20, 29, 43, 0.88)",
+        "ringBorder": "rgba(209, 224, 245, 0.28)",
+        "knob": "rgb(184, 217, 255)",
+        "knobBorder": "rgba(209, 224, 245, 0.28)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": true,
+      "theme": "dark",
+      "width": 820,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(20, 29, 43, 0.88)",
+        "ringBorder": "rgba(209, 224, 245, 0.28)",
+        "knob": "rgb(184, 217, 255)",
+        "knobBorder": "rgba(209, 224, 245, 0.28)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": true,
+      "theme": "dark",
+      "width": 1024,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(20, 29, 43, 0.88)",
+        "ringBorder": "rgba(209, 224, 245, 0.28)",
+        "knob": "rgb(184, 217, 255)",
+        "knobBorder": "rgba(209, 224, 245, 0.28)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    },
+    {
+      "touch": true,
+      "theme": "dark",
+      "width": 1366,
+      "colors": {
+        "base": "rgba(0, 0, 0, 0)",
+        "border": "rgb(252, 242, 255)",
+        "borderWidth": "0px",
+        "ring": "rgba(20, 29, 43, 0.88)",
+        "ringBorder": "rgba(209, 224, 245, 0.28)",
+        "knob": "rgb(184, 217, 255)",
+        "knobBorder": "rgba(209, 224, 245, 0.28)",
+        "blur": "none",
+        "opacity": "0.85"
+      }
+    }
+  ],
+  "mismatches": [],
+  "pass": true
+}

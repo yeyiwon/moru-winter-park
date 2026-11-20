@@ -1,0 +1,78 @@
+{
+  "at": "2026-11-20T10:05:47.808Z",
+  "revision": "6bc3c26d3f99a4ff7e8766b3fb4901d1f312782a",
+  "officialUrl": "https://moru-winter-park.vercel.app",
+  "sites": {
+    "version": 69,
+    "deploymentId": "appgdep_6b0018ed5b8c81918b4a18c381ef8e4d",
+    "status": "succeeded",
+    "envRevision": 4
+  },
+  "vercel": {
+    "id": "dpl_AmFV8Bu9hMdxYP3y7dET4qLziCPD",
+    "name": "moru-winter-park",
+    "url": "moru-winter-park-btopqhb0i-yeyiwons-projects.vercel.app",
+    "type": "LAMBDAS",
+    "state": "READY",
+    "createdAt": 1795168546168,
+    "creator": {
+      "uid": "TdlLixl5yCEDmqs1wNtaWwu6",
+      "username": "yeyiwon"
+    },
+    "project": {
+      "id": "prj_mbioBXlMSNwfJ8MWNaRMi2Lsm8I0",
+      "name": "moru-winter-park",
+      "framework": null
+    },
+    "meta": {
+      "githubCommitRef": "main",
+      "githubCommitSha": "6bc3c26d3f99a4ff7e8766b3fb4901d1f312782a",
+      "githubCommitMessage": "chore: exclude transient Wrangler deployment artifacts",
+      "githubRepo": "moru-winter-park",
+      "githubOrg": "yeyiwon"
+    },
+    "alias": [
+      "moru-winter-park.vercel.app",
+      "moru-winter-park-yeyiwons-projects.vercel.app",
+      "moru-winter-park-git-main-yeyiwons-projects.vercel.app"
+    ],
+    "target": "production",
+    "regions": [
+      "icn1"
+    ],
+    "buildingAt": 1795168547353,
+    "ready": 1795168590497,
+    "readyState": "READY",
+    "source": "git",
+    "aliasError": null
+  },
+  "cloudflare": {
+    "service": "winterlight-realtime",
+    "version": "9a432a47-df33-4ea1-83a9-918d6cc25ef9",
+    "revision": "6bc3c26d3f99a4ff7e8766b3fb4901d1f312782a"
+  },
+  "preservation": {
+    "wishes": {
+      "before": 7,
+      "after": 7,
+      "unchanged": 7
+    },
+    "quiz_journal": {
+      "before": 6,
+      "after": 6,
+      "unchanged": 6
+    },
+    "space_owner": {
+      "before": 1,
+      "after": 1,
+      "unchanged": 1
+    },
+    "tree_decorations": {
+      "before": 144,
+      "after": 144,
+      "unchanged": 144
+    }
+  },
+  "noDatabaseMigration": true,
+  "physicalDevicesVerified": false
+}

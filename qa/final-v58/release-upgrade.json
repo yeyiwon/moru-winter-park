@@ -1,0 +1,37 @@
+{
+  "checks": [
+    {
+      "name": "legacy returning visitor reaches the new dark-mode and inline management UI",
+      "ok": true
+    },
+    {
+      "name": "dark mode applies and saves",
+      "ok": true
+    },
+    {
+      "name": "nickname and session survive the update",
+      "ok": true
+    },
+    {
+      "name": "other park tabs reload coherently instead of mixing old HTML and new modules",
+      "ok": true
+    },
+    {
+      "name": "later releases recover automatically on ordinary reload without closing other tabs",
+      "ok": true
+    },
+    {
+      "name": "saved dark mode and session survive automatic recovery",
+      "ok": true
+    },
+    {
+      "name": "recovery entry escapes an already-pinned old worker without clearing user data",
+      "ok": true
+    },
+    {
+      "name": "no browser exceptions",
+      "ok": true
+    }
+  ],
+  "errors": []
+}

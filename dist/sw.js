@@ -22,9 +22,26 @@ async function installCohort(){
  }catch(error){await caches.delete(CACHE);throw error;}
 }
 self.addEventListener('install',event=>event.waitUntil(installCohort()));
-// A waiting release activates only after existing tabs close. Never swap modules
-// beneath a running world or remove the cache used by another active release.
-self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>/^(winterlight-|knowledge-campus-|knowledge-park-)/.test(key)&&key!==CACHE).map(key=>caches.delete(key))))));
+// Activate only from the explicit recovery entry. All open park tabs then reload
+// together, so a legacy page cannot keep running against a new module cohort.
+const UPDATE_KEY=new URL('/__winter_activate_release',self.location.href).href;
+self.addEventListener('message',event=>{
+ if(event.data?.type!=='winter:activate-release')return;
+ event.waitUntil(caches.open(CACHE).then(cache=>cache.put(UPDATE_KEY,new Response('1'))).then(()=>self.skipWaiting()));
+});
+self.addEventListener('activate',event=>event.waitUntil((async()=>{
+ const cache=await caches.open(CACHE),requested=await cache.match(UPDATE_KEY);
+ if(requested){
+  await cache.delete(UPDATE_KEY);await self.clients.claim();
+  const pages=await self.clients.matchAll({type:'window'});
+  for(const page of pages){const url=new URL(page.url);if(['/','/index.html','/admin','/admin/','/refresh.html'].includes(url.pathname))void page.navigate(url.pathname==='/refresh.html'?(url.searchParams.get('return')==='/admin'?'/admin':'/'):page.url).catch(()=>{});}
+  return;
+ }
+ const pages=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+ if(pages.length)return; // An older worker may still serve an open world.
+ const keys=await caches.keys();
+ await Promise.all(keys.filter(key=>/^(winterlight-|knowledge-campus-|knowledge-park-)/.test(key)&&key!==CACHE).map(key=>caches.delete(key)));
+})()));
 self.addEventListener('fetch',event=>{
  const url=new URL(event.request.url);if(event.request.method!=='GET'||url.origin!==self.location.origin)return;
  const pathname=['/admin','/admin/'].includes(url.pathname)?'/index.html':url.pathname;

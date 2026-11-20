@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>WINTERLIGHT</title>
+<style>html{color-scheme:dark;background:#111c2e;color:#edf4fc;font:16px system-ui,sans-serif}body{min-height:90vh;display:grid;place-content:center;text-align:center;gap:16px}p{color:#c6d5e6}a{color:#c6e9ff}</style></head>
+<body><strong>WINTERLIGHT</strong><p id="status">새 버전으로 연결하고 있어요.</p><a href="/" hidden id="retry">공원으로 돌아가기</a>
+<script>
+(async()=>{
+ try{
+  // This uncached entry works even when the previous page has no update handler.
+  // Keep cookies, nickname, appearance and settings; activate only a complete cache.
+  if('serviceWorker'in navigator){
+   const registration=await navigator.serviceWorker.register('/sw.js',{updateViaCache:'none'});
+   await registration.update();
+   const worker=registration.installing||registration.waiting||registration.active;
+   if(worker&&worker.state!=='activated')await new Promise((resolve,reject)=>{
+    const timer=setTimeout(()=>{worker.removeEventListener('statechange',changed);reject(new Error('Update timed out'));},90000);
+    function changed(){
+     if(worker.state==='installed')worker.postMessage({type:'winter:activate-release'});
+     if(worker.state==='activated'){clearTimeout(timer);worker.removeEventListener('statechange',changed);resolve();}
+     if(worker.state==='redundant'){clearTimeout(timer);worker.removeEventListener('statechange',changed);reject(new Error('Update replaced'));}
+    }
+    worker.addEventListener('statechange',changed);changed();
+   });
+  }
+  location.replace(new URL(location.href).searchParams.get('return')==='/admin'?'/admin':'/');
+ }catch{
+  document.querySelector('#status').textContent='연결을 다시 확인해 주세요.';
+  document.querySelector('#retry').hidden=false;
+ }
+})();
+</script></body></html>

@@ -1,0 +1,88 @@
+{
+  "checks": [
+    {
+      "name": "entry shows no automatic quiz",
+      "ok": true
+    },
+    {
+      "name": "upper opaque shutter removed and no park seats remain",
+      "ok": true
+    },
+    {
+      "name": "scientist has an exclusive lab coat and no greeting or dialogue panel",
+      "ok": true
+    },
+    {
+      "name": "nearby scientist does not open a quiz",
+      "ok": true
+    },
+    {
+      "name": "physical exit uses existing E interaction",
+      "ok": true
+    },
+    {
+      "name": "camera reaches dome and sky",
+      "ok": true
+    },
+    {
+      "name": "real catalogue has an observable constellation now",
+      "ok": true,
+      "data": {
+        "id": "pegasus",
+        "name": "페가수스자리",
+        "v": [
+          0.0753922869258944,
+          0.9568259795233685,
+          0.28071346241537837
+        ]
+      }
+    },
+    {
+      "name": "gaze briefly reveals constellation lines",
+      "ok": true,
+      "data": 0.24
+    },
+    {
+      "name": "constellation lines fade instead of remaining on",
+      "ok": true
+    },
+    {
+      "name": "Milky Way plane crosses open observable sky",
+      "ok": true,
+      "data": [
+        0.05175385683725113,
+        0.9269704982744903,
+        -0.37154708131165937
+      ]
+    },
+    {
+      "name": "one quiz action at central console",
+      "ok": true
+    },
+    {
+      "name": "production quiz is view-only; no journal row added",
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "environment": "Mac Chrome; mobile touch emulation; physical Windows/Edge/iOS/Android UNKNOWN",
+  "failure": "page.waitForFunction: Timeout 60000ms exceeded.\n    at enter (/Users/yeiwon/Documents/Codex/winter-alpine-v48/scripts/verify-observatory-experience-v55.mjs:9:351)\n    at async file:///Users/yeiwon/Documents/Codex/winter-alpine-v48/scripts/verify-observatory-experience-v55.mjs:32:35",
+  "failureState": [
+    {
+      "ready": true,
+      "joined": true,
+      "loading": true,
+      "qa": true,
+      "interior": "museum",
+      "body": "world-ready inside-room"
+    },
+    {
+      "ready": true,
+      "joined": true,
+      "loading": true,
+      "qa": true,
+      "interior": "museum",
+      "body": "world-ready room-transitioning inside-room"
+    }
+  ]
+}
