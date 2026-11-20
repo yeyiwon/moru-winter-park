@@ -57,3 +57,9 @@ body.invite-gate #hud-map{visibility:hidden}
 /* Explicit colors and bundled font also apply to native Windows controls. */
 button,input,textarea,select{font-family:var(--ui-font);font-synthesis:none}
 /* Unsupported blur retains the same authored tint; it never swaps to another palette. */
+/* Tablets have room for a larger visible stick without changing its colors. */
+@media(min-width:651px) and (min-height:501px){
+ #joystick{--joystick-radius:48px;width:128px;height:128px}
+ #joystick:before{width:100px;height:100px}
+ #joystick .joystick-stick{width:34px;height:34px}
+}
