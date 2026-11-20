@@ -44,7 +44,7 @@ export function createGondola(parent){
  }
  mergeFinish(root);root.traverse(o=>{if(o.isMesh)o.userData.rideCameraFade=true;});
  function cabinPose(start,now){const elapsed=(now-start)/1000,p=sampleCableRide(route,elapsed);return {...p,y:p.y-.82};}
- function update(){const now=serverNow(),player=globalThis.window?.labPlayerState,active=new Set();let count=0;
+ function update(now=serverNow()){const player=globalThis.window?.labPlayerState,active=new Set();let count=0;
   // Reservations use this same schedule on the server; they never spawn a second visual cabin.
   for(const {id,startedAt:start} of gondolaCabinsAt(now,cabins)){const p=cabinPose(start,now);
    const near=player&&Math.hypot(player.x-p.x,player.z-alpineShift-p.z)<170;let g=detail.get(id);

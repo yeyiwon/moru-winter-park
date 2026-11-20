@@ -87,8 +87,8 @@ const presenceTimer=setInterval(()=>{const now=Date.now(),changed=lastMoving!==(
 const chatForm=$('#chat-form'),chatInput=$('#chat-input'),chatStatus=$('#chat-status'),chatToggle=$('#chat-toggle'),chatLog=$('#chat-log'),selfBubble=$('#self-bubble');
 const seenChats=new Set(),blocked=new Set(),hiddenChats=new Set(),recentChats=[];
 let recentTimer=0,fadeTimer=0,composing=false,sendAfterComposition=false,compositionSendTimer=0,chatSending=false,chatSignature='';
-const keyboard=createChatViewport({input:chatInput,onRestored(){window.dispatchEvent(new Event('lab:close'));renderRecent();}});
-function openChat(){chatForm.hidden=false;chatToggle.setAttribute('aria-expanded','true');window.dispatchEvent(new Event('lab:pause'));keyboard.open();renderRecent();chatInput.focus({preventScroll:true});chatStatus.textContent=joined?'':'공간에 연결한 뒤 채팅할 수 있어요.';}
+const keyboard=createChatViewport({input:chatInput,onRestored(){renderRecent();}});
+function openChat(){chatForm.hidden=false;chatToggle.setAttribute('aria-expanded','true');keyboard.open();renderRecent();chatInput.focus({preventScroll:true});chatStatus.textContent=joined?'':'공간에 연결한 뒤 채팅할 수 있어요.';}
 function closeChat(){chatForm.hidden=true;chatToggle.setAttribute('aria-expanded','false');keyboard.close();chatInput.value='';chatStatus.textContent='';composing=false;sendAfterComposition=false;clearTimeout(compositionSendTimer);renderRecent();}
 window.closeWinterChat=()=>{if(!chatForm.hidden)closeChat();};
 chatToggle.onclick=()=>chatForm.hidden?openChat():closeChat();
@@ -170,7 +170,7 @@ for(const id of ['profile-name','visitor-name']){const input=$('#'+id);const edi
 updateNicknameInputs();
 $('#profile-form').addEventListener('submit',async e=>{e.preventDefault();const form=e.currentTarget,button=form.querySelector('[type=submit]');if(e.isComposing||form.dataset.state==='saving')return;try{const name=validateNickname($('#profile-name').value);form.dataset.state='saving';form.setAttribute('aria-busy','true');button.disabled=true;$('#profile-name').readOnly=true;$('#profile-status').textContent='저장 중…';const data=await request('name',{name});setName(data.name);form.dataset.state='saved';$('#profile-status').textContent='';nextSync=0;void sync();}catch(e){form.dataset.state='error';$('#profile-status').textContent=e.message;}finally{form.removeAttribute('aria-busy');$('#profile-name').readOnly=false;updateNicknameInputs();}});
 
-chatInput.addEventListener('focus',()=>{keyboard.open();window.dispatchEvent(new Event('lab:pause'));});window.addEventListener('online',()=>{if(!joined)initialize();else sync();});
+chatInput.addEventListener('focus',()=>{keyboard.open();});window.addEventListener('online',()=>{if(!joined)initialize();else sync();});
 
 window.exitGondola=async()=>{const data=await request('ride',{kind:'gondola',action:'exit'});window.labRideReservation=data.reservation;return data.reservation;};
 window.reserveRide=async (kind,benchId,seat)=>{await ensureChatSession();await releasingRide;await sync(true);const data=await request('ride',{kind,benchId,seat});window.labServerOffset=data.serverTime-Date.now();window.labRideReservation=data.reservation;return data.reservation;};

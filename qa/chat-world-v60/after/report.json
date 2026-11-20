@@ -1,0 +1,184 @@
+{
+  "environment": "Mac Chrome desktop and touch emulation; isolated local API/WebSocket; physical mobile keyboard UNKNOWN",
+  "checks": [
+    {
+      "name": "desktop chat keeps rendering and world clock running",
+      "ok": true,
+      "details": {
+        "frames": 47,
+        "elapsed": 1.7832999999999986
+      }
+    },
+    {
+      "name": "typing does not start manual player movement",
+      "ok": true
+    },
+    {
+      "name": "another real visitor moves while local chat stays open",
+      "ok": true,
+      "details": {
+        "before": [
+          {
+            "id": "6e3caa4ae8de10d52776a9dc9516a1a3df642f5d45b604b33c1a517366c8ecf8",
+            "x": 0,
+            "y": 0.95,
+            "z": 24,
+            "yaw": -0.14999859906826535,
+            "mode": "",
+            "accessory": "pumpkin-cap,eyes-oval,tail-round",
+            "emote": "",
+            "speed": 0
+          },
+          {
+            "id": "c30daeecdfb4fa2a5930f2e257dd066bc5bfe80ef42460c256b30edff14bacf0",
+            "x": 0,
+            "y": 0.95,
+            "z": 24,
+            "yaw": -0.14947502836597937,
+            "mode": "",
+            "accessory": "earmuffs,eyes-sparkle",
+            "emote": "",
+            "speed": 0
+          }
+        ],
+        "after": [
+          {
+            "id": "6e3caa4ae8de10d52776a9dc9516a1a3df642f5d45b604b33c1a517366c8ecf8",
+            "x": 2.995636363636364,
+            "y": 0.95,
+            "z": 22.97490909090909,
+            "yaw": 1.892490951254177,
+            "mode": "",
+            "accessory": "pumpkin-cap,eyes-oval,tail-round",
+            "emote": "",
+            "speed": 0
+          },
+          {
+            "id": "c30daeecdfb4fa2a5930f2e257dd066bc5bfe80ef42460c256b30edff14bacf0",
+            "x": -125.638,
+            "y": 0.95,
+            "z": -108.005,
+            "yaw": -3.1370400065305675,
+            "mode": "",
+            "accessory": "earmuffs,eyes-sparkle",
+            "emote": "",
+            "speed": 0
+          }
+        ]
+      }
+    },
+    {
+      "name": "incoming message arrives without closing local input",
+      "ok": true
+    },
+    {
+      "name": "touch layout continues rendering while text cannot move player",
+      "ok": true,
+      "details": {
+        "frames": 47,
+        "elapsed": 1.866499999999995
+      }
+    },
+    {
+      "name": "fireworks advance during typing instead of jumping after closing",
+      "ok": true,
+      "details": {
+        "before": 1.382300048828125,
+        "after": 3.41860009765625
+      }
+    },
+    {
+      "name": "settings also keep the world naturally running",
+      "ok": true,
+      "details": {
+        "frames": 19
+      }
+    },
+    {
+      "name": "shared gondola keeps moving while typing",
+      "ok": true,
+      "details": {
+        "before": {
+          "x": -124.81313869518348,
+          "y": 1.6954606293812093,
+          "z": -127.07975190579863,
+          "yaw": -1.5406099791646133,
+          "mode": "lift",
+          "lean": 0,
+          "tilt": 0,
+          "brake": false,
+          "air": 0,
+          "speed": 0.14723955060412025,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        },
+        "after": {
+          "x": -125.52635044242633,
+          "y": 8.817686493558423,
+          "z": -150.69953900056242,
+          "yaw": -1.5406099791646128,
+          "mode": "lift",
+          "lean": 0,
+          "tilt": 0,
+          "brake": false,
+          "air": 0,
+          "speed": 0.0889070790004519,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        }
+      }
+    },
+    {
+      "name": "skiing continues naturally while typing and world advances",
+      "ok": true,
+      "details": {
+        "before": {
+          "x": -145.4992917625295,
+          "y": 900.7645298253327,
+          "z": -1911.3434853293627,
+          "yaw": 0.3435066004265994,
+          "mode": "ski",
+          "lean": 0,
+          "tilt": 0.1382418081182636,
+          "brake": false,
+          "air": 0,
+          "speed": 4.676304151242817,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        },
+        "after": {
+          "x": -141.92159463264804,
+          "y": 897.1587721087205,
+          "z": -1901.3411777768977,
+          "yaw": 0.3435066004265994,
+          "mode": "ski",
+          "lean": 0,
+          "tilt": 0.4931210288105431,
+          "brake": false,
+          "air": 0,
+          "speed": 11.578129022420894,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        }
+      }
+    },
+    {
+      "name": "no browser exceptions",
+      "ok": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

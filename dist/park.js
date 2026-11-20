@@ -9,7 +9,7 @@ import {createCameraTransition,cameraDefaults,createCameraPolicy,smoothCameraAng
 import {createNavigationClient} from './navigation-client.js';
 import {createFrameMetrics} from './frame-metrics.js';
 import {disposeOwnedScene} from './scene-resources.js';
-import {createSimulationClock,shouldPauseSimulation} from './simulation-clock.js';
+import {createSimulationClock} from './simulation-clock.js';
 import {createPlayerState} from './player-state.js';
 import {createLocalLights} from './local-lights.js';
 import {createRenderBudget,projectedCharacterHeight} from './render-budget.js';
@@ -66,7 +66,7 @@ let target=new T.Vector3(fluff.position.x,fluff.position.y+cameraDefaults.focusH
 const keys=new Set(),directions={KeyW:[0,-1],ArrowUp:[0,-1],KeyS:[0,1],ArrowDown:[0,1],KeyA:[-1,0],ArrowLeft:[-1,0],KeyD:[1,0],ArrowRight:[1,0]},joy=new T.Vector2(),gate=createDiscoveryGate(750);let shown=null;
 const navigation=createNavigationClient(findPath),physics=createSimulationClock(),playerState=createPlayerState();let simulationView=null;
 let running=false;function clear(){window.labAudio?.stopFootsteps?.();navigation.cancel();physics.reset();simulationView=null;playerState.reset();running=false;keys.clear();joy.set(0,0);route=[];destination=null;velocity.set(0,0);}
-document.addEventListener('focusin',event=>{if(isTextInput(event.target))clear();});window.addEventListener('blur',clear);document.addEventListener('visibilitychange',clear);window.addEventListener('lab:open',()=>{clear();window.dismissParkDiscovery();});window.addEventListener('lab:pause',clear);window.addEventListener('lab:close',clear);
+document.addEventListener('focusin',event=>{if(isTextInput(event.target)&&event.target.id!=='chat-input')clear();});window.addEventListener('blur',clear);document.addEventListener('visibilitychange',clear);window.addEventListener('lab:open',()=>{clear();window.dismissParkDiscovery();});window.addEventListener('lab:pause',clear);window.addEventListener('lab:close',clear);
 function startJump(){if(!paused()&&experience.rides.mode==='ski'){window.dispatchEvent(new Event('lab:ski-jump'));window.labSound?.('jump');return;}if(!paused()&&!experience.active&&playerState.canJump()&&jump===0&&jumpVelocity===0){jumpVelocity=4.6;window.labSound?.('jump');}}
 window.addEventListener('keydown',e=>{if(paused()||e.metaKey||e.ctrlKey||['INPUT','TEXTAREA','SELECT'].includes(e.target.tagName)||e.target.isContentEditable)return;if(e.code==='ShiftLeft'||e.code==='ShiftRight')running=true;if(directions[e.code]){e.preventDefault();keys.add(e.code);route=[];navigation.cancel();}if(e.code==='Space'&&!e.target.closest?.('button,a,summary,[role=button]')){e.preventDefault();startJump();}});window.addEventListener('keyup',e=>{keys.delete(e.code);if(e.code==='ShiftLeft'||e.code==='ShiftRight')running=false;});
 const joystick=document.querySelector('#joystick');
@@ -83,7 +83,7 @@ function tapSeat(e){
  ray.far=Infinity;if(blocked)return false;clear();void experience.selectSeat(chosen.placeId,chosen.seat);return true;
 }
 function tapWorld(e){if(tapSeat(e))return;if(activeInterior&&!paused()){const r=canvas.getBoundingClientRect();ray.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);const floor=new T.Plane(new T.Vector3(0,1,0),-surfaceHeight(fluff.position.x,fluff.position.z));if(ray.ray.intersectPlane(floor,point))moveTo(point.x,point.z);return;}if(!paused()){const r=canvas.getBoundingClientRect();ray.setFromCamera(new T.Vector2((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1),camera);if(sharedTree.readAt(ray)){pointer=null;return;}const fixtureHit=ray.intersectObjects(world.interactive.concat(world.winter.treeTargets),false)[0];if(fixtureHit){if(fixtureHit.object.userData.winter){if(fixtureHit.object.userData.action==='tree'&&window.treeDecorationActive?.()){window.placeTreeDecoration(fixtureHit.point);pointer=null;return;}const hit=fixtureHit.object.userData;const bath=hit.action==='onsen'?onsenEntrances[hit.activity||'bath']:null;const p=bath?{id:'onsen',...bath.access}:world.winter.destinations.find(p=>p.id===hit.action);if(p&&(p.id==='tree'?Math.hypot(fluff.position.x-treeLayout.x,fluff.position.z-treeLayout.z)<30:Math.hypot(p.x-fluff.position.x,p.z-fluff.position.z)<5))experience.show(p.id,hit.activity);else if(p)moveTo(p.x,p.z);}else if(fixtureHit.object.userData.action==='sound')window.openSoundExperiment?.();else window.openWorldExperiment?.();}else if(ray.intersectObject(fluff,true).length){if(!experience.useHeldItem())startJump();}else{const fixture=world.markers.find(m=>ray.intersectObject(m.root,true).length);if(fixture)moveTo(fixture.door.x,fixture.door.z);else if(ray.ray.intersectPlane(plane,point))moveTo(point.x,point.z);}}pointer=null;};
-const touchControls=createTouchControls({canvas,joystick,jumpButton:document.querySelector('#jump-button'),brakeButton:document.querySelector('#brake-button'),runButton:document.querySelector('#run-button'),locked:paused,onMove:(x,y)=>{joy.set(x,y);route=[];navigation.cancel();},onOrbit:orbitCamera,onZoom:zoomCamera,onTap:tapWorld,onJump:startJump});
+const touchControls=createTouchControls({canvas,joystick,jumpButton:document.querySelector('#jump-button'),brakeButton:document.querySelector('#brake-button'),runButton:document.querySelector('#run-button'),locked:paused,onMove:(x,y)=>{joy.set(x,y);if(x||y){route=[];navigation.cancel();}},onOrbit:orbitCamera,onZoom:zoomCamera,onTap:tapWorld,onJump:startJump});
 function orbitCamera(dx,dy){interruptTreeCamera();cameraPolicy.orbit(dx,dy,yaw);}
 function zoomCamera(amount){interruptTreeCamera();cameraPolicy.zoom(amount,distance);}
 window.resetWinterCamera=()=>{cameraPolicy.reset();endTreeFrame();backgroundDirty=true;};
@@ -138,7 +138,7 @@ window.addEventListener('lab:interaction-end',()=>{touchControls.setMode('');});
 window.addEventListener('lab:stand',e=>{if(e.detail?.position){const p=e.detail.position;fluff.position.set(p.x,.86+surfaceHeight(p.x,p.z),p.z);}if(!canStandAt(fluff.position.x,fluff.position.z)){let found=false;for(let r=.4;r<=3&&!found;r+=.3)for(let a=0;a<Math.PI*2;a+=Math.PI/8){const x=fluff.position.x+Math.sin(a)*r,z=fluff.position.z+Math.cos(a)*r;if(canStandAt(x,z)){fluff.position.x=x;fluff.position.z=z;found=true;break;}}}publishPlayerPose();});
 const selfLabel=document.querySelector('#self-label'),bubble=document.querySelector('#self-bubble'),selfLayout=createLabelLayout(selfLabel);
 const treeCameraOccluders=world.occluders.filter(o=>!o.userData.treeFraming);
-const cameraClearance=createCameraClearance(),screen=new T.Vector3(),soundForward=new T.Vector3(),cameraAim=new T.Vector3(),orbitFocus=new T.Vector3();let nextRegionCheck=0,nextProximityCheck=0,interiorPrefetch=null;let frame=0,wasPaused=false,cameraRideMode='';
+const cameraClearance=createCameraClearance(),screen=new T.Vector3(),soundForward=new T.Vector3(),cameraAim=new T.Vector3(),orbitFocus=new T.Vector3(),rideFocusPrevious=new T.Vector3();let followingRide='',frameServerTime=serverNow();let nextRegionCheck=0,nextProximityCheck=0,interiorPrefetch=null;let frame=0,wasPaused=false,cameraRideMode='';
 function positionCamera(mode='',dt=0){
  if(activeInterior)constrainCameraFocusToRoom(target,interiorRooms[activeInterior]);
  cameraOrbitFocus(target,{pitch,distance},orbitFocus);
@@ -158,7 +158,7 @@ function snapCameraToPlayer(){
 }
 function simulatePlayer(dt){
  let ix=joy.x,iz=joy.y;for(const k of keys){ix+=directions[k]?.[0]||0;iz+=directions[k]?.[1]||0;}let input=moveVector(ix,iz,yaw),speed=(running||touchControls.sprinting)?8:4.3;if(!ix&&!iz&&route.length){let p=route[0],d=Math.hypot(p.x-fluff.position.x,p.z-fluff.position.z);if(d<.18){route.shift();p=route[0];}if(p){d=Math.hypot(p.x-fluff.position.x,p.z-fluff.position.z);input={x:(p.x-fluff.position.x)/d,z:(p.z-fluff.position.z)/d};speed=Math.min(4.3,d*7);}else{destination=null;velocity.set(0,0);}}
- velocity.x+=(input.x*speed-velocity.x)*(1-Math.exp(-dt*13));velocity.y+=(input.z*speed-velocity.y)*(1-Math.exp(-dt*13));const ride=experience.update(dt,{steer:ix,throttle:-iz,handbrake:touchControls.braking,push:iz<-.25,brake:iz>.25||touchControls.braking,x:input.x,z:input.z,running:running||touchControls.sprinting}),before={x:fluff.position.x,z:fluff.position.z},next=ride||moveOnGround(before,{x:velocity.x,z:velocity.y},dt),travel=Math.hypot(next.x-before.x,next.z-before.z),walking=travel>.001&&(!ride||ride.mode==='summit'||ride.walking);fluff.position.x=next.x;fluff.position.z=next.z;
+ velocity.x+=(input.x*speed-velocity.x)*(1-Math.exp(-dt*13));velocity.y+=(input.z*speed-velocity.y)*(1-Math.exp(-dt*13));const ride=experience.update(dt,{steer:ix,throttle:-iz,handbrake:touchControls.braking,push:iz<-.25,brake:iz>.25||touchControls.braking,x:input.x,z:input.z,running:running||touchControls.sprinting},frameServerTime),before={x:fluff.position.x,z:fluff.position.z},next=ride||moveOnGround(before,{x:velocity.x,z:velocity.y},dt),travel=Math.hypot(next.x-before.x,next.z-before.z),walking=travel>.001&&(!ride||ride.mode==='summit'||ride.walking);fluff.position.x=next.x;fluff.position.z=next.z;
  if(walking){phase+=travel*5.4;const facing=Math.atan2(velocity.x,velocity.y),diff=Math.atan2(Math.sin(facing-fluff.rotation.y),Math.cos(facing-fluff.rotation.y));fluff.rotation.y+=diff*(1-Math.exp(-dt*10));document.body.classList.add('has-walked');if(!jump&&!jumpVelocity&&Math.floor(phase/Math.PI)!==Math.floor((phase-travel*5.4)/Math.PI))window.labSound?.('step',{surface:surfaceAt(next.x,next.z,ride?.mode),running:running||touchControls.sprinting});}
  if(!walking||jump||jumpVelocity)window.labAudio?.stopFootsteps?.();
  if(!ride&&experience.facing!==null){const angle=experience.facing-fluff.rotation.y;fluff.rotation.y+=Math.atan2(Math.sin(angle),Math.cos(angle))*(1-Math.exp(-dt*8));}
@@ -198,22 +198,33 @@ window.addEventListener('lab:wish-submitted',()=>{
 window.addEventListener('lab:tree-closed',e=>endTreeFrame(e.detail?.restore!==false));
 window.addEventListener('lab:room',()=>{endTreeFrame(false);});
 window.addEventListener('lab:session-ended',()=>{experience.cancel();clear();endTreeFrame(false);});
-let animationFrame;function animate(now){animationFrame=requestAnimationFrame(animate);const raw=now-prev;prev=now;if(document.hidden)return;
+let animationFrame;function animate(now){animationFrame=requestAnimationFrame(animate);const raw=now-prev;prev=now;if(document.hidden)return;frameServerTime=serverNow();
  // A callback queued before synchronous world construction can carry an older timestamp.
- const dt=Math.max(0,Math.min(.05,raw/1000)),exhibitActive=activeInterior==='museum'&&document.body.classList.contains('quiz-open'),isPaused=shouldPauseSimulation({blocked:worldInputBlocked(),transitioning,mode:cameraRideMode,exhibit:exhibitActive,ready:frame>0});time+=isPaused?0:dt;
- // Resizing clears the drawing buffer even while menus freeze the world.
- // Redraw the same pose once; do not resume simulation or a continuous GPU loop.
+ const dt=Math.max(0,Math.min(.05,raw/1000)),isPaused=frame>0&&transitioning;time+=isPaused?0:dt;
+ // Only room transitions suspend the visible world; panels own input, not time.
+ // Resizing clears the drawing buffer even during that transition.
  if(isPaused&&backgroundDirty){if(glowPass)glowPass.render(scene,camera);else renderer.render(scene,camera);backgroundDirty=false;}
- // Audio follows the shared clock even while a settings panel pauses 3D rendering.
+ // Audio always follows the shared clock, including room transitions.
  window.labAudio?.show?.(window.labFireworks,serverNow());
  ornamentPreviews.update();
- if(isPaused&&!window.labPreviewVisible){physics.reset();wasPaused=true;return;} // Reading really freezes the background render loop.
- if(!isPaused){frameMetrics.begin();if(activeInterior)interiors.update(time,still());else world.update(time,still());let travelled=0;physics.advance(dt,step=>{simulationView=simulatePlayer(step);travelled+=simulationView.travel;});if(!simulationView)simulationView=simulatePlayer(0);const {ride,next,walking,gaze}=simulationView,travel=travelled;
+ if(isPaused&&!window.labPreviewVisible){physics.reset();wasPaused=true;return;}
+ if(!isPaused){frameMetrics.begin();if(activeInterior)interiors.update(time,still());else world.update(time,still(),frameServerTime);let travelled=0;
+  // Typing owns the controls, but ongoing motion and shared seats keep advancing.
+  // Shared seats are sampled every display frame, including 90/120 Hz frames
+  // with no 60 Hz physics step; their cabin uses this exact server timestamp.
+  if(['lift','ferris','carousel'].includes(cameraRideMode)){physics.reset();simulationView=simulatePlayer(dt);travelled=simulationView.travel;}
+  else physics.advance(dt,step=>{simulationView=simulatePlayer(step);travelled+=simulationView.travel;});
+  if(!simulationView)simulationView=simulatePlayer(0);const {ride,next,walking,gaze}=simulationView,travel=travelled;
   // Animate the final simulated pose once per display frame, even after catch-up steps.
   companion.pose({phase,walking,time,room:activeInterior,mode:ride?.walking?'':ride?.mode,diningStartedAt:ride?.diningStartedAt,diningNow:serverNow(),lean:ride?.lean,tilt:ride?.tilt,speed:ride?.speed??window.labPlayerState.speed,brake:ride?.brake,gesture:experience.gesture,heldItem:experience.heldItem,balloonTone:experience.balloonTone,balloonStyle:experience.balloonStyle,roast:experience.roast,landing:ride?.landing??land,still:still(),look:still()?0:Math.max(-.02,Math.min(.02,gaze*.005))});shadow.visible=!['bath','sauna','lie','tea','dining'].includes(ride?.mode);shadow.position.set(next.x,surfaceHeight(next.x,next.z)+.015,next.z);shadow.scale.setScalar(1-jump*.12);shadow.material.opacity=1-jump*.3;
  const skiing=ride?.mode==='ski',heading=ride?.heading??ride?.yaw??0;
  cameraSubjectFocus(fluff.position,{groundY:.86+surfaceHeight(next.x,next.z),mode:ride?.mode,view:ride?.view,heading},cameraAim);
  if(wishShot){if(walking||ride||still())endTreeFrame();else cameraAim.copy(wishShot.aim);}
+ // Carry the camera with the vehicle before easing the user's view.
+ // Chasing a moving seat with independent horizontal/vertical lag looked like sway.
+ const followMode=['lift','ferris','carousel'].includes(ride?.mode)?ride.mode:'';
+ if(followMode&&followingRide===followMode){target.x+=cameraAim.x-rideFocusPrevious.x;target.y+=cameraAim.y-rideFocusPrevious.y;target.z+=cameraAim.z-rideFocusPrevious.z;}
+ followingRide=followMode;rideFocusPrevious.copy(cameraAim);
  const view={...cameraPolicy.view({mode:ride?.mode,heading,renderedYaw:yaw})},followBlend=1-Math.exp(-dt*9);
  if(cameraTransition.step(cameraAim,view,dt)){target.copy(cameraAim);yaw=view.yaw;pitch=view.pitch;distance=view.distance;}else{
  for(const axis of ['x','z']){const change=(cameraAim[axis]-target[axis])*followBlend;target[axis]+=wishShot?T.MathUtils.clamp(change,-dt*14,dt*14):change;}
@@ -230,7 +241,7 @@ let animationFrame;function animate(now){animationFrame=requestAnimationFrame(an
  moon.position.set(target.x-40,target.y+70,target.z+40);moon.target.position.set(target.x,target.y-1.2,target.z);winterSky.update(time,still(),target,brightness,false,camera.position);lightingTheme.update(dt);const mountainAtmosphere=T.MathUtils.smoothstep(-next.z,80,400);scene.fog.near=130+770*mountainAtmosphere;scene.fog.far=500+6700*mountainAtmosphere;if(activeInterior){scene.background.set(activeInterior==='ryokan'?'#292921':'#152b2b');scene.fog.color.copy(scene.background);scene.fog.near=50;scene.fog.far=110;hemi.intensity=activeInterior==='ryokan'?.36:1.2;moon.intensity=activeInterior==='ryokan'?.12:.55;fill.intensity=activeInterior==='ryokan'?.18:.45;}
  skiTrails.update({x:next.x,z:next.z,yaw:fluff.rotation.y,speed:ride?.speed||0,lean:ride?.lean||0,brake:ride?.brake,gear:companion.gear,air:ride?.air||0,active:skiing,time,dt,still:still()});sharedTree.update(next.x,next.z,time,still());reactions.update({gesture:experience.gesture,mode:ride?.mode,x:next.x,y:fluff.position.y,z:next.z,yaw:fluff.rotation.y,time,dt,still:still()});parkGuides.update(time,still(),next,{interior:!!activeInterior,blocked:paused()||fireworks.active||!!window.treeDecorationActive?.()});footprints.update(time);if(walking&&!jump&&!activeInterior)footprints.walk(next.x,next.z,fluff.rotation.y,travel,time);moveMarker.update(dt,still());
  camera.updateMatrixWorld();companion.setViewDetail(projectedCharacterHeight(camera,fluff.position,innerHeight));
- if(!bubble.hidden){const remaining=Number(bubble.dataset.until)-performance.now();bubble.style.opacity=String(Math.max(0,Math.min(1,remaining/700)));if(remaining<=0)bubble.hidden=true;}screen.copy(fluff.position).add(new T.Vector3(0,companion.nameHeight??1.05,0)).project(camera);selfLabel.hidden=screen.z>1||screen.z< -1||!document.querySelector('#self-name').textContent;const ownScreen=selfLayout.fit((screen.x*.5+.5)*innerWidth,(-screen.y*.5+.5)*innerHeight-6,innerWidth,innerHeight);selfLabel.style.transform=`translate(${ownScreen.x}px,${ownScreen.y}px) translate(-50%,-100%)`;const selfBounds=selfLabel.hidden?null:ownScreen.bounds;visitors.update(dt,time,camera,selfBounds);
+ if(!bubble.hidden){const remaining=Number(bubble.dataset.until)-performance.now();bubble.style.opacity=String(Math.max(0,Math.min(1,remaining/700)));if(remaining<=0)bubble.hidden=true;}screen.copy(fluff.position).add(new T.Vector3(0,companion.nameHeight??1.05,0)).project(camera);selfLabel.hidden=screen.z>1||screen.z< -1||!document.querySelector('#self-name').textContent;const ownScreen=selfLayout.fit((screen.x*.5+.5)*innerWidth,(-screen.y*.5+.5)*innerHeight-6,innerWidth,innerHeight);selfLabel.style.transform=`translate(${ownScreen.x}px,${ownScreen.y}px) translate(-50%,-100%)`;const selfBounds=selfLabel.hidden?null:ownScreen.bounds;visitors.update(dt,time,camera,selfBounds,frameServerTime);
  if(now>=nextProximityCheck){experience.proximity(next.x,next.z);nextProximityCheck=now+100;}const hint=experience.anchor,prompt=document.querySelector('#place-card');if(hint&&!prompt.hidden)prompt.style.visibility='visible';
  const close=experience.active||!prompt.hidden||window.treeDecorationActive?.()?null:world.markers.reduce((best,r)=>{const d=Math.hypot(next.x-r.door.x,next.z-r.door.z);return d<2.8&&(!best||d<best.d)?{r,d}:best;},null);nearby=close?.r||null;const eligible=gate.update(nearby?.id||null,now);if(eligible!==shown){shown=eligible;window.showParkDiscovery?.(eligible?{...nearby,cat:nearby.id}:null);}
  if(nearby){screen.set(nearby.door.x,2.2,nearby.door.z).project(camera);const card=document.querySelector('#discovery-card');card.style.setProperty('--anchor-x',T.MathUtils.clamp((screen.x*.5+.5)*innerWidth,165,innerWidth-165)+'px');card.style.setProperty('--anchor-y',T.MathUtils.clamp((-screen.y*.5+.5)*innerHeight-45,135,innerHeight-150)+'px');}

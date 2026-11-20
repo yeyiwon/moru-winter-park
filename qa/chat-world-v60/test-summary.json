@@ -1,0 +1,12 @@
+{
+  "relatedTests": {
+    "passed": 82,
+    "failed": 0
+  },
+  "finalChatUI": {
+    "passed": 25,
+    "failed": 0
+  },
+  "fullSuite": "Not rerun locally for v60; prior v59 results are separate",
+  "physicalDevices": "UNKNOWN"
+}

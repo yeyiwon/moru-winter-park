@@ -1,0 +1,85 @@
+{
+  "environment": "Mac Chrome desktop and touch emulation; isolated local API/WebSocket; physical mobile keyboard UNKNOWN",
+  "checks": [
+    {
+      "name": "existing walking route continues when chat opens",
+      "ok": true,
+      "details": {
+        "before": {
+          "x": 0,
+          "y": 0.95,
+          "z": 29.72377113606679,
+          "yaw": 0,
+          "mode": "",
+          "lean": 0,
+          "tilt": 0,
+          "brake": false,
+          "air": 0,
+          "speed": 4.299999946382229,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        },
+        "after": {
+          "x": 0,
+          "y": 1.024324900167766,
+          "z": 32.94877113237327,
+          "yaw": 0,
+          "mode": "",
+          "lean": 0,
+          "tilt": 0,
+          "brake": false,
+          "air": 0,
+          "speed": 4.299999999996942,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        }
+      }
+    },
+    {
+      "name": "keyboard resize cannot cancel the ongoing route",
+      "ok": true
+    },
+    {
+      "name": "sending and closing chat preserve the walking route",
+      "ok": true
+    },
+    {
+      "name": "already held walking key continues until release while typing",
+      "ok": true
+    },
+    {
+      "name": "jump completes naturally while typing",
+      "ok": true,
+      "details": {
+        "air": 1.6180555555555554,
+        "landed": 0.95
+      }
+    },
+    {
+      "name": "dance keeps animating when chat opens",
+      "ok": true,
+      "details": {
+        "danceA": {
+          "gesture": "dance",
+          "z": -0.10820009665449967
+        },
+        "danceB": {
+          "gesture": "dance",
+          "z": 0.11361339728426739
+        }
+      }
+    },
+    {
+      "name": "no browser exceptions",
+      "ok": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

@@ -1,0 +1,21 @@
+{
+  "errors": [],
+  "boardingChecks": [
+    {
+      "id": "upperlift",
+      "ok": true
+    },
+    {
+      "id": "ridgelift",
+      "ok": true
+    },
+    {
+      "id": "ferris",
+      "ok": true
+    },
+    {
+      "id": "carousel",
+      "ok": true
+    }
+  ]
+}

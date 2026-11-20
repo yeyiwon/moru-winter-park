@@ -1,0 +1,77 @@
+{
+  "environment": "Mac Chrome desktop and touch emulation; isolated local API/WebSocket; physical mobile keyboard UNKNOWN",
+  "checks": [
+    {
+      "name": "desktop chat keeps rendering and world clock running",
+      "ok": true,
+      "details": {
+        "frames": 66,
+        "elapsed": 1.8999000000000068
+      }
+    },
+    {
+      "name": "typing keeps local player stationary",
+      "ok": true
+    },
+    {
+      "name": "another real visitor moves while local chat stays open",
+      "ok": true,
+      "details": {
+        "before": [
+          {
+            "id": "7e9b9c759e725a904381b27e9efc600608449351e7cb2401bb2e5948caa0e1bd",
+            "x": 0,
+            "y": 0.95,
+            "z": 24,
+            "yaw": -0.14999999999999994,
+            "mode": "",
+            "accessory": "bunny-ears,eyes-round,tail-cat",
+            "emote": "",
+            "speed": 0
+          },
+          {
+            "id": "f7c53491de122b83409eaf09f568de4312ea830fdec0452d12b19e55c20eae9c",
+            "x": 0,
+            "y": 0.95,
+            "z": 24,
+            "yaw": -0.1489888024777547,
+            "mode": "",
+            "accessory": "antlers,eyes-gentle",
+            "emote": "",
+            "speed": 0
+          }
+        ],
+        "after": [
+          {
+            "id": "7e9b9c759e725a904381b27e9efc600608449351e7cb2401bb2e5948caa0e1bd",
+            "x": 0,
+            "y": 0.95,
+            "z": 24,
+            "yaw": -0.14999999999999994,
+            "mode": "",
+            "accessory": "bunny-ears,eyes-round,tail-cat",
+            "emote": "",
+            "speed": 0
+          },
+          {
+            "id": "f7c53491de122b83409eaf09f568de4312ea830fdec0452d12b19e55c20eae9c",
+            "x": 2.309619090833162,
+            "y": 0.95,
+            "z": 23.208323022139698,
+            "yaw": 1.855514855398688,
+            "mode": "",
+            "accessory": "antlers,eyes-gentle",
+            "emote": "",
+            "speed": 0.11854497873676283
+          }
+        ]
+      }
+    },
+    {
+      "name": "incoming message arrives without closing local input",
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "failure": "locator.fill: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('#chat-input')\u001b[22m\n\u001b[2m    - locator resolved to <input id=\"chat-input\" maxlength=\"160\" placeholder=\"메시지\" autocomplete=\"off\" aria-label=\"채팅 메시지\"/>\u001b[22m\n\u001b[2m    - fill(\"wasd 이동하지 않음\")\u001b[22m\n\u001b[2m  - attempting fill action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying fill action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    48 × waiting for element to be visible, enabled and editable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying fill action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at /Users/yeiwon/Documents/Codex/winter-alpine-v48/scripts/verify-chat-world-v60.mjs:25:34"
+}

@@ -1,0 +1,60 @@
+{
+  "environment": "Mac Chrome desktop and touch emulation; isolated local API/WebSocket; physical mobile keyboard UNKNOWN",
+  "checks": [
+    {
+      "name": "v59 reproduces complete render and world clock freeze during chat",
+      "ok": true,
+      "details": {
+        "first": {
+          "time": 0.766399999999994,
+          "frames": 20,
+          "pose": {
+            "x": 0,
+            "y": 0.95,
+            "z": 24,
+            "yaw": -0.15,
+            "mode": "",
+            "lean": 0,
+            "tilt": 0,
+            "brake": false,
+            "air": 0,
+            "speed": 0,
+            "gesture": "",
+            "heldItem": "",
+            "balloonTone": -1,
+            "balloonStyle": "classic",
+            "roast": 0
+          },
+          "peers": [],
+          "fireworks": 0,
+          "connected": true
+        },
+        "second": {
+          "time": 0.766399999999994,
+          "frames": 20,
+          "pose": {
+            "x": 0,
+            "y": 0.95,
+            "z": 24,
+            "yaw": -0.15,
+            "mode": "",
+            "lean": 0,
+            "tilt": 0,
+            "brake": false,
+            "air": 0,
+            "speed": 0,
+            "gesture": "",
+            "heldItem": "",
+            "balloonTone": -1,
+            "balloonStyle": "classic",
+            "roast": 0
+          },
+          "peers": [],
+          "fireworks": 0,
+          "connected": true
+        }
+      }
+    }
+  ],
+  "errors": []
+}

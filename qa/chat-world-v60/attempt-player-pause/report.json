@@ -1,0 +1,140 @@
+{
+  "environment": "Mac Chrome desktop and touch emulation; isolated local API/WebSocket; physical mobile keyboard UNKNOWN",
+  "checks": [
+    {
+      "name": "desktop chat keeps rendering and world clock running",
+      "ok": true,
+      "details": {
+        "frames": 73,
+        "elapsed": 1.8166999999999993
+      }
+    },
+    {
+      "name": "typing keeps local player stationary",
+      "ok": true
+    },
+    {
+      "name": "another real visitor moves while local chat stays open",
+      "ok": true,
+      "details": {
+        "before": [
+          {
+            "id": "7e9b9c759e725a904381b27e9efc600608449351e7cb2401bb2e5948caa0e1bd",
+            "x": -4.0600000000000005,
+            "y": 1.46,
+            "z": 14,
+            "yaw": 6.283185307179585,
+            "mode": "rest",
+            "accessory": "bunny-ears,eyes-round,tail-round",
+            "emote": "",
+            "speed": 0
+          },
+          {
+            "id": "a833c28343b57871831690bb5adf13572e25c7835bedb7036ec04b9b527911f5",
+            "x": 0,
+            "y": 0.95,
+            "z": 24,
+            "yaw": -0.147674034331507,
+            "mode": "",
+            "accessory": "bunny-ears,eyes-gentle,tail-round",
+            "emote": "",
+            "speed": 0
+          }
+        ],
+        "after": [
+          {
+            "id": "7e9b9c759e725a904381b27e9efc600608449351e7cb2401bb2e5948caa0e1bd",
+            "x": -4.0600000000000005,
+            "y": 1.46,
+            "z": 14,
+            "yaw": 6.283185307179585,
+            "mode": "rest",
+            "accessory": "bunny-ears,eyes-round,tail-round",
+            "emote": "",
+            "speed": 0
+          },
+          {
+            "id": "a833c28343b57871831690bb5adf13572e25c7835bedb7036ec04b9b527911f5",
+            "x": 2.98728742230663,
+            "y": 0.95,
+            "z": 22.977237525897788,
+            "yaw": 1.8908108653369122,
+            "mode": "",
+            "accessory": "bunny-ears,eyes-gentle,tail-round",
+            "emote": "",
+            "speed": 0.08673661249443909
+          }
+        ]
+      }
+    },
+    {
+      "name": "incoming message arrives without closing local input",
+      "ok": true
+    },
+    {
+      "name": "touch layout continues rendering while text cannot move player",
+      "ok": true,
+      "details": {
+        "frames": 43,
+        "elapsed": 1.7499999999999813
+      }
+    },
+    {
+      "name": "fireworks advance during typing instead of jumping after closing",
+      "ok": true,
+      "details": {
+        "before": 0.863800048828125,
+        "after": 3.021406005859375
+      }
+    },
+    {
+      "name": "settings also keep the world naturally running",
+      "ok": true,
+      "details": {
+        "frames": 26
+      }
+    },
+    {
+      "name": "shared gondola keeps moving while typing",
+      "ok": true,
+      "details": {
+        "before": {
+          "x": -125.11927717208327,
+          "y": 3.9931720908026906,
+          "z": -137.21829165061018,
+          "yaw": -1.540609979164611,
+          "mode": "lift",
+          "lean": 0,
+          "tilt": 0,
+          "brake": false,
+          "air": 0,
+          "speed": 12.550265397148602,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        },
+        "after": {
+          "x": -126.04030977362075,
+          "y": 16.479095909955294,
+          "z": -167.72058502947112,
+          "yaw": -1.540609979164611,
+          "mode": "lift",
+          "lean": 0,
+          "tilt": 0,
+          "brake": false,
+          "air": 0,
+          "speed": 15.992528347049712,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        }
+      }
+    }
+  ],
+  "errors": [],
+  "failure": "locator.tap: Timeout 30000ms exceeded.\nCall log:\n\u001b[2m  - waiting for locator('[data-ski=push]')\u001b[22m\n\u001b[2m    - locator resolved to <button data-ski=\"push\" aria-label=\"밀고 출발 · 가속\">출발</button>\u001b[22m\n\u001b[2m  - attempting tap action\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying tap action\u001b[22m\n\u001b[2m    - waiting 20ms\u001b[22m\n\u001b[2m    2 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m      - element is not visible\u001b[22m\n\u001b[2m    - retrying tap action\u001b[22m\n\u001b[2m      - waiting 100ms\u001b[22m\n\u001b[2m    41 × waiting for element to be visible, enabled and stable\u001b[22m\n\u001b[2m       - element is not visible\u001b[22m\n\u001b[2m     - retrying tap action\u001b[22m\n\u001b[2m       - waiting 500ms\u001b[22m\n\n    at /Users/yeiwon/Documents/Codex/winter-alpine-v48/scripts/verify-chat-world-v60.mjs:32:401"
+}

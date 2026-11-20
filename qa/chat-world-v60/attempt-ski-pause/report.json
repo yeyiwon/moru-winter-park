@@ -1,0 +1,51 @@
+{
+  "environment": "Mac Chrome desktop and touch emulation; isolated local API/WebSocket; physical mobile keyboard UNKNOWN",
+  "checks": [
+    {
+      "name": "ski physics stay stopped while surrounding world advances",
+      "ok": true,
+      "details": {
+        "before": {
+          "x": -145.9613745270478,
+          "y": 900.9076801733007,
+          "z": -1912.6353481555375,
+          "yaw": 0.3435066004265994,
+          "mode": "ski",
+          "lean": 0,
+          "tilt": 0.07743676327917964,
+          "brake": false,
+          "air": 0,
+          "speed": 4.158353308545696,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        },
+        "after": {
+          "x": -145.9613745270478,
+          "y": 900.9076801733007,
+          "z": -1912.6353481555375,
+          "yaw": 0.3435066004265994,
+          "mode": "ski",
+          "lean": 0,
+          "tilt": 0.07743676327917964,
+          "brake": false,
+          "air": 0,
+          "speed": 4.158353308545696,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        }
+      }
+    },
+    {
+      "name": "no browser exceptions",
+      "ok": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}
