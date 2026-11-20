@@ -1,3 +1,24 @@
+# v58 운영 배포 확인 — 2026-11-20
+
+공식 주소: **https://moru-winter-park.vercel.app/** · 기존 화면 갱신: **https://moru-winter-park.vercel.app/refresh.html**
+
+| 대상 | 확인 결과 |
+|---|---|
+| 운영 소스 | `43fbaab8952daa1ca993a1abf20a43d096c83003` |
+| Sites | 버전 **71**, `appgdep_6b002289e60c8191a3d817997329d3cd`, succeeded, env revision 4 |
+| Vercel | `dpl_CKayZdxc3yT9BmvG6d4o3kLdSGDx`, READY, 공식 도메인 연결 |
+| Cloudflare realtime | `d67d109c-f699-4f05-9b15-e66995ef0702` |
+| 세 서비스 버전 | release.json / API health / realtime health 모두 위 SHA와 일치 |
+| 화면 파일 | index, SW, refresh, updater, theme, CSS, community 7개 검증한 빌드와 동일 |
+
+[배포·보존 기록](../qa/final-v58/deployment-verified.json) · [실제 응답과 파일 해시](../qa/final-v58/production-verified-integrity.json).
+
+실행 코드는 전체 **586/586 PASS**인 `0e0364f`와 같으며 이후 변경은 검증 문서·결과·스크린샷뿐이다. 공식 브라우저에서 다크 전환, 복구 후 닉네임·세션·테마 유지, 인라인 관리 요소, 라이트 복귀, JS 예외 없음 **5/5**를 확인했다. 소유자 실제 로그인은 이번 fresh 방문자 검사에 포함하지 않는다. [실제 화면 검사](../qa/final-v58/production-upgrade/report.json).
+
+3인 운영 채팅·이동·공연 중도 합류/종료와 2인 곤돌라 같은 객실/다른 좌석/하차는 v58에서 확인했다. 개인 음악 복원·서버 신청 원자성·5초/5분·관리자 중복 방지는 격리된 로컬 3인 브라우저에서 확인했다. 원본 소원 7/7·장식 144/144·퀴즈 기록 6/6·소유자 1/1의 보존 비교는 `6bc3c26` 배포 후 측정이며 이후 배포에는 데이터 삭제나 schema 변경이 없다. 실물 Windows/Galaxy/iPhone 및 무지연 보장은 포함하지 않는다.
+
+---
+
 # v58 기존 방문자 업데이트 수정
 
 기존 Service Worker가 열려 있는 공원 탭 때문에 구버전 화면을 계속 제공했다. 새 프로필 검사만으로 이 문제를 놓쳤다. `/refresh.html`은 저장된 닉네임·외형·로그인을 지우지 않고 검증이 끝난 새 캐시를 활성화하며, 같은 브라우저의 공원 탭을 함께 갱신한다. 이후 재접속은 시작 시 버전을 비교한다.

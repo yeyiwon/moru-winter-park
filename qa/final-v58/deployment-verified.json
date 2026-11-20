@@ -1,0 +1,67 @@
+{
+  "at": "2026-11-20T10:37:18.475Z",
+  "revision": "43fbaab8952daa1ca993a1abf20a43d096c83003",
+  "officialUrl": "https://moru-winter-park.vercel.app",
+  "sites": {
+    "version": 71,
+    "deploymentId": "appgdep_6b002289e60c8191a3d817997329d3cd",
+    "status": "succeeded",
+    "envRevision": 4
+  },
+  "vercel": {
+    "id": "dpl_CKayZdxc3yT9BmvG6d4o3kLdSGDx",
+    "state": "READY",
+    "revision": "43fbaab8952daa1ca993a1abf20a43d096c83003",
+    "alias": "moru-winter-park.vercel.app"
+  },
+  "cloudflare": {
+    "service": "winterlight-realtime",
+    "version": "d67d109c-f699-4f05-9b15-e66995ef0702",
+    "revision": "43fbaab8952daa1ca993a1abf20a43d096c83003"
+  },
+  "preservation": {
+    "wishes": {
+      "before": 7,
+      "after": 7,
+      "unchanged": 7
+    },
+    "quiz_journal": {
+      "before": 6,
+      "after": 6,
+      "unchanged": 6
+    },
+    "space_owner": {
+      "before": 1,
+      "after": 1,
+      "unchanged": 1
+    },
+    "tree_decorations": {
+      "before": 144,
+      "after": 144,
+      "unchanged": 144
+    }
+  },
+  "noDatabaseMigration": true,
+  "physicalDevicesVerified": false,
+  "recoveryUrl": "https://moru-winter-park.vercel.app/refresh.html",
+  "dataComparisonRevision": "6bc3c26d3f99a4ff7e8766b3fb4901d1f312782a",
+  "cacheUpgrade": {
+    "unitTests": 13,
+    "realBrowserChecks": 8,
+    "legacyWorkerRevision": "6bc3c26d3f99a4ff7e8766b3fb4901d1f312782a"
+  },
+  "verifiedRuntimeRevision": "0e0364f463fd4c922a2b312a20488b7512a06b60",
+  "runtimeChangesSinceVerifiedRevision": false,
+  "ci": {
+    "run": 44718575270,
+    "status": "success",
+    "tests": 586,
+    "failures": 0,
+    "browserChecks": 20
+  },
+  "productionUpgradeChecks": {
+    "passed": 5,
+    "browserExceptions": 0,
+    "report": "production-upgrade/report.json"
+  }
+}
