@@ -34,13 +34,14 @@ export const spaActivities=Object.fromEntries(Object.entries({
  tea:{x:15.2,y:1.28,z:118.8,yaw:0,mode:'tea',label:'찻자리 · 따뜻한 차 한 잔',view:{distance:5,yaw:.35,pitch:.2,lookHeight:-.8}}
 }).map(([id,p])=>[id,{...p,z:p.z+spaShift,...(p.pool?{pool:{...p.pool,z:p.pool.z+spaShift}}:{})}]));
 export function spaPositionValid(x,y,z,mode){return Object.values(spaActivities).some(a=>{if(a.mode!==mode||Math.abs(y-a.y)>.12)return false;if(a.pool)return ((x-a.pool.x)/a.pool.rx)**2+((z-a.pool.z)/a.pool.rz)**2<=1.02;return Math.hypot(x-a.x,z-a.z)<.15;});}
+const topStation=gondolaStations.at(-1),gondolaExit={x:topStation.x-Math.sin(topStation.yaw)*10,z:topStation.z-Math.cos(topStation.yaw)*10};
 const ski=skiNetwork[0].points.map(p=>[p.x,p.y,p.z]);
 const lift=Array.from({length:321},(_,i)=>liftPoint(i/320)),upperlift=Array.from({length:601},(_,i)=>upperLiftPoint(i/600));
 export const resortRides={
  lift:{bodyOffset:.82,heightMode:'seat',points:lift,exit:[summitTransfer[0].x,alpineHeight(summitTransfer[0].x,summitTransfer[0].z),summitTransfer[0].z],duration:28,arrivalYaw:.65},
  upperlift:{bodyOffset:.82,heightMode:'seat',points:upperlift,exit:[middleSummit.x+20,alpineHeight(middleSummit.x+20,middleSummit.z),middleSummit.z],duration:46,arrivalYaw:.6},
  ridgelift:{bodyOffset:.82,heightMode:'seat',points:Array.from({length:321},(_,i)=>ridgeLiftPoint(i/320)),exit:[ridgeTransfers[1][0].x,alpineHeight(ridgeTransfers[1][0].x,ridgeTransfers[1][0].z),ridgeTransfers[1][0].z],duration:38,arrivalYaw:.6},
- gondola:{smoothHeading:true,bodyOffset:.82,heightMode:'seat',points:gondolaPoints,exit:[peakSummit.x+5,alpineHeight(peakSummit.x+5,peakSummit.z+29),peakSummit.z+29],baseExit:[gondolaEntry.x,alpineHeight(gondolaEntry.x,gondolaEntry.z),gondolaEntry.z],duration:65,boardingSeconds:5,arrivalSeconds:8,arrivalYaw:0},
+ gondola:{smoothHeading:true,bodyOffset:.82,heightMode:'seat',points:gondolaPoints,exit:[gondolaExit.x,alpineHeight(gondolaExit.x,gondolaExit.z),gondolaExit.z],baseExit:[gondolaEntry.x,alpineHeight(gondolaEntry.x,gondolaEntry.z),gondolaEntry.z],duration:65,boardingSeconds:14,arrivalSeconds:14,arrivalYaw:0},
  ski:{heightMode:'surface',points:ski,duration:480}
 };
 export const resortObstacles=[

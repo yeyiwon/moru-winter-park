@@ -24,9 +24,9 @@ export function preparePanelOpen(dialog){
  if(dialog.hasAttribute('data-nonmodal')){queueMicrotask(syncPanelState);return;}
  window.dismissParkDiscovery?.();
  const chat=document.querySelector('#chat-form'),toggle=document.querySelector('#chat-toggle');
- if(chat&&!chat.hidden){toggle?.click();chat.hidden=true;}
- document.querySelector('#chat-input')?.blur();
- document.body.classList.remove('chat-typing');toggle?.setAttribute('aria-expanded','false');
+ if(window.closeWinterChat)window.closeWinterChat();
+ else if(chat&&!chat.hidden){toggle?.click();chat.hidden=true;document.querySelector('#chat-input')?.blur();document.body.classList.remove('chat-typing');}
+ toggle?.setAttribute('aria-expanded','false');
  for(const other of document.querySelectorAll('dialog[open]:not([data-nonmodal])'))if(other!==dialog){cancelDialogClose(other);other.close();}
  window.dispatchEvent(new Event('lab:pause'));
  queueMicrotask(syncPanelState);

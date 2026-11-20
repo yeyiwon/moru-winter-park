@@ -10,6 +10,13 @@ export function placePrompt({x,y,width,height,viewportWidth,viewportHeight,avoid
 
 // Cache label dimensions, not its projected position. Measuring after every
 // transform forced synchronous layout once per visitor on every frame.
+export function nearbyLabel({player,camera,subject,pixels,visible=false}){
+ if(!player)return false;
+ const distance=(a,b)=>Math.hypot(a.x-b.x,a.y-b.y,a.z-b.z);
+ // Hysteresis is independent of avatar culling. Summit/base height counts too.
+ return distance(player,subject)<(visible?42:34)&&distance(camera,subject)<(visible?82:72)&&pixels>(visible?13:17);
+}
+
 export function createLabelLayout(element){
  const bubble=element.querySelector('.speech-bubble');let dirty=true,signature='',extent=null;
  const Observer=element.ownerDocument.defaultView.ResizeObserver,observer=Observer?new Observer(()=>dirty=true):null;

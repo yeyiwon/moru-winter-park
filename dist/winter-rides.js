@@ -23,14 +23,14 @@ export function sampleCableRide(route,elapsed){
  const dwell=route.boardingSeconds,travel=route.duration,ramp=6,topDwell=route.arrivalSeconds||12,turn=9.5,cycle=dwell+travel*2+topDwell+turn*2;
  const t=((elapsed%cycle)+cycle)%cycle,topAt=dwell+travel,returnAt=topAt+topDwell+turn;
  const travelProgress=t=>{t=clamp(t,0,travel);return(t<ramp?t*t/(2*ramp):t>travel-ramp?travel-ramp-(travel-t)**2/(2*ramp):t-ramp/2)/(travel-ramp);};
- let p,doors=0,arrived=false,station='';
- if(t<dwell){p=sampleRide(route,0);doors=clamp(dwell-t,0,1);station='base';arrived=elapsed>=cycle;}
+ const smooth=t=>t*t*(3-2*t);let p,doors=0,arrived=false,station='';
+ if(t<dwell){p=sampleRide(route,0);doors=Math.min(clamp(t/2,0,1),clamp((dwell-t)/2,0,1));station='base';arrived=elapsed>=cycle;}
  else if(t<topAt)p=sampleRide(route,travelProgress(t-dwell));
  else if(t<topAt+topDwell){p=sampleRide(route,1);station='summit';arrived=true;doors=Math.min(clamp((t-topAt)/2,0,1),clamp((topAt+topDwell-t)/2,0,1));}
- else if(t<returnAt){p=sampleRide(route,1);const a=(t-topAt-topDwell)/turn*Math.PI,c=Math.cos(p.yaw),s=Math.sin(p.yaw);p.x+=-c*6*(1-Math.cos(a))+s*6*Math.sin(a);p.z+=s*6*(1-Math.cos(a))+c*6*Math.sin(a);p.yaw+=a;}
+ else if(t<returnAt){p=sampleRide(route,1);const a=smooth((t-topAt-topDwell)/turn)*Math.PI,c=Math.cos(p.yaw),s=Math.sin(p.yaw);p.x+=-c*6*(1-Math.cos(a))+s*6*Math.sin(a);p.z+=s*6*(1-Math.cos(a))+c*6*Math.sin(a);p.yaw+=a;}
  else if(t<returnAt+travel){p=sampleRide(route,1-travelProgress(t-returnAt));p.x-=Math.cos(p.yaw)*12;p.z+=Math.sin(p.yaw)*12;p.yaw+=Math.PI;}
- else{p=sampleRide(route,0);const a=(t-returnAt-travel)/turn*Math.PI,c=Math.cos(p.yaw),s=Math.sin(p.yaw);p.x-=c*6*(1+Math.cos(a))+s*6*Math.sin(a);p.z+=s*6*(1+Math.cos(a))-c*6*Math.sin(a);p.yaw+=Math.PI+a;}
- return {...p,arrived,doors,station,cycle};
+ else{p=sampleRide(route,0);const a=smooth((t-returnAt-travel)/turn)*Math.PI,c=Math.cos(p.yaw),s=Math.sin(p.yaw);p.x-=c*6*(1+Math.cos(a))+s*6*Math.sin(a);p.z+=s*6*(1+Math.cos(a))-c*6*Math.sin(a);p.yaw+=Math.PI+a;}
+ return {...p,arrived:arrived&&doors>=.99,doors,station,cycle,dwellRemaining:station==='base'?dwell-t:station==='summit'?topAt+topDwell-t:0};
 }
 export const skiPhysics={ski:{drag:.0030,friction:.035,turn:1.32,edgeResponse:10,brake:17,maxSpeed:56},board:{drag:.0031,friction:.032,turn:1.1,edgeResponse:3.8,brake:16,maxSpeed:56}};
 export function createRideController(routes){
@@ -38,7 +38,7 @@ export function createRideController(routes){
  function reset(){speed=steer=recovery=air=vertical=landing=0;launched=crossed=jumpHeld=false;}
  function summitPose(){const route=routes[activeRoute],[x,y,z]=last?.station==='base'&&route.baseExit?route.baseExit:route.exit;mode='summit';last={x,y:y+.86,z,yaw:0,arrivalYaw:route.arrivalYaw??.6};return {...last,mode};}
  return{get mode(){return mode;},get equipment(){return equipment;},get routeKind(){return activeRoute;},get arrived(){return mode==='lift'&&last?.arrived;},syncElapsed(seconds){if(mode==='lift')elapsed=Math.max(0,seconds);},
-  disembark(){return mode==='lift'&&last?.arrived?summitPose():null;},
+  disembark(pose){if(mode!=='lift'||!last?.arrived&&!pose)return null;if(pose){mode='summit';last={...pose,mode,arrivalYaw:pose.yaw};return last;}return summitPose();},
   recover(){if(mode!=='ski'||!checkpoint)return false;({x,z,heading}=checkpoint);reset();return true;},
   start(kind,position,gear='ski'){
    const valid=position&&onPiste(position.x,position.z);if(!routes[kind]||kind==='ski'&&mode!=='summit'&&!valid)return false;

@@ -97,7 +97,7 @@ export function mountainGroundHeight(x,z){
   y=mix(y,apron.height,wx*wz);
  }
  // The concourse must not impose a sideways bank on a groomed ski run.
- for(const run of skiRuns){if(z<run.startZ||z>run.finish)continue;const gap=Math.abs(x-skiRunCenter(z,run.id))-skiRunHalfWidth(z,run.id);y=mix(y,height,1-smooth(gap/28));}
+ for(const run of skiRuns){if(z<run.startZ-55||z>run.finish+25)continue;const gap=Math.abs(x-skiRunCenter(z,run.id))-skiRunHalfWidth(z,run.id),along=smooth((z-run.startZ+55)/55)*(1-smooth((z-run.finish)/25));y=mix(y,height,(1-smooth(gap/28))*along);}
  return Math.max(.09,y);
 }
 export const alpineHeight=(x,z)=>mountainGroundHeight(x,z)+skiJumpHeight(x,z);
@@ -142,14 +142,14 @@ const cableLength=Math.hypot(gondolaTop.x-gondolaBase.x,gondolaTop.z-gondolaBase
 const cableNX=-(gondolaTop.z-gondolaBase.z)/cableLength,cableNZ=(gondolaTop.x-gondolaBase.x)/cableLength;
 export const gondolaSupports=Array.from({length:spans+1},(_,i)=>{
  const t=i/spans,x=mix(gondolaBase.x,gondolaTop.x,t),z=mix(gondolaBase.z,gondolaTop.z,t);
- let y=Math.max(...[-3,0,12,15].map(offset=>alpineHeight(x+cableNX*offset,z+cableNZ*offset)))+(i===0||i===spans?1.2:19);
+ let y=Math.max(...[-3,0,12,15].map(offset=>alpineHeight(x+cableNX*offset,z+cableNZ*offset)))+(i===0||i===spans?.07:19);
  return[x,y,z];
 }).filter((p,i)=>i===0||i===spans||skiRuns.every(r=>p[2]<r.startZ||p[2]>r.finish||Math.abs(p[0]+cableNX*6-skiRunCenter(p[2]+cableNZ*6,r.id))-skiRunHalfWidth(p[2],r.id)>7));
 const supportLast=gondolaSupports.length-1;
 // Lift only intermediate supports until every straight span clears both lanes.
 for(let pass=0;pass<8;pass++)for(let i=1;i<=supportLast;i++){
  const a=gondolaSupports[i-1],b=gondolaSupports[i];let deficit=0;
- for(let j=1;j<40;j++){const t=j/40,x=mix(a[0],b[0],t),z=mix(a[2],b[2],t),floor=Math.max(...[-3,0,12,15].map(o=>alpineHeight(x+cableNX*o,z+cableNZ*o)))+1.2;deficit=Math.max(deficit,(floor-mix(a[1],b[1],t))/(i===1?t:i===supportLast?1-t:1));}
+ for(let j=1;j<40;j++){const t=j/40,x=mix(a[0],b[0],t),z=mix(a[2],b[2],t),floor=Math.max(...[-3,0,12,15].map(o=>alpineHeight(x+cableNX*o,z+cableNZ*o)))+.07+1.13*smooth(Math.min(Math.hypot(x-gondolaBase.x,z-gondolaBase.z),Math.hypot(x-gondolaTop.x,z-gondolaTop.z))/30);deficit=Math.max(deficit,(floor-mix(a[1],b[1],t))/(i===1?t:i===supportLast?1-t:1));}
  if(deficit>0){if(i>1)a[1]+=deficit*1.5;if(i<supportLast)b[1]+=deficit*1.5;}
 }
 // Arrival stays level with the summit socket; no final overshoot and drop.

@@ -18,8 +18,8 @@ test('jump lands, edge contact brakes without teleporting, and recovery requires
  assert.ok(ride.recover());p=ride.update(0);assert.equal(p.speed,0);assert.equal(p.air,0);assert.ok(Number.isFinite(p.x+before.x));
 });
 test('gondola launch, doors, return loop and all six server seats remain continuous and above terrain',()=>{
- const route=resortRides.gondola,arrival=route.boardingSeconds+route.duration,cycle=sampleCableRide(route,0).cycle;let previous=sampleCableRide(route,0);for(let t=.1;t<cycle;t+=.1){const p=sampleCableRide(route,t);assert.ok(Math.hypot(p.x-previous.x,p.y-previous.y,p.z-previous.z)<4.8);assert.ok(p.y-.82-alpineHeight(p.x,p.z)>.75);previous=p;}
- assert.equal(sampleCableRide(route,0).doors,1);assert.equal(sampleCableRide(route,6).doors,0);assert.equal(sampleCableRide(route,arrival+3).arrived,true);assert.equal(sampleCableRide(route,arrival+3).doors,1);assert.equal(sampleCableRide(route,arrival+route.arrivalSeconds+8).arrived,false);
+ const route=resortRides.gondola,arrival=route.boardingSeconds+route.duration,cycle=sampleCableRide(route,0).cycle;let previous=sampleCableRide(route,0);for(let t=.1;t<cycle;t+=.1){const p=sampleCableRide(route,t);assert.ok(Math.hypot(p.x-previous.x,p.y-previous.y,p.z-previous.z)<4.8);assert.ok(p.y-.82-alpineHeight(p.x,p.z)>.04);previous=p;}
+ assert.equal(sampleCableRide(route,0).doors,0);assert.equal(sampleCableRide(route,6).doors,1);assert.equal(sampleCableRide(route,arrival+3).arrived,true);assert.equal(sampleCableRide(route,arrival+3).doors,1);assert.equal(sampleCableRide(route,arrival+route.arrivalSeconds+8).arrived,false);
  for(let seat=0;seat<6;seat++)for(let t=0;t<cycle;t+=7){const r={kind:'gondola',seat,startedAt:0},p=sharedSeatPose(r,t*1000);assert.ok(validPose(p,r,t*1000));assert.equal(validPose({...p,x:p.x+8},r,t*1000),false);}
  const ride=createRideController(resortRides);ride.start('gondola');ride.syncElapsed(arrival+3);ride.update(0);const exit=ride.disembark();assert.equal(exit.mode,'summit');assert.ok(Math.hypot(exit.x-peakSummit.x,exit.z-peakSummit.z)<50);
 });

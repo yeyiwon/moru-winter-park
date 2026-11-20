@@ -1,3 +1,4 @@
+import {chatPreviewMs,chatShortcut,createChatViewport} from './chat-policy.js';
 import {createRealtimeClient} from './realtime-client.js';
 import {bindOwnerLogin,finishOwnerLogin,continueOwnerLogin} from './owner-login.js';
 import {mergeFireworkShow} from './fireworks-request.js';
@@ -104,31 +105,52 @@ $('#copy-room').onclick=async()=>{try{await navigator.clipboard.writeText(invite
 const presenceTimer=setInterval(()=>{const now=Date.now(),changed=lastMoving!==((window.labPlayerState?.speed||0)>.1);if(now>=nextSync||(!realtime.active&&!failures&&changed&&now-lastSent>=550))void sync();},250);document.addEventListener('visibilitychange',()=>{nextSync=0;void sync();});// Inactive presence expires after 20 seconds; retain the cookie identity across reloads.
 const chatForm=$('#chat-form'),chatInput=$('#chat-input'),chatStatus=$('#chat-status'),chatToggle=$('#chat-toggle'),chatLog=$('#chat-log'),selfBubble=$('#self-bubble');
 const seenChats=new Set(),blocked=new Set(),hiddenChats=new Set(),recentChats=[];
-let chatMotion=null;
-function openChat(){chatMotion?.cancel();chatMotion=null;chatForm.hidden=false;chatToggle.setAttribute('aria-expanded','true');window.dispatchEvent(new Event('lab:pause'));document.body.classList.add('chat-typing');renderRecent();chatInput.focus();chatStatus.textContent=joined?'':'공간에 연결한 뒤 채팅할 수 있어요.';}
-function finishChat(){chatForm.hidden=true;document.body.classList.remove('chat-typing');window.dispatchEvent(new Event('lab:close'));renderRecent();}
-function closeChat(){chatToggle.setAttribute('aria-expanded','false');chatInput.blur();if(!chatForm.animate||matchMedia('(prefers-reduced-motion: reduce)').matches||document.body.classList.contains('still')){finishChat();return;}chatMotion?.cancel();const motion=chatForm.animate([{opacity:1,transform:'translateY(0)'},{opacity:0,transform:'translateY(10px)'}],{duration:160,easing:'ease-in'});chatMotion=motion;motion.finished.then(()=>{if(chatMotion===motion){finishChat();chatMotion=null;}}).catch(()=>{});}
+let recentTimer=0,fadeTimer=0,composing=false,compositionEnded=-Infinity,chatSending=false,chatSignature='';
+const keyboard=createChatViewport({input:chatInput,onRestored(){window.dispatchEvent(new Event('lab:close'));renderRecent();}});
+function openChat(){chatForm.hidden=false;chatToggle.setAttribute('aria-expanded','true');window.dispatchEvent(new Event('lab:pause'));keyboard.open();renderRecent();chatInput.focus({preventScroll:true});chatStatus.textContent=joined?'':'공간에 연결한 뒤 채팅할 수 있어요.';}
+function closeChat(){chatForm.hidden=true;chatToggle.setAttribute('aria-expanded','false');keyboard.close();renderRecent();}
 window.closeWinterChat=()=>{if(!chatForm.hidden)closeChat();};
 chatToggle.onclick=()=>chatForm.hidden?openChat():closeChat();
-window.addEventListener('keydown',e=>{if(e.isComposing||document.body.classList.contains('studio-open')||document.body.classList.contains('quiz-open'))return;if(e.key==='Escape'&&!chatForm.hidden){closeChat();return;}if(e.key==='Enter'&&e.target!==chatInput&&!e.target.closest?.('input,textarea,button,a,summary')){e.preventDefault();openChat();}});
+// Capture Enter before a previously clicked facility button can activate again.
+window.addEventListener('keydown',e=>{
+ if(e.key==='Escape'&&!chatForm.hidden&&!e.isComposing){e.preventDefault();closeChat();return;}
+ if(chatShortcut(e,document)&&e.target!==chatInput){e.preventDefault();e.stopPropagation();openChat();}
+},{capture:true});
+chatInput.addEventListener('compositionstart',()=>{composing=true;});
+chatInput.addEventListener('compositionend',()=>{composing=false;compositionEnded=performance.now();});
+chatInput.addEventListener('keydown',e=>{
+ if(e.key!=='Enter')return;
+ e.preventDefault();e.stopPropagation();
+ if(composing||e.isComposing||e.keyCode===229||performance.now()-compositionEnded<40||e.repeat||e.shiftKey)return;
+ chatForm.requestSubmit();
+});
 function renderRecent(){
- const now=Date.now();while(recentChats.length&&(recentChats[0].at<now-600000||recentChats.length>50))recentChats.shift();
- // Keep history for the composer; exploration uses the character's speech bubble.
- const wasHidden=chatLog.hidden,scrollTop=chatLog.scrollTop,atEnd=chatLog.scrollHeight-chatLog.clientHeight-scrollTop<24;
- chatLog.hidden=chatForm.hidden;if(chatLog.hidden)return;
- chatLog.replaceChildren();
- for(const item of recentChats){
-  if(blocked.has(item.sender)||hiddenChats.has(item.sender))continue;
-  const row=document.createElement('p'),author=document.createElement('b');author.textContent=item.name+' ';row.append(author,document.createTextNode(item.message));
-  if(item.sender&&item.sender!==window.labGuestId){const hide=document.createElement('button');hide.className='chat-hide';hide.textContent='숨김';hide.setAttribute('aria-label',item.name+' 채팅 숨김');hide.onclick=()=>{hiddenChats.add(item.sender);renderRecent();};row.append(hide);}
-  chatLog.append(row);
+ clearTimeout(recentTimer);clearTimeout(fadeTimer);chatLog.classList.remove('chat-fading');
+ const now=performance.now(),editing=!chatForm.hidden;
+ const available=recentChats.filter(item=>!blocked.has(item.sender)&&!hiddenChats.has(item.sender));
+ const displayed=editing?available:available.filter(item=>now-item.at<chatPreviewMs);
+ if(!displayed.length){
+  if(!chatLog.hidden&&!editing){chatLog.classList.add('chat-fading');fadeTimer=setTimeout(()=>{chatLog.hidden=true;},240);}
+  else{chatLog.hidden=true;chatLog.replaceChildren();}
+  chatSignature='';return;
  }
- chatLog.scrollTop=wasHidden||atEnd?chatLog.scrollHeight:scrollTop;
+ const wasHidden=chatLog.hidden,scrollTop=chatLog.scrollTop,atEnd=chatLog.scrollHeight-chatLog.clientHeight-scrollTop<24;
+ chatLog.hidden=false;chatLog.dataset.mode=editing?'history':'recent';
+ const signature=(editing?'history:':'recent:')+displayed.map(item=>item.key).join('|');
+ if(signature!==chatSignature){chatSignature=signature;chatLog.replaceChildren();
+  for(const item of displayed){
+   const row=document.createElement('p'),author=document.createElement('b');author.textContent=item.name+' ';row.append(author,document.createTextNode(item.message));
+   if(editing&&item.sender&&item.sender!==window.labGuestId){const hide=document.createElement('button');hide.className='chat-hide';hide.textContent='숨김';hide.setAttribute('aria-label',item.name+' 채팅 숨김');hide.onclick=()=>{hiddenChats.add(item.sender);chatSignature='';renderRecent();};row.append(hide);}
+   chatLog.append(row);
+  }
+  chatLog.scrollTop=wasHidden||atEnd||!editing?chatLog.scrollHeight:scrollTop;
+ }
+ if(!editing)recentTimer=setTimeout(renderRecent,Math.max(1,Math.min(...displayed.map(item=>item.at+chatPreviewMs-now))));
 }
-function record(name,message,key,sender=''){if(seenChats.has(key))return;seenChats.add(key);if(seenChats.size>300)seenChats.delete(seenChats.values().next().value);recentChats.push({name,message,key,sender,at:Date.now()});renderRecent();}
+function record(name,message,key,sender=''){if(seenChats.has(key))return;seenChats.add(key);if(seenChats.size>300)seenChats.delete(seenChats.values().next().value);recentChats.push({name,message,key,sender,at:performance.now()});if(recentChats.length>100)recentChats.shift();renderRecent();}
 async function ensureChatSession(){if(joined)return;if(joining){await joining;return;}throw Error('공간에 연결한 뒤 이용해 주세요.');}
-chatForm.addEventListener('submit',async e=>{e.preventDefault();if(e.isComposing)return;const message=chatInput.value.trim();if(!message)return;const send=chatForm.querySelector('[type=submit]');send.disabled=true;try{await ensureChatSession();const data=await request('chat',{message});chatInput.value='';chatStatus.textContent='';setName(data.name);record(data.name,data.message,'self:'+data.at,window.labGuestId);selfBubble.textContent=data.message;selfBubble.dataset.until=String(Date.now()+6500);selfBubble.style.opacity='1';selfBubble.hidden=false;closeChat();}catch(err){chatStatus.textContent=err.message;}finally{send.disabled=false;}});
-window.addEventListener('lab:visitors',e=>{for(const p of e.detail)if(p.chat&&Date.now()-p.chatAt<6500&&!blocked.has(p.id)&&!hiddenChats.has(p.id))record(p.name,p.chat,p.id+':'+p.chatAt,p.id);});
+chatForm.addEventListener('submit',async e=>{e.preventDefault();if(e.isComposing||composing||performance.now()-compositionEnded<40||chatSending)return;const message=chatInput.value.trim();if(!message)return;chatSending=true;const send=chatForm.querySelector('[type=submit]');send.disabled=true;try{await ensureChatSession();const data=await request('chat',{message});chatInput.value='';chatStatus.textContent='';setName(data.name);record(data.name,data.message,window.labGuestId+':'+data.at,window.labGuestId);selfBubble.textContent=data.message;selfBubble.dataset.until=String(Date.now()+6500);selfBubble.style.opacity='1';selfBubble.hidden=false;closeChat();}catch(err){chatStatus.textContent=err.message;}finally{chatSending=false;send.disabled=false;}});
+window.addEventListener('lab:visitors',e=>{for(const p of e.detail)if(p.chat&&serverNow()-p.chatAt<15000&&!blocked.has(p.id)&&!hiddenChats.has(p.id))record(p.name,p.chat,p.id+':'+p.chatAt,p.id);});
 window.isVisitorBlocked=id=>blocked.has(id);window.isChatHidden=id=>blocked.has(id)||hiddenChats.has(id);people.addEventListener('click',e=>{const b=e.target.closest('[data-block-visitor]');if(!b)return;blocked.add(b.dataset.blockVisitor);b.closest('li')?.remove();sync();});
 
 window.joinSharedActivity=ensureChatSession;window.sharedRoom=()=>room;
@@ -154,8 +176,9 @@ for(const id of ['profile-name','visitor-name']){const input=$('#'+id);const edi
 updateNicknameInputs();
 $('#profile-form').addEventListener('submit',async e=>{e.preventDefault();const form=e.currentTarget,button=form.querySelector('[type=submit]');if(e.isComposing||form.dataset.state==='saving')return;try{const name=validateNickname($('#profile-name').value);form.dataset.state='saving';form.setAttribute('aria-busy','true');button.disabled=true;$('#profile-name').readOnly=true;$('#profile-status').textContent='저장 중…';const data=await request('name',{name});setName(data.name);form.dataset.state='saved';$('#profile-status').textContent='';nextSync=0;void sync();}catch(e){form.dataset.state='error';$('#profile-status').textContent=e.message;}finally{form.removeAttribute('aria-busy');$('#profile-name').readOnly=false;updateNicknameInputs();}});
 
-const visualViewport=window.visualViewport;function keyboardLayout(){const bottom=visualViewport?Math.max(0,innerHeight-visualViewport.height-visualViewport.offsetTop):0;document.documentElement.style.setProperty('--keyboard',bottom+'px');}visualViewport?.addEventListener('resize',keyboardLayout);visualViewport?.addEventListener('scroll',keyboardLayout);chatInput.addEventListener('focus',()=>{document.body.classList.add('chat-typing');window.dispatchEvent(new Event('lab:pause'));keyboardLayout();});chatInput.addEventListener('blur',keyboardLayout);window.addEventListener('online',()=>{if(!joined)initialize();else sync();});
+chatInput.addEventListener('focus',()=>{keyboard.open();window.dispatchEvent(new Event('lab:pause'));});window.addEventListener('online',()=>{if(!joined)initialize();else sync();});
 
+window.exitGondola=async()=>{const data=await request('ride',{kind:'gondola',action:'exit'});window.labRideReservation=data.reservation;return data.reservation;};
 window.reserveRide=async (kind,benchId,seat)=>{await ensureChatSession();await releasingRide;await sync(true);const data=await request('ride',{kind,benchId,seat});window.labServerOffset=data.serverTime-Date.now();window.labRideReservation=data.reservation;return data.reservation;};
 let releasingRide=null;
 window.releaseRide=()=>{
@@ -167,6 +190,6 @@ window.releaseRide=()=>{
  return releasingRide;
 };
 
-window.addEventListener('pagehide',event=>{if(!event.persisted){clearInterval(presenceTimer);realtime.dispose();}});
+window.addEventListener('pagehide',event=>{if(!event.persisted){clearInterval(presenceTimer);clearTimeout(recentTimer);clearTimeout(fadeTimer);keyboard.dispose();realtime.dispose();}});
 
 window.changeWinterRegion=async region=>{await window.joinSharedActivity();await sync(true);let data;try{data=await request('region',{region});}catch(e){if(e.status!==409)throw e;await new Promise(r=>setTimeout(r,550));await sync(true);data=await request('region',{region});}nextSync=0;return data;};

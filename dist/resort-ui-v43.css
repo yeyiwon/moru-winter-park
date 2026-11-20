@@ -10,7 +10,7 @@
 #self-label b,#visitor-labels .visitor-label>b{color:var(--ui-world-label);background:transparent;border-color:transparent;text-shadow:0 1px 4px #0b2034c7;backdrop-filter:none;-webkit-backdrop-filter:none}
 .speech-bubble,#self-bubble,#visitor-labels .speech-bubble{color:var(--ui-ink);background:var(--ui-hud);border-color:var(--ui-rim);box-shadow:var(--ui-shadow);text-shadow:var(--ui-text-shadow);backdrop-filter:none;-webkit-backdrop-filter:none}
 #chat-log{color:var(--ui-world-label);text-shadow:0 1px 5px #0b2034e6}
-#chat-log[hidden],body:not(.chat-typing) #chat-log{display:none!important}
+#chat-log[hidden]{display:none!important}
 #chat-log p{animation:none}
 #chat-log .chat-hide{font:inherit;font-size:10px;color:inherit;background:none;border:0;padding:4px 7px;opacity:.65}
 #chat-log b{color:var(--ui-world-label)}
@@ -212,3 +212,31 @@ body.chat-typing :is(#place-card,#ride-hud,#emote-panel){visibility:hidden!impor
 .has-swatch-paint>span:not(.swatch-paint-host){position:relative;z-index:1}
 
 #firework-notice.audio-blocked{flex-direction:column;gap:2px}
+
+/* Readable recent messages without an extra panel; full history stays in chat. */
+#chat-log{transition:opacity .24s ease,transform .24s ease}
+#chat-log[data-mode=recent]{pointer-events:auto;max-height:min(180px,28dvh);overflow:auto;background:none;border:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+#chat-log.chat-fading{opacity:0;transform:translateY(4px)}
+body.chat-restoring #chat-log{bottom:calc(28px + env(safe-area-inset-bottom) + var(--keyboard,0px))}
+
+#ski-controls button{pointer-events:auto;z-index:12}
+#ski-controls button svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+#ski-controls button.active{background:var(--ui-selected);border-color:var(--ui-selected-edge)}
+@media(pointer:coarse),(max-width:750px),(max-height:500px) and (max-width:1000px){
+ body[data-controls=ski] :is(#joystick,.touch-actions,#chat-toggle,#emote-toggle,#emote-panel,#place-card,#hud-map,#open-settings){visibility:hidden!important;pointer-events:none!important}
+ body[data-controls=ski] #ride-hud{display:contents}
+ body[data-controls=ski] #ride-label{position:fixed;z-index:12;top:calc(98px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);max-width:calc(100vw - 28px);width:max-content;font-size:12px;padding:8px 12px;border-radius:12px;background:var(--ui-hud);border:1px solid var(--ui-rim);color:var(--ui-ink);pointer-events:none}
+ body[data-controls=ski] #ski-controls:not([hidden]){display:contents!important}
+ body[data-controls=ski] #ski-controls button{position:fixed;display:grid;place-items:center;gap:2px;min-width:52px;min-height:52px;width:56px;height:56px;border-radius:16px;padding:6px;font-size:12px;bottom:calc(30px + env(safe-area-inset-bottom));touch-action:none}
+ body[data-controls=ski] [data-ski=left]{left:max(18px,env(safe-area-inset-left));font-size:27px!important}
+ body[data-controls=ski] [data-ski=right]{left:calc(max(18px,env(safe-area-inset-left)) + 68px);font-size:27px!important}
+ body[data-controls=ski] [data-ski=brake]{right:max(18px,env(safe-area-inset-right));width:72px!important}
+ body[data-controls=ski] [data-ski=jump]{right:calc(max(18px,env(safe-area-inset-right)) + 84px)}
+ body[data-controls=ski] [data-ski=push]{right:max(18px,env(safe-area-inset-right));bottom:calc(98px + env(safe-area-inset-bottom))!important}
+ body[data-controls=ski] [data-ski=recover]{left:max(18px,env(safe-area-inset-left));bottom:calc(98px + env(safe-area-inset-bottom))!important;width:auto!important;height:44px!important;min-height:44px!important;padding:8px 12px!important}
+ body[data-controls=ski] #stop-ride{position:fixed;z-index:12;right:max(18px,env(safe-area-inset-right));top:calc(136px + env(safe-area-inset-top));bottom:auto;width:auto;min-height:44px;font-size:12px;border:0;text-decoration:none;background:var(--ui-hud);border-radius:12px;padding:8px 12px}
+ body[data-controls=ski].chat-typing :is(#ski-controls,#ride-label,#stop-ride){visibility:hidden!important;pointer-events:none!important}
+ body[data-controls=ski][data-ski-equipment=board] [data-ski=left],body[data-controls=ski][data-ski-equipment=board] [data-ski=right]{border-radius:12px 20px}
+}
+
+#ski-controls button[hidden]{display:none!important}

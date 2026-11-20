@@ -21,7 +21,7 @@ test('admin path requires server owner identity and never joins an unauthenticat
 test('public chat and explicit nickname editing preserve one session; owner leaving does not gate guests',async t=>{
  let joins=0,name='눈꽃';const {w,d}=await fixture(t,{fetch:async(url,init)=>{const b=init.body?JSON.parse(init.body):{};if(url==='/api/access')return{admin:false,session:{id:'guest',name,room:'winter-plaza'}};if(url==='/api/join'){joins++;return{id:'guest',name,room:'winter-plaza'};}if(url==='/api/name'){name=b.name;return{name};}if(url==='/api/chat')return{name,message:b.message,at:Date.now()};return{people:[],count:1};}});
  assert.equal(joins,1);assert.equal(w.labSocialJoined,true);d.querySelector('#profile-name').value='모루';d.querySelector('#profile-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await tick();assert.equal(d.querySelector('#self-name').textContent,'모루');assert.equal(d.querySelector('#profile-form').hidden,true);
- d.querySelector('#chat-toggle').click();assert.equal(d.querySelector('#chat-form').hidden,false);assert.equal(d.activeElement,d.querySelector('#chat-input'));assert.ok(d.body.classList.contains('chat-typing'));d.querySelector('#chat-input').value='함께 겨울';d.querySelector('#chat-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await tick();assert.equal(d.querySelector('#self-bubble').hidden,false);assert.equal(d.querySelector('#self-bubble').textContent,'함께 겨울');assert.equal(d.querySelector('#chat-log').hidden,true);d.querySelector('#chat-toggle').click();assert.equal(d.querySelector('#chat-log').hidden,false);assert.match(d.querySelector('#chat-log').textContent,/함께 겨울/);assert.equal(d.querySelector('.chat-close'),null);w.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape'}));assert.equal(d.body.classList.contains('chat-typing'),false);assert.equal(w.labSocialJoined,true);
+ d.querySelector('#chat-toggle').click();assert.equal(d.querySelector('#chat-form').hidden,false);assert.equal(d.activeElement,d.querySelector('#chat-input'));assert.ok(d.body.classList.contains('chat-typing'));d.querySelector('#chat-input').value='함께 겨울';d.querySelector('#chat-form').dispatchEvent(new w.Event('submit',{cancelable:true}));await tick();assert.equal(d.querySelector('#self-bubble').hidden,false);assert.equal(d.querySelector('#self-bubble').textContent,'함께 겨울');assert.equal(d.querySelector('#chat-log').hidden,false);d.querySelector('#chat-toggle').click();assert.equal(d.querySelector('#chat-log').hidden,false);assert.match(d.querySelector('#chat-log').textContent,/함께 겨울/);assert.equal(d.querySelector('.chat-close'),null);w.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Escape'}));assert.equal(d.body.classList.contains('chat-typing'),false);assert.equal(w.labSocialJoined,true);
 });
 test('failed public bootstrap exposes retry and a blocked session never silently rejoins',async t=>{
  let deny=false;const {w,d}=await fixture(t,{fetch:async url=>{if(url==='/api/access')return{admin:false};if(url==='/api/join')return{id:'guest',name:'눈꽃',room:'winter-plaza'};return deny?{status:403,data:{error:'이용 제한'}}:{people:[],count:1};}});
@@ -30,7 +30,7 @@ test('failed public bootstrap exposes retry and a blocked session never silently
 
 test('personal chat hiding does not remove the other player from the world',async t=>{
  const {w,d}=await fixture(t,{fetch:async url=>url==='/api/access'?{admin:false}:url==='/api/join'?{id:'guest',name:'눈꽃',room:'winter-plaza'}:{people:[],count:1}});
- w.dispatchEvent(new w.CustomEvent('lab:visitors',{detail:[{id:'peer',name:'모루',chat:'안녕',chatAt:Date.now()}]}));assert.equal(d.querySelector('#chat-log').hidden,true);d.querySelector('#chat-toggle').click();assert.equal(d.querySelectorAll('.chat-report').length,0);assert.equal(d.querySelectorAll('.chat-hide').length,1);d.querySelector('.chat-hide').click();assert.equal(d.querySelector('#chat-log').textContent,'');assert.equal(w.isVisitorBlocked('peer'),false);assert.equal(w.isChatHidden('peer'),true);
+ w.dispatchEvent(new w.CustomEvent('lab:visitors',{detail:[{id:'peer',name:'모루',chat:'안녕',chatAt:Date.now()}]}));assert.equal(d.querySelector('#chat-log').hidden,false);d.querySelector('#chat-toggle').click();assert.equal(d.querySelectorAll('.chat-report').length,0);assert.equal(d.querySelectorAll('.chat-hide').length,1);d.querySelector('.chat-hide').click();assert.equal(d.querySelector('#chat-log').textContent,'');assert.equal(w.isVisitorBlocked('peer'),false);assert.equal(w.isChatHidden('peer'),true);
 });
 
 async function eventually(check){for(let i=0;i<100;i++){if(check())return;await new Promise(resolve=>setTimeout(resolve,5));}assert.ok(check(),'expected asynchronous recovery');}
@@ -114,4 +114,23 @@ test('an invalid dining pose is not mistaken for expired admission or an expired
  const reservation={kind:'dining',cabin:0,seat:0,startedAt:Date.now()};w.labRideReservation=reservation;w.labPlayerState={x:414,y:1.57,z:2.1,yaw:Math.PI,mode:'dining'};
  w.addEventListener('lab:ride-expired',()=>expired++);d.dispatchEvent(new w.Event('visibilitychange'));await tick();
  assert.equal(w.labRideReservation,reservation);assert.equal(expired,0);assert.equal(releases,0);assert.equal(w.labSocialJoined,true);assert.equal(d.body.classList.contains('invite-gate'),false);
+});
+
+test('a burst of recent messages is retained and duplicate snapshots do not rebuild or move history scroll',async t=>{
+ const {w,d}=await fixture(t,{fetch:async url=>url==='/api/access'?{admin:false}:{people:[],count:1}});
+ const people=Array.from({length:5},(_,i)=>({id:'burst-'+i,name:'방문자'+i,chat:'메시지'+i,chatAt:Date.now()}));
+ w.dispatchEvent(new w.CustomEvent('lab:visitors',{detail:people}));const log=d.querySelector('#chat-log');assert.equal(log.querySelectorAll('p').length,5);assert.match(log.textContent,/메시지0/);
+ d.querySelector('#chat-toggle').click();const first=log.firstChild;log.scrollTop=12;
+ w.dispatchEvent(new w.CustomEvent('lab:visitors',{detail:people}));assert.equal(log.firstChild,first);assert.equal(log.scrollTop,12);
+});
+
+test('a ski start or jump tapped entirely between frames is consumed once',async t=>{
+ const {w,d,mod}=await fixture(t,{fetch:async url=>url==='/api/access'?{admin:false}:{people:[],count:1}});
+ const m=await mod(path.join(root,'winter-experience.js'));await m.evaluate();const layout=await mod(path.join(root,'resort-layout.js'));
+ const {skiStarts,resortRides}=layout.namespace,p=skiStarts[0],experience=m.namespace.createWinterExperience({rides:resortRides,destinations:[],rideChair:{visible:false}},{winterReady:true,equip(){}},()=>{});
+ w.labPlayerState={...p,y:900};experience.proximity(p.x,p.z);experience.show('slope-'+p.id);d.querySelector('#place-actions button').click();
+ const tap=key=>{const button=d.querySelector('[data-ski='+key+']'),e={pointerId:44,preventDefault(){},stopPropagation(){}};button.onpointerdown(e);button.onpointerup(e);};
+ tap('push');let pose=experience.update(.016,{});assert.equal(pose.launched,true);assert.ok(pose.speed>0);
+ tap('jump');pose=experience.update(.016,{});assert.ok(pose.air>0);
+ w.dispatchEvent(new w.Event('blur'));tap('left');experience.update(.016,{});experience.cancel();
 });
