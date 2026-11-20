@@ -1,0 +1,30 @@
+{
+  "environment": "Mac Chrome headless compositor screencast; Windows/Samsung physical devices not tested",
+  "blockingLoopMs": 1500,
+  "observedConsoleIntervalMs": 1491,
+  "capturedFramesDuringBlock": 40,
+  "comparison": [
+    {
+      "method": "externalSVG",
+      "minX": 40,
+      "maxX": 40,
+      "distinctPositions": 1,
+      "advancesDuringBlock": false
+    },
+    {
+      "method": "animatedWebP",
+      "minX": 38.5,
+      "maxX": 104.5,
+      "distinctPositions": 21,
+      "advancesDuringBlock": true
+    },
+    {
+      "method": "cssSprite",
+      "minX": 41.5,
+      "maxX": 101.5,
+      "distinctPositions": 21,
+      "advancesDuringBlock": true
+    }
+  ],
+  "method": "Page.startScreencast timestamps and visible marker pixel centroids; screenshot requests alone were unsuitable because they waited for the main thread."
+}

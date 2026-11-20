@@ -1,0 +1,114 @@
+{
+  "environment": "local macOS Cloudflare workerd + isolated SQLite; actual WebSocket network; HTTP handlers in-process",
+  "createdAt": "2026-11-20T12:28:50.067Z",
+  "results": [
+    {
+      "clients": 10,
+      "durationSeconds": 8,
+      "sent": 780,
+      "received": 780,
+      "rejected": 0,
+      "successRatio": 1,
+      "roundTripMs": {
+        "mean": 24.03,
+        "p50": 18.87,
+        "p95": 64.52,
+        "p99": 192.77,
+        "max": 219.68941599999926
+      },
+      "movementServerToObserverMs": {
+        "mean": 62.6,
+        "p95": 134,
+        "samples": 6621
+      },
+      "chatSubmissionToObserverMs": {
+        "mean": 103.8,
+        "p95": 112.46,
+        "samples": 50
+      },
+      "apiInProcessMs": {
+        "mean": 112.3,
+        "p95": 214.58
+      },
+      "serverHandlerP95Ms": 1,
+      "connections": 10,
+      "showIds": 1,
+      "seatClaims": [
+        409,
+        200,
+        409
+      ],
+      "reconnected": true,
+      "leaseRenewals": 0,
+      "storedWishes": 5,
+      "db": {
+        "queries": 112,
+        "writes": 34,
+        "poseWrites": 0
+      },
+      "bytesOut": 1223897,
+      "bytesIn": 1225293,
+      "reconnections": 1,
+      "rejectionReasons": {},
+      "nodeRssBefore": 179159040,
+      "nodeRssAfter": 181698560,
+      "nodeCpuMs": 492.395,
+      "workerCpu": "UNKNOWN",
+      "errors": []
+    },
+    {
+      "clients": 100,
+      "durationSeconds": 8,
+      "sent": 4396,
+      "received": 4396,
+      "rejected": 0,
+      "successRatio": 1,
+      "roundTripMs": {
+        "mean": 268.95,
+        "p50": 261.1,
+        "p95": 481.82,
+        "p99": 552.42,
+        "max": 635.2048750000031
+      },
+      "movementServerToObserverMs": {
+        "mean": 175.3,
+        "p95": 427,
+        "samples": 78192
+      },
+      "chatSubmissionToObserverMs": {
+        "mean": 462.59,
+        "p95": 615.74,
+        "samples": 501
+      },
+      "apiInProcessMs": {
+        "mean": 423.02,
+        "p95": 1044.93
+      },
+      "serverHandlerP95Ms": 2,
+      "connections": 100,
+      "showIds": 1,
+      "seatClaims": [
+        409,
+        200,
+        409
+      ],
+      "reconnected": true,
+      "leaseRenewals": 0,
+      "storedWishes": 5,
+      "db": {
+        "queries": 117,
+        "writes": 35,
+        "poseWrites": 0
+      },
+      "bytesOut": 19969771,
+      "bytesIn": 20022807,
+      "reconnections": 1,
+      "rejectionReasons": {},
+      "nodeRssBefore": 191741952,
+      "nodeRssAfter": 218480640,
+      "nodeCpuMs": 2126.161,
+      "workerCpu": "UNKNOWN",
+      "errors": []
+    }
+  ]
+}

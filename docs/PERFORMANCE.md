@@ -1,3 +1,13 @@
+v59 8초 격리 WebSocket 부하: 10명 800/800, 100명 7,921/7,921 응답, 거절·오류 0, 공연 1개·좌석 1개 승인 유지. 채팅 p95 57.8/236.53ms, 100명 RTT p95 134.64ms. 100명 채팅은 200ms 목표를 초과하므로 무지연을 보증하지 않는다. 3D 전체 테스트와 동시에 실행한 앞선 표본은 채팅 p95 615.74ms였으며 [별도 원본](../qa/platform-v59/load-during-suite.json)을 보존한다. CPU 경쟁이 없는 재측정 [원본](../qa/platform-v59/load.json). 운영 인터넷·수 시간 부하·Worker CPU는 UNKNOWN.
+
+v59 세 브라우저의 로컬 채팅 제출→미리보기 표시: [33,30,30], [40,43,40], [118,116,106]ms. 같은 메시지의 세 화면 차이는 3–12ms. 실제 인터넷/실물 기기의 지연 보증은 아니다. 배포 자산 core 37,361,240B / 제한 37,748,736B, code gzip 1,183,926B / 제한 1,280,000B. [용량](../qa/platform-v59/budget.json).
+
+## v59 변경과 측정 범위
+
+- 로딩 자산 합계 783,865B. 1,500ms 메인 스레드 정지 중 최종 animated WebP의 서로 다른 15프레임 표시를 Chrome compositor에서 관찰했다. 기존 SVG/JS 진행은 같은 조건에서 멈췄다. [증거](../qa/platform-v59/loading-final-asset-compositor.json).
+- 회전/문구/중간 밀도 변경은 기존 GPU 입자 버퍼(24 slots)와 draw call 구조를 유지한다. [32개 seed 용량 검사](../qa/platform-v59/firework-score.json).
+- Mac Chrome 원거리 전체 월드 시야: PC off 45.87FPS / middle 43.98FPS, 모바일 화면 에뮬레이션 off 55.21FPS / middle 49.59FPS. p95 33.3–33.4ms. 이전 다른 시야의 수치와 직접 성능 향상/저하로 비교하지 않는다. 반복 종료 시 입자 0, geometry/texture 수 유지. 실물 모바일·Windows FPS 및 발열은 UNKNOWN.
+
 # v58 최종 성능 기록
 
 Mac Chrome GPU, PC 및 모바일 터치 화면 에뮬레이션에서 측정했다. 실물 Windows/Edge·Galaxy·iPhone/Safari·발열·GPU 메모리 byte는 UNKNOWN이다.

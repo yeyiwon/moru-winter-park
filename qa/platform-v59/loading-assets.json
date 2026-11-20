@@ -1,0 +1,38 @@
+{
+  "curve": "M70 449 C210 407 509 421 532 454 C571 509 8 493 70 449 C182 362 526 307 480 334 C406 379 89 365 126 320 C232 248 452 188 411 207 C345 227 161 212 195 184 C235 149 398 138 360 112 C330 90 307 67 300 32",
+  "cycleMs": 4150,
+  "frameCount": 60,
+  "artifacts": [
+    {
+      "path": "dist/brand/loading-tree-v59.webp",
+      "bytes": 728558,
+      "width": 360,
+      "height": 324,
+      "frames": 59,
+      "durationMs": 4150,
+      "space": "srgb",
+      "sha256": "440498d3c2b08f0417bc898f72f54001bfec93b4c1a3afbefe0f0b9d50706e0a"
+    },
+    {
+      "path": "dist/brand/loading-tree-still-v59.webp",
+      "bytes": 45760,
+      "width": 360,
+      "height": 324,
+      "frames": 1,
+      "durationMs": 0,
+      "space": "srgb",
+      "sha256": "ec34e5d82b954221403c77e7894a3f45ed799fa7dbe61909b341db567c75cb84"
+    },
+    {
+      "path": "dist/brand/logo-compact-v59.png",
+      "bytes": 9547,
+      "width": 120,
+      "height": 108,
+      "frames": 1,
+      "durationMs": 0,
+      "space": "srgb",
+      "sha256": "2098859f1338f878b15174c204eba8a532c2de6f7801f2dab2511c08ced833f8"
+    }
+  ],
+  "totalBytes": 783865
+}

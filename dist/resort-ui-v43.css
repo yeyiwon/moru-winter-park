@@ -265,3 +265,8 @@ body.world-owner:not(.invite-gate) #pane-social>:not(#admin-panel){display:none}
 #chat-log[data-mode=recent] p{font-size:12px;font-weight:500;line-height:1.6}
 #chat-log[data-mode=recent] p .chat-author{color:#ddc4ff}
 #chat-log[data-mode=recent] p[data-author=self] .chat-author{color:#a2f4de}
+
+#admin-panel .admin-clear-confirm{padding:12px;margin:10px 0;border:1px solid var(--ui-edge);border-radius:12px;background:var(--ui-field)}
+#admin-panel .admin-clear-confirm[hidden]{display:none}
+#admin-panel .admin-clear-confirm p{margin:0 0 10px;font-size:13px;line-height:1.5}
+#admin-panel .admin-clear-confirm button{margin:0 8px 0 0}

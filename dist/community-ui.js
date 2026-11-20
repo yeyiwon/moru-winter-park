@@ -110,8 +110,8 @@ for(const section of adminScroll.querySelectorAll(':scope > details'))section.ad
 });
 window.addEventListener('lab:access',e=>{adminRoot.hidden=!e.detail.admin;if(!e.detail.admin)clearShowTimer();});
 async function action(body){
- try{await request('admin',body);if(body.action.includes('quiz'))window.dispatchEvent(new Event('lab:quiz-updated'));await loadAdmin('저장했습니다.');}
- catch(error){adminStatus.textContent=error.message;}
+ try{await request('admin',body);if(['clear-decorations','remove-decoration','remove-wish'].includes(body.action))window.dispatchEvent(new Event('lab:tree-changed'));if(body.action.includes('quiz'))window.dispatchEvent(new Event('lab:quiz-updated'));await loadAdmin('저장했습니다.');return true;}
+ catch(error){await loadAdmin();adminStatus.textContent=error.message;return false;}
 }
 function row(container,title,buttons,{detail='',state=''}={}){
  const el=document.createElement('div');el.className='admin-row';
@@ -125,12 +125,21 @@ function row(container,title,buttons,{detail='',state=''}={}){
 }
 function empty(container,message){if(container.children.length)return;const text=document.createElement('p');text.className='admin-empty';text.textContent=message;container.append(text);}
 let decorationSnapshot=null,adminLoad=0;
-adminRoot.querySelector('[data-clear-decorations]').onclick=async()=>{
- if(!decorationSnapshot)return;
- const {count,revision}=decorationSnapshot,confirmation=window.prompt(`장식 ${count}개를 삭제합니다. 소원 글은 유지됩니다.\n확인하려면 ‘장식 ${count}개 삭제’를 입력하세요.`);
- if(confirmation!==`장식 ${count}개 삭제`)return;
+const clearConfirm=document.createElement('div');clearConfirm.className='admin-clear-confirm';clearConfirm.hidden=true;
+clearConfirm.innerHTML='<p data-clear-summary></p><p>소원 글은 유지되고, 장식은 복구용 기록을 남긴 뒤 삭제됩니다.</p><button type="button" data-confirm-clear></button><button type="button" data-cancel-clear>취소</button>';
+adminRoot.querySelector('[data-decorations]').before(clearConfirm);let pendingClear=null;
+function cancelClear(){pendingClear=null;clearConfirm.hidden=true;}
+adminRoot.querySelector('[data-clear-decorations]').onclick=()=>{
+ if(!decorationSnapshot?.count)return;pendingClear={...decorationSnapshot};
+ clearConfirm.querySelector('[data-clear-summary]').textContent=`트리 장식 ${pendingClear.count}개를 모두 삭제할까요?`;
+ clearConfirm.querySelector('[data-confirm-clear]').textContent=`장식 ${pendingClear.count}개 삭제`;
+ clearConfirm.hidden=false;clearConfirm.scrollIntoView?.({block:'nearest'});
+};
+clearConfirm.querySelector('[data-cancel-clear]').onclick=cancelClear;
+clearConfirm.querySelector('[data-confirm-clear]').onclick=async()=>{
+ if(!pendingClear)return;const {count,revision}=pendingClear;cancelClear();
  const button=adminRoot.querySelector('[data-clear-decorations]');button.disabled=true;
- try{await action({action:'clear-decorations',count,revision,confirmation});}finally{button.disabled=!decorationSnapshot?.count;}
+ try{await action({action:'clear-decorations',count,revision,confirmation:`장식 ${count}개 삭제`});}finally{button.disabled=!decorationSnapshot?.count;}
 };
 async function loadAdmin(message=''){
  const load=++adminLoad,refresh=adminRoot.querySelector('[data-refresh]');refresh.disabled=true;adminStatus.textContent='불러오는 중…';
@@ -142,9 +151,9 @@ async function loadAdmin(message=''){
   ]);
   if(load!==adminLoad)return;
   if(firework)showError();await loadOperations();
-  decorationSnapshot={count:data.decorations.length,revision:data.decorationRevision};
-  adminRoot.querySelector('[data-decoration-count]').textContent=data.decorations.length+'개';
-  adminRoot.querySelector('[data-clear-decorations]').disabled=!data.decorations.length;
+  cancelClear();decorationSnapshot={count:data.decorationCount??data.decorations.length,revision:data.decorationRevision};
+  adminRoot.querySelector('[data-decoration-count]').textContent=decorationSnapshot.count+'개';
+  adminRoot.querySelector('[data-clear-decorations]').disabled=!decorationSnapshot.count;
   for(const name of ['reports','people','decorations','quizzes','candidates','generation','blocks','audit'])adminRoot.querySelector('[data-'+name+']').replaceChildren();
   const get=name=>adminRoot.querySelector('[data-'+name+']');
   for(const item of data.blocks||[])row(get('blocks'),'방문자 '+item.id.slice(0,4).toUpperCase(),[['차단 해제',()=>action({action:'unblock',id:item.id})]]);

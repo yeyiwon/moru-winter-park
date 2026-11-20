@@ -23,6 +23,8 @@ test('real Cloudflare runtime: authenticated sockets, sequence validation, persi
  assert.equal((await f.mf.dispatchFetch(new URL('/connect',f.url),{headers:{Upgrade:'websocket',Origin:'http://127.0.0.1','Sec-WebSocket-Protocol':'winter-v1,auth.forged'}})).status,401);const sa=await f.call(a,'join',{});await f.call(b,'join',{});
  const ta=await f.call(a,'realtime',{}),tb=await f.call(b,'realtime',{});assert.equal(ta.status,200,JSON.stringify(ta.data));
  const ca=await connect(ta.data.url,ta.data.ticket),cb=await connect(tb.data.url,tb.data.ticket);t.after(()=>{ca.ws.close();cb.ws.close();});assert.equal(cb.ready.count,2);
+ const pushed=[ca,cb].map(({ws})=>new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('chat push timeout')),3000);ws.once('message',raw=>{clearTimeout(timer);resolve(JSON.parse(raw));});}));
+ const chat=await f.call(a,'chat',{message:'즉시 전달'});assert.equal(chat.status,200);for(const event of await Promise.all(pushed)){assert.equal(event.type,'chat');assert.equal(event.message,'즉시 전달');assert.equal(event.at,chat.data.at);}
  const before=f.stats.poseWrites;assert.equal((await send(ca.ws,{type:'pose',seq:1,at:Date.now(),pose:{...pose,x:1,speed:1}})).type,'snapshot');
  const snap=await send(cb.ws,{type:'ping',seq:1,at:Date.now()});assert.equal(snap.people[0].x,1);assert.equal(f.stats.poseWrites,before);
  assert.equal((await send(ca.ws,{type:'pose',seq:1,at:Date.now(),pose})).code,'stale');
@@ -92,4 +94,21 @@ test('an accepted map arrival reaches the live world even while persistent pose 
  const profile=await realtimeRPC(f.env,{action:'profile',id:join.data.id});assert.equal(profile.profile.x,arrival.x);assert.equal(profile.profile.z,arrival.z);
  assert.equal((await f.call(guest,'ride',{kind:'lift'})).status,200);
  const invalid=await f.call(guest,'presence',{...arrival,x:999999});assert.equal(invalid.status,400);
+});
+
+test('committed chat pushes to sender and all region peers without waiting for their pose packets',()=>{
+ const world=new RealtimeWorld({now:()=>10000}),sockets=[];
+ for(let i=0;i<40;i++){const ws={messages:[],send(raw){this.messages.push(JSON.parse(raw));},close(){},serializeAttachment(){}};world.accept(ws,{id:String(i),exp:100000,profile:{...pose,id:String(i),name:'사람'+i,region:i===39?'museum':'outdoors'}});ws.messages=[];sockets.push(ws);}
+ world.rpc({action:'chat',id:'0',profile:{name:'사람0',region:'outdoors',chat:'안녕하세요',chatAt:10000}});
+ for(const ws of sockets.slice(0,39)){assert.equal(ws.messages.length,1);assert.deepEqual(ws.messages[0],{type:'chat',id:'0',name:'사람0',message:'안녕하세요',at:10000,serverTime:10000});}
+ assert.equal(sockets[39].messages.length,0);assert.equal(world.clients.get(sockets[0]).profile.chat,'안녕하세요');
+});
+
+test('delayed chat respects the latest room and nickname without undoing relocation',()=>{
+ const world=new RealtimeWorld({now:()=>10000}),sockets=[];
+ for(const [id,region]of [['sender','outdoors'],['outside','outdoors'],['inside','museum']]){const ws={messages:[],send(raw){this.messages.push(JSON.parse(raw));},close(){},serializeAttachment(){}};world.accept(ws,{id,exp:100000,profile:{...pose,id,name:id,region}});ws.messages=[];sockets.push(ws);}
+ world.rpc({action:'relocate',id:'sender',profile:{x:590,region:'museum',name:'새이름'}});
+ world.rpc({action:'chat',id:'sender',profile:{region:'outdoors',name:'이전이름',chat:'도착했어요',chatAt:9500}});
+ assert.equal(world.clients.get(sockets[0]).profile.region,'museum');assert.equal(world.clients.get(sockets[0]).profile.x,590);assert.equal(sockets[1].messages.length,0);assert.equal(sockets[2].messages.at(-1).name,'새이름');assert.equal(sockets[2].messages.at(-1).message,'도착했어요');
+ world.rpc({action:'chat',id:'sender',profile:{region:'outdoors',name:'이전이름',chat:'낡은 요청',chatAt:9000}});assert.equal(sockets[2].messages.length,1);assert.equal(world.clients.get(sockets[0]).profile.chat,'도착했어요');
 });

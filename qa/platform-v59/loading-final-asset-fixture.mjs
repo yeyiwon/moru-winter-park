@@ -1,0 +1,23 @@
+import fs from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import {chromium} from '/Users/yeiwon/Documents/Codex/winter-qa-tools/node_modules/playwright-core/index.mjs';
+import sharp from '/Users/yeiwon/Documents/Codex/winter-alpine-v48/node_modules/sharp/dist/index.mjs';
+const root='/Users/yeiwon/Documents/Codex/winter-alpine-v48';
+const bytes=await fs.readFile(root+'/dist/brand/loading-tree-v59.webp');
+const browser=await chromium.launch({executablePath:'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true,args:['--window-size=720,800']});
+const context=await browser.newContext({viewport:{width:720,height:720}}),page=await context.newPage(),cdp=await context.newCDPSession(page);
+let begin=0,end=0; const frames=[];
+page.on('console',m=>{if(m.text()==='BUSY_START')begin=Date.now();if(m.text()==='BUSY_END')end=Date.now();});
+cdp.on('Page.screencastFrame',e=>{frames.push({at:Date.now(),data:e.data});cdp.send('Page.screencastFrameAck',{sessionId:e.sessionId}).catch(()=>{});});
+await page.setContent(`<style>body{margin:0;background:#101b32}img{display:block;width:360px;height:324px}</style><img src="data:image/webp;base64,${bytes.toString('base64')}">`);
+await page.locator('img').evaluate(image=>image.decode());
+await cdp.send('Page.startScreencast',{format:'png',everyNthFrame:1});
+await page.evaluate(()=>setTimeout(()=>{console.log('BUSY_START');const stop=performance.now()+1500;while(performance.now()<stop){}console.log('BUSY_END');},200));
+await new Promise(r=>setTimeout(r,2200));await cdp.send('Page.stopScreencast');
+const during=frames.filter(f=>f.at>begin+80&&f.at<end-80),report=[];
+for(const f of during){const png=Buffer.from(f.data,'base64'); const raw=await sharp(png).raw().toBuffer({resolveWithObject:true});let bright=0;for(let i=0;i<raw.data.length;i+=raw.info.channels)if(raw.data[i]>80&&raw.data[i+1]>80&&raw.data[i+2]>80)bright++;report.push({atMs:f.at-begin,brightPixels:bright,sha256:createHash('sha256').update(png).digest('hex')});}
+const result={environment:'Mac Chrome headless on this machine; production animated WebP asset; no other animated content',asset:'dist/brand/loading-tree-v59.webp',blockingLoopMs:1500,observedConsoleIntervalMs:end-begin,capturedFramesDuringBlock:during.length,distinctFrames:new Set(report.map(r=>r.sha256)).size,frames:report};
+if(result.distinctFrames<5)throw Error('The final WebP did not visibly advance during the block.');
+await fs.writeFile(root+'/qa/platform-v59/loading-final-asset-compositor.json',JSON.stringify(result,null,2)+'\n');
+for(const [name,index] of [['start',0],['middle',Math.floor(during.length/2)],['end',during.length-1]])await sharp(Buffer.from(during[index].data,'base64')).extract({left:0,top:0,width:360,height:324}).png().toFile(root+'/qa/platform-v59/loading-block-'+name+'.png');
+console.log(JSON.stringify({...result,frames:undefined},null,2));await browser.close();

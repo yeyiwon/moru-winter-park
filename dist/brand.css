@@ -6,3 +6,5 @@ header .brand-word{font-family:'Winter Sans',system-ui,sans-serif;font-size:14px
 header .brand:hover .brand-mark{filter:none}
 header .brand:focus-visible{outline:2px solid #8bbde5;outline-offset:7px;border-radius:3px}
 @media(max-width:650px){header .brand{gap:6px}header .brand-mark{width:24px;height:24px}header .brand-word{font-size:13px;letter-spacing:.065em}}
+
+header .brand,header .brand-mark,header .brand-mark img,header .brand-word{color-scheme:only light;forced-color-adjust:none}

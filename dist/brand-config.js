@@ -10,7 +10,7 @@ export const BRAND = Object.freeze({
   colors: Object.freeze({ night: '#101c2a', white: '#f6f9fc', silver: '#c4d2df', silverLight: '#edf4fa', ice: '#8bbde5', blue: '#5e87ab', ink: '#344d65' }),
   assets: Object.freeze({
     logo: '/brand/logo-primary.svg',
-    logoCompact: '/brand/logo-compact.svg',
+    logoCompact: '/brand/logo-compact-v59.png',
     logoMonochrome: '/brand/logo-monochrome.svg',
     favicon: '/brand/favicon.svg',
     favicon32: '/brand/favicon-32.png',

@@ -1,0 +1,23 @@
+[
+  {
+    "id": "love",
+    "beforeShells": 95,
+    "afterShells": 106,
+    "maxSlotsAcross32Seeds": 15,
+    "bufferSlots": 24
+  },
+  {
+    "id": "wedding-entrance",
+    "beforeShells": 102,
+    "afterShells": 123,
+    "maxSlotsAcross32Seeds": 21,
+    "bufferSlots": 24
+  },
+  {
+    "id": "trepak",
+    "beforeShells": 58,
+    "afterShells": 71,
+    "maxSlotsAcross32Seeds": 16,
+    "bufferSlots": 24
+  }
+]

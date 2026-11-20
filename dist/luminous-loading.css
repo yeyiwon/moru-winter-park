@@ -4,7 +4,7 @@
 #world-loading.has-world,#room-transition{background:linear-gradient(135deg,#0a142960,#15334a45);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px)}
 #room-transition.active{visibility:visible;opacity:1;pointer-events:auto}#world-loading.loaded{opacity:0;visibility:hidden;pointer-events:none}#world-loading[hidden]{display:none}
 .luminous-loading{width:min(360px,62vw,57dvh);display:grid;justify-items:center;gap:8px;margin:0 0 2vh;pointer-events:none}
-#world-loading svg.luminous-tree,#room-transition svg.luminous-tree{display:block;width:100%;height:auto;fill:none;stroke:none;filter:none;overflow:visible}
+#world-loading .luminous-tree,#room-transition .luminous-tree{display:block;width:100%;height:auto;fill:none;stroke:none;filter:none;overflow:visible}
 .luminous-line{fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:1;stroke-dashoffset:1}
 .luminous-halo{stroke-width:5;opacity:.48}.luminous-soft{stroke-width:2.2;opacity:.8}.luminous-core{stroke-width:1.05;opacity:.96}
 .luminous-caption{display:flex;align-items:center;justify-content:center}
@@ -28,3 +28,7 @@
 /* Present a complete loading frame immediately; never fade in a bare blur surface. */
 #room-transition{display:none;transition:none}
 #room-transition.active{display:grid}
+
+/* Brand pixels retain their authored silver palette under browser auto-dark. */
+#world-loading,#room-transition,.luminous-loading,.luminous-tree{color-scheme:only light;forced-color-adjust:none}
+.luminous-tree{object-fit:contain;aspect-ratio:10/9}

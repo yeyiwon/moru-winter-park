@@ -1,4 +1,4 @@
-import {chatPreviewMs,chatShortcut,createChatViewport} from './chat-policy.js';
+import {bubbleDuration,chatPreviewMs,chatShortcut,createChatViewport} from './chat-policy.js';
 import {createRealtimeClient} from './realtime-client.js';
 import {bindOwnerLogin,finishOwnerLogin,continueOwnerLogin} from './owner-login.js';
 import {mergeFireworkShow} from './fireworks-request.js';
@@ -50,7 +50,7 @@ function outgoingPose(){
  }
  return p;
 }
-const realtime=createRealtimeClient({request,pose:()=>{if(!window.labPlayerState)return null;const pose={...outgoingPose(),gesture:gesture||encodeActivity(window.labPlayerState)};gesture='';return pose;},onSnapshot:acceptPresence,onActive:active=>{window.labRealtimeActive=active;},onStatus:message=>{if(message)status.textContent=message;},onCheckpoint:()=>{if(Date.now()-lastSent>600)void sync(true);}});
+const realtime=createRealtimeClient({request,pose:()=>{if(!window.labPlayerState)return null;const pose={...outgoingPose(),gesture:gesture||encodeActivity(window.labPlayerState)};gesture='';return pose;},onSnapshot:acceptPresence,onChat:acceptChat,onActive:active=>{window.labRealtimeActive=active;},onStatus:message=>{if(message)status.textContent=message;},onCheckpoint:()=>{if(Date.now()-lastSent>600)void sync(true);}});
 function sync(force=false){if(releasingRide)return force?releasingRide.then(()=>sync(true)):Promise.resolve();if(syncing)return force?syncing.then(()=>sync(true)):syncing;if(appearanceSaving||!joined||joining||!window.labPlayerState)return Promise.resolve();syncing=performSync().finally(()=>{syncing=null;});return syncing;}
 window.saveWinterAppearance=async look=>{
  if(!joined||joining)throw Error('공간에 연결한 뒤 다시 저장해 주세요.');
@@ -137,9 +137,14 @@ function renderRecent(){
  }
  if(!editing)recentTimer=setTimeout(renderRecent,Math.max(1,Math.min(...displayed.map(item=>item.at+chatPreviewMs-now))));
 }
-function record(name,message,key,sender=''){if(seenChats.has(key))return;seenChats.add(key);if(seenChats.size>300)seenChats.delete(seenChats.values().next().value);recentChats.push({name,message,key,sender,at:performance.now()});if(recentChats.length>100)recentChats.shift();renderRecent();}
+function record(name,message,key,sender=''){if(seenChats.has(key))return false;seenChats.add(key);if(seenChats.size>300)seenChats.delete(seenChats.values().next().value);recentChats.push({name,message,key,sender,at:performance.now()});if(recentChats.length>100)recentChats.shift();renderRecent();return true;}
+function acceptChat(data){
+ if(blocked.has(data.id)||hiddenChats.has(data.id)||!record(data.name,data.message,data.id+':'+data.at,data.id))return;
+ if(data.id===window.labGuestId){selfBubble.textContent=data.message;selfBubble.dataset.until=String(performance.now()+bubbleDuration(data.at,serverNow()));selfBubble.style.opacity='1';selfBubble.hidden=false;}
+ else window.dispatchEvent(new CustomEvent('lab:chat',{detail:data}));
+}
 async function ensureChatSession(){if(joined)return;if(joining){await joining;return;}throw Error('공간에 연결한 뒤 이용해 주세요.');}
-chatForm.addEventListener('submit',async e=>{e.preventDefault();if(e.isComposing||composing||chatSending)return;const message=chatInput.value.trim();if(!message){closeChat();return;}chatSending=true;const send=chatForm.querySelector('[type=submit]');send.disabled=true;try{await ensureChatSession();const data=await request('chat',{message});chatInput.value='';chatStatus.textContent='';setName(data.name);record(data.name,data.message,window.labGuestId+':'+data.at,window.labGuestId);selfBubble.textContent=data.message;selfBubble.dataset.until=String(Date.now()+6500);selfBubble.style.opacity='1';selfBubble.hidden=false;closeChat();}catch(err){chatStatus.textContent=err.message;}finally{chatSending=false;send.disabled=false;}});
+chatForm.addEventListener('submit',async e=>{e.preventDefault();if(e.isComposing||composing||chatSending)return;const message=chatInput.value.trim();if(!message){closeChat();return;}chatSending=true;const send=chatForm.querySelector('[type=submit]');send.disabled=true;try{await ensureChatSession();const data=await request('chat',{message});chatInput.value='';chatStatus.textContent='';setName(data.name);acceptChat({...data,id:window.labGuestId});closeChat();}catch(err){chatStatus.textContent=err.message;}finally{chatSending=false;send.disabled=false;}});
 window.addEventListener('lab:visitors',e=>{for(const p of e.detail)if(p.chat&&serverNow()-p.chatAt<15000&&!blocked.has(p.id)&&!hiddenChats.has(p.id))record(p.name,p.chat,p.id+':'+p.chatAt,p.id);});
 window.isVisitorBlocked=id=>blocked.has(id);window.isChatHidden=id=>blocked.has(id)||hiddenChats.has(id);people.addEventListener('click',e=>{const b=e.target.closest('[data-block-visitor]');if(!b)return;blocked.add(b.dataset.blockVisitor);b.closest('li')?.remove();sync();});
 

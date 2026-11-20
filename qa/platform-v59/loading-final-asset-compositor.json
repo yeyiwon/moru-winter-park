@@ -1,0 +1,85 @@
+{
+  "environment": "Mac Chrome headless on this machine; production animated WebP asset; no other animated content",
+  "asset": "dist/brand/loading-tree-v59.webp",
+  "blockingLoopMs": 1500,
+  "observedConsoleIntervalMs": 1409,
+  "capturedFramesDuringBlock": 15,
+  "distinctFrames": 15,
+  "frames": [
+    {
+      "atMs": 135,
+      "brightPixels": 629,
+      "sha256": "d265a17f2cc10858ae32efc21bcb4627bcd4b0013bb29abfcc706e84158fdfff"
+    },
+    {
+      "atMs": 225,
+      "brightPixels": 712,
+      "sha256": "2f8e4691028abf9898975ada637a6f01497fdd45cbd0c334490e8f43cd8bfd54"
+    },
+    {
+      "atMs": 282,
+      "brightPixels": 815,
+      "sha256": "d632fa0590b2bbf341d226a729cf5f03093ce3212dc93b1b9469c61da4319d83"
+    },
+    {
+      "atMs": 431,
+      "brightPixels": 920,
+      "sha256": "936865b85f93ff4092247537c4f991645ad35ec30afff78fdf9a9f5bf95f4684"
+    },
+    {
+      "atMs": 432,
+      "brightPixels": 1026,
+      "sha256": "54939c83d6b996906e78da72120415807b6ae0c5c68b635e45660a421702ccae"
+    },
+    {
+      "atMs": 517,
+      "brightPixels": 1138,
+      "sha256": "c1949270520347cd84781170abf5422b09d99bc4b14b30065eeaca31533caf0c"
+    },
+    {
+      "atMs": 574,
+      "brightPixels": 1255,
+      "sha256": "cb0bcc25aa25b6d10846ae5a9729fadeb5c5fa36b1cda61d7d676a3d7d6d414f"
+    },
+    {
+      "atMs": 628,
+      "brightPixels": 1378,
+      "sha256": "327cf8907b437dd7f325257ea1f9f07446aabbd91125a052d811ef97dcdd0cd9"
+    },
+    {
+      "atMs": 679,
+      "brightPixels": 1480,
+      "sha256": "6b5597b436cb074c3191b288365191826a2fff187d779e1e97ca2fc305f435dd"
+    },
+    {
+      "atMs": 792,
+      "brightPixels": 1605,
+      "sha256": "558ae91ef3c853b52d1ba0045c52a37b052753f51bd9975ab7f961a22595d3ab"
+    },
+    {
+      "atMs": 847,
+      "brightPixels": 1718,
+      "sha256": "b60b7de33521c5964980ef5c27cbf86840126f448a80c3ff56ef056a8a7b8a1c"
+    },
+    {
+      "atMs": 920,
+      "brightPixels": 1844,
+      "sha256": "5d3e4d5ea30b7ec5dc29fcfb749099a2a6f84b1ded780cb15168754fc8c4e11a"
+    },
+    {
+      "atMs": 996,
+      "brightPixels": 1969,
+      "sha256": "bb124ff70770ed391d02f23b049131ea7ef5c57dddef2a60fdac6cc5c181b0ad"
+    },
+    {
+      "atMs": 1043,
+      "brightPixels": 2086,
+      "sha256": "cbe8a6bb864595c20ce2ecd8839cc9114a64fa2bf92136a5cbdbcebdabb503ce"
+    },
+    {
+      "atMs": 1112,
+      "brightPixels": 2187,
+      "sha256": "ab010ed55f8543b375a4099f150f2f5d28f763f83c09f211eceded55d2c2b7e4"
+    }
+  ]
+}

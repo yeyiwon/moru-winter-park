@@ -45,12 +45,12 @@ export async function communityAPI(request,env,self,admin){
   const [reports,people,decorations,events,quizzes,candidates,generation]=await Promise.all([
    DB.prepare('SELECT id,room,target_type AS type,target_id AS targetId,reason,created_at AS createdAt FROM reports WHERE resolved=0 ORDER BY created_at DESC LIMIT 80').bind().all(),
    DB.prepare('SELECT id,room,name,chat,chat_at AS chatAt,auth_type AS authType FROM visitors WHERE seen>? ORDER BY seen DESC LIMIT 80').bind(now-600000).all(),
-   DB.prepare('SELECT id,room,kind FROM tree_decorations WHERE room=? ORDER BY created_at DESC LIMIT 160').bind(self.room).all(),
+   DB.prepare('SELECT id,room,kind FROM tree_decorations WHERE room=? ORDER BY created_at DESC,id DESC').bind(self.room).all(),
    DB.prepare('SELECT id,title,starts_at AS startsAt,ends_at AS endsAt,kind,enabled FROM world_events ORDER BY starts_at DESC LIMIT 30').bind().all(),
    DB.prepare('SELECT id,payload FROM quiz_overrides ORDER BY updated_at DESC LIMIT 100').bind().all(),DB.prepare("SELECT id,payload FROM quiz_candidates WHERE status='review' ORDER BY created_at DESC LIMIT 30").bind().all(),DB.prepare('SELECT day,status,count,usage FROM quiz_generation_runs ORDER BY day DESC LIMIT 7').bind().all()]);
   const blocks=await DB.prepare('SELECT id,created_at AS createdAt FROM visitor_blocks ORDER BY created_at DESC LIMIT 100').bind().all(),audit=await DB.prepare('SELECT action,target,created_at AS createdAt FROM moderation_audit ORDER BY created_at DESC LIMIT 50').bind().all();
   // Private wish text is deliberately never included in moderation listings.
-  return json({blocks:blocks.results,audit:audit.results,candidates:candidates.results.map(r=>({id:r.id,...JSON.parse(r.payload)})),generation:generation.results,reports:reports.results,people:people.results,decorations:decorations.results,decorationRevision:await decorationRevision(decorations.results),events:events.results,quizzes:quizzes.results.map(r=>({id:r.id,...JSON.parse(r.payload)}))});
+  return json({blocks:blocks.results,audit:audit.results,candidates:candidates.results.map(r=>({id:r.id,...JSON.parse(r.payload)})),generation:generation.results,reports:reports.results,people:people.results,decorations:decorations.results.slice(0,160),decorationCount:decorations.results.length,decorationRevision:await decorationRevision(decorations.results),events:events.results,quizzes:quizzes.results.map(r=>({id:r.id,...JSON.parse(r.payload)}))});
  }
  if(request.method!=='POST')return json({error:'지원하지 않는 요청입니다.'},405);
  const b=await bodyOf(request,8192),id=String(b.id||'');

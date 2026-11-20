@@ -1,0 +1,27 @@
+{
+  "fullSuite": {
+    "tests": 593,
+    "pass": 593,
+    "fail": 0,
+    "durationMs": 465779.179416
+  },
+  "targetedInitial": {
+    "tests": 66,
+    "pass": 66
+  },
+  "finalRealtimeIncludingRelocation": {
+    "tests": 11,
+    "pass": 11
+  },
+  "finalVisitorClear": {
+    "tests": 1,
+    "pass": 1
+  },
+  "sourceModulesChecked": 341,
+  "builds": [
+    "Sites Worker",
+    "Vercel assets",
+    "Cloudflare realtime"
+  ],
+  "physicalDevices": "Windows/Samsung/iPhone NOT verified"
+}

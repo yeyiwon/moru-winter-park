@@ -104,3 +104,14 @@ test('owner departure leaves public guest movement, chat and persistence availab
  await f.call(a,'presence',pose);const unchanged=await f.DB.prepare('SELECT pose_at,seen FROM visitors WHERE id=?').bind(sa.id).first();assert.equal(unchanged.pose_at,first.pose_at-1000);assert.equal(unchanged.seen,first.seen);
  await f.call(a,'chat',{message:'관리자 없이도 함께'});const people=(await f.call(b,'presence',{...pose,x:0})).data.people;assert.equal(people.length,1);assert.equal(people[0].chat,'관리자 없이도 함께');assert.equal(people[0].x,1);
 });
+
+test('owner clears the full decoration snapshot beyond the 160-item render window',async t=>{
+ const f=await fixture(t),g=f.guest();await f.join(f.owner);const person=await f.join(g);
+ await f.DB.prepare("WITH RECURSIVE n(i) AS (VALUES(1) UNION ALL SELECT i+1 FROM n WHERE i<205) INSERT INTO tree_decorations(id,room,author,kind,color,angle,height,created_at) SELECT 'bulk-'||i,?,?, 'star','#e5bb6b',0,12,i FROM n").bind(publicRoom,person.id).run();
+ const snapshot=(await f.call(f.owner,'admin')).data;assert.equal(snapshot.decorations.length,160);assert.equal(snapshot.decorationCount,205);
+ const command={action:'clear-decorations',count:snapshot.decorationCount,revision:snapshot.decorationRevision,confirmation:'장식 205개 삭제'};
+ assert.equal((await f.call(g,'admin',command)).status,403);
+ const result=await f.call(f.owner,'admin',command);assert.equal(result.status,200,JSON.stringify(result.data));assert.equal(result.data.removed,205);
+ assert.equal((await f.call(g,'tree')).data.decorations.length,0);
+ const backup=await f.DB.prepare('SELECT payload FROM decoration_backups WHERE id=?').bind(result.data.backupId).first();assert.equal(JSON.parse(backup.payload).length,205);
+});

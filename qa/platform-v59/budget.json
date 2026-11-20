@@ -1,0 +1,58 @@
+{
+  "totals": {
+    "files": 274,
+    "allBytes": 47365787,
+    "codeBytes": 3587001,
+    "codeGzipBytes": 1183926,
+    "audioBytes": 38216383,
+    "coreBytes": 37361240,
+    "showAudioBytes": 10004547
+  },
+  "limits": {
+    "coreBytes": 37748736,
+    "showAudioBytes": 10485760,
+    "codeGzipBytes": 1280000
+  },
+  "largest": [
+    {
+      "name": "audio/show/love.mp3",
+      "bytes": 4314174,
+      "gzip": 4304642
+    },
+    {
+      "name": "audio/ethereal-winter-ballet-01.mp3",
+      "bytes": 4240896,
+      "gzip": 4078088
+    },
+    {
+      "name": "audio/show/wedding-entrance.mp3",
+      "bytes": 3943862,
+      "gzip": 3934213
+    },
+    {
+      "name": "audio/winter-jazz-artmylife.mp3",
+      "bytes": 3904512,
+      "gzip": 3898442
+    },
+    {
+      "name": "audio/waltz-of-snowflakes.mp3",
+      "bytes": 3736555,
+      "gzip": 3728590
+    },
+    {
+      "name": "audio/cinematic-christmas-piano-strings-bells.m4a",
+      "bytes": 3274060,
+      "gzip": 3176562
+    },
+    {
+      "name": "audio/moonlight.m4a",
+      "bytes": 2093421,
+      "gzip": 2036036
+    },
+    {
+      "name": "fonts/PretendardVariable.woff2",
+      "bytes": 2057688,
+      "gzip": 2045523
+    }
+  ]
+}

@@ -13,17 +13,18 @@ export function createWinterFireworks(parent,{light=null}={}){
  void main(){float age=clock-timing.x-timing.y;float flight=timing.z;float kind=design.x;vec3 p=position;alpha=0.;tint=color;float size=1.;
  if(arc!=0.&&age>=0.&&age<flight){if(spark<30.){float lag=spark*.018+timing.y*.5;float u=clamp((clock-timing.x-lag)/flight,0.,1.);p=mix(launch,position,u);p.y+=arc>0.?4.*arc*u*(1.-u):(position.y-launch.y)*u*(1.-u);
  alpha=smoothstep(0.,.025,u)*exp(-lag*4.);size=mix(2.8,.7,clamp(lag/.65,0.,1.));tint=mix(color,vec3(1.,.96,.85),.5);}}
+ else if(kind>9.5&&kind<10.5&&age>=0.&&age<flight){if(spark<18.){float lag=spark*.022;float u=clamp((age-lag)/flight,0.,1.);p=mix(launch,position,vec3(u,2.*u-u*u,u));alpha=smoothstep(0.,.02,u)*exp(-lag*6.);tint=mix(color,vec3(1.),.6);size=mix(2.6,.65,spark/18.);}}
  else if(age>=0.&&age<flight&&spark<1.5){float u=age/flight;p=mix(launch,position,vec3(u,2.*u-u*u,u));p.x+=sin(u*3.141593)*design.w*8.;p.z+=sin(u*3.141593)*3.;alpha=.85*exp(-timing.y*2.4);tint=mix(color,vec3(1.,.94,.8),.65);size=kind>5.5&&kind<6.5?3.:2.1;}
  else if(age>=flight+timing.w&&age<flight+design.z){float t=age-flight-timing.w;float dragRate=kind>1.5&&kind<2.5?.28:.48;float drag=(1.-exp(-t*dragRate))/dragRate;float gravity=kind>1.5&&kind<2.5?1.:1.6;p+=velocity*(drag+(kind>7.5?timing.w*.9:timing.w*.58));p.y-=gravity*t*t;if(kind>6.5&&kind<7.5)p.y-=4.5*t*t;p.x+=design.w*t+sin(t*.8+spark*.1)*t*.1;
  if(kind>8.5&&kind<9.5){p=position+velocity*(1.-exp(-t*2.4));p.y-=max(0.,t-2.)*.8;}
- if(kind>10.5&&kind<11.5){float angle=timing.w*5.8*design.w+mod(spark,3.)*2.094395+t*.7*design.w;float radius=2.5+9.*t;p=position+vec3(cos(angle)*radius,sin(angle)*radius,velocity.z*t);p.y-=t*t*.7;}
+ if(kind>10.5&&kind<11.5){float angle=timing.w*5.8*design.w+mod(spark,3.)*2.094395+t*.7*design.w;float wheelAge=clock-timing.x-flight;float bloom=smoothstep(0.,3.5,wheelAge);float radius=1.2+4.*bloom+(11.+6.*bloom)*t;p=position+vec3(cos(angle)*radius,sin(angle)*radius,velocity.z*t);p.y-=t*t*.7;}
  float fade=1.-smoothstep(design.z*.42,design.z,t);float twinkle=.72+.28*pow(.5+.5*sin(t*17.+spark*7.1-timing.y*12.),3.);if(kind>3.5&&kind<4.5)twinkle=.4+.6*pow(.5+.5*sin(t*19.+spark*11.7),4.);alpha=smoothstep(0.,.04,t)*fade*twinkle*exp(-timing.y*15.);size=mix(2.1,.6,clamp(timing.y/.13,0.,1.));tint=mix(color,vec3(1.,.82,.46),smoothstep(1.,design.z,t)*(kind>1.5&&kind<2.5?.65:.06));if(spark<.5&&t<.1){p=position;size=4.;alpha*=1.-reduced;}}
  // Tail endpoints die with their heads: no long shower after the burst.
  alpha*=1.-smoothstep(design.z*.55,design.z,clock-timing.x-flight);
  if(kind>10.5&&kind<11.5&&age>=flight+timing.w){float t=age-flight-timing.w;alpha*=1.-smoothstep(.8,1.65,t);}
  // Every letter uses one clock, one lifetime and one opacity. No staggered
  // partial letter death: a quick burst opens the whole phrase, then scatters it.
- if(kind>9.5&&kind<10.5&&age>=flight){float t=clock-timing.x-flight;float opening=1.-pow(1.-clamp(t/.4,0.,1.),3.);p=position+velocity*opening;float scatter=smoothstep(.75,design.z,t);float angle=spark*2.399963;p+=vec3(cos(angle)*(9.+mod(spark,9.)),sin(angle)*(6.+mod(spark,6.))+2.,sin(spark*1.7)*5.)*scatter;p.y-=scatter*scatter*4.;alpha=smoothstep(0.,.08,t)*(1.-smoothstep(.9,design.z,t));tint=color;size=2.;}
+ if(kind>9.5&&kind<10.5&&age>=flight){float t=clock-timing.x-flight;float opening=1.-pow(1.-clamp(t/.55,0.,1.),3.);p=position+velocity*opening;float spread=max(0.,t-.65);float fall=max(0.,t-.45);float angle=spark*2.399963;p+=vec3(cos(angle)*(5.+mod(spark,7.)),sin(angle)*1.8,sin(spark*1.7)*3.)*spread;p.y-=4.8*fall*fall;alpha=smoothstep(0.,.08,t)*(1.-smoothstep(.9,design.z,t));tint=color;size=2.;}
  alpha*=mix(1.,.38,reduced);vec4 eye=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*eye;gl_PointSize=clamp(420.*pixelRatio*design.y/max(1.,-eye.z),1.4,5.8*pixelRatio)*size;if(alpha<.001)gl_Position=vec4(2.,2.,2.,1.);}`,
  fragmentShader:`varying vec3 tint;varying float alpha;void main(){float r=length(gl_PointCoord-.5)*2.;float a=(exp(-r*r*11.)+exp(-r*r*3.)*.32)*(1.-smoothstep(.72,1.,r))*alpha;if(a<.008)discard;gl_FragColor=vec4(tint*2.,a);
 #include <tonemapping_fragment>

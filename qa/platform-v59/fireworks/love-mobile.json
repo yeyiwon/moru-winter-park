@@ -1,0 +1,164 @@
+{
+  "environment": "macOS Chrome 390x844 touch emulation / medium",
+  "physicalWindowsMobile": "UNKNOWN",
+  "stages": {
+    "wheel-inner": {
+      "age": 92.219,
+      "particles": 11664
+    },
+    "wheel-outward": {
+      "age": 94.01899999999999,
+      "particles": 5184
+    },
+    "message-rise-low": {
+      "age": 113.26100000000001,
+      "particles": 18360
+    },
+    "message-rise-high": {
+      "age": 114.661,
+      "particles": 7992
+    },
+    "message-burst": {
+      "age": 115.611,
+      "particles": 6696
+    },
+    "message-readable": {
+      "age": 116.06099999999999,
+      "particles": 6696
+    },
+    "message-scatter": {
+      "age": 116.711,
+      "particles": 2808
+    },
+    "message-fall": {
+      "age": 117.711,
+      "particles": 216
+    },
+    "message-gone": {
+      "age": 118.361,
+      "particles": 216
+    },
+    "off": {
+      "fps": 55.20877371863358,
+      "p95": 33.30000000000291,
+      "p99": 33.400000000001455,
+      "maxFrameMs": 33.400000000001455,
+      "calls": [
+        953,
+        1359
+      ],
+      "triangles": [
+        4446701,
+        7577093
+      ],
+      "memory": {
+        "geometries": 792,
+        "textures": 35
+      },
+      "cue": 0,
+      "regions": [
+        0.6000000238418579,
+        0.18000000715255737,
+        0.18000000715255737,
+        0.30000001192092896,
+        0.1599999964237213,
+        0.550000011920929,
+        0.3499999940395355,
+        0.6000000238418579,
+        0.5,
+        0.30000001192092896
+      ],
+      "particles": 0
+    },
+    "middle": {
+      "fps": 49.59130781499199,
+      "p95": 33.400000000001455,
+      "p99": 33.5,
+      "maxFrameMs": 33.5,
+      "calls": [
+        956,
+        1359
+      ],
+      "triangles": [
+        4439093,
+        7573819
+      ],
+      "memory": {
+        "geometries": 792,
+        "textures": 35
+      },
+      "cue": 2,
+      "regions": [
+        0.699999988079071,
+        0.4000000059604645,
+        0.75,
+        0.6499999761581421,
+        0.20000000298023224,
+        0.47999998927116394,
+        0.6000000238418579,
+        0.5,
+        0.4000000059604645,
+        0.5
+      ],
+      "particles": 6480
+    }
+  },
+  "score": {
+    "shells": 106,
+    "wheels": [
+      91.719,
+      91.719
+    ],
+    "message": {
+      "at": 112.861,
+      "pattern": "message",
+      "x": 0,
+      "y": 5,
+      "z": -80.58436669781804,
+      "launchX": 0,
+      "launchZ": -32,
+      "height": 110,
+      "flight": 2.6,
+      "color": "#ffe7bd",
+      "size": 1,
+      "life": 2.8,
+      "tilt": 0.19034016402438284,
+      "wind": 0
+    }
+  },
+  "repeats": [
+    {
+      "memory": {
+        "geometries": 792,
+        "textures": 35
+      },
+      "active": false,
+      "points": 0
+    },
+    {
+      "memory": {
+        "geometries": 792,
+        "textures": 35
+      },
+      "active": false,
+      "points": 0
+    },
+    {
+      "memory": {
+        "geometries": 792,
+        "textures": 35
+      },
+      "active": false,
+      "points": 0
+    },
+    {
+      "memory": {
+        "geometries": 792,
+        "textures": 35
+      },
+      "active": false,
+      "points": 0
+    }
+  ],
+  "errors": []
+}

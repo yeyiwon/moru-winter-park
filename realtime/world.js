@@ -67,6 +67,16 @@ export class RealtimeWorld{
   if(b.action==='relocate')for(const [ws,s]of this.clients)if(s.id===b.id){s.profile={...s.profile,...b.profile,updatedAt:now};s.poseAt=now;s.seen=now;this.save(ws,s);}
   if(b.action==='revoke'){this.revoked.set(b.id,now+125000);for(const [ws,s]of this.clients)if(s.id===b.id){this.clients.delete(ws);ws.close(4001,'Session revoked');}}
   if(b.action==='patch')for(const [ws,s]of this.clients)if(s.id===b.id){s.profile={...s.profile,...b.profile};this.save(ws,s);}
+  if(b.action==='chat'&&b.profile?.chat&&Number.isFinite(b.profile.chatAt)){
+   // Chat is pushed at commit time, independently of each peer's pose cadence.
+   const sender=[...this.clients.values()].find(s=>s.id===b.id),profile=sender?.profile||b.profile;
+   // A delayed HTTP chat must never undo a newer room admission or nickname.
+   if((profile.chatAt||0)<=b.profile.chatAt){
+    for(const [ws,s]of this.clients)if(s.id===b.id){s.profile={...s.profile,chat:b.profile.chat,chatAt:b.profile.chatAt};this.save(ws,s);}
+    const event={type:'chat',id:b.id,name:profile.name,message:b.profile.chat,at:b.profile.chatAt,serverTime:now};
+    for(const [ws,s]of this.clients)if(s.profile.region===profile.region)this.send(ws,event);
+   }
+  }
   if('fireworks'in b)this.fireworks=b.fireworks;
   if(b.rideSeats)this.rideSeats=b.rideSeats;
   if(b.action==='profile')return{profile:[...this.clients.values()].find(s=>s.id===b.id)?.profile||null};

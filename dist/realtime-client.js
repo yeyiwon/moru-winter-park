@@ -1,5 +1,5 @@
 import {serverNow,observeServerTime} from './server-clock.js';
-export function createRealtimeClient({request,pose,onSnapshot,onActive=()=>{},onStatus=()=>{},onCheckpoint=()=>{},Socket=globalThis.WebSocket,clock=Date.now}){
+export function createRealtimeClient({request,pose,onSnapshot,onChat=()=>{},onActive=()=>{},onStatus=()=>{},onCheckpoint=()=>{},Socket=globalThis.WebSocket,clock=Date.now}){
  let socket=null,timer=null,renew=null,retry=null,active=false,enabled=true,disposed=false,attempts=0,seq=0,next=0,lastMessage=0,starting=null,latestRTT=null,lastReport=0;
  const pending=new Map();
  const status=value=>onStatus(value);
@@ -12,6 +12,7 @@ export function createRealtimeClient({request,pose,onSnapshot,onActive=()=>{},on
    const ws=new Socket(data.url,['winter-v1','auth.'+data.ticket]);socket=ws;seq=0;next=0;lastMessage=clock();
    ws.onmessage=event=>{if(socket!==ws)return;let message;try{message=JSON.parse(event.data);}catch{return;}
     lastMessage=clock();if(message.type==='rejected'){pending.clear();next=clock()+200;if(message.code==='movement')onCheckpoint();return;}
+    if(message.type==='chat'){if(typeof message.id==='string'&&typeof message.name==='string'&&typeof message.message==='string'&&Number.isFinite(message.at))onChat(message);return;}
     if(!['snapshot','ready'].includes(message.type)||!Array.isArray(message.people))return;
     if(pending.has(message.ack)){latestRTT=Math.max(0,clock()-pending.get(message.ack));pending.delete(message.ack);}
     const first=!active;active=true;attempts=0;if(first){status('');onActive(true);}onSnapshot(message);

@@ -1,3 +1,7 @@
+## v59 배포 준비
+
+기존 Sites API·Vercel 프런트엔드·Cloudflare 실시간 서버를 유지한다. 전체 장식 삭제는 격리된 테스트 데이터로 검증하며 운영 장식·소원·접속자 데이터를 삭제하지 않는다. 배포 완료 후 세 서비스의 동일 소스 revision, 공식 도메인과 새 로딩 자산 해시를 별도 기록으로 확인한다. 아직 아래 v58 배포 기록이 마지막 완료된 운영 상태다.
+
 # v58 운영 배포 확인 — 2026-11-20
 
 공식 주소: **https://moru-winter-park.vercel.app/** · 기존 화면 갱신: **https://moru-winter-park.vercel.app/refresh.html**

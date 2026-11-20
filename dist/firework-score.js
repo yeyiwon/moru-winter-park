@@ -24,7 +24,7 @@ export function createFireworkScore(seed=1,musicId){
   for(const side of [-1,1]){burst(wheelAt,'wheel',side*59,83,accents[side>0?1:0],1,2.5);Object.assign(score.at(-1),{life:5.6,wind:side,volleyAt:wheelAt});}
   for(const section of track.sections){
    if(section.afterglow)continue;
-   const finale=section.cue===4,interval=finale?2.5:section.cue===0?5.2:3.8;
+   const finale=section.cue===4,interval=finale?2.5:section.cue===0?5.2:3.0;
    for(const at of track.accents){
     if(at<section.start||at>=section.end||at<3||at-previous<interval||at>coda-8||Math.abs(at-wheelAt)<4.5)continue;
     previous=at;const palette=castleShowCues[section.cue].palette.map((c,i)=>sequence%3===1?accents[(i+colorOffset)%3]:c);

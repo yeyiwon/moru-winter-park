@@ -1,7 +1,7 @@
 import {digest} from './invitations.js';
 export async function decorationRevision(rows){return (await digest(rows.map(r=>r.id).sort().join('|'))).slice(0,24);}
 export async function clearDecorations(DB,self,body,now){
- const rows=(await DB.prepare('SELECT * FROM tree_decorations WHERE room=? ORDER BY created_at LIMIT 160').bind(self.room).all()).results||[];
+ const rows=(await DB.prepare('SELECT * FROM tree_decorations WHERE room=? ORDER BY created_at,id').bind(self.room).all()).results||[];
  if(!rows.length||body.count!==rows.length||body.revision!==await decorationRevision(rows)||body.confirmation!==`장식 ${rows.length}개 삭제`)return {status:409,error:'장식 목록이 변경됐습니다. 수량을 다시 확인해 주세요.'};
  const backupId=crypto.randomUUID();
  // Snapshot only the confirmed decorations. Concurrent new ornaments and all

@@ -109,3 +109,26 @@ test('all farewell letters share the exact start, lifetime and tail-free fade on
   show.update(track.duration*1000);assert.equal(show.root.geometry.drawRange.count,0);assert.equal(show.root.parent?.getObjectByName('firework-drifting-smoke'),undefined);show.dispose();
  }
 });
+
+test('slow mobile seeks finish rather than being restarted every frame',async()=>{
+ const {Audio}=mockAudio(),context=new Audio();let time=0,clock=10000,readyAt=0,seeks=0,finished=0;
+ const element={paused:true,readyState:4,seeking:false,load(){},removeAttribute(){},pause(){this.paused=true;},async play(){this.paused=false;},get currentTime(){return time;},set currentTime(v){time=v;this.seeking=true;readyAt=clock+300;seeks++;}};
+ const music=createFireworkMusic(context,context.destination,()=>{},()=>element),show={id:'slow',musicId:showTracks[0].id,state:'playing',startsAt:0};
+ for(let n=0;n<120;n++){clock=10000+n*1000/60;if(element.seeking&&clock>=readyAt){element.seeking=false;finished++;}if(!element.seeking&&!element.paused)time+=1/60;music.update(show,clock);await Promise.resolve();}
+ assert.equal(seeks,1);assert.equal(finished,1);assert.equal(element.seeking,false);assert.ok(Math.abs(time-clock/1000)<.4);
+ music.update(show,clock,false);music.update(show,clock+3000);assert.equal(seeks,2,'resume aligns once');music.dispose();
+});
+test('buffer starvation does not cause seeking and a real sustained drift is corrected once',async()=>{
+ const {Audio}=mockAudio(),context=new Audio();let time=10,seeks=0;
+ const element={paused:true,readyState:4,seeking:false,load(){},removeAttribute(){},pause(){this.paused=true;},async play(){this.paused=false;},get currentTime(){return time;},set currentTime(v){time=v;seeks++;}};
+ const music=createFireworkMusic(context,context.destination,()=>{},()=>element),show={id:'stall',musicId:showTracks[0].id,state:'playing',startsAt:0};music.update(show,10000);await new Promise(r=>setImmediate(r));element.readyState=2;
+ for(let now=13000;now<17000;now+=100)music.update(show,now);assert.equal(seeks,0,'buffering remains decoder-owned');element.readyState=4;
+ for(let now=17000;now<19000;now+=100){music.update(show,now);time+=.1;}assert.equal(seeks,1);music.dispose();
+});
+test('blocked mobile media can play directly inside a gesture without losing mute',async()=>{
+ const {Audio}=mockAudio(),context=new Audio();let gesture=false;
+ const element={paused:true,readyState:4,currentTime:0,load(){},removeAttribute(){},pause(){this.paused=true;},play(){if(!gesture)return Promise.reject(Object.assign(Error('gesture'),{name:'NotAllowedError'}));this.paused=false;return Promise.resolve();}};
+ const music=createFireworkMusic(context,context.destination,()=>{},()=>element),show={id:'gesture',musicId:showTracks[0].id,state:'playing',startsAt:0};music.update(show,10000);await new Promise(r=>setImmediate(r));assert.equal(music.blocked,true);
+ gesture=true;music.resumeFromGesture();gesture=false;await new Promise(r=>setImmediate(r));assert.equal(element.paused,false);assert.equal(music.blocked,false);
+ music.update(show,12000,false);gesture=true;music.resumeFromGesture();assert.equal(element.paused,true);music.dispose();
+});

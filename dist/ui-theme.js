@@ -1,7 +1,7 @@
 // Apply the saved UI preference before styles paint; the world clock is independent.
 (()=>{
  const root=document.documentElement,key='winter-ui-theme';
- try{root.dataset.uiTheme=localStorage.getItem(key)==='dark'?'dark':'glass';}catch{root.dataset.uiTheme='glass';}
+ try{root.dataset.uiTheme=localStorage.getItem(key)==='glass'?'glass':'dark';}catch{root.dataset.uiTheme='dark';}
  document.addEventListener('DOMContentLoaded',()=>{
   const control=document.querySelector('#ui-dark-mode');if(!control)return;
   control.checked=root.dataset.uiTheme==='dark';
