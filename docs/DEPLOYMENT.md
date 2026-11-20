@@ -23,7 +23,7 @@
 - Vercel error/fatal 조회 결과 없음. Sites의 배포 crawler 시간대에는 realtime 요청 취소 1건, 자산 `Network connection lost` 1건, 미제공 robots/sitemap/favicon 404가 있었다. 자산은 공식·API 원점에서 각 2회 200/동일 크기로 재확인했다. 단일 연결 중단의 원인은 확정하지 않으며 브라우저 검사에서는 재현되지 않았다.
 - **실물 Windows/Edge·Galaxy/Samsung Browser·iPhone Safari, 실제 가상 키보드·발열·수 시간 내구 시험은 UNKNOWN**. Mac Chrome과 터치 화면 검증이다. 실제 소유자 로그인은 사용자가 이전 운영에서 확인했고 이번에는 게스트 권한·관리자 진입 경로를 확인했다.
 
-GitHub Actions의 최종 상태는 완료 후 덧붙인다. 배포 후 문서/측정은 `codex/v53-release-verification` 브랜치에 보관하며 실행 SHA는 그대로 유지한다. [전체 변경](release-v53.md).
+[GitHub Actions 44670009060](https://github.com/yeyiwon/moru-winter-park/actions/runs/44670009060) **success**: 같은 운영 SHA의 전체 자동 검사·3종 빌드·용량·10~100명 부하·Linux 공개 멀티플레이/모바일 반응형 브라우저 검사까지 통과했다. 배포 후 문서/측정은 `codex/v53-release-verification` 브랜치에 보관하며 실행 SHA는 그대로 유지한다. [전체 변경](release-v53.md).
 
 ---
 

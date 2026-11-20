@@ -74,9 +74,21 @@
         "status": 404
       }
     ],
-    "note": "Deployment crawler/window events; isolated network disconnect cause not established. No exception or 5xx during official browser smoke."
+    "note": "Deployment crawler/window events; isolated network disconnect cause not established. No exception or 5xx during official browser smoke.",
+    "laterFiveMinutes": "Only one /api/world-state 401, Worker outcome ok; no 5xx or exception."
   },
   "physicalWindows": "UNKNOWN",
   "physicalMobile": "UNKNOWN",
-  "liveOwnerAuthentication": "User-confirmed previously, not repeated by agent"
+  "liveOwnerAuthentication": "User-confirmed previously, not repeated by agent",
+  "githubActions": {
+    "id": 44670009060,
+    "status": "completed",
+    "conclusion": "success",
+    "url": "https://github.com/yeyiwon/moru-winter-park/actions/runs/44670009060"
+  },
+  "liveChecks": {
+    "ui": 60,
+    "gameplay": 15,
+    "sharedShow": "PASS: Wedding Entrance complete 123.245714 seconds, 3 clients, late join, same seed and clock"
+  }
 }

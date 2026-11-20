@@ -1,0 +1,138 @@
+{
+  "runId": 44670009060,
+  "conclusion": "success",
+  "revision": "8b3b4498dc140b017a833c9ab28ec74f445d7132",
+  "tests": {
+    "passed": 543,
+    "failed": 0
+  },
+  "browser": {
+    "version": "157.0.8103.50",
+    "renderMode": "low",
+    "physicalMobile": false,
+    "checks": [
+      {
+        "name": "public guest entry and two rendered peers",
+        "ok": true
+      },
+      {
+        "name": "walking updates through WebSocket",
+        "ok": true,
+        "details": {
+          "x": 0.4847113684425178,
+          "y": 0.95,
+          "z": 23.833974302733925,
+          "yaw": 1.623251225047504,
+          "mode": "",
+          "lean": 0,
+          "tilt": 0,
+          "brake": false,
+          "air": 0,
+          "speed": 1.9254204537507327,
+          "gesture": "",
+          "heldItem": "",
+          "balloonTone": -1,
+          "balloonStyle": "classic",
+          "roast": 0
+        }
+      },
+      {
+        "name": "mobile joystick beyond rim keeps full walking input",
+        "ok": true,
+        "details": {
+          "pose": {
+            "x": 0.44996840211969713,
+            "y": 0.95,
+            "z": 23.35035791771644,
+            "yaw": 2.3153572798217015,
+            "mode": "",
+            "lean": 0,
+            "tilt": 0,
+            "brake": false,
+            "air": 0,
+            "speed": 4.1332709063235775,
+            "gesture": "",
+            "heldItem": "",
+            "balloonTone": -1,
+            "balloonStyle": "classic",
+            "roast": 0
+          },
+          "hidden": false,
+          "body": "world-ready has-walked",
+          "active": true,
+          "knob": "translate(calc(-50% + 20.9315px), calc(-50% - 15.4232px))"
+        }
+      },
+      {
+        "name": "mobile touch release stops movement",
+        "ok": true
+      },
+      {
+        "name": "ferris reservation and motion survive live validation",
+        "ok": true
+      },
+      {
+        "name": "ski reservation and motion survive live validation",
+        "ok": true
+      },
+      {
+        "name": "chat persisted",
+        "ok": true
+      },
+      {
+        "name": "chat visible on other device",
+        "ok": true
+      },
+      {
+        "name": "guest admin API denied",
+        "ok": true
+      },
+      {
+        "name": "same server countdown and seed",
+        "ok": true
+      },
+      {
+        "name": "mobile panel inside viewport",
+        "ok": true,
+        "details": {
+          "page": false,
+          "dialog": false
+        }
+      },
+      {
+        "name": "landscape panel inside viewport",
+        "ok": true
+      },
+      {
+        "name": "offline reconnection",
+        "ok": true
+      },
+      {
+        "name": "admin metrics with authenticated sockets",
+        "ok": true,
+        "details": {
+          "connections": 3,
+          "service": "healthy"
+        }
+      },
+      {
+        "name": "owner controls same show",
+        "ok": true
+      },
+      {
+        "name": "no browser exceptions",
+        "ok": true,
+        "details": []
+      },
+      {
+        "name": "no unexpected console or shader errors",
+        "ok": true,
+        "details": []
+      }
+    ],
+    "errors": [],
+    "consoleErrors": [],
+    "httpErrors": []
+  },
+  "note": "Pinned checkout/setup-node Actions emitted a Node 20-to-24 deprecation warning; all steps succeeded."
+}
