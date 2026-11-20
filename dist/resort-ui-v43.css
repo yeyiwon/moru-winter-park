@@ -250,11 +250,18 @@ body:has(#place-card:not([hidden]):not(.guide-card)) :is(#park-guide-hint,#obser
 body.world-owner:not(.invite-gate) #pane-social>:not(#admin-panel){display:none}
 
 /* Distinguish the local speaker by identity, including on the world preview. */
-#chat-log p .chat-author{display:inline-block;font-weight:750;line-height:1.5;margin:0 6px 0 0;padding:0 5px;border-radius:5px;text-shadow:none;color:#65358a;background:rgba(239,229,255,.94)}
-#chat-log p[data-author=self] .chat-author{color:#075d57;background:rgba(211,246,236,.94)}
-:root[data-ui-theme=dark] #chat-log p .chat-author{color:#ddc4ff;background:rgba(52,36,71,.94)}
-:root[data-ui-theme=dark] #chat-log p[data-author=self] .chat-author{color:#a2f4de;background:rgba(19,57,53,.94)}
+#chat-log p .chat-author{display:inline;font-weight:700;line-height:inherit;margin:0 4px 0 0;padding:0;border-radius:0;text-shadow:inherit;color:#65358a;background:none}
+#chat-log p[data-author=self] .chat-author{color:#075d57;background:none}
+:root[data-ui-theme=dark] #chat-log p .chat-author{color:#ddc4ff;background:none}
+:root[data-ui-theme=dark] #chat-log p[data-author=self] .chat-author{color:#a2f4de;background:none}
 
 /* Short speech stays compact without shrinking its readable text. */
 #self-bubble{min-width:0;padding:6px 12px;line-height:1.4;border-radius:14px!important}
 @media(pointer:coarse),(max-width:650px){#self-bubble{padding:4px 9px;line-height:1.4;border-radius:11px!important}}
+
+/* Recent chat remains unboxed; clear type separates it from snow and sky. */
+#chat-log p{font-weight:500}
+#chat-log[data-mode=recent]{color:#fff;text-shadow:0 1px 3px #061120,0 0 2px #061120aa}
+#chat-log[data-mode=recent] p{font-size:12px;font-weight:500;line-height:1.6}
+#chat-log[data-mode=recent] p .chat-author{color:#ddc4ff}
+#chat-log[data-mode=recent] p[data-author=self] .chat-author{color:#a2f4de}
