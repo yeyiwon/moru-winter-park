@@ -12,3 +12,5 @@ dist/.openai/
 web-dist/
 .env*
 .vercel
+
+.wrangler/
