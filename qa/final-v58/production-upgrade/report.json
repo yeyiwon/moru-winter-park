@@ -1,5 +1,25 @@
 {
-  "checks": [],
-  "errors": [],
-  "failure": "page.waitForFunction: Timeout 120000ms exceeded.\n    at /private/tmp/winter-v58-production-upgrade.mjs:3:40"
+  "checks": [
+    {
+      "name": "official dark switch changes the UI",
+      "ok": true
+    },
+    {
+      "name": "real recovery retains name, session and dark mode",
+      "ok": true
+    },
+    {
+      "name": "current release includes embedded management",
+      "ok": true
+    },
+    {
+      "name": "light mode returns without removing the setting",
+      "ok": true
+    },
+    {
+      "name": "no browser exceptions",
+      "ok": true
+    }
+  ],
+  "errors": []
 }
