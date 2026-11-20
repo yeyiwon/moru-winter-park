@@ -1,10 +1,10 @@
-import {museumGalleries} from './district-layout.js';
+import {observatoryLayout} from './observatory-layout.js';
 import {diningSeats} from './ryokan-service.js';
 // Room-local architecture and collision share these dimensions. World positions are
 // separate from the outdoor map, so an interior can be spacious without moving its door.
 const floor=.09;
 export const interiorRooms={
- museum:{id:'museum',name:'별빛 만물관',x:600,z:0,rx:24,rz:22,floor,ceiling:28,shape:'rectangle',entry:{x:586,z:0},exit:{x:577,z:0},arrivalYaw:Math.PI/2,ambient:'#b7d8e9'},
+ museum:{id:'museum',name:'별빛 만물관',x:600,z:0,rx:24,rz:22,floor,ceiling:28,shape:'rectangle',entry:{x:590,z:0},exit:{x:577,z:0},arrivalYaw:Math.PI/2,ambient:'#b7d8e9'},
  ryokan:{id:'ryokan',name:'료칸',x:400,z:0,rx:21,rz:17,floor,ceiling:11.5,shape:'rectangle',entry:{x:400,z:5.3},exit:{x:400,z:15.2},arrivalYaw:Math.PI,ambient:'#e9c79e'},
 };
 export const ryokanFixtures=[
@@ -33,7 +33,7 @@ export const ryokanFixtures=[
 ];
 export const interiorInteractions=[
  {id:'exit-museum',name:'밖으로',room:'museum',kind:'exit',x:577,z:0},
- ...museumGalleries.map(g=>({id:'gallery-'+g.id,name:g.name,room:'museum',kind:'gallery',gallery:g.id,x:600+g.x,z:g.z+3.3})),
+ {id:'observatory-quiz',name:'퀴즈 풀기',room:'museum',kind:'quiz-station',x:600+observatoryLayout.quiz.x,z:observatoryLayout.quiz.z,r:observatoryLayout.quiz.r},
  {id:'interior-aquarium',name:'수족관',room:'ryokan',kind:'aquarium',x:388,z:11.8},
  {id:'exit-ryokan',name:'밖으로',room:'ryokan',kind:'exit',x:400,z:15.2},
  {id:'interior-tea',name:'차',room:'ryokan',kind:'tea',x:387,z:8.7},
@@ -54,7 +54,7 @@ export const interiorActivityPoses={
 };
 export function interiorActivityPoseValid(x,y,z){return Number.isFinite(x+y+z)&&[...Object.values(interiorActivityPoses),...diningSeats].some(p=>Math.hypot(x-p.x,z-p.z)<.22&&Math.abs(y-p.y)<.2);}
 export function interiorAt(x,z){if(!Number.isFinite(x+z))return null;return Object.values(interiorRooms).find(r=>Math.abs(x-r.x)<=r.rx+.6&&Math.abs(z-r.z)<=r.rz+.6)||null;}
-export const museumFixtures=[{x:-18,z:16,rx:2.05,rz:.7},{x:18,z:16,rx:2.05,rz:.7},{x:0,z:0,r:4.2},...museumGalleries.map(g=>({x:g.x,z:g.z,r:2.4}))];
+export const museumFixtures=[{x:-18,z:16,rx:2.05,rz:.7},{x:18,z:16,rx:2.05,rz:.7},observatoryLayout.telescope,observatoryLayout.console,...observatoryLayout.piers];
 export function interiorSurfaceHeight(x,z){return interiorAt(x,z)?floor:null;}
 export function interiorCanStandAt(x,z,radius=.35){const room=interiorAt(x,z);if(!room||!Number.isFinite(radius)||radius<0)return false;const dx=x-room.x,dz=z-room.z;if(room.shape==='ellipse'){if((dx/(room.rx-radius-.25))**2+(dz/(room.rz-radius-.25))**2>1)return false;}else if(Math.abs(dx)>room.rx-radius-.25||Math.abs(dz)>room.rz-radius-.25)return false;const obstacles=room.id==='museum'?museumFixtures:ryokanFixtures;return !obstacles.some(o=>o.r?Math.hypot(dx-o.x,dz-o.z)<o.r+radius:Math.abs(dx-o.x)<o.rx+radius&&Math.abs(dz-o.z)<o.rz+radius);}
 export function interiorCanMoveFrom(from,to){const a=interiorAt(from.x,from.z),b=interiorAt(to.x,to.z);if(!a||!b||a.id!==b.id)return false;return interiorCanStandAt(to.x,to.z)&&Math.abs(interiorSurfaceHeight(from.x,from.z)-interiorSurfaceHeight(to.x,to.z))<=.22;}

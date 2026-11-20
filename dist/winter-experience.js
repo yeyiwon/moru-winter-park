@@ -110,7 +110,7 @@ export function createWinterExperience(winter,companion,travel){
   if(['carousel','ferris'].includes(id))button('탑승',async()=>{if(boarding)return;cancel();const epoch=boardingEpoch;boarding=true;try{if(id==='ferris'&&window.reserveRide){const claim=await window.reserveRide('ferris');if(epoch!==boardingEpoch){window.releaseRide?.();return;}reservation=claim;}parkRide=id;lifecycle.enter(place);lifecycle.activate();parkSeat=parseInt((window.labGuestId||'00').slice(0,2),16)||0;companion.equip('none');hud.hidden=false;label.textContent=place.name;stopButton.textContent='내리기';card.hidden=true;window.labSound?.('ride');}catch(error){document.querySelector('#place-description').textContent=error.message;}finally{boarding=false;}});
   else if(['bench','dining'].includes(place.kind))renderSeatChoices(place,true);
   else if(place.kind==='exit')button('나가기',()=>window.exitInterior?.());
-  else if(place.kind==='gallery'){button('전시 보기',()=>window.openKnowledgeExhibit?.(place.gallery));button('퀴즈',()=>window.openQuickQuiz?.({gallery:place.gallery}));if(place.gallery==='logic')button('별자리 맞추기',()=>window.openMuseumPuzzle?.());}
+  else if(place.kind==='quiz-station')button('퀴즈 풀기',()=>{if(Math.hypot(position.x-place.x,position.z-place.z)<=place.r)window.openQuickQuiz?.();});
   else if(place.room)button(place.name,()=>{cancel();lifecycle.enter(place);lifecycle.activate();const mode=['aquarium','view'].includes(place.kind)?'view':place.kind==='dining'?'dining':place.kind==='tea'?'tea':place.kind==='footbath'?'bath':place.kind==='sauna'?'sauna':'rest';rest={...interiorActivityPoses[id],returnPosition:{x:place.x,z:place.z},mode,view:interiorActivityPoses[id].view||activityCameraView(place.kind==='footbath'?'rest':place.kind,{yaw:interiorActivityPoses[id].yaw,mobile:window.innerWidth<650})||{distance:8,pitch:.34,yaw:.25,lookHeight:-.5}};companion.equip('none');card.hidden=true;hud.hidden=false;stopButton.textContent='일어나기';label.textContent='';window.labSound?.(place.kind==='footbath'?'footbath':mode==='tea'?'tea-pour':mode==='dining'?'dining':'rest');});
   else if(id==='ski-gear'){button('스노보드',()=>{window.dispatchEvent(new CustomEvent('lab:equip-winter',{detail:{gear:'board'}}));companion.equip('board');card.hidden=true;});button('스키',()=>{window.dispatchEvent(new Event('lab:equip-winter'));companion.equip('ski');card.hidden=true;});button('장비 해제',()=>{window.dispatchEvent(new Event('lab:unequip-winter'));companion.equip('none');card.hidden=true;});}
   else if(id==='snowman')button('인사',()=>{window.dispatchEvent(new Event('lab:snowman'));card.hidden=true;});
@@ -165,7 +165,7 @@ export function createWinterExperience(winter,companion,travel){
    position={x,z};lifecycle.update(x,z);
    if(approach||boarding||parkRide||gesture||spa.active||rides.mode&&rides.mode!=='summit'||rest||window.treeDecorationActive?.()){card.hidden=true;return;}
    const nearbyRun=skiRunAt(x,z),resume= !completedSki&&z>=nearbyRun.startZ-7&&z<=nearbyRun.finish&&Math.abs(x-skiRunCenter(z,nearbyRun.id))<skiRunHalfWidth(z,nearbyRun.id)?[{id:'resume-ski',x,z,r:2}]:[];
-   const inside=interiorAt(x,z);const points=inside?[...interiorInteractions.filter(p=>!['interior-rest','interior-tea','interior-sauna'].includes(p.id)),...benchInteractions].filter(p=>p.room===inside.id).map(p=>({...p,r:2.8})):rides.mode==='summit'?[...resume,...benchInteractions.filter(p=>!p.room),...summitFacilities.map(p=>({...p,r:p.r??4})),...skiStarts.map(p=>({...p,id:'slope-'+p.id}))]:[
+   const inside=interiorAt(x,z);const points=inside?[...interiorInteractions.filter(p=>!['interior-rest','interior-tea','interior-sauna'].includes(p.id)),...benchInteractions].filter(p=>p.room===inside.id).map(p=>({...p,r:p.r??2.8})):rides.mode==='summit'?[...resume,...benchInteractions.filter(p=>!p.room),...summitFacilities.map(p=>({...p,r:p.r??4})),...skiStarts.map(p=>({...p,id:'slope-'+p.id}))]:[
     ...summitFacilities.map(p=>({...p,r:p.r??4})),...skiStarts.map(p=>({...p,id:'slope-'+p.id})),
     ...resume,...parkActivities,...benchInteractions.filter(p=>!p.room),...winter.destinations.filter(p=>!p.mapOnly&&p.id!=='onsen'&&p.kind!=='photo').map(p=>p.id==='tree'?{...p,x:treeLayout.x,z:treeLayout.z,r:26}:{...p,r:p.id==='ski'?6.5:4.2}),
     ...Object.entries(onsenEntrances).map(([activity,b])=>({id:'onsen',activity,...b.access,r:2.9}))
@@ -177,7 +177,7 @@ export function createWinterExperience(winter,companion,travel){
    // Keep a prompt at its boundary; a nearby seat always outranks the broad tree zone.
    const currentArea=current||candidates.find(p=>p.id===place?.id&&!p.activity);
    const next=eligible[0];
-   const keep=currentArea&&distanceTo(currentArea)<currentArea.r+.65&&(!next||next.id===currentArea.id||currentArea.id!=='tree'&&distanceTo(next)+.85>=distanceTo(currentArea));
+   const keep=currentArea&&distanceTo(currentArea)<currentArea.r+(currentArea.kind==='quiz-station'?0:.65)&&(!next||next.id===currentArea.id||currentArea.id!=='tree'&&distanceTo(next)+.85>=distanceTo(currentArea));
    const near=keep?currentArea:next;
    if(!near){card.hidden=true;return;}
    if(card.hidden||place?.id!==near.id||(near.activity&&card.dataset.activity!==near.activity))show(near.id,near.activity);

@@ -1,5 +1,6 @@
 // User intent is kept separate from collision clearance and temporary framing.
 export const cameraDefaults=Object.freeze({yaw:.33,pitch:.48,distance:16.5,fov:50,focusHeight:.45,interiorYaw:.5,interiorPitch:.65,interiorDistance:15});
+export const observatoryCameraDefaults=Object.freeze({yaw:-Math.PI/2,pitch:-.16,distance:12});
 const clamp=(value,min,max)=>Math.max(min,Math.min(max,value));
 const angleDelta=(to,from)=>Math.atan2(Math.sin(to-from),Math.cos(to-from));
 
@@ -39,12 +40,12 @@ export function createCameraPolicy(){
  function adoptCarouselView(){if(mode!=='carousel'||carouselManual)return;requested.distance=Math.max(24,requested.distance);requested.pitch=Math.min(.16,requested.pitch);carouselManual=true;}
  return {
   restoreView(saved){requested={yaw:saved.yaw,pitch:saved.pitch,distance:saved.distance};manualYaw=saved.manualYaw;skiAuto=mode==='ski'&&!manualYaw;revision++;},
-  adopt(view){requested={yaw:view.yaw,pitch:clamp(view.pitch,-.95,1.08),distance:clamp(view.distance,8,500)};manualYaw=true;skiAuto=false;revision++;},
+  adopt(view){requested={yaw:view.yaw,pitch:clamp(view.pitch,context==='museum'?-1.42:-.95,1.08),distance:clamp(view.distance,8,500)};manualYaw=true;skiAuto=false;revision++;},
   orbit(dx,dy,renderedYaw=requested.yaw){
    if(!Number.isFinite(dx)||!Number.isFinite(dy))return;adoptCarouselView();
    if(treeView){requested={...requested,...treeView};treeView=null;treeOffset=0;}
    if(dx){if(skiAuto)requested.yaw=renderedYaw;manualYaw=true;skiAuto=false;requested.yaw-=dx*.004;}
-   requested.pitch=clamp(requested.pitch+dy*.003,-.95,1.08);revision++;
+   requested.pitch=clamp(requested.pitch+dy*.003,context==='museum'?-1.42:-.95,1.08);revision++;
   },
   zoom(amount,renderedDistance){
    if(!Number.isFinite(amount))return;adoptCarouselView();
@@ -52,11 +53,11 @@ export function createCameraPolicy(){
    if(treeOffset){requested.distance=Number.isFinite(renderedDistance)?renderedDistance:requested.distance+treeOffset;treeOffset=0;}
    requested.distance=clamp(requested.distance+amount,context?5.5:8,context?24:Math.max(64,requested.distance));revision++;
   },
-  reset(){treeSaved=null;requested={yaw:context?cameraDefaults.interiorYaw:cameraDefaults.yaw,pitch:context?cameraDefaults.interiorPitch:cameraDefaults.pitch,distance:context?cameraDefaults.interiorDistance:cameraDefaults.distance};manualYaw=false;carouselManual=false;skiAuto=mode==='ski';treeOffset=0;treeView=null;revision++;},
+  reset(){treeSaved=null;requested=context==='museum'?{...observatoryCameraDefaults}:{yaw:context?cameraDefaults.interiorYaw:cameraDefaults.yaw,pitch:context?cameraDefaults.interiorPitch:cameraDefaults.pitch,distance:context?cameraDefaults.interiorDistance:cameraDefaults.distance};manualYaw=false;carouselManual=false;skiAuto=mode==='ski';treeOffset=0;treeView=null;revision++;},
   setContext(next){
    next=next||null;if(next===context)return;endTree();
    if(context)indoorViews.set(context,copy());else outside=copy();
-   if(next){const saved=indoorViews.get(next);if(saved)restore(saved);else{requested={yaw:cameraDefaults.interiorYaw,pitch:cameraDefaults.interiorPitch,distance:cameraDefaults.interiorDistance};manualYaw=false;}}
+   if(next){const saved=indoorViews.get(next);if(saved)restore(saved);else{requested=next==='museum'?{...observatoryCameraDefaults}:{yaw:cameraDefaults.interiorYaw,pitch:cameraDefaults.interiorPitch,distance:cameraDefaults.interiorDistance};manualYaw=false;}}
    else if(outside){restore(outside);outside=null;}
    context=next;mode='';carouselManual=false;skiAuto=false;treeOffset=0;treeView=null;
   },

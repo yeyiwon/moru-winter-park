@@ -1,3 +1,11 @@
+# v54 천문대 — 배포 준비
+
+공식 주소와 기존 Sites / Vercel / Cloudflare realtime 연결을 유지한다. 소스·기록·실제 PC/터치 화면 검증을 마친 뒤 동일 SHA로 배포한다. 현재 이 항목은 운영 완료를 뜻하지 않는다. 최종 배포 ID·운영 검사·데이터 보존 결과는 배포 후 갱신한다.
+
+배포 전 원본 행을 세션 내에서 읽어 비교 기준으로 보관했다: 소원 7, 장식 144, 개인 퀴즈 기록 5, 소유자 1. 이 내용이나 인증 정보는 저장소에 넣지 않는다. [변경·검증 범위](observatory-v54.md).
+
+---
+
 # v53 운영 반영 — 2026-11-20
 
 공식 주소: **https://moru-winter-park.vercel.app/** · 관리자: **https://moru-winter-park.vercel.app/admin**

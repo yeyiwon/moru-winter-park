@@ -3,7 +3,6 @@ import {createLuminousLoading} from './luminous-loading.js';
 import {createWinterFireworks} from './winter-fireworks.js';
 import {onsenEntrances} from './onsen-layout.js';
 import {createLightingThemeManager} from './lighting-theme.js';
-import {mountMuseumPuzzle} from './museum-puzzle.js';
 import './world-settings.js';
 import {interiorDoors,museumGalleries} from './district-layout.js';
 import {createCameraTransition,cameraDefaults,createCameraPolicy,smoothCameraAngle,followCameraHeight,cameraSubjectFocus,cameraOrbitPosition,cameraOrbitFocus,constrainCameraFocusToRoom,constrainCameraToRoom,constrainCameraToTerrain,clearSkiCameraTerrain} from './camera-policy.js';
@@ -57,7 +56,6 @@ const world=await buildWorldAsync(scene),lightingTheme=createLightingThemeManage
 world.experiment({kind:'bridge',key:true,lantern:false});const companion=createCompanion(),fluff=companion.group;fluff.position.set(0,.95,24);fluff.rotation.y=-.15;scene.add(fluff);
 const winterSky=createWinterSky(scene,hemi,moon,fill,world),visitors=createVisitors(scene,{rideChair:world.winter.rideChair,occluders:()=>activeInterior?interiors.occluders:world.occluders});
 const exteriorVisibility=new Map();const exteriorNodes=scene.children.filter(o=>![hemi,moon,moon.target,fill,fluff].includes(o));const interiors=buildInteriors(scene,{lazy:true,onLoad:root=>localLights.register(root),onRelease:root=>{cameraClearance.reset();localLights.unregister(root);}});window.labLoading?.complete('interiors');let activeInterior=null,transitioning=false,returnPosition=null;const roomFade=document.createElement('div');roomFade.id='room-transition';roomFade.setAttribute('aria-hidden','true');roomFade.setAttribute('role','status');document.body.append(roomFade);const roomLoader=createLuminousLoading(roomFade);window.labInterior=null;
-mountMuseumPuzzle();
 const experience=createWinterExperience(world.winter,companion,(id,show=true)=>window.travelToPlace(id,show));window.labWinter=world.winter;window.dispatchEvent(new Event('lab:winter-ready'));
 const glowCanvas=document.createElement('canvas');glowCanvas.width=glowCanvas.height=64;const gc=glowCanvas.getContext('2d'),gradient=gc.createRadialGradient(32,32,3,32,32,32);gradient.addColorStop(0,'#00000088');gradient.addColorStop(1,'#00000000');gc.fillStyle=gradient;gc.fillRect(0,0,64,64);
 const shadow=new T.Mesh(new T.PlaneGeometry(2.2,1.8),new T.MeshBasicMaterial({map:new T.CanvasTexture(glowCanvas),transparent:true,depthWrite:false}));shadow.rotation.x=-Math.PI/2;shadow.position.y=.105;scene.add(shadow);
@@ -100,7 +98,7 @@ function ripple(x,z){moveMarker.show(x,surfaceHeight(x,z),z);}
 async function moveTo(x,z){if(experience.active&&!experience.wake())return;route=[];destination=null;velocity.set(0,0);const next=await navigation.request({x:fluff.position.x,z:fluff.position.z},{x,z});if(!next)return;if(!next.length){status.textContent='그곳에는 길이 없습니다. 산책로를 눌러 주세요.';return;}route=next;destination=route.at(-1);ripple(destination.x,destination.z);window.labSound?.('move');}
 window.travelToIsland=id=>{const island=islands.find(r=>r.id===id);if(!island||island.hidden)return;experience.cancel();setInterior(null);placePlayer(island.spawn,Math.atan2(island.x-island.spawn.x,island.z-island.spawn.z));window.dismissParkDiscovery();ripple(island.spawn.x,island.spawn.z);window.labSound?.('travel');document.body.classList.add('has-walked');};
 function publishPlayerPose(){window.labPlayerState={x:fluff.position.x,y:fluff.position.y,z:fluff.position.z,yaw:fluff.rotation.y,mode:'',speed:0};}
-function setInterior(id){cameraClearance.reset();cameraPolicy.setContext(id);if(id&&!activeInterior)for(const o of exteriorNodes)exteriorVisibility.set(o,o.visible);const leaving=activeInterior&&!id;activeInterior=id;window.labInterior=id;interiors.setActive(id);for(const o of exteriorNodes){if(id)o.visible=false;else if(leaving)o.visible=exteriorVisibility.get(o)??true;}document.body.classList.toggle('inside-room',!!id);}
+function setInterior(id){cameraClearance.reset();cameraPolicy.setContext(id);if(id&&!activeInterior)for(const o of exteriorNodes)exteriorVisibility.set(o,o.visible);const leaving=activeInterior&&!id;activeInterior=id;window.labInterior=id;interiors.setActive(id);for(const o of exteriorNodes){if(id)o.visible=false;else if(leaving)o.visible=exteriorVisibility.get(o)??true;}document.body.classList.toggle('inside-room',!!id);window.dispatchEvent(new Event('lab:interior-change'));}
 function placePlayer(p,yawValue){endTreeFrame(false);cameraTransition.cancel();cameraClearance.reset();clear();jump=jumpVelocity=0;fluff.position.set(p.x,.86+surfaceHeight(p.x,p.z),p.z);fluff.rotation.y=yawValue;publishPlayerPose();cameraPolicy.setMode('',yaw);snapCameraToPlayer();}
 async function transitionRoom(change,name='겨울 공원'){if(transitioning)return;transitioning=true;clear();experience.cancel();roomFade.setAttribute('aria-label',name+' 준비 중');roomLoader.start();roomFade.setAttribute('aria-hidden','false');roomFade.classList.add('active');try{
  // Give the overlay a paint before building an uncached room; no invented progress/delay.
@@ -150,7 +148,7 @@ function positionCamera(mode='',dt=0){
  else constrainCameraToTerrain(orbitFocus,camera.position,surfaceHeight,8);
  scene.updateMatrixWorld();
  cameraClearance.update(camera,orbitFocus,activeInterior?interiors.occluders:wishShot||cameraTransition.active?treeCameraOccluders:world.occluders.concat(world.winter.rideOccluders||[]),dt,{mode:activeInterior||(wishShot||cameraTransition.active?'tree':mode)||'walk',maxRecoverySpeed:wishShot||cameraTransition.active?24:3.5,minDistance:mode==='ferris'?4:['carousel','lift'].includes(mode)?4.2:2.5});
- if(activeInterior)interiors.setCamera(camera.position);
+ if(activeInterior)interiors.setCamera(camera.position,camera,renderer.getPixelRatio());
  camera.up.set(0,1,0);camera.lookAt(orbitFocus);
 }
 function snapCameraToPlayer(){

@@ -141,7 +141,8 @@ export function buildInteriors(scene,{lazy=false,onLoad=()=>{},onRelease=()=>{},
  function release(id){const room=rooms[id];if(!room||id===active)return false;onRelease(room.root);for(let i=occluders.length-1;i>=0;i--){let node=occluders[i];while(node&&node!==room.root)node=node.parent;if(node)occluders.splice(i,1);}room.dispose?.();room.atmosphere.dispose();disposeOwnedScene(room.root);delete rooms[id];return true;}
  function maintain(now,nearEntrance=false){if(active||nearEntrance)lastUsed=now;if(lazy&&!active&&!nearEntrance&&now-lastUsed>retainMs)for(const id of Object.keys(rooms))release(id);}
  function setActive(id){active=id&&ensure(id)?id:null;root.visible=!!active;for(const [key,room]of Object.entries(rooms))room.root.visible=key===active;}
- function setCamera(position){const room=rooms[active];if(!room||!position)return;position.y=Math.min(position.y,room.layout.ceiling-.45);
+ function setCamera(position,camera,pixelRatio){const room=rooms[active];if(!room||!position)return;position.y=Math.min(position.y,room.layout.ceiling-.45);
+ room.setView?.(camera,pixelRatio);
  const bounds=room.layout,dx=position.x-bounds.x,dz=position.z-bounds.z;
  if(bounds.shape==='ellipse'){const curve=Math.sqrt(Math.max(.2,1-(Math.max(0,position.y)/bounds.ceiling)**2)),rx=(bounds.rx-1)*curve,rz=(bounds.rz-1)*curve,r=Math.hypot(dx/rx,dz/rz);if(r>1){position.x=bounds.x+dx/r;position.z=bounds.z+dz/r;}}
  else{position.x=Math.max(bounds.x-bounds.rx+1,Math.min(bounds.x+bounds.rx-1,position.x));position.z=Math.max(bounds.z-bounds.rz+1,Math.min(bounds.z+bounds.rz-1,position.z));}

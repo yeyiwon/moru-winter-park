@@ -1,0 +1,162 @@
+{
+  "environment": "local macOS Cloudflare workerd + isolated SQLite; actual WebSocket network; HTTP handlers in-process",
+  "createdAt": "2026-11-20T04:28:43.111Z",
+  "results": [
+    {
+      "clients": 10,
+      "durationSeconds": 20,
+      "sent": 2000,
+      "received": 2000,
+      "rejected": 0,
+      "successRatio": 1,
+      "roundTripMs": {
+        "p50": 1.68,
+        "p95": 5.01,
+        "p99": 28.36,
+        "max": 50.96875
+      },
+      "apiInProcessMs": {
+        "p95": 24.71
+      },
+      "serverHandlerP95Ms": 1,
+      "connections": 10,
+      "showIds": 1,
+      "seatClaims": [
+        409,
+        200,
+        409
+      ],
+      "reconnected": true,
+      "leaseRenewals": 0,
+      "storedWishes": 5,
+      "db": {
+        "queries": 203,
+        "writes": 64,
+        "poseWrites": 10
+      },
+      "bytesOut": 3110382,
+      "nodeRssBefore": 182730752,
+      "nodeRssAfter": 154402816,
+      "nodeCpuMs": 700.53,
+      "workerCpu": "UNKNOWN",
+      "errors": []
+    },
+    {
+      "clients": 25,
+      "durationSeconds": 20,
+      "sent": 5000,
+      "received": 5000,
+      "rejected": 0,
+      "successRatio": 1,
+      "roundTripMs": {
+        "p50": 4.78,
+        "p95": 13.95,
+        "p99": 35.93,
+        "max": 92.59362500000134
+      },
+      "apiInProcessMs": {
+        "p95": 54.46
+      },
+      "serverHandlerP95Ms": 1,
+      "connections": 25,
+      "showIds": 1,
+      "seatClaims": [
+        409,
+        200,
+        409
+      ],
+      "reconnected": true,
+      "leaseRenewals": 0,
+      "storedWishes": 5,
+      "db": {
+        "queries": 345,
+        "writes": 111,
+        "poseWrites": 25
+      },
+      "bytesOut": 18297894,
+      "nodeRssBefore": 171835392,
+      "nodeRssAfter": 186155008,
+      "nodeCpuMs": 1453.878,
+      "workerCpu": "UNKNOWN",
+      "errors": []
+    },
+    {
+      "clients": 50,
+      "durationSeconds": 20,
+      "sent": 9950,
+      "received": 9950,
+      "rejected": 0,
+      "successRatio": 1,
+      "roundTripMs": {
+        "p50": 6.81,
+        "p95": 17.43,
+        "p99": 32.54,
+        "max": 80.55783299999894
+      },
+      "apiInProcessMs": {
+        "p95": 81.99
+      },
+      "serverHandlerP95Ms": 1,
+      "connections": 50,
+      "showIds": 1,
+      "seatClaims": [
+        409,
+        409,
+        200
+      ],
+      "reconnected": true,
+      "leaseRenewals": 0,
+      "storedWishes": 5,
+      "db": {
+        "queries": 570,
+        "writes": 186,
+        "poseWrites": 50
+      },
+      "bytesOut": 47825660,
+      "nodeRssBefore": 193822720,
+      "nodeRssAfter": 207912960,
+      "nodeCpuMs": 2110.988,
+      "workerCpu": "UNKNOWN",
+      "errors": []
+    },
+    {
+      "clients": 100,
+      "durationSeconds": 20,
+      "sent": 20000,
+      "received": 20000,
+      "rejected": 0,
+      "successRatio": 1,
+      "roundTripMs": {
+        "p50": 11.79,
+        "p95": 25.64,
+        "p99": 57.71,
+        "max": 127.0712499999936
+      },
+      "apiInProcessMs": {
+        "p95": 183.32
+      },
+      "serverHandlerP95Ms": 1,
+      "connections": 100,
+      "showIds": 1,
+      "seatClaims": [
+        409,
+        409,
+        200
+      ],
+      "reconnected": true,
+      "leaseRenewals": 0,
+      "storedWishes": 5,
+      "db": {
+        "queries": 1020,
+        "writes": 336,
+        "poseWrites": 100
+      },
+      "bytesOut": 97820118,
+      "nodeRssBefore": 209534976,
+      "nodeRssAfter": 236978176,
+      "nodeCpuMs": 3251.102,
+      "workerCpu": "UNKNOWN",
+      "errors": []
+    }
+  ]
+}

@@ -1,0 +1,100 @@
+{
+  "environment": "macOS Chrome GPU; touch viewport emulation; physical Windows/Android/iOS UNKNOWN",
+  "views": [
+    {
+      "width": 1440,
+      "meanFPS": 60.0028094960968,
+      "p95ms": 16.700000000000728,
+      "render": {
+        "frame": 1462,
+        "calls": 140,
+        "triangles": 507192,
+        "points": 1412,
+        "lines": 36
+      },
+      "memory": {
+        "geometries": 666,
+        "textures": 21
+      },
+      "camera": {
+        "yaw": 0.5,
+        "pitch": 0.65,
+        "distance": 15,
+        "fov": 50,
+        "context": "museum",
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.5,
+          "pitch": 0.65,
+          "distance": 15,
+          "fov": 50
+        },
+        "focus": {
+          "x": 586,
+          "y": 1.4,
+          "z": 0
+        },
+        "eye": {
+          "x": 591.724943558402,
+          "y": 10.477796086040593,
+          "z": 10.479438891151498
+        },
+        "aim": {
+          "x": 586,
+          "y": 1.4,
+          "z": 0
+        }
+      }
+    },
+    {
+      "width": 390,
+      "meanFPS": 60.001605394124276,
+      "p95ms": 16.700000000000728,
+      "render": {
+        "frame": 1450,
+        "calls": 47,
+        "triangles": 245947,
+        "points": 722,
+        "lines": 36
+      },
+      "memory": {
+        "geometries": 593,
+        "textures": 13
+      },
+      "camera": {
+        "yaw": 0.5,
+        "pitch": 0.65,
+        "distance": 15,
+        "fov": 50,
+        "context": "museum",
+        "manualYaw": false,
+        "revision": 0,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.5,
+          "pitch": 0.65,
+          "distance": 15,
+          "fov": 50
+        },
+        "focus": {
+          "x": 586,
+          "y": 1.4,
+          "z": 0
+        },
+        "eye": {
+          "x": 591.724943558402,
+          "y": 10.477796086040593,
+          "z": 10.479438891151498
+        },
+        "aim": {
+          "x": 586,
+          "y": 1.4,
+          "z": 0
+        }
+      }
+    }
+  ],
+  "errors": []
+}

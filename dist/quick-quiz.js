@@ -1,3 +1,4 @@
+import {canStartObservatoryQuiz} from './observatory-layout.js';
 import {museumGalleries} from './district-layout.js';
 import {closeDialog} from './ui-motion.js';
 import * as panelSystem from './panels.js';
@@ -48,6 +49,7 @@ function reset(){
  trivia.splice(0,trivia.length,...questions.map(q=>[q.question,q.options,q.answer,q.explanation,'✦',q.source,q.id]));order=trivia.map((_,i)=>i);index=score=0;render();
 }
 window.openQuickQuiz=async(options={})=>{
+ if(!canStartObservatoryQuiz(window.labPlayerState)){window.labToast?.('천문대 중앙 관측 테이블에서 시작할 수 있어요.');return false;}
  generation++;const run=generation;requestedQuestion=options.questionId;gallery=museumGalleries.some(g=>g.id===options.gallery)?options.gallery:null;
  panelSystem.preparePanelOpen?.(dialog);const journal=document.getElementById('quiz-journal');if(journal?.open)journal.close();
  dialog.querySelector('.quiz-header>span').textContent=museumGalleries.find(g=>g.id===gallery)?.name||'별빛 만물관';window.dispatchEvent(new CustomEvent('lab:exhibit-focus',{detail:gallery}));if(!dialog.open)dialog.showModal();document.body.classList.add('quiz-open');window.dispatchEvent(new Event('lab:pause'));dialog.querySelector('#quick-question').textContent='별빛 속 질문을 펼치는 중…';dialog.querySelector('.quiz-options').replaceChildren();dialog.querySelector('.quiz-result').hidden=true;dialog.querySelector('.quiz-next').hidden=true;

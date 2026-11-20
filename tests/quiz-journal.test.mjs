@@ -69,7 +69,7 @@ async function eventually(predicate){for(let i=0;i<60;i++){if(predicate())return
 test('a solo answer appears in the knowledge journal; saving, returning and guest isolation work',async t=>{
  const {DB}=await fixture(t),env={DB},root=path.resolve('dist');
  const dom=new JSDOM('<body><button id="open-quiz-journal-menu"></button></body>',{url:'https://winter.test',runScripts:'outside-only'});t.after(()=>dom.window.close());
- const w=dom.window;w.labGuestId='guest-a';w.labSocialJoined=true;w.matchMedia=()=>({matches:false});w.AbortSignal=globalThis.AbortSignal;
+ const w=dom.window;w.labPlayerState={x:600,z:8.1};w.labGuestId='guest-a';w.labSocialJoined=true;w.matchMedia=()=>({matches:false});w.AbortSignal=globalThis.AbortSignal;
  w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};w.HTMLDialogElement.prototype.close=function(){this.open=false;this.dispatchEvent(new w.Event('close'));};
  let failed=false;
  w.fetch=async(url,options={})=>{

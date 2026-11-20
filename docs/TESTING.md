@@ -1,3 +1,9 @@
+# v54 천문대 검사
+
+`npm test` **548/548 PASS**, 실패·건너뜀 0, 165.96초. 마지막 별빛 재질 조정은 실제 GPU 체험 검사로 다시 검증했다. [원본 체험 결과](../qa/observatory-v54/experience/report.json), [설계·카메라·퀴즈·동기화 범위](observatory-v54.md). Mac Chrome PC와 모바일 터치 화면에서 수행했으며 실물 Windows/Edge·iPhone·Galaxy·수 시간 내구 시험은 UNKNOWN이다. JavaScript 프로젝트로 별도 TypeScript/Lint 명령은 없다. 소스 312개 모듈 검사, 최종 재질의 천문대 집중 검사 10개, 10~100명 부하 검사도 통과했다. 3종 빌드·용량 및 운영 결과는 [배포 기록](DEPLOYMENT.md)에 기록한다.
+
+---
+
 # v53 최종 검사
 
 Mac Chrome PC/터치 화면의 실제 3D·음악·채팅·곤돌라 검증과 스키 입력 재검사를 수행했다. [검증과 실패 후 수정 이력](release-v53.md#검증-범위). 실물 Windows/Galaxy/iPhone 및 실제 가상 키보드 검증은 UNKNOWN. 최종 `npm test` **543/543 PASS**, 실패·건너뜀 0, 39.48초. `npm run check` 305개 JS 모듈, Worker·Vercel·realtime 빌드와 용량 검사를 통과했다. 10/25/50/100명 localhost WebSocket 부하도 각각 15초, 전송 성공률 100%, 거부·오류 0으로 통과했다. [최종 검사 기록](../qa/gameplay-v53/verification.json). 공식 운영 UI 60/60, 실제 3인 공유 공연·중도 입장·전체 종료 및 운영 동승/조작 15/15도 통과했다. [운영 증거](DEPLOYMENT.md). JavaScript 프로젝트로 별도 TypeScript/Lint 명령은 없다. [같은 운영 커밋의 GitHub Actions](https://github.com/yeyiwon/moru-winter-park/actions/runs/44670009060)도 전체 단계 success이며 Linux 브라우저 검사까지 포함한다.

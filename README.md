@@ -1,3 +1,9 @@
+# WINTERLIGHT v54 — 별빛 만물관
+
+중앙 반사망원경·열린 곡면 돔, 실제 항성 5,041개·별자리 6개, 은하수와 드문 유성으로 천문대 내부를 재설계했다. 퀴즈는 중앙 테이블 한 곳에서만 시작하며 기존 개인 기록·다른 시설·음악은 유지한다. [설계·실제 화면·검증 범위](docs/observatory-v54.md) · [천문 데이터와 라이선스](docs/observatory-data-v54.md) · [운영 반영 상태](docs/DEPLOYMENT.md). 아래는 이전 이력이다.
+
+---
+
 # WINTERLIGHT v53 — 운영 반영 완료
 
 공식 주소: **https://moru-winter-park.vercel.app/**. 불꽃놀이는 **Love / Wedding Entrance** 두 곡의 완곡 랜덤 공연으로 바꾸고, 최초 합성 음악과 이전 공연곡을 제거했다. **Waltz of Snowflakes는 BGM 5번**이다. 채팅·이름표·발소리·모바일 스키 입력·곤돌라 연속 승하차·혼합 LOD 지형 경계를 수정했다. [변경과 검증 범위](docs/release-v53.md) · [음원](docs/show-music-v53.md) · [운영 배포 상태](docs/DEPLOYMENT.md). 아래는 이전 이력이다.

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as T from '../dist/vendor/three.module.js';
-import {cameraDefaults,createCameraPolicy,smoothCameraAngle,followCameraHeight,cameraSubjectFocus,cameraOrbitPosition,cameraOrbitFocus,constrainCameraFocusToRoom,constrainCameraToRoom,constrainCameraToTerrain} from '../dist/camera-policy.js';
+import {cameraDefaults,observatoryCameraDefaults,createCameraPolicy,smoothCameraAngle,followCameraHeight,cameraSubjectFocus,cameraOrbitPosition,cameraOrbitFocus,constrainCameraFocusToRoom,constrainCameraToRoom,constrainCameraToTerrain} from '../dist/camera-policy.js';
 import {activityCameraView} from '../dist/activity-camera.js';
 import {interiorRooms} from '../dist/interior-layout.js';
 import {canStandAt} from '../dist/movement.js';
@@ -60,8 +60,8 @@ test('indoor view is remembered separately and map departure consumes the outdoo
 test('higher interior preset fits real entry bounds and all three dining seats without collapsing to a close view',()=>{
  for(const room of Object.values(interiorRooms)){
   assert.ok(canStandAt(room.entry.x,room.entry.z));const policy=createCameraPolicy();policy.setContext(room.id);
-  const view={...policy.view()},focus=cameraSubjectFocus({...room.entry,y:room.floor+.86},{groundY:room.floor+.86}),point=cameraOrbitPosition(focus,view);
-  constrainCameraToRoom(focus,point,room);near(Math.hypot(point.x-focus.x,point.y-focus.y,point.z-focus.z),15,1e-6);near(Math.atan2(point.y-focus.y,Math.hypot(point.x-focus.x,point.z-focus.z)),.65);
+  const view={...policy.view()},focus=cameraOrbitFocus(cameraSubjectFocus({...room.entry,y:room.floor+.86},{groundY:room.floor+.86}),view),point=cameraOrbitPosition(focus,view);
+  constrainCameraToRoom(focus,point,room);near(Math.hypot(point.x-focus.x,point.y-focus.y,point.z-focus.z),view.distance,1e-6);near(Math.atan2(point.y-focus.y,Math.hypot(point.x-focus.x,point.z-focus.z)),view.pitch);
  }
  for(const seat of diningSeats){const policy=createCameraPolicy();policy.setContext('ryokan');const focus=cameraSubjectFocus(seat,{mode:'dining'}),point=cameraOrbitPosition(focus,policy.view());constrainCameraToRoom(focus,point,interiorRooms.ryokan);assert.ok(Math.hypot(point.x-focus.x,point.y-focus.y,point.z-focus.z)>=14.8);near(direction(point,focus).y,Math.sin(.65));}
 });
@@ -155,5 +155,5 @@ test('carousel has a wider low-angle view, permits free orbit and restores untou
 test('manual show orbit keeps its current distance and restores the saved exploration view before indoor framing',()=>{
  const policy=createCameraPolicy(),before=policy.snapshot();policy.adopt({yaw:0,pitch:.05,distance:476});policy.orbit(10,2);policy.zoom(-5);
  assert.equal(policy.snapshot().distance,471);policy.restoreView(before);assert.equal(policy.snapshot().distance,before.distance);assert.equal(policy.snapshot().manualYaw,before.manualYaw);
- policy.setContext('museum');assert.equal(policy.snapshot().distance,cameraDefaults.interiorDistance);policy.setContext(null);assert.equal(policy.snapshot().distance,before.distance);
+ policy.setContext('museum');assert.equal(policy.snapshot().distance,observatoryCameraDefaults.distance);policy.setContext(null);assert.equal(policy.snapshot().distance,before.distance);
 });

@@ -1,3 +1,4 @@
+import {canStartObservatoryQuiz} from './observatory-layout.js';
 import {closeDialog} from './ui-motion.js';
 import * as panelSystem from './panels.js';
 import {quizSnapshot,quizRevision,journalRecordId,mergeJournalRecords} from './quiz-journal-data.js';
@@ -64,6 +65,7 @@ function node(tag,text,cls){const element=document.createElement(tag);element.te
 function sourceLink(source){const link=node('a',source.title,'journal-source');link.href=source.url;link.target='_blank';link.rel='noreferrer';return link;}
 function render(){
  list.replaceChildren();
+ const available=canStartObservatoryQuiz(window.labPlayerState),start=journal.querySelector('.journal-start');start.disabled=!available;start.textContent=available?'퀴즈 풀기':'중앙 관측 테이블에서 시작';
  const shown=records.filter(r=>filter==='all'||(filter==='correct'?r.everCorrect:r.saved));
  if(!shown.length){const empty=node('div',filter==='saved'?'다시 보고 싶은 해설에서 “지식 담기”를 눌러보세요.':filter==='correct'?'맞힌 문제는 여기에 모여요. 틀린 문제의 해설도 언제든 다시 볼 수 있어요.':'첫 퀴즈를 풀면 질문과 해설이 여기에 남아요.','journal-empty');list.append(empty);}
  for(const entry of shown){
@@ -74,7 +76,7 @@ function render(){
   content.append(choice,node('p','정답 · '+q.options[q.answer],'journal-answer'),node('p',q.explanation,'journal-explanation'),sourceLink(q.source));
   const row=node('div','','journal-card-actions'),save=node('button',entry.saved?'담은 지식':'지식 담기');save.type='button';save.setAttribute('aria-pressed',String(!!entry.saved));
   save.onclick=async()=>{save.disabled=true;try{const result=await saveJournalKnowledge(entry,!entry.saved);save.textContent=result.record.saved?'담은 지식':'지식 담기';save.setAttribute('aria-pressed',String(!!result.record.saved));entry.saved=result.record.saved;status.textContent=result.mode==='server'?'지식집에 저장했어요.':result.mode==='memory'?'현재 화면에서만 기록을 볼 수 있어요.':result.mode==='changed'?result.message:'이 브라우저에 보관했어요.';if(filter==='saved'&&!entry.saved)render();}finally{save.disabled=false;}};
-  const retry=node('button','다시 풀기');retry.type='button';retry.onclick=()=>window.openQuickQuiz?.({questionId:q.id});
+  const retry=node('button','다시 풀기');retry.type='button';retry.disabled=!available;retry.onclick=()=>window.openQuickQuiz?.({questionId:q.id});
   row.append(save,retry);content.append(row,node('small',new Date(entry.updatedAt).toLocaleDateString('ko-KR')+(entry.synced?'':' · 이 브라우저에 보관 중'),'journal-date'));card.append(content);list.append(card);
  }
  more.hidden=!nextCursor;more.disabled=loading;

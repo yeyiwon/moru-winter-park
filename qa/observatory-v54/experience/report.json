@@ -1,0 +1,125 @@
+{
+  "checks": [
+    {
+      "name": "entry shows no automatic quiz",
+      "ok": true
+    },
+    {
+      "name": "camera reaches dome and sky",
+      "ok": true
+    },
+    {
+      "name": "real catalogue has an observable constellation now",
+      "ok": true,
+      "data": {
+        "id": "lyra",
+        "name": "거문고자리",
+        "v": [
+          0.40081766010158953,
+          0.9154542946000355,
+          -0.035897602274221084
+        ]
+      }
+    },
+    {
+      "name": "gaze briefly reveals constellation lines",
+      "ok": true,
+      "data": 0.24
+    },
+    {
+      "name": "constellation lines fade instead of remaining on",
+      "ok": true
+    },
+    {
+      "name": "Milky Way plane crosses open observable sky",
+      "ok": true,
+      "data": [
+        0.6297305061975412,
+        0.7760031246899546,
+        0.03547731719867964
+      ]
+    },
+    {
+      "name": "one quiz action at central console",
+      "ok": true
+    },
+    {
+      "name": "server grades and records the answer",
+      "ok": true
+    },
+    {
+      "name": "private journal keeps explanation and source",
+      "ok": true
+    },
+    {
+      "name": "two guests share museum presence",
+      "ok": true
+    },
+    {
+      "name": "same site and server observation time",
+      "ok": true,
+      "data": [
+        {
+          "site": {
+            "latitude": 37.5665,
+            "longitude": 126.978
+          },
+          "time": 1795148837775.7,
+          "meteor": 24591079
+        },
+        {
+          "site": {
+            "latitude": 37.5665,
+            "longitude": 126.978
+          },
+          "time": 1795148837760.7,
+          "meteor": 24591079
+        }
+      ]
+    },
+    {
+      "name": "interior chat and own bubble work",
+      "ok": true
+    },
+    {
+      "name": "real touch dispatch rotates sky camera",
+      "ok": true
+    },
+    {
+      "name": "exit restores outdoor camera",
+      "ok": true
+    },
+    {
+      "name": "reentry restores indoor camera",
+      "ok": true
+    },
+    {
+      "name": "repeated visit disposal does not grow GPU resources",
+      "ok": true,
+      "data": [
+        {
+          "geometries": 594,
+          "textures": 21,
+          "programs": 205
+        },
+        {
+          "geometries": 594,
+          "textures": 21,
+          "programs": 207
+        },
+        {
+          "geometries": 594,
+          "textures": 21,
+          "programs": 207
+        }
+      ]
+    },
+    {
+      "name": "no browser or shader errors",
+      "ok": true,
+      "data": []
+    }
+  ],
+  "errors": [],
+  "environment": "Mac Chrome; mobile touch emulation; physical Windows/Edge/iOS/Android UNKNOWN"
+}

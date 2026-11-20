@@ -1,0 +1,100 @@
+{
+  "environment": "macOS Chrome GPU; touch viewport emulation; physical Windows/Android/iOS UNKNOWN",
+  "views": [
+    {
+      "width": 1440,
+      "meanFPS": 60.00160539412425,
+      "p95ms": 16.700000000000728,
+      "render": {
+        "frame": 1816,
+        "calls": 47,
+        "triangles": 453573,
+        "points": 13680,
+        "lines": 0
+      },
+      "memory": {
+        "geometries": 620,
+        "textures": 21
+      },
+      "camera": {
+        "yaw": 0.45,
+        "pitch": -0.4,
+        "distance": 12,
+        "fov": 50,
+        "context": "museum",
+        "manualYaw": true,
+        "revision": 1,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.44999999999999984,
+          "pitch": -0.39999999999999986,
+          "distance": 12,
+          "fov": 50
+        },
+        "focus": {
+          "x": 594,
+          "y": 1.4,
+          "z": 12
+        },
+        "eye": {
+          "x": 598.3474955901933,
+          "y": 1.847187231580449,
+          "z": 20.99999999926324
+        },
+        "aim": {
+          "x": 594,
+          "y": 6.073020107703805,
+          "z": 12
+        }
+      }
+    },
+    {
+      "width": 390,
+      "meanFPS": 60.000401340477175,
+      "p95ms": 16.799999999999272,
+      "render": {
+        "frame": 1819,
+        "calls": 25,
+        "triangles": 254609,
+        "points": 13680,
+        "lines": 0
+      },
+      "memory": {
+        "geometries": 552,
+        "textures": 13
+      },
+      "camera": {
+        "yaw": 0.45,
+        "pitch": -0.4,
+        "distance": 12,
+        "fov": 50,
+        "context": "museum",
+        "manualYaw": true,
+        "revision": 1,
+        "treeOffset": 0,
+        "rendered": {
+          "yaw": 0.44999999999999984,
+          "pitch": -0.39999999999999986,
+          "distance": 12,
+          "fov": 50
+        },
+        "focus": {
+          "x": 594,
+          "y": 1.4,
+          "z": 12
+        },
+        "eye": {
+          "x": 598.3474955901935,
+          "y": 1.8471872315803095,
+          "z": 20.99999999926353
+        },
+        "aim": {
+          "x": 594,
+          "y": 6.073020107703805,
+          "z": 12
+        }
+      }
+    }
+  ],
+  "errors": []
+}
