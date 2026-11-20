@@ -12,7 +12,7 @@ export class WinterWorld{
    const raw=await request.text();if(raw.length>65536||!await verifyRPC(raw,request.headers.get('x-winter-signature'),this.env.REALTIME_SECRET))return new Response('Unauthorized',{status:403});
    const b=JSON.parse(raw);if(Math.abs(Date.now()-b.at)>10000||!b.nonce||this.nonces.has(b.nonce))return new Response('Expired',{status:403});
    for(const [key,time]of this.nonces)if(time<Date.now()-10000)this.nonces.delete(key);if(this.nonces.size>4096)return new Response('Busy',{status:429});this.nonces.set(b.nonce,Date.now());
-   const result=this.world.rpc(b);
+   const result=this.world.rpc(b);if(b.action==='metrics'){result.revision=this.env.RELEASE_REVISION||'local';result.protocol='winter-v1';}
    if('fireworks'in b||b.rideSeats||b.action==='revoke'){const shared={fireworks:this.world.fireworks,rideSeats:this.world.rideSeats,revoked:[...this.world.revoked]},json=JSON.stringify(shared);if(json!==this.sharedJSON){await this.ctx.storage.put('shared',shared);this.sharedJSON=json;}}
    return Response.json(result);
   }

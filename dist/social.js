@@ -9,11 +9,11 @@ import {presenceDelay,createPresenceCache} from './presence-policy.js';
 import {createGuestName,isNumberedGuest} from './guest-names.js';
 import {encodeActivity} from './activity-state.js';
 import {closeDialog} from './ui-motion.js';
-import {invitationToken,publicRoom,spaceURL} from './space-links.js';
+import {publicRoom} from './space-links.js';
 const $=s=>document.querySelector(s),form=$('#join-form'),status=$('#social-status'),people=$('#social-people'),nameInput=$('#visitor-name'),studio=$('#studio');
 const entryURL=new URL(location.href),rawInvitation=new URLSearchParams(entryURL.hash.slice(1)).get('invite');
 const adminEntry=/^\/admin(?:\/|$)/.test(entryURL.pathname);
-let pendingToken=invitationToken(rawInvitation),invalidLink=!!rawInvitation&&!pendingToken||entryURL.searchParams.has('room'),room=publicRoom,joined=false,admin=false,busy=false,gesture='',failures=0,inviteURL='',createdInviteId='';
+let room=publicRoom,joined=false,admin=false,busy=false,gesture='',failures=0;
 if(rawInvitation||entryURL.searchParams.has('room'))history.replaceState(null,'',entryURL.pathname);
 $('#owner-signin').href='/signin-with-chatgpt?return_to=%2Fadmin';
 try{nameInput.value=nicknameParts(localStorage.getItem('winter-visitor-name')||'').slice(0,nicknameLimit).join('');}catch{}
@@ -23,33 +23,21 @@ function setName(name){nameInput.value=name;if(document.querySelector('.wardrobe
 // Give only session bootstrap the same bounded window as the loading screen.
 async function request(path,body,method){const sent=Date.now();const r=await fetch('/api/'+path,{method:method||(body===undefined?'GET':'POST'),headers:body===undefined?{}:{'Content-Type':'application/json'},body:body===undefined?undefined:JSON.stringify(body),signal:AbortSignal.timeout(['access','join'].includes(path)?30000:8000)});const data=await r.json();if(r.ok&&Number.isFinite(data.serverTime))observeServerTime(data.serverTime,sent,Date.now());if(!r.ok){const e=Error(data.error||'연결을 확인해 주세요.');e.status=r.status;if(typeof data.code==='string')e.code=data.code;throw e;}return data;}
 let peopleSignature='';function showPeople(list){list=list.filter(p=>!window.isVisitorBlocked?.(p.id));window.dispatchEvent(new CustomEvent('lab:visitors',{detail:list}));const next=JSON.stringify(list.map(p=>[p.id,p.name,p.gesture==='wave']));if(next===peopleSignature)return;peopleSignature=next;people.replaceChildren();for(const person of list){const li=document.createElement('li');li.textContent=person.name+(person.gesture==='wave'?' · 인사':'');const block=document.createElement('button');block.textContent='차단';block.dataset.blockVisitor=person.id;block.setAttribute('aria-label',person.name+' 차단');li.append(block);people.append(li);}}
-function openInvite(){ window.openWinterSettings?.('social'); }
+function openConnection(){ window.openWinterSettings?.('social'); }
 function endGate(){document.body.classList.remove('invite-gate');if(studio.open)closeDialog(studio);$('.studio-head>span').textContent='설정';}
 
 function gate(message,canJoin=false){
  joined=false;window.labSocialJoined=false;realtime.stop();showPeople([]);document.body.classList.add('invite-gate');
  if(window.labRideReservation)window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));
  for(const dialog of document.querySelectorAll('dialog[open]'))if(dialog!==studio)dialog.close();
- openInvite();$('.studio-head>span').textContent='겨울로의 초대';$('#invite-description').textContent=message;form.hidden=!canJoin;
+ openConnection();$('.studio-head>span').textContent='WINTERLIGHT 접속';$('#studio-section-en').textContent='CONNECTION';$('#studio-section-name').textContent='접속';$('#connection-description').textContent=message;form.hidden=!canJoin;
  window.dispatchEvent(new Event('lab:session-ended'));window.dispatchEvent(new Event('lab:pause'));window.labLoading?.complete('connection');
 }
-function updateRoomLinks(){
- $('#social-room').textContent='하나의 겨울 광장';$('#invite-url').value=inviteURL||spaceURL();$('#room-share').hidden=false;
-}
-async function loadInvites(){
- if(!admin)return;const list=$('#invite-list');
- try{const data=await request('invite');list.replaceChildren();for(const item of data.invites){
-  const row=document.createElement('div'),label=document.createElement('span');row.className='invite-list-row';
-  const active=!item.revokedAt&&item.expiresAt>Date.now();label.textContent=new Date(item.createdAt).toLocaleDateString('ko-KR')+' 초대 · '+(item.revokedAt?'폐기됨':active?new Date(item.expiresAt).toLocaleDateString('ko-KR')+'까지':'만료됨');row.append(label);
-  if(active){const button=document.createElement('button');button.type='button';button.textContent='폐기';button.onclick=async()=>{button.disabled=true;try{await request('invite',{id:item.id},'DELETE');if(createdInviteId===item.id){createdInviteId='';$('#invite-created-url').value='';$('#created-invite').hidden=true;}inviteURL='';updateRoomLinks();$('#invite-result').textContent='링크와 해당 게스트의 접속 권한을 종료했습니다.';await loadInvites();}catch(e){$('#invite-result').textContent=e.message;button.disabled=false;}};row.append(button);}list.append(row);
- }}catch(e){$('#invite-result').textContent=e.message;}
-}
-window.refreshWinterInvites=loadInvites;
 function entered(data){presenceCache.reset();nextSync=0;if(data.color)window.dispatchEvent(new CustomEvent('lab:restore-appearance',{detail:{fur:data.color,furTop:data.colorTop||null,accessory:data.accessory,fluff:data.fluff??100,roundness:data.roundness??50}}));
  if(window.labGuestId&&window.labGuestId!==data.id){showPeople([]);recentChats.length=0;seenChats.clear();chatLog.replaceChildren();selfBubble.hidden=true;window.labRideSeats=[];if(window.labRideReservation)window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));window.labRideReservation=null;}
- room=publicRoom;if(pendingToken&&admin)inviteURL=spaceURL(pendingToken);pendingToken=null;invalidLink=false;joined=true;window.labSocialJoined=true;window.labGuestId=data.id;failures=0;setName(data.name);form.hidden=true;status.textContent='접속 중 · 1명';chatStatus.textContent='';updateRoomLinks();endGate();window.dispatchEvent(new CustomEvent('lab:room',{detail:room}));void realtime.restart();
+ room=publicRoom;joined=true;window.labSocialJoined=true;window.labGuestId=data.id;failures=0;setName(data.name);form.hidden=true;status.textContent='접속 중 · 1명';chatStatus.textContent='';endGate();window.dispatchEvent(new CustomEvent('lab:room',{detail:room}));void realtime.restart();
 }
-let joining=null;function join(){if(joining)return joining;joining=(async()=>{try{await syncing;const data=await request('join',{name:nameInput.value,...(pendingToken?{token:pendingToken}:{}),color:window.labAppearance?.fur||'#f4eee5'});entered(data);}finally{joining=null;}})();return joining.then(()=>sync());}
+let joining=null;function join(){if(joining)return joining;joining=(async()=>{try{await syncing;const data=await request('join',{name:nameInput.value});entered(data);}finally{joining=null;}})();return joining.then(()=>sync());}
 form.addEventListener('submit',async e=>{e.preventDefault();const button=form.querySelector('button');button.disabled=true;status.textContent='입장 중…';try{await join();closeDialog(studio);}catch(e){status.textContent=e.message;}finally{button.disabled=false;}});
 let syncing=null,nextSync=0,lastSent=0,lastMoving=false,remoteMoving=false,appearanceSaving=false;const presenceCache=createPresenceCache();
 function acceptPresence(data){window.labServerOffset=data.serverTime-Date.now();window.labFireworks=mergeFireworkShow(window.labFireworks,data.fireworks);window.dispatchEvent(new CustomEvent('lab:fireworks',{detail:window.labFireworks}));window.labRideSeats=data.rideSeats||[];if(window.labRideReservation&&!window.labRideSeats.some(s=>s.id===window.labGuestId))window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));const list=presenceCache.merge(data.people,data.farBucket);remoteMoving=list.some(p=>!p.distant&&p.speed>.1);showPeople(list);status.textContent='접속 중 · '+data.count+'명';}
@@ -62,7 +50,7 @@ function outgoingPose(){
  }
  return p;
 }
-const realtime=createRealtimeClient({request,pose:()=>{if(!window.labPlayerState)return null;const pose={...outgoingPose(),gesture:gesture||encodeActivity(window.labPlayerState)};gesture='';return pose;},onSnapshot:acceptPresence,onStatus:message=>{if(message)status.textContent=message;},onCheckpoint:()=>{if(Date.now()-lastSent>600)void sync(true);}});
+const realtime=createRealtimeClient({request,pose:()=>{if(!window.labPlayerState)return null;const pose={...outgoingPose(),gesture:gesture||encodeActivity(window.labPlayerState)};gesture='';return pose;},onSnapshot:acceptPresence,onActive:active=>{window.labRealtimeActive=active;},onStatus:message=>{if(message)status.textContent=message;},onCheckpoint:()=>{if(Date.now()-lastSent>600)void sync(true);}});
 function sync(force=false){if(releasingRide)return force?releasingRide.then(()=>sync(true)):Promise.resolve();if(syncing)return force?syncing.then(()=>sync(true)):syncing;if(appearanceSaving||!joined||joining||!window.labPlayerState)return Promise.resolve();syncing=performSync().finally(()=>{syncing=null;});return syncing;}
 window.saveWinterAppearance=async look=>{
  if(!joined||joining)throw Error('공간에 연결한 뒤 다시 저장해 주세요.');
@@ -88,41 +76,43 @@ async function performSync(){
    // also clear stale state if the world is still loading or its loop is paused.
    if(window.labRideReservation===sentReservation)window.releaseRide();
    if(['dining','lift','ferris'].includes(window.labPlayerState?.mode))window.labPlayerState={...window.labPlayerState,mode:'',speed:0};
-  }else{failures++;if(e.status===401||e.status===403){pendingToken=null;inviteURL='';updateRoomLinks();gate(e.message);}if(failures>2)showPeople([]);}
+  }else{failures++;if(e.status===401||e.status===403){gate(e.message);}if(failures>2)showPeople([]);}
   status.textContent=e.message;
  }finally{
   busy=false;nextSync=recoveredSeat?0:Date.now()+(realtime.active?10000:presenceDelay({hidden:document.hidden,moving:remoteMoving||(window.labPlayerState?.speed||0)>.1,chat:!chatForm.hidden,failures}));
  }
 }
 window.addEventListener('lab:wave',()=>{if(joined){gesture='wave';sync();}});
-$('#invite-form').addEventListener('submit',async e=>{
- e.preventDefault();const button=e.target.querySelector('[type=submit]');button.disabled=true;
- try{const data=await request('invite',{days:Number($('#invite-days').value)});inviteURL=data.url;createdInviteId=data.id;updateRoomLinks();$('#invite-created-url').value=inviteURL;$('#created-invite').hidden=false;$('#invite-result').textContent='같은 겨울 광장으로 연결됩니다. 링크는 지금 복사해 주세요.';await loadInvites();}
- catch(e){$('#invite-result').textContent=e.message;}finally{button.disabled=false;}
-});
-$('#copy-created-invite').onclick=async()=>{try{await navigator.clipboard.writeText($('#invite-created-url').value);$('#invite-result').textContent='복사했습니다.';}catch{$('#invite-created-url').select();$('#invite-result').textContent='선택된 링크를 복사하세요.';}};
-$('#copy-room').onclick=async()=>{try{await navigator.clipboard.writeText(inviteURL||spaceURL());$('#copy-result').textContent='복사됨';setTimeout(()=>$('#copy-result').textContent='',2200);}catch{$('#invite-url').select();$('#copy-result').textContent='선택된 링크를 복사하세요.';}};
 const presenceTimer=setInterval(()=>{const now=Date.now(),changed=lastMoving!==((window.labPlayerState?.speed||0)>.1);if(now>=nextSync||(!realtime.active&&!failures&&changed&&now-lastSent>=550))void sync();},250);document.addEventListener('visibilitychange',()=>{nextSync=0;void sync();});// Inactive presence expires after 20 seconds; retain the cookie identity across reloads.
 const chatForm=$('#chat-form'),chatInput=$('#chat-input'),chatStatus=$('#chat-status'),chatToggle=$('#chat-toggle'),chatLog=$('#chat-log'),selfBubble=$('#self-bubble');
 const seenChats=new Set(),blocked=new Set(),hiddenChats=new Set(),recentChats=[];
-let recentTimer=0,fadeTimer=0,composing=false,compositionEnded=-Infinity,chatSending=false,chatSignature='';
+let recentTimer=0,fadeTimer=0,composing=false,sendAfterComposition=false,compositionSendTimer=0,chatSending=false,chatSignature='';
 const keyboard=createChatViewport({input:chatInput,onRestored(){window.dispatchEvent(new Event('lab:close'));renderRecent();}});
 function openChat(){chatForm.hidden=false;chatToggle.setAttribute('aria-expanded','true');window.dispatchEvent(new Event('lab:pause'));keyboard.open();renderRecent();chatInput.focus({preventScroll:true});chatStatus.textContent=joined?'':'공간에 연결한 뒤 채팅할 수 있어요.';}
-function closeChat(){chatForm.hidden=true;chatToggle.setAttribute('aria-expanded','false');keyboard.close();renderRecent();}
+function closeChat(){chatForm.hidden=true;chatToggle.setAttribute('aria-expanded','false');keyboard.close();chatInput.value='';chatStatus.textContent='';composing=false;sendAfterComposition=false;clearTimeout(compositionSendTimer);renderRecent();}
 window.closeWinterChat=()=>{if(!chatForm.hidden)closeChat();};
 chatToggle.onclick=()=>chatForm.hidden?openChat():closeChat();
+// Dismiss before a world gesture begins, so cancelling a draft does not also travel.
+document.addEventListener('pointerdown',event=>{
+ if(chatForm.hidden||event.target.closest?.('#chat-form,#chat-toggle,#chat-log'))return;
+ closeChat();if(event.target.closest?.('#park-canvas')){event.preventDefault();event.stopPropagation();}
+},{capture:true});
 // Capture Enter before a previously clicked facility button can activate again.
 window.addEventListener('keydown',e=>{
  if(e.key==='Escape'&&!chatForm.hidden&&!e.isComposing){e.preventDefault();closeChat();return;}
  if(chatShortcut(e,document)&&e.target!==chatInput){e.preventDefault();e.stopPropagation();openChat();}
 },{capture:true});
-chatInput.addEventListener('compositionstart',()=>{composing=true;});
-chatInput.addEventListener('compositionend',()=>{composing=false;compositionEnded=performance.now();});
+chatInput.addEventListener('compositionstart',()=>{composing=true;sendAfterComposition=false;});
+chatInput.addEventListener('compositionend',()=>{
+ composing=false;if(!sendAfterComposition)return;sendAfterComposition=false;
+ // Let the IME's final input event commit the last syllable before sending.
+ compositionSendTimer=setTimeout(()=>{if(!chatForm.hidden&&!composing)chatForm.requestSubmit();},0);
+});
 chatInput.addEventListener('keydown',e=>{
  if(e.key!=='Enter')return;
- e.preventDefault();e.stopPropagation();
- if(composing||e.isComposing||e.keyCode===229||performance.now()-compositionEnded<40||e.repeat||e.shiftKey)return;
- chatForm.requestSubmit();
+ e.stopPropagation();if(e.repeat||e.shiftKey)return;
+ if(composing||e.isComposing){sendAfterComposition=true;return;}
+ e.preventDefault();clearTimeout(compositionSendTimer);chatForm.requestSubmit();
 });
 function renderRecent(){
  clearTimeout(recentTimer);clearTimeout(fadeTimer);chatLog.classList.remove('chat-fading');
@@ -139,7 +129,7 @@ function renderRecent(){
  const signature=(editing?'history:':'recent:')+displayed.map(item=>item.key).join('|');
  if(signature!==chatSignature){chatSignature=signature;chatLog.replaceChildren();
   for(const item of displayed){
-   const row=document.createElement('p'),author=document.createElement('b');author.textContent=item.name+' ';row.append(author,document.createTextNode(item.message));
+   const row=document.createElement('p'),author=document.createElement('b');row.dataset.author=item.sender===window.labGuestId?'self':'peer';author.className='chat-author';author.textContent=item.name+(row.dataset.author==='self'?' (나)':'')+' ';row.append(author,document.createTextNode(item.message));
    if(editing&&item.sender&&item.sender!==window.labGuestId){const hide=document.createElement('button');hide.className='chat-hide';hide.textContent='숨김';hide.setAttribute('aria-label',item.name+' 채팅 숨김');hide.onclick=()=>{hiddenChats.add(item.sender);chatSignature='';renderRecent();};row.append(hide);}
    chatLog.append(row);
   }
@@ -149,26 +139,25 @@ function renderRecent(){
 }
 function record(name,message,key,sender=''){if(seenChats.has(key))return;seenChats.add(key);if(seenChats.size>300)seenChats.delete(seenChats.values().next().value);recentChats.push({name,message,key,sender,at:performance.now()});if(recentChats.length>100)recentChats.shift();renderRecent();}
 async function ensureChatSession(){if(joined)return;if(joining){await joining;return;}throw Error('공간에 연결한 뒤 이용해 주세요.');}
-chatForm.addEventListener('submit',async e=>{e.preventDefault();if(e.isComposing||composing||performance.now()-compositionEnded<40||chatSending)return;const message=chatInput.value.trim();if(!message)return;chatSending=true;const send=chatForm.querySelector('[type=submit]');send.disabled=true;try{await ensureChatSession();const data=await request('chat',{message});chatInput.value='';chatStatus.textContent='';setName(data.name);record(data.name,data.message,window.labGuestId+':'+data.at,window.labGuestId);selfBubble.textContent=data.message;selfBubble.dataset.until=String(Date.now()+6500);selfBubble.style.opacity='1';selfBubble.hidden=false;closeChat();}catch(err){chatStatus.textContent=err.message;}finally{chatSending=false;send.disabled=false;}});
+chatForm.addEventListener('submit',async e=>{e.preventDefault();if(e.isComposing||composing||chatSending)return;const message=chatInput.value.trim();if(!message)return;chatSending=true;const send=chatForm.querySelector('[type=submit]');send.disabled=true;try{await ensureChatSession();const data=await request('chat',{message});chatInput.value='';chatStatus.textContent='';setName(data.name);record(data.name,data.message,window.labGuestId+':'+data.at,window.labGuestId);selfBubble.textContent=data.message;selfBubble.dataset.until=String(Date.now()+6500);selfBubble.style.opacity='1';selfBubble.hidden=false;closeChat();}catch(err){chatStatus.textContent=err.message;}finally{chatSending=false;send.disabled=false;}});
 window.addEventListener('lab:visitors',e=>{for(const p of e.detail)if(p.chat&&serverNow()-p.chatAt<15000&&!blocked.has(p.id)&&!hiddenChats.has(p.id))record(p.name,p.chat,p.id+':'+p.chatAt,p.id);});
 window.isVisitorBlocked=id=>blocked.has(id);window.isChatHidden=id=>blocked.has(id)||hiddenChats.has(id);people.addEventListener('click',e=>{const b=e.target.closest('[data-block-visitor]');if(!b)return;blocked.add(b.dataset.blockVisitor);b.closest('li')?.remove();sync();});
 
 window.joinSharedActivity=ensureChatSession;window.sharedRoom=()=>room;
 async function initialize(){try{
- await finishOwnerLogin(request);const access=await request('access');if(await continueOwnerLogin(request,access))return;admin=access.admin;window.labAdmin=admin;$('#owner-signin').hidden=admin;$('#tab-social').hidden=false;$('#admin-invite').hidden=!admin;document.body.classList.toggle('world-owner',admin);
+ await finishOwnerLogin(request);const access=await request('access');if(await continueOwnerLogin(request,access))return;admin=access.admin;window.labAdmin=admin;$('#owner-signin').hidden=admin||!adminEntry;$('#tab-social').hidden=!admin;document.body.classList.toggle('world-owner',admin);
  window.dispatchEvent(new CustomEvent('lab:access',{detail:{admin}}));
- if(access.blocked){gate('이 게스트의 이용이 제한되었습니다. 관리자에게 문의해 주세요.');return;}
+ if(access.blocked){gate('이용이 제한되었습니다. 관리자에게 문의해 주세요.');return;}
  if(adminEntry&&!admin){gate(access.signedIn?'이 계정에는 관리 권한이 없습니다. 소유자 계정으로 로그인해 주세요.':'소유자 계정으로 로그인해 주세요.');return;}
- pendingToken=null;invalidLink=false;history.replaceState(null,'',location.pathname);if(access.session)setName(access.session.name);
- if(!nameInput.value)nameInput.value=admin?'YIWON':createGuestName();
+ history.replaceState(null,'',location.pathname);
+ if(access.session)setName(access.session.name);else nameInput.value=admin?'YIWON':createGuestName();
  await join();window.labLoading?.complete('connection');
 }catch(e){status.textContent=e.message;gate(e.message||'연결을 확인한 뒤 다시 입장해 주세요.',e.status!==403);}}
 bindOwnerLogin(request);initialize();
-// Opening another invite in an existing tab may only change its fragment, without a reload.
+// Old shared links still enter the same public world; credentials are never required.
 window.addEventListener('hashchange',()=>{
  const value=new URLSearchParams(location.hash.slice(1));if(!value.has('invite'))return;
- pendingToken=invitationToken(value.get('invite'));invalidLink=!pendingToken;
- history.replaceState(null,'',location.pathname);void initialize();
+ history.replaceState(null,'',location.pathname);
 });
 
 function updateNicknameInputs(){for(const [id,counter]of [['profile-name','profile-count'],['visitor-name','visitor-count']]){const input=$('#'+id),count=nicknameParts(input.value).length;$('#'+counter).textContent=count+' / '+nicknameLimit;input.setCustomValidity(count>nicknameLimit?'닉네임은 10자 이내로 입력하세요.':'');}const input=$('#profile-name');$('#profile-form [type=submit]').disabled=$('#profile-form').dataset.state==='saving'||!input.value.trim()||input.value.trim()===$('#self-name').textContent||!!input.validationMessage;}

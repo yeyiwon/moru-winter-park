@@ -1,0 +1,50 @@
+{
+  "checks": [
+    {
+      "mobile": false,
+      "combination": "cat-headphones,glow-nose",
+      "saved": true,
+      "restored": true,
+      "bounds": {
+        "left": 240,
+        "top": 70,
+        "right": 1040,
+        "bottom": 730,
+        "width": 1280,
+        "height": 800,
+        "blur": "blur(18px) saturate(1.2)",
+        "background": "linear-gradient(135deg, rgba(249, 253, 255, 0.82), rgba(233, 244, 253, 0.78) 54%, rgba(241, 245, 252, 0.8))"
+      }
+    },
+    {
+      "mobile": false,
+      "darkThemeSaved": true,
+      "worldLightingUnchanged": true,
+      "reversible": true
+    },
+    {
+      "mobile": true,
+      "combination": "cat-headphones,glow-nose",
+      "saved": true,
+      "restored": true,
+      "bounds": {
+        "left": 10,
+        "top": 12,
+        "right": 402,
+        "bottom": 903,
+        "width": 412,
+        "height": 915,
+        "blur": "blur(18px) saturate(1.2)",
+        "background": "linear-gradient(135deg, rgba(249, 253, 255, 0.82), rgba(233, 244, 253, 0.78) 54%, rgba(241, 245, 252, 0.8))"
+      }
+    },
+    {
+      "mobile": true,
+      "darkThemeSaved": true,
+      "worldLightingUnchanged": true,
+      "reversible": true
+    }
+  ],
+  "errors": [],
+  "physicalWindowsGalaxy": "UNKNOWN"
+}

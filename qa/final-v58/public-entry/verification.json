@@ -1,0 +1,162 @@
+{
+  "at": "2026-11-20T09:13:30.716Z",
+  "physicalMobile": false,
+  "checks": [
+    {
+      "name": "First visit enters automatically with random nickname and appearance",
+      "ok": true,
+      "details": {
+        "name": "라벤더판다",
+        "color": "#428578",
+        "accessory": "cat-headphones,eyes-happy"
+      }
+    },
+    {
+      "name": "Reload retains chosen nickname and initial appearance",
+      "ok": true
+    },
+    {
+      "name": "Management is inside settings without a second launch button",
+      "ok": true
+    },
+    {
+      "name": "Management header and content remain inside desktop",
+      "ok": true,
+      "details": {
+        "box": {
+          "top": 70,
+          "bottom": 730,
+          "left": 240,
+          "right": 1040
+        },
+        "headerBottom": 215,
+        "paneTop": 227,
+        "paneBottom": 687,
+        "firstTop": 239,
+        "scroll": true,
+        "inside": true
+      }
+    },
+    {
+      "name": "Last management action is reachable desktop",
+      "ok": true
+    },
+    {
+      "name": "Management header and content remain inside mobile",
+      "ok": true,
+      "details": {
+        "box": {
+          "top": 12,
+          "bottom": 832,
+          "left": 10,
+          "right": 380
+        },
+        "headerBottom": 145,
+        "paneTop": 155,
+        "paneBottom": 795,
+        "firstTop": 167,
+        "scroll": true,
+        "inside": true
+      }
+    },
+    {
+      "name": "Last management action is reachable mobile",
+      "ok": true
+    },
+    {
+      "name": "Management header and content remain inside landscape",
+      "ok": true,
+      "details": {
+        "box": {
+          "top": 8,
+          "bottom": 382,
+          "left": 22,
+          "right": 822
+        },
+        "headerBottom": 121,
+        "paneTop": 127,
+        "paneBottom": 373,
+        "firstTop": 139,
+        "scroll": true,
+        "inside": true
+      }
+    },
+    {
+      "name": "Last management action is reachable landscape",
+      "ok": true
+    },
+    {
+      "name": "Reset request accepted",
+      "ok": true
+    },
+    {
+      "name": "Owner resets only selected test device to first admission",
+      "ok": true
+    },
+    {
+      "name": "Owner deletes individual tree ornament",
+      "ok": true
+    },
+    {
+      "name": "Owner deletes all confirmed ornaments",
+      "ok": true
+    },
+    {
+      "name": "Public and admin text contain no guest or invite labels",
+      "ok": true
+    },
+    {
+      "name": "No browser exceptions",
+      "ok": true,
+      "details": []
+    }
+  ],
+  "errors": [],
+  "views": [
+    {
+      "name": "desktop",
+      "box": {
+        "top": 70,
+        "bottom": 730,
+        "left": 240,
+        "right": 1040
+      },
+      "headerBottom": 215,
+      "paneTop": 227,
+      "paneBottom": 687,
+      "firstTop": 239,
+      "scroll": true,
+      "inside": true
+    },
+    {
+      "name": "mobile",
+      "box": {
+        "top": 12,
+        "bottom": 832,
+        "left": 10,
+        "right": 380
+      },
+      "headerBottom": 145,
+      "paneTop": 155,
+      "paneBottom": 795,
+      "firstTop": 167,
+      "scroll": true,
+      "inside": true
+    },
+    {
+      "name": "landscape",
+      "box": {
+        "top": 8,
+        "bottom": 382,
+        "left": 22,
+        "right": 822
+      },
+      "headerBottom": 121,
+      "paneTop": 127,
+      "paneBottom": 373,
+      "firstTop": 139,
+      "scroll": true,
+      "inside": true
+    }
+  ]
+}

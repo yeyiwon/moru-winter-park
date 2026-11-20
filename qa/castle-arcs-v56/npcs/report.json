@@ -1,0 +1,27 @@
+{
+  "checks": [
+    {
+      "name": "plaza message and guest request are visible without greeting or sparkler text",
+      "ok": true
+    },
+    {
+      "name": "tree keeper gives wish and decorating hint",
+      "ok": true
+    },
+    {
+      "name": "scientist outfit is exclusive and greeting panel removed",
+      "ok": true
+    },
+    {
+      "name": "hand sparkler has a brighter glow and one bounded particle batch",
+      "ok": true
+    },
+    {
+      "name": "no browser or shader errors",
+      "ok": true,
+      "data": []
+    }
+  ],
+  "errors": [],
+  "environment": "Mac Chrome; mobile touch emulation; physical Windows/Edge/iOS/Android UNKNOWN"
+}

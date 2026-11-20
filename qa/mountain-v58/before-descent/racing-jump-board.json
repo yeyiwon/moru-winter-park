@@ -1,0 +1,27 @@
+{
+  "pose": {
+    "x": 105.52514281874372,
+    "y": 339.30029828428667,
+    "z": -1054.164076187668,
+    "yaw": -0.49067949341389067,
+    "mode": "ski",
+    "lean": -3.601623382346978e-11,
+    "tilt": 0.43513368690676774,
+    "brake": false,
+    "air": 0,
+    "speed": 22.74792700069614,
+    "gesture": "",
+    "heldItem": "",
+    "balloonTone": -1,
+    "balloonStyle": "classic",
+    "roast": 0
+  },
+  "gear": "board",
+  "summary": {
+    "gear": "board",
+    "maximumAir": 12.204643312552742,
+    "airborneFrames": 204,
+    "visibleFrames": 204,
+    "landingSpeed": 22.74792700069614
+  }
+}

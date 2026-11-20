@@ -1,7 +1,7 @@
 import {canStandAt} from '../dist/movement.js';
 import {benches,benchAccess,benchPoseValid} from '../dist/bench-layout.js';
 import {alpineShift,resortRides,liftLayout,ridgeLiftEntry,gondolaEntry} from '../dist/resort-layout.js';
-import {gondolaSchedule} from '../dist/ride-seats.js';
+import {gondolaSchedule,gondolaTransitionMs} from '../dist/ride-seats.js';
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';import {spawnSync} from 'node:child_process';
 import {ferrisDimensions} from '../dist/ferris-layout.js';
 import {rideAPI,listRideSeats} from '../server/ride-api.js';import {sharedSeatPose} from '../dist/ride-seats.js';import {buildFerrisWheel} from '../dist/ferris-model.js';
@@ -44,19 +44,19 @@ test('automatic seats fill free places concurrently, retry idempotently and pres
 });
 
 test('six gondola seats share a cabin atomically, reject the seventh and reopen on release',async()=>{
- const time=Math.floor(now/gondolaSchedule.interval)*gondolaSchedule.interval+3000,self=id=>({id,room:'gondola-room',region:'outdoors',...gondolaEntry});
+ const time=Math.floor(now/gondolaSchedule.interval)*gondolaSchedule.interval+1500,self=id=>({id,room:'gondola-room',region:'outdoors',...gondolaEntry});
  const responses=await Promise.all(Array.from({length:7},(_,i)=>req(self('gondola-'+i),'gondola',time)));
  assert.equal(responses.filter(r=>r.status===200).length,6);assert.equal(responses.filter(r=>r.status===409).length,1);
  const seats=await listRideSeats(DB,'gondola-room',time);assert.equal(new Set(seats.map(s=>s.seat)).size,6);assert.equal(new Set(seats.map(s=>s.startedAt)).size,1);
  for(let t=6;t<756;t+=2){const positions=seats.map(s=>sharedSeatPose(s,s.startedAt+t*1000));for(let i=0;i<6;i++)for(let j=0;j<i;j++)assert.ok(Math.hypot(positions[i].x-positions[j].x,positions[i].z-positions[j].z)>1);}
  await req(self(seats[0].id),'gondola',time,'DELETE');assert.equal((await req(self('gondola-new'),'gondola',time)).status,200);
- assert.equal((await req(self('gondola-closed'),'gondola',time+6000)).status,409);assert.equal((await req({...self('gondola-far'),x:0,z:0},'gondola',time)).status,400);
+ assert.equal((await req(self('gondola-closed'),'gondola',time+4500)).status,409);assert.equal((await req({...self('gondola-far'),x:0,z:0},'gondola',time)).status,400);
 });
 
 test('mid-mountain lift claims two seats at its own station and rejects base-station boarding',async()=>{const self={id:'ridge-a',room:'ridge-room',...ridgeLiftEntry};const a=await(await req(self,'ridgelift',now)).json(),b=await(await req({...self,id:'ridge-b'},'ridgelift',now+200)).json();assert.equal(a.reservation.startedAt,b.reservation.startedAt);assert.notEqual(a.reservation.seat,b.reservation.seat);const p=sharedSeatPose(a.reservation,now+50000);assert.ok(p.z<ridgeLiftEntry.z);assert.equal((await req({id:'ridge-far',room:'ridge-room',x:0,z:0},'ridgelift',now)).status,400);});
 
 test('gondola exit requires an owned open-station seat and retries keep the same transition',async()=>{
- const cabin=Math.floor(now/gondolaSchedule.interval)*gondolaSchedule.interval,boardAt=cabin+3000,self={id:'exit-a',room:'exit-room',region:'outdoors',...gondolaEntry};
+ const cabin=Math.floor(now/gondolaSchedule.interval)*gondolaSchedule.interval,boardAt=cabin+1500,self={id:'exit-a',room:'exit-room',region:'outdoors',...gondolaEntry};
  const response=await req(self,'gondola',boardAt);assert.equal(response.status,200);
  const reservation=(await response.json()).reservation,arrival=cabin+(resortRides.gondola.boardingSeconds+resortRides.gondola.duration+2.1)*1000;
  q('UPDATE ride_seats SET expires_at=? WHERE visitor=?',[arrival+20000,self.id]);
@@ -67,5 +67,5 @@ test('gondola exit requires an owned open-station seat and retries keep the same
  const leaving=await exit(self,arrival);assert.equal(leaving.status,200);const pose=(await leaving.json()).reservation;
  assert.equal(pose.cabin,reservation.cabin);assert.equal(pose.seat,reservation.seat);assert.equal(pose.startedAt,arrival);
  const retry=await exit(self,arrival+500);assert.equal(retry.status,200);assert.equal((await retry.json()).reservation.startedAt,arrival);
- const start=sharedSeatPose(pose,arrival),end=sharedSeatPose(pose,arrival+5000);assert.equal(start.transition,'exiting');assert.equal(end.transitionDone,true);
+ const start=sharedSeatPose(pose,arrival),end=sharedSeatPose(pose,arrival+gondolaTransitionMs);assert.equal(start.transition,'exiting');assert.equal(end.transitionDone,true);
 });

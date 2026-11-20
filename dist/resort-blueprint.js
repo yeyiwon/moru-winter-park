@@ -1,6 +1,6 @@
 import {ryokanGardenObstacles} from './ryokan-exterior-layout.js';
-import {mountainWayfinders,mountainShelter,mountainBounds,skiJumps,skiJumpCoordinates,mountainGroundHeight,alpineHeight,skiRunCenter,skiRunHalfWidth,skiRunHeight,skiRunAt,skiRuns,skiStarts,skiRunouts,skiNetwork,mountainTerraces,ridgeBase,ridgeSummit,ridgeLiftLayout,ridgeLiftEntry,ridgeLiftPoint,ridgeTransfers,summit,peakSummit,middleSummit,liftLayout,upperLiftLayout,upperLiftEntry,liftPoint,upperLiftPoint,summitTransfer,middleTransfer,mountainRest,beginnerAccess,gondolaEntry,gondolaApproach,liftApproach,gondolaPoints,gondolaStations} from './mountain-layout.js';
-export {skiJumps,skiJumpCoordinates,mountainGroundHeight,alpineHeight,skiRunCenter,skiRunHalfWidth,skiRunHeight,skiRunAt,skiRuns,skiStarts,skiRunouts,skiNetwork,mountainTerraces,ridgeBase,ridgeSummit,ridgeLiftLayout,ridgeLiftEntry,ridgeLiftPoint,ridgeTransfers,summit,peakSummit,middleSummit,liftLayout,upperLiftLayout,upperLiftEntry,liftPoint,upperLiftPoint,summitTransfer,middleTransfer,mountainRest,beginnerAccess,gondolaEntry,gondolaApproach,liftApproach,gondolaPoints};
+import {mountainWayfinders,mountainShelter,mountainBounds,skiArrival,skiJumps,skiJumpCoordinates,mountainGroundHeight,alpineHeight,skiRunCenter,skiRunHalfWidth,skiRunHeight,skiRunAt,skiRuns,skiStarts,skiRunouts,skiNetwork,mountainTerraces,ridgeBase,ridgeSummit,ridgeLiftLayout,ridgeLiftEntry,ridgeLiftPoint,ridgeTransfers,summit,peakSummit,middleSummit,liftLayout,upperLiftLayout,upperLiftEntry,liftPoint,upperLiftPoint,summitTransfer,middleTransfer,mountainRest,beginnerAccess,gondolaEntry,gondolaApproach,liftApproach,gondolaPoints,gondolaStations} from './mountain-layout.js';
+export {skiArrival,skiJumps,skiJumpCoordinates,mountainGroundHeight,alpineHeight,skiRunCenter,skiRunHalfWidth,skiRunHeight,skiRunAt,skiRuns,skiStarts,skiRunouts,skiNetwork,mountainTerraces,ridgeBase,ridgeSummit,ridgeLiftLayout,ridgeLiftEntry,ridgeLiftPoint,ridgeTransfers,summit,peakSummit,middleSummit,liftLayout,upperLiftLayout,upperLiftEntry,liftPoint,upperLiftPoint,summitTransfer,middleTransfer,mountainRest,beginnerAccess,gondolaEntry,gondolaApproach,liftApproach,gondolaPoints};
 export const spaShift=-40;
 export const alpine={x:0,z:-260,r:144,landZ:-230,rx:144,rz:174},spa={x:0,z:119+spaShift,r:31};
 export const skiTicketBooth={x:-110,z:-187};
@@ -38,10 +38,10 @@ const topStation=gondolaStations.at(-1),gondolaExit={x:topStation.x-Math.sin(top
 const ski=skiNetwork[0].points.map(p=>[p.x,p.y,p.z]);
 const lift=Array.from({length:321},(_,i)=>liftPoint(i/320)),upperlift=Array.from({length:601},(_,i)=>upperLiftPoint(i/600));
 export const resortRides={
- lift:{bodyOffset:.82,heightMode:'seat',points:lift,exit:[summitTransfer[0].x,alpineHeight(summitTransfer[0].x,summitTransfer[0].z),summitTransfer[0].z],duration:28,arrivalYaw:.65},
- upperlift:{bodyOffset:.82,heightMode:'seat',points:upperlift,exit:[middleSummit.x+20,alpineHeight(middleSummit.x+20,middleSummit.z),middleSummit.z],duration:46,arrivalYaw:.6},
- ridgelift:{bodyOffset:.82,heightMode:'seat',points:Array.from({length:321},(_,i)=>ridgeLiftPoint(i/320)),exit:[ridgeTransfers[1][0].x,alpineHeight(ridgeTransfers[1][0].x,ridgeTransfers[1][0].z),ridgeTransfers[1][0].z],duration:38,arrivalYaw:.6},
- gondola:{smoothHeading:true,bodyOffset:.82,heightMode:'seat',points:gondolaPoints,exit:[gondolaExit.x,alpineHeight(gondolaExit.x,gondolaExit.z),gondolaExit.z],baseExit:[gondolaEntry.x,alpineHeight(gondolaEntry.x,gondolaEntry.z),gondolaEntry.z],duration:65,boardingSeconds:14,arrivalSeconds:14,arrivalYaw:0},
+ lift:{bodyOffset:.82,heightMode:'seat',points:lift,exit:[summitTransfer[0].x,alpineHeight(summitTransfer[0].x,summitTransfer[0].z),summitTransfer[0].z],duration:35,arrivalYaw:.65},
+ upperlift:{bodyOffset:.82,heightMode:'seat',points:upperlift,exit:[middleSummit.x+20,alpineHeight(middleSummit.x+20,middleSummit.z),middleSummit.z],duration:68,arrivalYaw:.6},
+ ridgelift:{bodyOffset:.82,heightMode:'seat',points:Array.from({length:321},(_,i)=>ridgeLiftPoint(i/320)),exit:[ridgeTransfers[1][0].x,alpineHeight(ridgeTransfers[1][0].x,ridgeTransfers[1][0].z),ridgeTransfers[1][0].z],duration:62,arrivalYaw:.6},
+ gondola:{smoothHeading:true,bodyOffset:.82,heightMode:'seat',points:gondolaPoints,exit:[gondolaExit.x,alpineHeight(gondolaExit.x,gondolaExit.z),gondolaExit.z],baseExit:[gondolaEntry.x,alpineHeight(gondolaEntry.x,gondolaEntry.z),gondolaEntry.z],duration:95,boardingSeconds:5,arrivalSeconds:5,doorSeconds:.5,turnSeconds:6,arrivalYaw:0},
  ski:{heightMode:'surface',points:ski,duration:480}
 };
 export const resortObstacles=[

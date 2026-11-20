@@ -20,7 +20,7 @@ test('show cues address actual architectural regions and all six emitter locatio
  const scene=new T.Scene();scene.add(castle.root);const show=createCastleShow(scene),beam=show.root.getObjectByName('castle-laser-fan'),geometry=beam.geometry,buffer=geometry.attributes.design.array,context={};
  for(let age=0;age<74;age+=.25){const state=sampleCastleCue(age,context);show.update(age,{active:true,quality:'low'});assert.equal(state,context);assert.equal(beam.geometry,geometry);assert.equal(geometry.attributes.design.array,buffer);assert.equal(beam.material.uniforms.count.value,12);assert.ok(state.mix>=0&&state.mix<=1);}
  assert.equal(show.root.getObjectByName('castle-starlight-orbs'),undefined);
- const counts=[];for(const object of show.root.children)object.geometry.addEventListener('dispose',()=>counts.push(object.name));show.dispose();assert.equal(counts.length,2);castle.dispose();
+ const counts=[];for(const object of show.root.children.filter(o=>o.geometry))object.geometry.addEventListener('dispose',()=>counts.push(object.name));show.dispose();assert.equal(counts.length,2);castle.dispose();
 });
 
 test('projection shares a clock across existing surfaces and preserves geometry and materials on cleanup',()=>{
@@ -58,4 +58,19 @@ test('authored beam sectors clear the castle throughout both recordings and quie
   assert.equal(sampleCastleLight(6.4,e,{bpm:120,offset:0,laser:1},{}).level,0,'quiet phrase');
  }
  assert.ok(rays>1000);castle.dispose();
+});
+
+
+test('performance uses broad fixtures and two bounded physical castle washes, with no pointer lasers',()=>{
+ assert.ok(castleBeamEmitters.every(e=>!e.laser&&e.width>=5));
+ const scene=new T.Scene(),show=createCastleShow(scene),lamps=scene.children.filter(o=>o.isSpotLight);
+ assert.equal(lamps.length,2);assert.ok(lamps.every(l=>!l.castShadow&&l.angle>.5&&l.penumbra>.8));
+ show.update(42,{active:true,musicId:'love'});assert.ok(lamps.every(l=>l.intensity>0&&l.intensity<=120));
+ show.update(80,{active:false});assert.ok(lamps.every(l=>l.intensity===0));show.dispose();assert.equal(scene.children.length,0);
+});
+
+
+test('starting and stopping a show preserves the shader light count and disposal releases washes',()=>{
+ const scene=new T.Scene(),show=createCastleShow(scene),count=()=>{let n=0;scene.traverseVisible(o=>{if(o.isSpotLight)n++;});return n;};assert.equal(count(),2);
+ show.update(0,{active:false});assert.equal(count(),2);show.update(35,{active:true});assert.equal(count(),2);show.update(180,{active:false});assert.equal(count(),2);assert.ok(scene.children.filter(o=>o.isSpotLight).every(l=>l.intensity===0));show.dispose();assert.equal(count(),0);
 });

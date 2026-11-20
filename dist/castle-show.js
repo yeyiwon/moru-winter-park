@@ -29,7 +29,7 @@ float projectionPattern(float mode,vec3 p,float t){
  float aurora=pow(.5+.5*sin(p.y*.32+p.x*.2+sin(p.z*.4+t*.3)*1.1-t*.55),6.);
  if(mode<2.5)return aurora+.12*flow;
  vec2 cell=floor(p.xy*.6),st=fract(p.xy*.6)-.5;float hash=fract(sin(dot(cell,vec2(127.1,311.7)))*43758.5453);
- return exp(-dot(st,st)*100.)*pow(.5+.5*sin(t*1.7+hash*30.),8.)+flow*.35+aurora*.15;
+ return (exp(-dot(st,st)*90.)+exp(-abs(st.x)*55.-abs(st.y)*9.)*.3+exp(-abs(st.y)*55.-abs(st.x)*9.)*.3)*(.55+.45*pow(.5+.5*sin(t*1.7+hash*30.),4.))+flow*.18;
 }
 vec3 castleProjection(float finish){
  if(showPower<.0001)return vec3(0.);
@@ -38,7 +38,10 @@ vec3 castleProjection(float finish){
  float pattern=projectionPattern(showMode,showP,t);if(showMix<.999)pattern=mix(projectionPattern(showPreviousMode,showP,t),pattern,showMix);
  float breathe=.85+.15*sin(t*.6+r*.9),level=showRegions[int(r)];
  // Low base illumination preserves stone shadows; the moving detail carries the colour.
- float energy=(.065+pattern*.52)*level*breathe;
+ float sweep=pow(.5+.5*sin(showP.y*.48-abs(showP.x)*.2-t*1.3),18.);
+ float fleck=pow(.5+.5*sin(showP.x*8.+showP.y*13.+showP.z*7.),24.)*pow(.5+.5*sin(t*2.+showP.y*.7),8.);
+ float energy=(.1+pattern*.84+sweep*.2+fleck*.25)*level*breathe;
+ tint=mix(tint,showPalette[2],sweep*.5);
  if(r>4.5&&r<5.5)energy=(.16+.14*sin(t*.7+showP.y*.25))*level;
  if(finish>1.5)energy*=1.25;
  return tint*energy*showPower*1.7;
@@ -64,13 +67,13 @@ export function createCastleShow(scene){
  });
  const root=new T.Group();root.name='castle-performance';root.visible=false;scene.add(root);
  const positions=[],uvs=[],origins=[],directions=[],designs=[],extents=[],indices=[];
- // Low quality retains symmetrical ground beams and timed lasers. Additional
+ // Low quality retains symmetrical broad ground beams and timed accents. Additional
  // window/rear fixtures fill the composition without adding dynamic lights.
  const order=[0,1,2,3,4,5,8,9,12,13,22,23,10,11,6,7,14,15,16,17,18,19,20,21];
  for(const [id,index]of order.entries()){
   const e=castleBeamEmitters[index];
   for(let cross=0;cross<1;cross++){const base=positions.length/3;for(const [u,v]of [[-1,0],[1,0],[-1,1],[1,1]]){
-   positions.push(u,v,cross);uvs.push(u,v);origins.push(...e.position);directions.push(...e.direction);designs.push(id,castleBeamGroups.indexOf(e.group),e.laser?1:0,e.width);extents.push(e.length);
+   positions.push(u,v,cross);uvs.push(u,v);origins.push(...e.position);directions.push(...e.direction);designs.push(id,castleBeamGroups.indexOf(e.group),e.accent?1:0,e.width);extents.push(e.length);
   }indices.push(base,base+1,base+2,base+1,base+3,base+2);}
  }
  const g=new T.BufferGeometry();for(const [name,data,size]of [['position',positions,3],['uv',uvs,2],['origin',origins,3],['direction',directions,3],['design',designs,4],['extent',extents,1]])g.setAttribute(name,new T.Float32BufferAttribute(data,size));g.setIndex(indices);
@@ -80,17 +83,17 @@ export function createCastleShow(scene){
  vertexShader:`attribute float extent;attribute vec3 origin;attribute vec4 design;uniform float count;uniform vec4 beamDirections[24];uniform float beamSpreads[24];uniform float showGroups[6];varying vec2 vUv;varying float strength;varying float laser;varying float group;varying float fan;varying float viewDistance;void main(){
  vUv=uv;laser=design.z;group=design.y;int index=int(design.x);vec4 beam=beamDirections[index];vec3 aim=beam.xyz,eye=cameraPosition-(modelMatrix*vec4(origin,1.)).xyz;
  vec3 across=cross(aim,normalize(eye));if(length(across)<.01)across=cross(aim,vec3(0.,0.,1.));across=normalize(across);
- fan=laser<.5&&(group==1.||group==3.)?1.:0.;float width=laser>.5?.018+uv.y*design.w:.05+uv.y*design.w*beamSpreads[index];
+ fan=(group==1.||group==3.)?1.:0.;float width=.12+uv.y*design.w*beamSpreads[index];
  vec3 p=origin+aim*(uv.y*extent)+across*uv.x*width;vec4 mv=modelViewMatrix*vec4(p,1.);viewDistance=length(mv.xyz);
  gl_Position=projectionMatrix*mv;strength=design.x<count?showGroups[int(group)]*beam.w:0.;
  }`,
  fragmentShader:`uniform float showPower;uniform vec3 showPalette[3];varying vec2 vUv;varying float strength;varying float laser;varying float group;varying float fan;varying float viewDistance;void main(){
- float soft=exp(-vUv.x*vUv.x*5.)*.115;soft+=fan*pow(.5+.5*cos(vUv.x*24.),14.)*.026*(1.-abs(vUv.x));
+ float feather=1.-smoothstep(.45,1.,abs(vUv.x));float soft=exp(-vUv.x*vUv.x*3.5)*feather*.13;
  // Interpolated UVs may exceed one by an ulp at the far edge. A negative
  // fractional power becomes NaN and contaminates HDR bloom with black blocks.
- float core=mix(soft,exp(-abs(vUv.x)*5.)*.6,laser),fade=pow(clamp(1.-vUv.y,0.,1.),1.25)*smoothstep(0.,.018,vUv.y);
- float attenuation=1./(1.+pow(viewDistance/420.,2.));vec3 tint=mix(showPalette[0],showPalette[2],mod(group,2.)*.7);
- float alpha=core*fade*strength*showPower*attenuation;if(!(alpha>.001))discard;gl_FragColor=vec4(tint*1.4,alpha);
+ float ribbon=exp(-vUv.x*vUv.x*2.8)*feather*(.12+.025*cos(vUv.x*9.));float core=mix(soft,ribbon*.65,fan)*mix(1.,1.1,laser),fade=pow(clamp(1.-vUv.y,0.,1.),1.6)*smoothstep(0.,.065,vUv.y)*(1.-smoothstep(.65,.98,vUv.y));
+ float attenuation=1./(1.+pow(viewDistance/420.,2.));vec3 tint=mix(showPalette[2],mix(showPalette[0],showPalette[1],mod(group,2.)*.7),smoothstep(.05,.85,vUv.y));
+ float alpha=core*fade*strength*showPower*attenuation*.4;if(!(alpha>.001))discard;gl_FragColor=vec4(tint*mix(1.4,2.2,laser),alpha);
 #include <tonemapping_fragment>
 #include <colorspace_fragment>
 }`});
@@ -99,10 +102,15 @@ export function createCastleShow(scene){
  const groundFixtures=castleBeamEmitters.filter(e=>!e.laser),fixtures=new T.InstancedMesh(fixtureGeo,fixtureMat,groundFixtures.length),dummy=new T.Object3D();
  groundFixtures.forEach((e,i)=>{dummy.position.set(e.position[0]+castleLayout.x,e.position[1]-.1,e.position[2]);dummy.updateMatrix();fixtures.setMatrixAt(i,dummy.matrix);});fixtures.name='show-ground-fixtures';root.add(fixtures);
  const beams=new T.Mesh(g,material);beams.name='castle-laser-fan';beams.frustumCulled=false;root.add(beams);
+ // Two real, shadow-free washes illuminate the stone and nearby architecture.
+ // Keep the light count visible even at zero intensity between shows. Hiding them
+ // under the effects root recompiles every lit material when a show starts/stops.
+ const washes=[-1,1].map(side=>{const lamp=new T.SpotLight('#bddfff',0,85,.56,.85,1.7);lamp.name='castle-surface-wash';lamp.position.set(castleLayout.x+side*22,1.6,8);lamp.target.position.set(castleLayout.x+side*7,19,-17);lamp.castShadow=false;scene.add(lamp,lamp.target);return lamp;});
  // Architectural projection supplies surface sparkle without free-floating ground orbs.
  beams.position.x=castleLayout.x;
  return{root,uniforms,update(age,{active=false,still=false,quality='high',musicId,duration=74}={}){
   root.visible=active;uniforms.showTime.value=Math.max(0,age);uniforms.showPower.value=active?showEnvelope(age,duration)*(still?.45:1):0;uniforms.showCalm.value=still?1:0;
+  for(const lamp of washes)lamp.intensity=0;
   if(!active)return;
   const track=showTrack(musicId),{cue,previous,mix,index,previousIndex:prevIndex}=sampleCastleCue(age,state,musicId);
   for(let i=0;i<3;i++)uniforms.showPalette.value[i].copy(palettes[prevIndex][i]).lerp(palettes[index][i],mix);
@@ -114,5 +122,6 @@ export function createCastleShow(scene){
   lightOptions.bpm=track?.bpm??cue.beat.bpm;lightOptions.offset=track?.offset??cue.beat.offset;lightOptions.sweep=uniforms.showSweep.value;lightOptions.laser=uniforms.showLaser.value;lightOptions.calm=still;lightOptions.finale=cue.id==='luminous-finale';lightOptions.afterglow=!!track?.sections.find(s=>age>=s.start&&age<s.end)?.afterglow;
   for(let i=0;i<order.length;i++){sampleCastleLight(age,castleBeamEmitters[order[i]],lightOptions,lightState);beamDirections[i].set(lightState.x,lightState.y,lightState.z,lightState.level);beamSpreads[i]=lightState.spread;}
 
- },dispose(){restores.forEach(fn=>fn());g.dispose();material.dispose();fixtureGeo.dispose();fixtureMat.dispose();root.removeFromParent();}};
+  for(let i=0;i<washes.length;i++){const lamp=washes[i];lamp.color.copy(uniforms.showPalette.value[i]);lamp.intensity=lightOptions.afterglow?0:uniforms.showPower.value*(still?18:75+45*Math.sin(age*.6+i)**2)*(quality==='low'?.6:1);lamp.target.position.y=19+(still?0:Math.sin(age*.21+i)*5);}
+ },dispose(){restores.forEach(fn=>fn());g.dispose();material.dispose();fixtureGeo.dispose();fixtureMat.dispose();washes.forEach(l=>{l.removeFromParent();l.target.removeFromParent();l.dispose();});root.removeFromParent();}};
 }

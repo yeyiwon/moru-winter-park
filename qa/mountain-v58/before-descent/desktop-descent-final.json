@@ -1,0 +1,37 @@
+{
+  "environment": "macOS arm64 / headless Chrome / 1280x800; actual elapsed time; automated steering",
+  "stage": "compact 900m drop, approximately 60 second target, worker terrain and authoritative transport",
+  "elapsedSeconds": 58.61340000000149,
+  "frames": 2931,
+  "averageFPS": 50.00563011188418,
+  "frameMsMean": 19.997748208803056,
+  "frameMsP50": 16.69999999999709,
+  "frameMsP95": 33.400000000001455,
+  "callsRange": [
+    76,
+    1155
+  ],
+  "trianglesRange": [
+    507226,
+    5037645
+  ],
+  "terrainResidentMax": 28,
+  "final": {
+    "x": -5.703607138626641,
+    "y": 0.95,
+    "z": -71.76459036784429,
+    "yaw": -0.09671050871934946,
+    "mode": "",
+    "lean": 0,
+    "tilt": 0,
+    "brake": false,
+    "air": 0,
+    "speed": 0,
+    "gesture": "",
+    "heldItem": "",
+    "balloonTone": -1,
+    "balloonStyle": "classic",
+    "roast": 0
+  },
+  "errors": []
+}

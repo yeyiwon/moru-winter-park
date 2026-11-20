@@ -12,6 +12,7 @@ if (!/^[a-z0-9-]+$/.test(revision)) throw Error('Use a stable, URL-safe brand as
 const socialImage = new URL(BRAND.assets.socialImage, url).href + '?v=' + revision;
 const metadata = `<meta charset="UTF-8">
 <base href="/">
+<script src="/ui-theme.js"></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <!-- brand:metadata:start -->
 <meta name="theme-color" content="${escape(BRAND.colors.white)}">
@@ -29,8 +30,8 @@ const metadata = `<meta charset="UTF-8">
 <meta property="og:image" content="${escape(socialImage)}">
 <meta property="og:image:secure_url" content="${escape(socialImage)}">
 <meta property="og:image:type" content="image/png">
-<meta property="og:image:width" content="1200">
-<meta property="og:image:height" content="630">
+<meta property="og:image:width" content="${BRAND.assets.socialImageWidth}">
+<meta property="og:image:height" content="${BRAND.assets.socialImageHeight}">
 <meta property="og:image:alt" content="${escape(BRAND.assets.socialImageAlt)}">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="${escape(title)}">

@@ -21,7 +21,7 @@ async function request(body,cursor=null){
 }
 function attemptId(){return globalThis.crypto?.randomUUID?.()||('attempt_'+Date.now().toString(36)+'_'+Math.random().toString(36).slice(2));}
 function accountStill(id,epoch){return id===currentOwner()&&epoch===sessionEpoch;}
-const changedSession=record=>({record,mode:'changed',message:'접속이 바뀌어 이전 게스트의 기록은 수정하지 않았어요.'});
+const changedSession=record=>({record,mode:'changed',message:'접속이 바뀌어 이전 접속의 기록은 수정하지 않았어요.'});
 
 export async function recordQuizAnswer(question,choice){
  if(owner!==currentOwner())readCache();

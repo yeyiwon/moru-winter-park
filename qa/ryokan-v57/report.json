@@ -1,0 +1,194 @@
+{
+  "checks": [
+    {
+      "name": "aquarium wall covers 92 percent and has real 8m depth",
+      "ok": true
+    },
+    {
+      "name": "chef message separated from seating actions",
+      "ok": true,
+      "data": {
+        "gap": 14,
+        "background": "rgba(24, 35, 54, 0.84)"
+      }
+    },
+    {
+      "name": "aquarium has no viewing popup",
+      "ok": true
+    },
+    {
+      "name": "server seat ryokan-tea-bench",
+      "ok": true
+    },
+    {
+      "name": "server seat ryokan-tatami",
+      "ok": true
+    },
+    {
+      "name": "server seat ryokan-footbath-south",
+      "ok": true
+    },
+    {
+      "name": "server seat interior-dining",
+      "ok": true
+    },
+    {
+      "name": "repeated entry retains room geometry without new scene allocations",
+      "ok": true,
+      "data": {
+        "before": {
+          "geometries": 775,
+          "textures": 26
+        },
+        "samples": [
+          {
+            "geometries": 775,
+            "textures": 26,
+            "resident": 1077,
+            "room": 92,
+            "newGeometry": 0,
+            "roomUnchanged": true
+          },
+          {
+            "geometries": 775,
+            "textures": 26,
+            "resident": 1077,
+            "room": 92,
+            "newGeometry": 0,
+            "roomUnchanged": true
+          },
+          {
+            "geometries": 778,
+            "textures": 26,
+            "resident": 1077,
+            "room": 92,
+            "newGeometry": 0,
+            "roomUnchanged": true
+          },
+          {
+            "geometries": 778,
+            "textures": 26,
+            "resident": 1077,
+            "room": 92,
+            "newGeometry": 0,
+            "roomUnchanged": true
+          },
+          {
+            "geometries": 778,
+            "textures": 26,
+            "resident": 1077,
+            "room": 92,
+            "newGeometry": 0,
+            "roomUnchanged": true
+          }
+        ]
+      }
+    },
+    {
+      "name": "mobile chef message separated from seating actions",
+      "ok": true,
+      "data": {
+        "gap": 14
+      }
+    },
+    {
+      "name": "browser and shader errors",
+      "ok": true,
+      "data": []
+    }
+  ],
+  "frames": [
+    {
+      "name": "desktop hall",
+      "fps": 55.367650465644275,
+      "p95": 33.29999999999927,
+      "p99": 33.400000000001455,
+      "calls": 78,
+      "triangles": 448676,
+      "memory": {
+        "geometries": 663,
+        "textures": 21
+      }
+    },
+    {
+      "name": "desktop panorama",
+      "fps": 57.82444594986939,
+      "p95": 16.80000000000291,
+      "p99": 33.30000000000291,
+      "calls": 71,
+      "triangles": 438812,
+      "memory": {
+        "geometries": 663,
+        "textures": 21
+      }
+    },
+    {
+      "name": "mobile portrait",
+      "fps": 60.00200843542879,
+      "p95": 16.799999999999272,
+      "p99": 16.80000000000291,
+      "calls": 167,
+      "triangles": 517668,
+      "memory": {
+        "geometries": 595,
+        "textures": 14
+      }
+    },
+    {
+      "name": "mobile landscape",
+      "fps": 60.00200843542879,
+      "p95": 16.799999999999272,
+      "p99": 16.80000000000291,
+      "calls": 185,
+      "triangles": 449206,
+      "memory": {
+        "geometries": 595,
+        "textures": 14
+      }
+    }
+  ],
+  "errors": [],
+  "environment": "Mac Chrome GPU; touch viewport emulation, physical phones/Windows UNKNOWN",
+  "entrySamples": [
+    {
+      "geometries": 775,
+      "textures": 26,
+      "resident": 1077,
+      "room": 92,
+      "newGeometry": 0,
+      "roomUnchanged": true
+    },
+    {
+      "geometries": 775,
+      "textures": 26,
+      "resident": 1077,
+      "room": 92,
+      "newGeometry": 0,
+      "roomUnchanged": true
+    },
+    {
+      "geometries": 778,
+      "textures": 26,
+      "resident": 1077,
+      "room": 92,
+      "newGeometry": 0,
+      "roomUnchanged": true
+    },
+    {
+      "geometries": 778,
+      "textures": 26,
+      "resident": 1077,
+      "room": 92,
+      "newGeometry": 0,
+      "roomUnchanged": true
+    },
+    {
+      "geometries": 778,
+      "textures": 26,
+      "resident": 1077,
+      "room": 92,
+      "newGeometry": 0,
+      "roomUnchanged": true
+    }
+  ]
+}

@@ -54,4 +54,4 @@
 ![활성 조명 우측](../qa/experience-v55/angles/desktop-right.png)
 ![모바일 피날레](../qa/experience-v55/show/mobile-finale.png)
 
-운영 배포 결과는 [DEPLOYMENT](DEPLOYMENT.md)에 기록한다.
+`npm run check` 318개 JS 모듈, Worker·Vercel·realtime 빌드, 용량 검사도 PASS. core 26,728,698 bytes / 공연 음원 8,258,036 bytes / 코드 gzip 1,166,126 bytes로 기존 한도 이내다. 운영 배포 결과는 [DEPLOYMENT](DEPLOYMENT.md)에 기록한다.

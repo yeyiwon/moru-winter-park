@@ -1,0 +1,358 @@
+{
+  "checks": [
+    {
+      "name": "three independent selected BGM tracks",
+      "ok": true,
+      "details": [
+        {
+          "track": "ethereal-winter-ballet-01",
+          "repeat": "true",
+          "muted": false,
+          "level": 0.45
+        },
+        {
+          "track": "cinematic-christmas-piano-strings-bells",
+          "repeat": "false",
+          "muted": false,
+          "level": 0.55
+        },
+        {
+          "track": "winter-waltz",
+          "repeat": "true",
+          "muted": true,
+          "level": 0.65
+        }
+      ]
+    },
+    {
+      "name": "A changing BGM never changes B or C",
+      "ok": true
+    },
+    {
+      "name": "three simultaneous requests create exactly one shared show",
+      "ok": true,
+      "details": [
+        {
+          "created": true,
+          "id": "030144f2-51c8-49ee-ae50-5c48e0a41684"
+        },
+        {
+          "created": false,
+          "id": "030144f2-51c8-49ee-ae50-5c48e0a41684"
+        },
+        {
+          "created": false,
+          "id": "030144f2-51c8-49ee-ae50-5c48e0a41684"
+        }
+      ]
+    },
+    {
+      "name": "server countdown is five seconds and cooldown five minutes",
+      "ok": true
+    },
+    {
+      "name": "all local BGM playheads pause during shared show",
+      "ok": true,
+      "details": [
+        {
+          "track": "winter-jazz-artmylife",
+          "repeat": "true",
+          "muted": false,
+          "level": 0.45,
+          "show": {
+            "id": "030144f2-51c8-49ee-ae50-5c48e0a41684",
+            "musicId": "wedding-entrance",
+            "duration": 123.24571428571429,
+            "timelineVersion": 57,
+            "startsAt": 1795166542373,
+            "endsAt": 1795166665618.7144,
+            "nextRequestAt": 1795166965618.7144,
+            "seed": 2958798143,
+            "state": "playing",
+            "revision": 1
+          },
+          "background": [
+            {
+              "src": "/audio/winter-jazz-artmylife.mp3",
+              "time": 6.093757,
+              "paused": true
+            },
+            {
+              "src": "/audio/ethereal-winter-ballet-01.mp3",
+              "time": 57.343893,
+              "paused": true
+            }
+          ],
+          "performance": [
+            {
+              "src": "/audio/show/wedding-entrance.mp3",
+              "time": 3.970612,
+              "paused": false
+            }
+          ]
+        },
+        {
+          "track": "cinematic-christmas-piano-strings-bells",
+          "repeat": "false",
+          "muted": false,
+          "level": 0.55,
+          "show": {
+            "id": "030144f2-51c8-49ee-ae50-5c48e0a41684",
+            "musicId": "wedding-entrance",
+            "duration": 123.24571428571429,
+            "timelineVersion": 57,
+            "startsAt": 1795166542373,
+            "endsAt": 1795166665618.7144,
+            "nextRequestAt": 1795166965618.7144,
+            "seed": 2958798143,
+            "state": "playing",
+            "revision": 1
+          },
+          "background": [
+            {
+              "src": "/audio/ethereal-winter-ballet-01.mp3",
+              "time": 3.498195,
+              "paused": true
+            },
+            {
+              "src": "/audio/cinematic-christmas-piano-strings-bells.m4a",
+              "time": 37.163204,
+              "paused": true
+            }
+          ],
+          "performance": [
+            {
+              "src": "/audio/show/wedding-entrance.mp3",
+              "time": 3.993832,
+              "paused": false
+            }
+          ]
+        },
+        {
+          "track": "winter-waltz",
+          "repeat": "true",
+          "muted": true,
+          "level": 0.65,
+          "show": {
+            "id": "030144f2-51c8-49ee-ae50-5c48e0a41684",
+            "musicId": "wedding-entrance",
+            "duration": 123.24571428571429,
+            "timelineVersion": 57,
+            "startsAt": 1795166542373,
+            "endsAt": 1795166665618.7144,
+            "nextRequestAt": 1795166965618.7144,
+            "seed": 2958798143,
+            "state": "playing",
+            "revision": 1
+          },
+          "background": [
+            {
+              "src": "/audio/ethereal-winter-ballet-01.mp3",
+              "time": 2.877887,
+              "paused": true
+            },
+            {
+              "src": "/audio/winter-waltz.m4a",
+              "time": 13.316834,
+              "paused": true
+            }
+          ],
+          "performance": [
+            {
+              "src": "/audio/show/wedding-entrance.mp3",
+              "time": 0,
+              "paused": true
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "same show recording plays while C remains muted",
+      "ok": true
+    },
+    {
+      "name": "paused personal playheads stay fixed",
+      "ok": true
+    },
+    {
+      "name": "reconnection joins the existing show and elapsed music",
+      "ok": true,
+      "details": {
+        "track": "cinematic-christmas-piano-strings-bells",
+        "repeat": "false",
+        "muted": false,
+        "level": 0.55,
+        "show": {
+          "id": "030144f2-51c8-49ee-ae50-5c48e0a41684",
+          "musicId": "wedding-entrance",
+          "duration": 123.24571428571429,
+          "timelineVersion": 57,
+          "startsAt": 1795166542373,
+          "endsAt": 1795166665618.7144,
+          "nextRequestAt": 1795166965618.7144,
+          "seed": 2958798143,
+          "state": "playing",
+          "revision": 1
+        },
+        "background": [
+          {
+            "src": "/audio/ethereal-winter-ballet-01.mp3",
+            "time": 3.498195,
+            "paused": true
+          },
+          {
+            "src": "/audio/cinematic-christmas-piano-strings-bells.m4a",
+            "time": 37.163204,
+            "paused": true
+          }
+        ],
+        "performance": [
+          {
+            "src": "/audio/show/wedding-entrance.mp3",
+            "time": 7.887253,
+            "paused": false
+          }
+        ]
+      }
+    },
+    {
+      "name": "each visitor keeps their own track, volume, repeat and mute",
+      "ok": true
+    },
+    {
+      "name": "all visitors resume enabled personal BGM",
+      "ok": true
+    },
+    {
+      "name": "continuously connected BGM resumes its saved playhead",
+      "ok": true
+    },
+    {
+      "name": "normal visitors cannot bypass the cooldown",
+      "ok": true
+    },
+    {
+      "name": "administrator starts immediately during cooldown",
+      "ok": true
+    },
+    {
+      "name": "administrator repeated start cannot duplicate show",
+      "ok": true
+    },
+    {
+      "name": "no browser exceptions",
+      "ok": true,
+      "details": []
+    }
+  ],
+  "errors": [],
+  "environment": "Mac Chrome; three independent desktop/touch contexts; real local WebSocket and server clock",
+  "show": {
+    "id": "030144f2-51c8-49ee-ae50-5c48e0a41684",
+    "musicId": "wedding-entrance",
+    "duration": 123.24571428571429,
+    "timelineVersion": 57,
+    "startsAt": 1795166542373,
+    "endsAt": 1795166665618.7144,
+    "nextRequestAt": 1795166965618.7144,
+    "seed": 2958798143,
+    "state": "scheduled",
+    "revision": 1
+  },
+  "after": [
+    {
+      "track": "winter-jazz-artmylife",
+      "repeat": "true",
+      "muted": false,
+      "level": 0.45,
+      "show": {
+        "id": "030144f2-51c8-49ee-ae50-5c48e0a41684",
+        "musicId": "wedding-entrance",
+        "duration": 123.24571428571429,
+        "timelineVersion": 57,
+        "startsAt": 1795166542373,
+        "endsAt": 1795166665618.7144,
+        "nextRequestAt": 1795166965618.7144,
+        "seed": 2958798143,
+        "state": "playing",
+        "revision": 1
+      },
+      "background": [
+        {
+          "src": "/audio/winter-jazz-artmylife.mp3",
+          "time": 6.856433,
+          "paused": false
+        },
+        {
+          "src": "/audio/ethereal-winter-ballet-01.mp3",
+          "time": 57.343893,
+          "paused": true
+        }
+      ],
+      "performance": []
+    },
+    {
+      "track": "cinematic-christmas-piano-strings-bells",
+      "repeat": "false",
+      "muted": false,
+      "level": 0.55,
+      "show": {
+        "id": "030144f2-51c8-49ee-ae50-5c48e0a41684",
+        "musicId": "wedding-entrance",
+        "duration": 123.24571428571429,
+        "timelineVersion": 57,
+        "startsAt": 1795166542373,
+        "endsAt": 1795166665618.7144,
+        "nextRequestAt": 1795166965618.7144,
+        "seed": 2958798143,
+        "state": "playing",
+        "revision": 1
+      },
+      "background": [
+        {
+          "src": "/audio/ethereal-winter-ballet-01.mp3",
+          "time": 3.498195,
+          "paused": true
+        },
+        {
+          "src": "/audio/cinematic-christmas-piano-strings-bells.m4a",
+          "time": 39.121158,
+          "paused": false
+        }
+      ],
+      "performance": []
+    },
+    {
+      "track": "winter-waltz",
+      "repeat": "true",
+      "muted": true,
+      "level": 0.65,
+      "show": {
+        "id": "030144f2-51c8-49ee-ae50-5c48e0a41684",
+        "musicId": "wedding-entrance",
+        "duration": 123.24571428571429,
+        "timelineVersion": 57,
+        "startsAt": 1795166542373,
+        "endsAt": 1795166665618.7144,
+        "nextRequestAt": 1795166965618.7144,
+        "seed": 2958798143,
+        "state": "playing",
+        "revision": 1
+      },
+      "background": [
+        {
+          "src": "/audio/ethereal-winter-ballet-01.mp3",
+          "time": 2.877887,
+          "paused": true
+        },
+        {
+          "src": "/audio/winter-waltz.m4a",
+          "time": 13.698585,
+          "paused": false
+        }
+      ],
+      "performance": []
+    }
+  ]
+}

@@ -19,6 +19,6 @@ export async function regionAPI(request,DB,self,now){
   position=room.entry;yaw=room.arrivalYaw;
  }
  await DB.prepare('DELETE FROM ride_seats WHERE visitor=?').bind(self.id).run();
- await DB.prepare("UPDATE visitors SET region=?,x=?,z=?,y=.95,yaw=?,mode='',gesture='',gesture_at=0,seen=? WHERE id=?").bind(region,position.x,position.z,yaw,now,self.id).run();
+ await DB.prepare("UPDATE visitors SET region=?,x=?,z=?,y=.95,yaw=?,mode='',speed=0,gesture='',gesture_at=0,seen=?,pose_at=? WHERE id=?").bind(region,position.x,position.z,yaw,now,now,self.id).run();
  return reply({region,position:{x:position.x,z:position.z},yaw});
 }

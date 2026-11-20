@@ -78,6 +78,6 @@ export function buildObservatoryInterior(root){
  const sky=buildObservatorySky(root),guide=buildObservatoryGuide(root);guide.root.traverse(o=>{if(o.isMesh)o.castShadow=false;});let disposed=false;
  return {root,walls:[],doors:[],uniforms:[],sky,atmosphere:{update(){},setQuality(){},dispose(){}},
   update(t,still,player){if(disposed||!Number.isFinite(t))return false;guide.update(t,still,player);return sky.update(t,still);},setQuality(q){sky.setQuality(q);guide.setQuality(q);},setView:(camera,ratio)=>sky.setCamera(camera,ratio),
-  react(){return false;},puzzle(){return false;},dispose(){disposed=true;guide.dispose();sky.dispose();}
+  setActive:value=>guide.setActive(value),react(){return false;},puzzle(){return false;},dispose(){disposed=true;guide.dispose();sky.dispose();}
  };
 }

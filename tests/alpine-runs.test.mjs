@@ -2,7 +2,7 @@ import {alpineShift} from '../dist/resort-layout.js';
 import {courseStart,followCourse} from './ski-driver.mjs';
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {alpineHeight,skiRuns,skiRunCenter,skiRunHalfWidth,summitFacilities,summitPositionValid,resortRides} from '../dist/resort-layout.js';
+import {skiArrival,alpineHeight,skiRuns,skiRunCenter,skiRunHalfWidth,summitFacilities,summitPositionValid,resortRides} from '../dist/resort-layout.js';
 import {canStandAt} from '../dist/movement.js';
 
 
@@ -17,6 +17,6 @@ test('every physically entered ski run responds to steering and reaches its own 
    p=ride.update(.05,followCourse(p,run.id));if(p.finished)break;
   }
   assert.equal(p.finished,true,run.id);assert.ok(skiRuns.some(r=>r.id===p.runId));
-  assert.ok(canStandAt(p.x,p.z));assert.ok(p.z>=Math.max(...skiRuns.map(r=>r.finish)));
+  assert.ok(canStandAt(p.x,p.z));assert.ok(p.z>=skiArrival.startZ&&p.z<=skiArrival.finishZ+.2);
  }
 });

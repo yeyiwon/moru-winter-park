@@ -29,7 +29,7 @@ test('invited accountless guests reconnect to their session; wishes remain priva
   assert.equal((await req('tree',{kind:'star',color:'#e5bb6b',height:12,angle:1},{cookie:ca})).status,429);
   query({sql:"DELETE FROM tree_decorations WHERE id LIKE 'capacity-fixture-%' OR id=?",args:[latest]});
  });
- const own=await(await req('wishes',undefined,{cookie:ca})).json(),other=await(await req('wishes',undefined,{cookie:cb})).json();assert.equal(own.wishes.length,2);assert.equal(other.wishes.length,1);assert.match(other.wishes[0].name,/^게스트 [A-F0-9]{4}$/);assert.equal(other.wishes[0].id,publicId);
+ const own=await(await req('wishes',undefined,{cookie:ca})).json(),other=await(await req('wishes',undefined,{cookie:cb})).json();assert.equal(own.wishes.length,2);assert.equal(other.wishes.length,1);assert.match(other.wishes[0].name,/^방문자 [A-F0-9]{4}$/);assert.equal(other.wishes[0].id,publicId);
  assert.equal((await req('wishes',{action:'react',id:privateId},{cookie:cb})).status,404);assert.equal((await req('reports',{type:'wish',id:privateId,reason:'검사'},{cookie:cb})).status,404);assert.equal((await req('wishes',{action:'react',id:publicId},{cookie:cb})).status,200);assert.equal((await req('reports',{type:'wish',id:publicId,reason:'테스트 신고'},{cookie:cb})).status,200);
  assert.equal((await req('chat',{message:'<img src=x onerror=alert(1)>'},{cookie:ca})).status,400);assert.equal((await req('chat',{message:'안녕하세요'},{cookie:ca})).status,200);assert.equal((await req('chat',{message:'연속 전송'},{cookie:ca})).status,429);
  const presence=await(await req('presence',{x:0,y:.95,z:24,yaw:0,mode:''},{cookie:cb})).json();assert.equal(presence.people.find(p=>p.id===aa.id).chat,'안녕하세요');

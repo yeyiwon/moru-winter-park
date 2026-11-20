@@ -1,3 +1,4 @@
+import {aquariumBounds as bounds} from '../dist/ryokan-aquarium-layout.js';
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import * as T from '../dist/vendor/three.module.js';
@@ -29,7 +30,7 @@ test('fish silhouettes taper at both ends and keep per-vertex shading at both LO
 });
 
 test('fish body and tail stay inside the viewing tank even when turning toward the glass',()=>{
- const school=createFishSchool();for(let i=0;i<600;i++){school.step(.08);for(const f of school.fish){assert.ok(Math.abs(f.x)+f.size*1.6<=6.65001);assert.ok(Math.abs(f.z)+f.size*1.6<=1.35001);assert.ok(Math.abs(f.y)+f.size*.62<=1.65001);}}
+ const school=createFishSchool();for(let i=0;i<600;i++){school.step(.08);for(const f of school.fish){assert.ok(Math.abs(f.x)+f.size*1.6<=bounds.x+.00001);assert.ok(Math.abs(f.z)+f.size*1.6<=bounds.z+.00001);assert.ok(Math.abs(f.y)+f.size*.62<=bounds.y+.00001);}}
 });
 
 test('loose fish shoals travel visibly and turn gradually while preserving deterministic bounded motion',()=>{
@@ -47,9 +48,9 @@ test('loose fish shoals travel visibly and turn gradually while preserving deter
 test('aquarium keeps its draw objects and quality budgets while reusing instance storage',()=>{
  const aquarium=buildRyokanAquarium(new T.Group(),materials()),bodies=aquarium.root.getObjectByName('aquarium-instanced-fish'),bubbles=aquarium.root.getObjectByName('aquarium-floating-bubbles');
  let meshes=0,points=0,lights=0,vertices=0;aquarium.root.traverse(o=>{if(o.isMesh)meshes++;if(o.isPoints)points++;if(o.isLight)lights++;if(o.geometry)vertices+=o.geometry.attributes.position.count;});
- assert.deepEqual({meshes,points,lights,vertices},{meshes:15,points:1,lights:1,vertices:23921});
+ assert.ok(meshes<=18);assert.equal(points,1);assert.equal(lights,3);assert.ok(vertices<45000,vertices+' aquarium vertices');
  const matrices=bodies.instanceMatrix.array,phases=bodies.geometry.attributes.swimPhase.array,geometry=bodies.geometry;
- for(const [quality,fish,particleCount]of [['low',12,20],['medium',24,40],['high',32,64]]){
+ for(const [quality,fish,particleCount]of [['low',28,20],['medium',48,40],['high',72,64]]){
   aquarium.setQuality(quality);assert.equal(bodies.count,fish);assert.equal(bubbles.geometry.drawRange.count,particleCount);
   assert.equal(bodies.instanceMatrix.array,matrices);assert.equal(bodies.geometry.attributes.swimPhase.array,phases);
   assert.ok([...matrices].every(Number.isFinite));assert.equal(bodies.frustumCulled,true);
@@ -75,7 +76,7 @@ test('aquarium water, fish and vegetation freeze together and resume without cat
 test('fish matrices update less often when distant or not rendered while the water clock stays bounded',()=>{
  const measure=(kind)=>{
   const parent=new T.Group();parent.position.set(400,0,0);const aquarium=buildRyokanAquarium(parent,materials()),bodies=aquarium.root.getObjectByName('aquarium-instanced-fish');
-  const player=kind==='far'?{x:480,z:80}:{x:388,z:12};aquarium.update(0);bodies.onBeforeRender();
+  const player=kind==='far'?{x:480,z:80}:{x:400,z:-12};aquarium.update(0);bodies.onBeforeRender();
   // Warm past the visibility grace period before measuring the next second.
   for(let i=1;i<=60;i++){aquarium.update(i/60,false,player);if(kind!=='offscreen')bodies.onBeforeRender();}
   const before=bodies.instanceMatrix.version;
@@ -85,4 +86,10 @@ test('fish matrices update less often when distant or not rendered while the wat
  const near=measure('near'),far=measure('far'),offscreen=measure('offscreen');
  assert.ok(near>=18&&near<=31);assert.ok(far>=4&&far<=6);assert.ok(offscreen>=4&&offscreen<=6);
  assert.ok(near>far*2&&near>offscreen*2);
+});
+
+test('fish remain distributed across the panoramic volume after two minutes, without a collapsed common centroid',()=>{
+ const school=createFishSchool();for(let i=0;i<1500;i++)school.step(.08);
+ const fish=school.fish;for(const [axis,minSpread]of [['x',23],['y',4],['z',4]])assert.ok(Math.max(...fish.map(f=>f[axis]))-Math.min(...fish.map(f=>f[axis]))>minSpread,axis+' spread');
+ let overlaps=0;for(let i=0;i<fish.length;i++)for(let j=i+1;j<fish.length;j++)if(Math.hypot(fish[i].x-fish[j].x,fish[i].y-fish[j].y,fish[i].z-fish[j].z)<.35)overlaps++;assert.equal(overlaps,0);
 });

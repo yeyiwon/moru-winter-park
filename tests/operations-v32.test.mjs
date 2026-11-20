@@ -50,7 +50,7 @@ test('owner can start one synchronized firework score; late visitors receive its
  const {DB,call,join}=await fixture(t),a=await join('공연 모루'),b=await join('관객');
  assert.equal((await call('fireworks',{action:'stop'},a.cookie)).status,403);
  const starts=await Promise.all([call('fireworks',{action:'start'},a.cookie,true),call('fireworks',{action:'start'},a.cookie,true)]);assert.deepEqual(starts.map(r=>r.status).sort(),[200,409]);
- const first=await starts.find(r=>r.status===200).json();assert.equal(first.show.state,'scheduled');assert.ok(Number.isInteger(first.show.seed));
+ const first=await starts.find(r=>r.status===200).json();assert.equal(first.show.state,'playing');assert.equal(first.show.startsAt,first.serverTime);assert.ok(Number.isInteger(first.show.seed));
  const second=await(await call('fireworks',undefined,b.cookie)).json();assert.equal(second.show.id,first.show.id);assert.equal(second.show.startsAt,first.show.startsAt);assert.equal(second.show.seed,first.show.seed);
  const presence=await(await call('presence',{x:0,y:.95,z:30,yaw:0},b.cookie)).json();assert.equal(presence.fireworks.id,first.show.id);
  assert.equal((await call('fireworks',{action:'stop'},b.cookie)).status,403);assert.equal((await call('fireworks',{action:'stop'},a.cookie,true)).status,200);assert.equal((await(await call('fireworks',undefined,b.cookie)).json()).show.state,'stopped');

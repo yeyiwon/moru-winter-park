@@ -27,6 +27,7 @@ function authoredRunHeight(z){let i=0;while(i<grades.length-2&&z>grades[i+1][0])
 // One tangent-continuous runout is used by terrain, skis and map alike.
 // Multiplying the last 72 m by another flattening mask doubled the downhill grade.
 const runoutStart=-460,runoutEnd=-244,runoutHeight=authoredRunHeight(runoutStart),runoutGrade=(authoredRunHeight(runoutStart+.1)-authoredRunHeight(runoutStart-.1))/.2;
+export const skiArrival=Object.freeze({startZ:runoutEnd,finishZ:runoutEnd+44});
 export function skiRunHeight(z){
  if(z<=runoutStart)return authoredRunHeight(z);
  if(z>=runoutEnd)return .09;
@@ -60,7 +61,7 @@ export const skiStarts=skiRuns.map(r=>({id:r.id,name:r.name,level:r.level,x:r.st
 export const skiRunouts=[{x:-25,z:-165,rx:28,rz:18},{x:0,z:-165,rx:28,rz:18},{x:25,z:-165,rx:28,rz:18}];
 export const summit={x:-73,z:mountainZ(-920),height:skiRunHeight(mountainZ(-920)),rx:68,rz:45};
 export const peakSummit={x:mainX(mountainZ(-4850)),z:mountainZ(-4880),height:mountainY(1800.09,-4880),rx:140,rz:48};
-export const middleSummit={x:mountainX(780,-2420),z:mountainZ(-2420),height:skiRunHeight(mountainZ(-2420)),rx:90,rz:55};
+export const middleSummit={x:mountainX(780,-2420),z:mountainZ(-2420),height:skiRunHeight(mountainZ(-2420)-17),rx:90,rz:55};
 export const ridgeBase={x:middleSummit.x+54,z:middleSummit.z-34,height:middleSummit.height,rx:32,rz:30};
 export const ridgeSummit={x:peakSummit.x+82,z:peakSummit.z+6,height:peakSummit.height,rx:30,rz:32};
 export const gondolaBase={x:-126,z:-210,height:.09,rx:40,rz:42};
@@ -77,28 +78,43 @@ export function skiJumpHeight(x,z){let height=0;for(const jump of skiJumps){if(M
 
 export const mountainAprons=[
  {x:summit.x+2,z:summit.z,rx:35,rz:24,height:summit.height},
- {x:middleSummit.x+42,z:middleSummit.z-17,rx:57,rz:47,height:middleSummit.height},
+ {x:middleSummit.x+42,z:middleSummit.z-17,rx:57,rz:47,height:middleSummit.height,downhillStart:24},
  {x:peakSummit.x+25,z:peakSummit.z,rx:88,rz:50,height:peakSummit.height},
 ];
 export function mountainGroundHeight(x,z){
  if(z>=-244)return .09;
- // Open snow faces follow the course grade. Raised flank ridges previously
- // carved every piste into a canyon and hid the view from the summit arrival.
- const height=skiRunHeight(z),edge=smooth(Math.max(0,-mountainDistance(x,z))/65),back=smooth((z-mountainBounds.minZ)/150);
- let y=.09+(height-.09)*edge*back;
- for(const r of skiRuns){if(z<r.startZ-55||z>r.finish+25)continue;const side=Math.abs(x-skiRunCenter(z,r.id)),weight=(1-smooth((side-skiRunHalfWidth(z,r.id))/140))*smooth((z-r.startZ+55)/55);y=mix(y,height,weight);}
- // The terminal apron is outside the piste; preserve its level floor after broad snow blending.
+ const height=skiRunHeight(z),halfWidth=mountainHalfWidth(z);
+ // A broad ridge follows the groomed network. The old 65 m edge mask made
+ // a flat-topped mountain with near-vertical sides, irrespective of its height.
+ let left=-85,right=85,proximity=0,pisteDistance=Infinity;
+ for(const run of skiRuns){
+  if(z<run.startZ-75||z>run.finish+25)continue;
+  const center=skiRunCenter(z,run.id),width=skiRunHalfWidth(z,run.id),along=smooth((z-run.startZ+75)/75);
+  left=Math.min(left,mix(-85,center-width-30,along));right=Math.max(right,mix(85,center+width+30,along));
+  if(z>=run.startZ&&z<=run.finish)pisteDistance=Math.min(pisteDistance,Math.abs(x-center)-width);
+  proximity=Math.max(proximity,(1-smooth((Math.abs(x-center)-width)/110))*along);
+ }
+ // Low shoulders vary along the mountain, but never form enclosing peaks.
+ const shoulder=x<left?1-smooth((left-x)/Math.max(1,left+halfWidth)):x>right?1-smooth((x-right)/Math.max(1,halfWidth-right)):1;
+ const back=smooth((z-mountainBounds.minZ)/155);
+ const relief=(Math.sin(x*.012+z*.006)*2.8+Math.sin(z*.019-x*.008)*1.5)*(1-proximity)*smooth((height-8)/55);
+ let y=.09+Math.max(0,height-.09+relief)*shoulder*back;
+ // Stations have level boarding pads, then resume the hillside's grade.
+ // Extending the summit's 900 m floor downhill created 51 m walls beside the piste.
+ for(const apron of mountainAprons){
+  const wx=1-smooth((Math.abs(x-apron.x)-apron.rx)/100),wz=1-smooth((Math.abs(z-apron.z)-apron.rz)/90);
+  const downhill=smooth((z-apron.z-(apron.downhillStart??12))/55),level=mix(apron.height,height,downhill);
+  y=mix(y,level,wx*wz);
+ }
  const stationDistance=Math.hypot((x-gondolaBase.x)/gondolaBase.rx,(z-gondolaBase.z)/gondolaBase.rz);
  y=mix(y,gondolaBase.height,1-smooth((stationDistance-.8)/.2));
- // A broad graded concourse joins terminals to the hillside. Small nested
- // elliptical cuts made the mid-station look like an excavated crater.
- for(const apron of mountainAprons){
-  const wx=1-smooth((Math.abs(x-apron.x)-apron.rx)/100),wz=1-smooth((Math.abs(z-apron.z)-apron.rz)/180);
-  y=mix(y,apron.height,wx*wz);
- }
- // The concourse must not impose a sideways bank on a groomed ski run.
- for(const run of skiRuns){if(z<run.startZ-55||z>run.finish+25)continue;const gap=Math.abs(x-skiRunCenter(z,run.id))-skiRunHalfWidth(z,run.id),along=smooth((z-run.startZ+55)/55)*(1-smooth((z-run.finish)/25));y=mix(y,height,(1-smooth(gap/28))*along);}
- return Math.max(.09,y);
+ // A wide shoulder joins the exact playable floor without a narrow trench.
+ y=mix(y,height,proximity);
+ // Keep the shared middle lift concourse level after joining the piste floor.
+ // Its elevation follows the local hillside, with a 28 m shoulder outside the course.
+ const pad=mountainAprons[1],padX=1-smooth((Math.abs(x-pad.x)-pad.rx)/65),padZ=1-smooth((Math.abs(z-pad.z)-pad.rz)/65);
+ y=mix(y,mix(pad.height,height,smooth((z-pad.z-24)/55)),padX*padZ*smooth(pisteDistance/28));
+ return Math.max(.09,Math.min(peakSummit.height,y));
 }
 export const alpineHeight=(x,z)=>mountainGroundHeight(x,z)+skiJumpHeight(x,z);
 export const summitTransfer=[{x:summit.x-22,z:summit.z},{x:summit.x-22,z:summit.z+7},{x:summit.x,z:summit.z+7},{x:skiRunCenter(mountainZ(-900),'easy'),z:mountainZ(-900)}];
@@ -114,60 +130,42 @@ export const ridgeTransfers=[
  [{x:ridgeSummit.x+16,z:ridgeSummit.z+6},{x:peakSummit.x+65,z:peakSummit.z+28},{x:mainX(mountainZ(-4850)),z:mountainZ(-4850)}]
 ];
 export const upperLiftEntry={x:72,z:-196};
-// Cable spans are anchored above the actual mountain; station seats remain at boarding height.
-function cableSamples(line){const count=Math.ceil(Math.hypot(line.dx,line.dz)/6),points=[];
- for(let i=0;i<=count;i++){const t=i/count,x=line.x+line.dx*t,z=line.z+line.dz*t,edge=Math.min(t,1-t),clearance=.69+22*smooth(edge/.08);let y=alpineHeight(x,z)+clearance;
-  // Look ahead under the complete span; a chair never clips the crest between towers.
-  for(let d=-24;d<=24;d+=4){const u=clamp(t+d/Math.hypot(line.dx,line.dz)),gx=line.x+line.dx*u,gz=line.z+line.dz*u;y=Math.max(y,alpineHeight(gx,gz)+clearance-Math.abs(d)*.3);}
-  if(i===0||i===count){const len=Math.hypot(line.dx,line.dz);y=Math.max(alpineHeight(x,z),alpineHeight(x-line.dz/len*4,z+line.dx/len*4))+.69;}else y+=.7*Math.min(1,t*count,(1-t)*count);points.push([x,y,z]);}
- // Relax the cable profile before arc sampling. This removes slope kinks from
- // terrain-envelope maxima while preserving both station sockets and snow clearance.
- const nx=-line.dz/Math.hypot(line.dx,line.dz),nz=line.dx/Math.hypot(line.dx,line.dz);
- for(let pass=0;pass<18;pass++){const next=points.map(p=>p[1]);for(let i=1;i<points.length-1;i++){const p=points[i],floor=Math.max(alpineHeight(p[0],p[2]),alpineHeight(p[0]+nx*4,p[2]+nz*4))+.69;next[i]=Math.max(floor,(points[i-1][1]+points[i][1]*2+points[i+1][1])/4);}for(let i=1;i<points.length-1;i++)points[i][1]=next[i];}
- // Raise neighbouring spans instead of inheriting abrupt terrain slopes into the cable.
- // A forward/backward envelope keeps camera vertical acceleration bounded.
- const maxGrade=line===ridgeLiftLayout?1.3:.82;
- for(let i=1;i<points.length;i++){const a=points[i-1],b=points[i],span=Math.hypot(b[0]-a[0],b[2]-a[2]);b[1]=Math.max(b[1],a[1]-maxGrade*span);}
- for(let i=points.length-2;i>=0;i--){const a=points[i+1],b=points[i],span=Math.hypot(b[0]-a[0],b[2]-a[2]);b[1]=Math.max(b[1],a[1]-maxGrade*span);}
- for(let pass=0;pass<12;pass++){const next=points.map(p=>p[1]);for(let i=1;i<points.length-1;i++)next[i]=Math.max(points[i][1],(points[i-1][1]+points[i][1]*2+points[i+1][1])/4);for(let i=1;i<points.length-1;i++)points[i][1]=next[i];}
- return points;}
+// Fit a monotone C1 profile above both travel lanes. Control spans, not each
+// terrain sample, set the cable grade; a lift never overshoots and drops into its terminal.
+function cableProfile(line,offsets,seatHeight,clearance){
+ const length=Math.hypot(line.dx,line.dz),nx=-line.dz/length,nz=line.dx/length;
+ const ground=t=>{const x=line.x+line.dx*t,z=line.z+line.dz*t;let y=.09;for(const o of offsets)y=Math.max(y,alpineHeight(x+nx*o,z+nz*o));return y;};
+ const count=Math.ceil(length/70),heights=Array.from({length:count+1},(_,i)=>ground(i/count)+(i===0||i===count?seatHeight:clearance)),top=heights.at(-1);
+ const maxStep=length/count*(line===liftLayout?.48:line===upperLiftLayout?.60:.70);
+ const normalize=()=>{for(let i=count-1;i>0;i--)heights[i]=Math.max(heights[i],heights[i+1]-maxStep);for(let i=1;i<count;i++)heights[i]=Math.min(top,Math.max(heights[i-1],heights[i]));};
+ const slopes=()=>heights.map((y,i)=>{if(i===0||i===count)return 0;const a=y-heights[i-1],b=heights[i+1]-y;return a*b<=0?0:2*a*b/(a+b);});
+ const sample=(i,t,m)=>{const a=heights[i],b=heights[i+1];return(2*t**3-3*t*t+1)*a+(t**3-2*t*t+t)*m[i]+(-2*t**3+3*t*t)*b+(t**3-t*t)*m[i+1];};
+ normalize();
+ // Lift neighbouring controls only where a sampled span needs clearance.
+ // Endpoint easing remains level and shared by the vehicle and seat validation.
+ for(let pass=0;pass<18;pass++){
+  const m=slopes();let changed=false;
+  for(let i=0;i<count;i++)for(let j=1;j<24;j++){
+   const u=j/24,t=(i+u)/count,minimum=ground(t)+seatHeight,deficit=minimum-sample(i,u,m);
+   if(deficit<=.001)continue;
+   if(i>0)heights[i]=Math.min(top,heights[i]+deficit*(i+1===count?1.2/Math.max(.001,1-smooth(u)):1.8));
+   if(i+1<count)heights[i+1]=Math.min(top,heights[i+1]+deficit*(i===0?1.2/Math.max(.001,smooth(u)):1.8));
+   changed=true;
+  }
+  normalize();if(!changed)break;
+ }
+ const m=slopes(),points=[],samples=count*24;
+ for(let n=0;n<=samples;n++){const t=n/samples,f=t*count,i=Math.min(count-1,Math.floor(f));points.push([line.x+line.dx*t,sample(i,f-i,m),line.z+line.dz*t]);}
+ return points;
+}
 function cablePoint(points,t){const f=clamp(t)*(points.length-1),i=Math.min(points.length-2,Math.floor(f)),u=f-i,a=points[i],b=points[i+1];return a.map((v,k)=>mix(v,b[k],u));}
-const leftCable=cableSamples(liftLayout),rightCable=cableSamples(upperLiftLayout),ridgeCable=cableSamples(ridgeLiftLayout);
+const leftCable=cableProfile(liftLayout,[0,4],.69,13),rightCable=cableProfile(upperLiftLayout,[0,4],.69,15),ridgeCable=cableProfile(ridgeLiftLayout,[0,4],.69,15);
 export const liftPoint=t=>cablePoint(leftCable,t),upperLiftPoint=t=>cablePoint(rightCable,t),ridgeLiftPoint=t=>cablePoint(ridgeCable,t);
-// A straight cable alignment: terrain shapes the support heights, never the horizontal route.
-// Intermediate towers carry one smooth vertical profile with clear terminal run-ins.
-export const gondolaPoints=[];
-const gondolaTop={x:peakSummit.x-34,z:peakSummit.z};
-const cableLength=Math.hypot(gondolaTop.x-gondolaBase.x,gondolaTop.z-gondolaBase.z),spans=Math.ceil(cableLength/90);
-const cableNX=-(gondolaTop.z-gondolaBase.z)/cableLength,cableNZ=(gondolaTop.x-gondolaBase.x)/cableLength;
-export const gondolaSupports=Array.from({length:spans+1},(_,i)=>{
- const t=i/spans,x=mix(gondolaBase.x,gondolaTop.x,t),z=mix(gondolaBase.z,gondolaTop.z,t);
- let y=Math.max(...[-3,0,12,15].map(offset=>alpineHeight(x+cableNX*offset,z+cableNZ*offset)))+(i===0||i===spans?.07:19);
- return[x,y,z];
-}).filter((p,i)=>i===0||i===spans||skiRuns.every(r=>p[2]<r.startZ||p[2]>r.finish||Math.abs(p[0]+cableNX*6-skiRunCenter(p[2]+cableNZ*6,r.id))-skiRunHalfWidth(p[2],r.id)>7));
-const supportLast=gondolaSupports.length-1;
-// Lift only intermediate supports until every straight span clears both lanes.
-for(let pass=0;pass<8;pass++)for(let i=1;i<=supportLast;i++){
- const a=gondolaSupports[i-1],b=gondolaSupports[i];let deficit=0;
- for(let j=1;j<40;j++){const t=j/40,x=mix(a[0],b[0],t),z=mix(a[2],b[2],t),floor=Math.max(...[-3,0,12,15].map(o=>alpineHeight(x+cableNX*o,z+cableNZ*o)))+.07+1.13*smooth(Math.min(Math.hypot(x-gondolaBase.x,z-gondolaBase.z),Math.hypot(x-gondolaTop.x,z-gondolaTop.z))/30);deficit=Math.max(deficit,(floor-mix(a[1],b[1],t))/(i===1?t:i===supportLast?1-t:1));}
- if(deficit>0){if(i>1)a[1]+=deficit*1.5;if(i<supportLast)b[1]+=deficit*1.5;}
-}
-// Arrival stays level with the summit socket; no final overshoot and drop.
-for(let i=1;i<supportLast;i++)gondolaSupports[i][1]=Math.min(gondolaSupports.at(-1)[1],gondolaSupports[i][1]);
-for(let i=supportLast-1;i>=0;i--)gondolaSupports[i][1]=Math.min(gondolaSupports[i][1],gondolaSupports[i+1][1]);
-const cableGrades=gondolaSupports.map((p,i)=>{
- if(i===0||i===supportLast)return 0;
- const a=gondolaSupports[i-1],b=gondolaSupports[i+1],left=(p[1]-a[1])/Math.hypot(p[0]-a[0],p[2]-a[2]),right=(b[1]-p[1])/Math.hypot(b[0]-p[0],b[2]-p[2]);
- return left*right<=0?0:2*left*right/(left+right);
-});
-for(let i=0;i<supportLast;i++)for(let j=0;j<16;j++){
- const a=gondolaSupports[i],b=gondolaSupports[i+1],t=j/16,d=Math.hypot(b[0]-a[0],b[2]-a[2]);
- const y=(2*t**3-3*t*t+1)*a[1]+(t**3-2*t*t+t)*cableGrades[i]*d+(-2*t**3+3*t*t)*b[1]+(t**3-t*t)*cableGrades[i+1]*d;
- gondolaPoints.push([mix(a[0],b[0],t),y,mix(a[2],b[2],t)]);
-}
-gondolaPoints.push(gondolaSupports.at(-1));
-
+const gondolaTop={x:peakSummit.x-34,z:peakSummit.z},gondolaLine={x:gondolaBase.x,z:gondolaBase.z,dx:gondolaTop.x-gondolaBase.x,dz:gondolaTop.z-gondolaBase.z};
+export const gondolaPoints=cableProfile(gondolaLine,[-3,0,12,15],.07,19);
 export const gondolaPoint=t=>cablePoint(gondolaPoints,t);
+const cableLength=Math.hypot(gondolaLine.dx,gondolaLine.dz),spans=Math.ceil(cableLength/90),cableNX=-gondolaLine.dz/cableLength,cableNZ=gondolaLine.dx/cableLength;
+export const gondolaSupports=Array.from({length:spans+1},(_,i)=>gondolaPoint(i/spans)).filter((p,i)=>i===0||i===spans||skiRuns.every(r=>p[2]<r.startZ||p[2]>r.finish||Math.abs(p[0]+cableNX*6-skiRunCenter(p[2]+cableNZ*6,r.id))-skiRunHalfWidth(p[2],r.id)>7));
 export const gondolaStations=[0,gondolaPoints.length-1].map(index=>{const p=gondolaPoints[index],a=gondolaPoints[Math.max(0,index-1)],b=gondolaPoints[Math.min(gondolaPoints.length-1,index+1)],yaw=Math.atan2(b[0]-a[0],b[2]-a[2]);return{x:p[0],z:p[2],y:alpineHeight(p[0],p[2]),yaw,columns:[-16,-4,4].flatMap(x=>[-5,5].map(z=>({x:p[0]+x*Math.cos(yaw)+z*Math.sin(yaw),z:p[2]+z*Math.cos(yaw)-x*Math.sin(yaw),r:.18})))};});
 // Entry sockets face the open base promenade, opposite the uphill cable heading.
 export const gondolaEntry={x:gondolaStations[0].x-Math.sin(gondolaStations[0].yaw)*12,z:gondolaStations[0].z-Math.cos(gondolaStations[0].yaw)*12};

@@ -23,5 +23,19 @@
     "controlledAfter": "performance/after/report.json"
   },
   "physicalWindowsIOSAndroid": "UNKNOWN",
-  "deployment": "pending"
+  "deployment": "v55 published; production repeat-entry check found a region checkpoint race, addressed in v56",
+  "revision": "f14ca97874b2292e4aa4759d974ed5d4dc4b5986",
+  "sourceCheck": {
+    "modules": 318,
+    "pass": true
+  },
+  "builds": {
+    "worker": "PASS",
+    "vercel": "PASS",
+    "realtime": "PASS",
+    "assetBudget": "PASS",
+    "coreBytes": 26728698,
+    "showAudioBytes": 8258036,
+    "codeGzipBytes": 1166126
+  }
 }

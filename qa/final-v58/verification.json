@@ -1,0 +1,32 @@
+{
+  "at": "2026-11-20T09:24:06.914721+00:00",
+  "suite": {
+    "tests": 582,
+    "pass": 582,
+    "fail": 0,
+    "skipped": 0,
+    "durationMs": 195972.915833
+  },
+  "finalChatRegression": {
+    "tests": 14,
+    "pass": 14
+  },
+  "builds": [
+    "worker",
+    "vercel",
+    "realtime"
+  ],
+  "budget": "PASS",
+  "publicEntry": "qa/final-v58/public-entry/verification.json",
+  "operations": "qa/final-v58/operations/browser.json",
+  "audio": "qa/final-v58/personal-audio/report.json",
+  "interface": "qa/interface-v58/report.json",
+  "physicalDevices": "UNKNOWN",
+  "audioChecks": 15,
+  "thumbnail": {
+    "file": "og-festival-night-v58.png",
+    "width": 1672,
+    "height": 941,
+    "sha256": "c120e4cc4605836e3dd880a535f58a29589fd59e99f679715d0dfb8bf06906dc"
+  }
+}

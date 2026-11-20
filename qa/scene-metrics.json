@@ -1,36 +1,36 @@
 {
   "environment": "Node v22.4.1 darwin arm64",
   "measurement": "CPU scene geometry construction; no browser, WebGL or GPU rendering",
-  "sceneConstructionMs": 17795.98,
-  "meshObjects": 949,
+  "sceneConstructionMs": 17704.44,
+  "meshObjects": 951,
   "materials": 218,
-  "triangles": 4457619,
+  "triangles": 4344522,
   "renderFPS": null,
   "largestMeshes": [
     {
+      "name": "",
+      "parent": "",
+      "triangles": 126720
+    },
+    {
+      "name": "",
+      "parent": "",
+      "triangles": 126720
+    },
+    {
+      "name": "",
+      "parent": "",
+      "triangles": 126720
+    },
+    {
+      "name": "",
+      "parent": "",
+      "triangles": 126720
+    },
+    {
       "name": "alpine-far-ridges",
       "parent": "streamed-alpine-heightfield",
-      "triangles": 184777
-    },
-    {
-      "name": "",
-      "parent": "",
-      "triangles": 126720
-    },
-    {
-      "name": "",
-      "parent": "",
-      "triangles": 126720
-    },
-    {
-      "name": "",
-      "parent": "",
-      "triangles": 126720
-    },
-    {
-      "name": "",
-      "parent": "",
-      "triangles": 126720
+      "triangles": 125276
     },
     {
       "name": "winter-palace-metal",

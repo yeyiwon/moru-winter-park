@@ -1,0 +1,27 @@
+{
+  "environment": "macOS, isolated SQLite and Cloudflare workerd, Chrome GPU",
+  "fullTests": {
+    "passed": 564,
+    "failed": 0,
+    "skipped": 0,
+    "durationSeconds": 298.025662166,
+    "scope": "All application changes through sparkler hold, chat cancellation, booth titles and coloured fireworks. Final NPC overlap CSS checked in browser."
+  },
+  "followupTests": {
+    "passed": 20,
+    "failed": 0
+  },
+  "physicalWindowsGalaxyIPhone": "UNKNOWN",
+  "sparseStoneFollowup": {
+    "passed": 14,
+    "failed": 0
+  },
+  "audioChecks": {
+    "passed": 14,
+    "failed": 0
+  },
+  "controlChecks": {
+    "passed": 15,
+    "failed": 0
+  }
+}

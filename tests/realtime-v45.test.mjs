@@ -4,6 +4,16 @@ import {RealtimeWorld} from '../realtime/world.js';
 import {signTicket,verifyTicket} from '../realtime/auth.js';
 import {realtimeRPC} from '../server/realtime.js';
 const pose={x:0,y:.95,z:30,yaw:0,speed:0,mode:''};
+test('far movement is sampled while nearby motion, stops and chat remain immediate',()=>{
+ let now=10000;const world=new RealtimeWorld({now:()=>now}),socket=()=>({send(){},close(){},serializeAttachment(){}}),a=socket(),b=socket();
+ world.accept(a,{id:'a',exp:100000,profile:{...pose,id:'a',region:'outdoors'}});world.accept(b,{id:'b',exp:100000,profile:{...pose,id:'b',x:100,speed:1,region:'outdoors'}});
+ const snapshot=()=>world.wireSnapshot(a,world.clients.get(a)).people[0];assert.equal(snapshot().x,100);
+ now+=100;world.rpc({action:'patch',id:'b',profile:{x:101,chat:'hello',chatAt:now,updatedAt:now}});let delta=snapshot();assert.equal(delta.x,undefined);assert.equal(delta.chat,'hello');
+ now+=1000;assert.equal(snapshot().x,101);
+ now+=100;world.rpc({action:'patch',id:'b',profile:{x:102,speed:0}});delta=snapshot();assert.equal(delta.x,102);assert.equal(delta.speed,0);
+ now+=100;world.rpc({action:'patch',id:'b',profile:{x:5,speed:1}});assert.equal(snapshot().x,5);
+ world.close(b);world.accept(socket(),{id:'b',exp:100000,profile:{...pose,id:'b',region:'outdoors'}});assert.equal(world.rpc({action:'metrics'}).reconnected,1);
+});
 function connect(url,ticket){return new Promise((resolve,reject)=>{const ws=new WebSocket(url,['winter-v1','auth.'+ticket],{origin:'http://127.0.0.1'});ws.once('error',reject);ws.once('close',()=>reject(Error('closed before welcome')));ws.once('message',raw=>resolve({ws,ready:JSON.parse(raw)}));});}
 function send(ws,b){return new Promise((resolve,reject)=>{const timer=setTimeout(()=>reject(Error('snapshot timeout')),4000);ws.once('message',raw=>{clearTimeout(timer);resolve(JSON.parse(raw));});ws.send(JSON.stringify(b));});}
 test('real Cloudflare runtime: authenticated sockets, sequence validation, persistence-free motion, shared show and revoke',async t=>{
@@ -47,4 +57,39 @@ test('capacity, oversized messages and rapid senders are bounded per connection'
  assert.equal(world.clients.size,100);assert.equal(sockets[100].code,4008);
  world.message(sockets[0],'x'.repeat(2049));assert.equal(sockets[0].code,1009);
  for(let seq=0;seq<31;seq++)world.message(sockets[1],JSON.stringify({type:'ping',seq,at:1000}));assert.equal(sockets[1].code,1008);assert.equal(world.clients.size,98);
+});
+
+test('validated region relocation wins over newer old-region poses without accepting stale movement',()=>{
+ let now=1000;const ws={messages:[],send(raw){this.messages.push(JSON.parse(raw));},close(){},serializeAttachment(){}};
+ const world=new RealtimeWorld({now:()=>now});world.accept(ws,{id:'region-guest',exp:100000,profile:{...pose,id:'region-guest',region:'outdoors'}});
+ now=1100;world.message(ws,JSON.stringify({type:'pose',seq:1,at:now,pose}));
+ const arrival={x:590,y:.95,z:0,yaw:1.57,mode:'',speed:0,region:'museum',updatedAt:1050};
+ world.rpc({action:'checkpoint',id:'region-guest',profile:arrival});assert.equal(world.clients.get(ws).profile.region,'outdoors','normal stale checkpoints remain ignored');
+ now=1150;world.message(ws,JSON.stringify({type:'relocate',seq:2,at:now,pose:arrival}));assert.equal(ws.messages.at(-1).code,'type','clients cannot authorize relocations');
+ now=1200;world.rpc({action:'relocate',id:'region-guest',profile:arrival});assert.equal(world.clients.get(ws).profile.region,'museum');
+ now=1250;world.message(ws,JSON.stringify({type:'pose',seq:2,at:now,pose}));assert.equal(ws.messages.at(-1).code,'movement','late outdoor packet cannot undo admission');
+ now=1300;world.message(ws,JSON.stringify({type:'pose',seq:3,at:now,pose:arrival}));assert.equal(ws.messages.at(-1).type,'snapshot');assert.equal(world.clients.get(ws).profile.x,590);
+});
+
+test('real transport keeps repeated HTTP room admission and immediate exit synchronized',async t=>{
+ const {interiorDoors}=await import('../dist/district-layout.js'),f=await realtimeFixture(t),guest=f.guest(),join=await f.call(guest,'join',{}),door=interiorDoors.museum;
+ await f.call(guest,'presence',{...pose,x:door.x,z:door.z});const ticket=await f.call(guest,'realtime',{}),socket=await connect(ticket.data.url,ticket.data.ticket);t.after(()=>socket.ws.close());
+ for(let i=0;i<3;i++){
+  const enter=await f.call(guest,'region',{region:'museum'});assert.equal(enter.status,200,JSON.stringify(enter.data));
+  const profile=await realtimeRPC(f.env,{action:'profile',id:join.data.id});assert.equal(profile.profile.region,'museum');assert.equal(profile.profile.x,enter.data.position.x);
+  const leave=await f.call(guest,'region',{region:'outdoors'});assert.equal(leave.status,200,JSON.stringify(leave.data));
+  const outside=await realtimeRPC(f.env,{action:'profile',id:join.data.id});assert.equal(outside.profile.region,'outdoors');assert.equal(outside.profile.x,door.x);
+ }
+});
+
+test('an accepted map arrival reaches the live world even while persistent pose writes are throttled',async t=>{
+ const {resortDestinations}=await import('../dist/resort-layout.js'),{surfaceHeight}=await import('../dist/world-layout.js');
+ const f=await realtimeFixture(t),guest=f.guest(),join=await f.call(guest,'join',{}),ticket=await f.call(guest,'realtime',{}),socket=await connect(ticket.data.url,ticket.data.ticket);t.after(()=>socket.ws.close());
+ // Hold the persistence gate closed independently of the machine's test speed.
+ await f.DB.prepare('UPDATE visitors SET pose_at=? WHERE id=?').bind(Date.now()+5000,join.data.id).run();
+ const entrance=resortDestinations.find(p=>p.id==='ski'),arrival={...pose,x:entrance.x,z:entrance.z,y:surfaceHeight(entrance.x,entrance.z)+.95};
+ const checkpoint=await f.call(guest,'presence',arrival);assert.equal(checkpoint.status,200);
+ const profile=await realtimeRPC(f.env,{action:'profile',id:join.data.id});assert.equal(profile.profile.x,arrival.x);assert.equal(profile.profile.z,arrival.z);
+ assert.equal((await f.call(guest,'ride',{kind:'lift'})).status,200);
+ const invalid=await f.call(guest,'presence',{...arrival,x:999999});assert.equal(invalid.status,400);
 });

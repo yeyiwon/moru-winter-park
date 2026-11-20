@@ -4,23 +4,24 @@ import {activityGestures} from '../dist/activity-state.js';
 export const realtimeLimits=Object.freeze({capacity:100,peers:32,maxMessage:2048,rate:15,idleMs:15000});
 const modes=new Set(['','lift','summit','ski','rest','bath','sauna','lie','tea','dining','carousel','ferris','view','footbath']);
 export class RealtimeWorld{
- constructor({now=Date.now,restore=[]}={}){this.now=now;this.clients=new Map();this.known=new WeakMap();this.revoked=new Map();this.fireworks=null;this.rideSeats=[];this.metrics={since:now(),accepted:0,closed:0,received:0,rejected:0,bytesOut:0,samples:[]};for(const ws of restore){const state=ws.deserializeAttachment();if(state&&state.exp>now())this.clients.set(ws,state);else ws.close(4001,'Session expired');}}
+ constructor({now=Date.now,restore=[]}={}){this.now=now;this.clients=new Map();this.known=new WeakMap();this.farSent=new WeakMap();this.recentlyClosed=new Map();this.revoked=new Map();this.fireworks=null;this.rideSeats=[];this.metrics={since:now(),accepted:0,closed:0,reconnected:0,received:0,rejected:0,bytesOut:0,rejections:{},clientRTT:[],samples:[]};for(const ws of restore){const state=ws.deserializeAttachment();if(state&&state.exp>now())this.clients.set(ws,state);else ws.close(4001,'Session expired');}}
  save(ws,state){ws.serializeAttachment?.(state);}
  accept(ws,claims){
   this.prune();if(this.revoked.get(claims.id)>this.now()){ws.close(4001,'Session revoked');return false;}
   const previous=[...this.clients].find(([,s])=>s.id===claims.id);
   if(!previous&&this.clients.size>=realtimeLimits.capacity){ws.close(4008,'World full');return false;}
   if(previous){this.clients.delete(previous[0]);previous[0].close(4009,'Connected in another tab');}
+  if(previous||this.recentlyClosed.get(claims.id)>this.now())this.metrics.reconnected++;this.recentlyClosed.delete(claims.id);
   const state={id:claims.id,exp:claims.exp,profile:previous?.[1].profile||claims.profile,seq:-1,seen:this.now(),poseAt:this.now(),windowAt:this.now(),messages:0};
   this.clients.set(ws,state);this.save(ws,state);this.metrics.accepted++;this.send(ws,{type:'ready',...this.wireSnapshot(ws,state)});return true;
  }
  send(ws,data){const body=JSON.stringify(data);try{ws.send(body);this.metrics.bytesOut+=body.length;}catch{this.close(ws);}}
- close(ws){if(this.clients.delete(ws))this.metrics.closed++;}
+ close(ws){const s=this.clients.get(ws);if(this.clients.delete(ws)){this.metrics.closed++;this.recentlyClosed.set(s.id,this.now()+60000);while(this.recentlyClosed.size>100)this.recentlyClosed.delete(this.recentlyClosed.keys().next().value);}}
  prune(){const now=this.now();for(const [ws,s] of this.clients)if(s.exp<=now||now-s.seen>realtimeLimits.idleMs){this.clients.delete(ws);ws.close(4001,'Session expired');this.metrics.closed++;}for(const [id,expires]of this.revoked)if(expires<=now)this.revoked.delete(id);}
  message(ws,raw){
   const start=performance.now(),now=this.now();this.prune();const s=this.clients.get(ws);if(!s)return;
   this.metrics.received++;
-  const reject=code=>{this.metrics.rejected++;this.send(ws,{type:'rejected',code,serverTime:now});};
+  const reject=code=>{this.metrics.rejected++;this.metrics.rejections[code]=(this.metrics.rejections[code]||0)+1;this.send(ws,{type:'rejected',code,serverTime:now});};
   if(typeof raw!=='string'||raw.length>realtimeLimits.maxMessage){ws.close(1009,'Message too large');this.close(ws);return;}
   if(now-s.windowAt>=1000){s.windowAt=now;s.messages=0;}if(++s.messages>realtimeLimits.rate){reject('rate');if(s.messages>30){ws.close(1008,'Message rate exceeded');this.close(ws);}return;}
   let b;try{b=JSON.parse(raw);}catch{return reject('format');}
@@ -37,16 +38,21 @@ export class RealtimeWorld{
    const gesture=activityGestures.includes(p.gesture)&&p.gesture?p.gesture:s.profile.gesture==='wave'&&now-s.profile.gestureAt<2000?'wave':'';
    s.profile={...s.profile,x:p.x,y:p.y,z:p.z,yaw:p.yaw,mode:p.mode||'',lean:p.mode==='ski'&&Number.isFinite(p.lean)?Math.max(-1,Math.min(1,p.lean)):0,tilt:p.mode==='ski'&&Number.isFinite(p.tilt)?Math.max(-.55,Math.min(.55,p.tilt)):0,brake:p.mode==='ski'&&p.brake===true,air:p.mode==='ski'&&Number.isFinite(p.air)?Math.max(0,Math.min(1.2,p.air)):0,speed:Math.max(0,Math.min(p.mode==='ski'?56:8,Number.isFinite(p.speed)?p.speed:0)),region:interiorAt(p.x,p.z)?.id||'outdoors',updatedAt:now,gesture,gestureAt:gesture===s.profile.gesture?s.profile.gestureAt:now};s.poseAt=now;
   }
+  if(Number.isFinite(b.rttMs)&&b.rttMs>=0&&b.rttMs<=30000&&now-(s.reportAt||0)>=5000){s.reportAt=now;this.metrics.clientRTT.push(b.rttMs);if(this.metrics.clientRTT.length>300)this.metrics.clientRTT.shift();}
   s.seq=b.seq;s.seen=now;this.save(ws,s);this.send(ws,{type:'snapshot',ack:b.seq,...this.wireSnapshot(ws,s)});
   const samples=this.metrics.samples;samples.push(performance.now()-start);if(samples.length>300)samples.shift();
  }
  wireSnapshot(ws,self){
-  const snapshot=this.snapshot(self),previous=this.known.get(ws)||new Map(),next=new Map();
+  const snapshot=this.snapshot(self),previous=this.known.get(ws)||new Map(),next=new Map(),sent=this.farSent.get(ws)||new Map(),nextSent=new Map(),now=this.now();
   snapshot.people=snapshot.people.map(profile=>{
    const full={...profile};for(const key of ['x','y','z','yaw','speed','lean','tilt','air'])if(Number.isFinite(full[key]))full[key]=Math.round(full[key]*1000)/1000;
-   next.set(full.id,full);const old=previous.get(full.id);if(!old)return full;
+   const old=previous.get(full.id),far=Math.hypot(full.x-self.profile.x,full.z-self.profile.z)>75,last=sent.get(full.id)||0;
+   // Chat, appearance and state changes stay prompt; only distant motion is sampled at 1 Hz.
+   const defer=far&&old&&full.mode===old.mode&&full.speed!==0&&now-last<1000;
+   if(defer)for(const key of ['x','y','z','yaw','speed','lean','tilt','air','updatedAt'])if(key in old)full[key]=old[key];
+   nextSent.set(full.id,defer?last:now);next.set(full.id,full);if(!old)return full;
    const delta={id:full.id};for(const key of Object.keys(full))if(full[key]!==old[key])delta[key]=full[key];return delta;
-  });this.known.set(ws,next);return snapshot;
+  });this.known.set(ws,next);this.farSent.set(ws,nextSent);return snapshot;
  }
  snapshot(self){
   const now=this.now(),people=[...this.clients.values()].filter(s=>s.id!==self.id&&s.profile.region===self.profile.region).sort((a,b)=>Math.hypot(a.profile.x-self.profile.x,a.profile.z-self.profile.z)-Math.hypot(b.profile.x-self.profile.x,b.profile.z-self.profile.z)).slice(0,realtimeLimits.peers).map(s=>({...s.profile,speed:now-s.poseAt>1500?0:s.profile.speed,chat:now-s.profile.chatAt<10000?s.profile.chat:'',gesture:now-s.profile.gestureAt<6000?s.profile.gesture:''}));
@@ -56,6 +62,9 @@ export class RealtimeWorld{
   this.prune();const now=this.now();
   if(b.action==='authorize')for(const [ws,s]of this.clients)if(s.id===b.id){s.exp=b.exp;for(const k of ['name','color','colorTop','accessory','fluff','roundness'])s.profile[k]=b.profile[k];this.save(ws,s);}
   if(b.action==='checkpoint')for(const [ws,s]of this.clients)if(s.id===b.id){if((b.profile.updatedAt||0)>=s.poseAt){s.profile={...s.profile,...b.profile};s.poseAt=b.profile.updatedAt;}s.seen=now;this.save(ws,s);}
+  // Only the authenticated HTTP region handler authorizes a discontinuous move.
+  // A newer outdoor socket packet must not defeat this committed transition.
+  if(b.action==='relocate')for(const [ws,s]of this.clients)if(s.id===b.id){s.profile={...s.profile,...b.profile,updatedAt:now};s.poseAt=now;s.seen=now;this.save(ws,s);}
   if(b.action==='revoke'){this.revoked.set(b.id,now+125000);for(const [ws,s]of this.clients)if(s.id===b.id){this.clients.delete(ws);ws.close(4001,'Session revoked');}}
   if(b.action==='patch')for(const [ws,s]of this.clients)if(s.id===b.id){s.profile={...s.profile,...b.profile};this.save(ws,s);}
   if('fireworks'in b)this.fireworks=b.fireworks;
@@ -63,7 +72,7 @@ export class RealtimeWorld{
   if(b.action==='profile')return{profile:[...this.clients.values()].find(s=>s.id===b.id)?.profile||null};
   if(b.action==='metrics'){
    const samples=[...this.metrics.samples].sort((a,b)=>a-b),regions={};for(const s of this.clients.values())regions[s.profile.region]=(regions[s.profile.region]||0)+1;
-   const {samples:_,...metrics}=this.metrics;return{connections:this.clients.size,regions,...metrics,handlerP95Ms:samples.length?samples[Math.floor((samples.length-1)*.95)]:null,capacity:realtimeLimits.capacity};
+   const {samples:_,clientRTT,...metrics}=this.metrics,rtt=[...clientRTT].sort((a,b)=>a-b);return{clientRTTMeanMs:rtt.length?rtt.reduce((a,b)=>a+b,0)/rtt.length:null,clientRTTP95Ms:rtt.length?rtt[Math.floor((rtt.length-1)*.95)]:null,handlerMeanMs:samples.length?samples.reduce((a,b)=>a+b,0)/samples.length:null,connections:this.clients.size,regions,...metrics,handlerP95Ms:samples.length?samples[Math.floor((samples.length-1)*.95)]:null,capacity:realtimeLimits.capacity};
   }
   return{ok:true};
  }

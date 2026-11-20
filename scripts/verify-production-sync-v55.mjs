@@ -1,0 +1,52 @@
+// Authorized v55 production smoke; normal guest request only, never owner override.
+import fs from 'node:fs/promises';
+import {pathToFileURL} from 'node:url';
+const {chromium}=await import(pathToFileURL(process.env.PLAYWRIGHT_PATH||'/Users/yeiwon/Documents/Codex/winter-qa-tools/node_modules/playwright-core/index.mjs'));
+const origin=process.env.PROFILE_URL||'http://127.0.0.1:4192';
+if(origin!=='https://moru-winter-park.vercel.app'||process.env.QA_ALLOW_PRODUCTION!=='1')throw Error('Explicit official production smoke only');
+const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true,args:['--disable-background-timer-throttling','--disable-renderer-backgrounding']});
+const output=process.env.QA_OUTPUT||'qa/experience-v55/production-sync';
+const report={environment:'macOS Chrome, desktop and touch emulation, official production WebSocket; physical mobile UNKNOWN',socketFrames:0,poseSnapshots:0},errors=[];
+async function open(name,mobile=false){
+ const context=await browser.newContext({viewport:mobile?{width:390,height:844}:{width:1280,height:800},deviceScaleFactor:1,isMobile:mobile,hasTouch:mobile});
+ await context.addInitScript(()=>{localStorage.setItem('lab-music','off');localStorage.setItem('winter-render-mode','medium');});
+ const page=await context.newPage();page.on('websocket',socket=>{if(socket.url().startsWith('wss://winterlight-realtime.'))socket.on('framereceived',({payload})=>{report.socketFrames++;try{const d=JSON.parse(payload);if(d.type==='snapshot'&&d.people?.length)report.poseSnapshots++;}catch{}});});page.on('pageerror',e=>errors.push(name+': '+e.message));page.on('console',m=>{if(m.type()==='error'&&/THREE|Shader|WebGL/.test(m.text()))errors.push(m.text());});
+ await page.route('**/__dev/events',r=>r.abort());
+ await page.route('**/park.js*',async r=>{const response=await r.fetch();await r.fulfill({response,body:(await response.text()).replace(/}\s*$/,';window.__showQA=fireworks;window.__placeQA=placePlayer;window.__experienceQA=experience;\n}')});});
+ const joined=await context.request.post(origin+'/api/join',{headers:{Origin:origin},data:{name}});if(!joined.ok())throw Error('Production join failed');
+ await page.goto(origin,{timeout:180000});await page.waitForFunction(()=>window.__showQA&&window.labSocialJoined,null,{timeout:180000});return page;
+}
+async function snapshot(page){return page.evaluate(async()=>{const {serverNow}=await import('/server-clock.js');return{show:labFireworks,sampledAt:Date.now(),clock:serverNow(),renderAge:__showQA.root.material.uniforms.clock.value,castleAge:__showQA.castle.uniforms.showTime.value,castleMode:__showQA.castle.uniforms.showMode.value,castleRegions:Array.from(__showQA.castle.uniforms.showRegions.value),active:__showQA.active,camera:getWinterCameraState(),position:{x:labPlayerState.x,z:labPlayerState.z}};});}
+try{
+ const a=await open('공연동기화A'),b=await open('공연동기화B',true);await a.keyboard.down('KeyD');await a.waitForTimeout(900);await a.keyboard.up('KeyD');await a.waitForTimeout(1000);report.movement=await a.evaluate(()=>Math.abs(labPlayerState.x)>.1);if(!report.movement)throw Error('Production keyboard movement failed');
+ await a.locator('#chat-toggle').click();await a.locator('#chat-input').fill('운영 연결 확인');const sent=a.waitForResponse(r=>r.url().endsWith('/api/chat')&&r.request().method()==='POST');await a.locator('#chat-input').press('Enter');const chatted=await sent;if(!chatted.ok())throw Error('Single Enter chat send failed');report.singleEnterChat=true;await b.locator('#chat-toggle').click();await b.waitForFunction(()=>document.querySelector('#chat-log').textContent.includes('운영 연결 확인'),null,{timeout:20000});report.chat=true;const own=await a.locator('#chat-log [data-author=self] .chat-author').last().evaluate(el=>getComputedStyle(el).color),peer=await b.locator('#chat-log [data-author=peer] .chat-author').last().evaluate(el=>getComputedStyle(el).color);if(own===peer)throw Error('Chat speaker colors are identical');report.chatColors={own,peer};await b.evaluate(()=>closeWinterChat());
+ await a.evaluate(async()=>{const {parkGuideLayout}=await import('/park-guide-layout.js');__placeQA({x:parkGuideLayout.plaza.x,z:parkGuideLayout.plaza.z+2.2},0);__experienceQA.show('plaza-fireworks');});await a.waitForTimeout(1000);
+ report.before=await Promise.all([snapshot(a),snapshot(b)]);
+ // Let an existing performance and its normal cooldown finish without owner controls.
+ const requestState=await a.evaluate(async()=>{const {fireworkRequestState}=await import('/fireworks-request.js');const {serverNow}=await import('/server-clock.js');return{state:fireworkRequestState(labFireworks,serverNow()),next:labFireworks?.nextRequestAt||0,now:serverNow()};});
+ if(requestState.state.phase!=='idle'){
+  const wait=Math.max(0,requestState.next-requestState.now)+5000;if(wait>12*60*1000)throw Error('Unexpected show cooldown exceeds verification window');
+  console.log('Waiting for normal show availability',Math.ceil(wait/1000));await a.waitForFunction(()=>!window.winterFireworkRequestState?.disabled,null,{timeout:wait});
+ }
+ const responsePromise=a.waitForResponse(r=>r.url().endsWith('/api/fireworks')&&r.request().method()==='POST');await a.locator('#place-actions button').filter({hasText:'불꽃놀이 신청'}).click();const response=await responsePromise;const reply={status:response.status(),data:await response.json()};report.npcRequest=true;
+ if(reply.status!==200||!reply.data.show){report.showRequestStatus=reply.status;report.showRequestUnavailable=true;if(reply.status!==409)throw Error('Show request unavailable: '+reply.status);throw Error('Existing cooldown; no owner override performed');}report.server=reply.data.show;
+ await Promise.all([a,b].map(p=>p.waitForFunction(id=>window.labFireworks?.id===id,report.server.id,{timeout:15000})));
+ if(await a.locator('#firework-watch').count())throw Error('Removed camera control still exists');await a.waitForTimeout(Math.max(0,report.server.startsAt+4000-Date.now()));
+ report.playing=await Promise.all([snapshot(a),snapshot(b)]);
+ if(!['love','wedding-entrance','trepak'].includes(report.server.musicId))throw Error('Retired or unknown production show track');
+ await a.evaluate(()=>openWinterSettings('audio'));await a.waitForFunction(()=>!document.querySelector('#show-music-status').hidden);
+ report.settingsMusic=await a.locator('#show-music-status').textContent();
+ const expectedTitle=await a.evaluate(async id=>(await import('/show-tracks.js')).showTrack(id).title,report.server.musicId);
+ if(!report.settingsMusic.includes(expectedTitle)||await a.locator('#firework-notice').textContent().then(t=>t.includes(expectedTitle)))throw Error('Music title placement mismatch');
+ await fs.mkdir(output,{recursive:true});await a.screenshot({path:output+'/settings-current-song.png'});await a.locator('#close-studio').click();
+ const unchanged=(x,y)=>Math.abs(x.yaw-y.yaw)<.01&&Math.abs(x.pitch-y.pitch)<.01&&Math.abs(x.distance-y.distance)<.1;
+ if(!unchanged(report.before[1].camera,report.playing[1].camera))throw Error('Another guest camera changed automatically');
+ if(report.playing.some(s=>Math.abs(s.castleAge-s.renderAge)>.05||!s.active||s.show.id!==report.server.id||s.show.seed!==report.server.seed||Math.abs((s.clock-s.show.startsAt)/1000-s.renderAge)>.6))throw Error('Shared render timeline mismatch');
+ report.adminDenied=await b.evaluate(async()=>{const r=await fetch('/api/fireworks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'start'})});return r.status;});if(report.adminDenied!==403)throw Error('Guest admin control was not blocked');
+ const c=await open('공연늦은접속');await c.waitForFunction(()=>window.__showQA.active,null,{timeout:10000});report.lateJoin=await snapshot(c);
+ if(report.lateJoin.show.id!==report.server.id||report.lateJoin.show.seed!==report.server.seed||report.lateJoin.renderAge<5||Math.abs((report.lateJoin.clock-report.server.startsAt)/1000-report.lateJoin.renderAge)>.6)throw Error('Late join restarted the show');
+ await a.waitForTimeout(Math.max(0,report.server.endsAt+3500-Date.now()));report.after=await Promise.all([snapshot(a),snapshot(b),snapshot(c)]);
+ if(report.after.some(s=>s.active)||!unchanged(report.before[0].camera,report.after[0].camera))throw Error('Show cleanup or camera restoration failed');
+ if(Math.hypot(report.before[0].position.x-report.after[0].position.x,report.before[0].position.z-report.after[0].position.z)>1e-6)throw Error('Watching moved the player');
+ if(!report.socketFrames||!report.poseSnapshots)throw Error('Production WebSocket snapshots missing');console.log('PASS production WebSocket/poses/chat, shared ID/seed/clock, free camera, late join, permissions and natural end');
+}catch(e){report.failure=e.stack;process.exitCode=1;console.log('FAIL',e.stack);}finally{report.errors=errors;if(errors.length)process.exitCode=1;await fs.mkdir(output,{recursive:true});await fs.writeFile(output+'/sync.json',JSON.stringify(report,null,2));for(const c of browser.contexts())await c.request.post(origin+'/api/leave',{headers:{Origin:origin},data:{}}).catch(()=>{});await browser.close();}

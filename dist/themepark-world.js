@@ -1,3 +1,4 @@
+import {buildParkGarden} from './park-garden.js';
 import {finishSteps,runStartupSteps} from './startup-work.js';
 import {serverNow} from './server-clock.js';
 import {museumLayout} from './district-layout.js';
@@ -51,13 +52,7 @@ const lanterns=[];for(let i=0;i<12;i++){const g=new THREE.Group();g.position.set
 const pos=[];for(let i=0;i<300;i++){const az=random()*Math.PI*2,y=.08+random()*.92,r=Math.sqrt(1-y*y);pos.push(Math.sin(az)*r*4000,y*4000,Math.cos(az)*r*4000);}const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));const stars=new THREE.Points(geo,new THREE.PointsMaterial({size:1.3,color:'#dfd5ff',map:glowMap,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));scene.add(stars);stars.name='winter-distant-stars';stars.frustumCulled=false;stars.onBeforeRender=(_r,_s,c)=>{stars.position.copy(c.position);stars.updateMatrixWorld();};const celestial=ball(new THREE.MeshBasicMaterial({color:'#ddd8cb',toneMapped:false}),-90,95,-260,1.65);celestial.name='quiet-sun-moon';celestial.castShadow=false;
 // Fairy lights arc above the path. Every strand has a physical catenary-like curve.
 for(let zi of [-7,0,7]){const points=[];for(let i=0;i<=30;i++){let x=-4+i*8/30,y=4.3+.055*x*x;points.push(new THREE.Vector3(x,y,zi));if(i%2===0)ball(i%4?glow:pinkGlow,x,y-.07,zi,.045)}mesh(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),30,.012,4,false),gold);for(let x of [-4,4])rod([x,0,zi],[x,5.2,zi],.035,gold);}
-const flowerPink=M('#e4ddd0'),flowerLilac=M('#bdcfdd');
-// Low parterres sit outside the walking routes: curved stone rims, foliage and layered winter flowers.
-for(const [cx,cz,rx,rz] of [[parkFountain.x,parkFountain.z,2.1,1.1]]){
- const bed=cylinder(1,1,.18,cream,cx,.15,cz,scene,48);bed.scale.set(rx,1,rz);const soil=cylinder(1,1,.035,leafM[0],cx,.26,cz,scene,48);soil.scale.set(rx*.94,1,rz*.9);
- const rim=torus(1,.025,gold,cx,.28,cz);rim.rotation.x=Math.PI/2;rim.scale.set(rx,rz,1);
- for(let j=0;j<35;j++){const a=j*2.399,r=Math.sqrt((j+.5)/35)*.85,x=cx+Math.cos(a)*rx*r,z=cz+Math.sin(a)*rz*r;const leaf=ball(leafM[j%3],x,.3,z,.22);leaf.scale.set(1.4,.45,.9);const h=.34+(j%3)*.065;for(let k=0;k<5;k++){const b=k*Math.PI*2/5,petal=ball(j%2?flowerPink:flowerLilac,x+Math.cos(b)*.085,h,z+Math.sin(b)*.085,.105);petal.scale.set(1,.55,1);}ball(cream,x,h+.045,z,.048);}
-}
+buildParkGarden(scene);
 // Fireflies respond to the companion; particles are one draw call.
 const fireCount=28,fireData=new Float32Array(fireCount*3),fireSeeds=[];for(let i=0;i<fireCount;i++)fireSeeds.push({x:(random()-.5)*28,y:.6+random()*4,z:(random()-.5)*25,p:random()*6});const fireGeo=new THREE.BufferGeometry();fireGeo.setAttribute('position',new THREE.BufferAttribute(fireData,3));const fireflies=new THREE.Points(fireGeo,new THREE.PointsMaterial({color:'#f7d5a4',size:.14,map:glowMap,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));scene.add(fireflies);
 // Faint moving nebula in the actual sky dome, not a flat backdrop image.

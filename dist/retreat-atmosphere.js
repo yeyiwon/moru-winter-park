@@ -40,9 +40,9 @@ export function createRetreatAtmosphere(parent,{name='retreat',waters=[],vapour=
   const pos=[],data=[];for(let i=0;i<Math.max(...vapour.map(s=>s.count||12));i++)for(const source of vapour){if(i>=(source.count||12))continue;const a=random()*Math.PI*2,r=Math.sqrt(random())*.8;pos.push(source.x+Math.cos(a)*(source.rx||.25)*r,source.y,source.z+Math.sin(a)*(source.rz||.25)*r);data.push(random(),source.rise||1.6,source.size||1,source.opacity??.12);}
   const g=new T.BufferGeometry();g.setAttribute('position',new T.Float32BufferAttribute(pos,3));g.setAttribute('aData',new T.Float32BufferAttribute(data,4));g.computeBoundingSphere();g.boundingSphere.radius+=4;
   const mat=material({uniforms:{time,motion},vertexShader:`uniform float time;uniform float motion;attribute vec4 aData;varying float vLife;varying float vAlpha;varying float vSeed;
-   void main(){vLife=fract(aData.x+time*.065);vAlpha=aData.w;vSeed=aData.x;vec3 p=position;p.y+=.08+vLife*aData.y;p.x+=sin(time*.27+aData.x*17.)*vLife*.28;p.z+=cos(time*.19+aData.x*21.)*vLife*.2;vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=clamp(aData.z*(.55+vLife*.9)*270./max(1.,-mv.z),1.,65.);gl_Position=projectionMatrix*mv;}`,
-   fragmentShader:`varying float vLife;varying float vAlpha;varying float vSeed;
-   void main(){vec2 p=(gl_PointCoord-.5)*2.;p.x+=sin(p.y*4.+vSeed*9.)*.12;float d=dot(p*vec2(1.,.85),p*vec2(1.,.85));float a=exp(-d*4.)*(1.-smoothstep(.55,1.,d))*sin(vLife*3.14159)*vAlpha;gl_FragColor=vec4(.98,.93,.82,a);
+   void main(){vLife=fract(aData.x+time*.065);vAlpha=aData.w;vSeed=aData.x;vec3 p=position;p.y+=.08+vLife*aData.y;p.x+=(sin(time*.37+aData.x*17.+vLife*5.)*.23+sin(vLife*10.+aData.x*6.)*.11)*vLife;p.z+=cos(time*.29+aData.x*21.+vLife*4.)*vLife*.24;vec4 mv=modelViewMatrix*vec4(p,1.);gl_PointSize=clamp(aData.z*(.55+vLife*.9)*270./max(1.,-mv.z),1.,65.);gl_Position=projectionMatrix*mv;}`,
+   fragmentShader:`uniform float time;varying float vLife;varying float vAlpha;varying float vSeed;
+   void main(){vec2 p=(gl_PointCoord-.5)*2.;p.x+=sin(p.y*4.+vSeed*9.)*.12;float d=dot(p*vec2(1.,.85),p*vec2(1.,.85));float curls=.76+.24*sin(p.x*6.+sin(p.y*5.+vSeed*11.)-time*.6);float a=exp(-d*3.4)*(1.-smoothstep(.45,1.,d))*smoothstep(0.,.12,vLife)*(1.-smoothstep(.55,1.,vLife))*vAlpha*curls;gl_FragColor=vec4(.98,.93,.82,a);
 #include <tonemapping_fragment>
 #include <colorspace_fragment>
 }`});

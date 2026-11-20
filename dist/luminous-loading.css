@@ -24,3 +24,7 @@
 /* Keep the existing text/quiz fallback operable if WebGL creation fails. */
 .no-webgl #world-loading{pointer-events:none}
 .no-webgl #world-loading .loading-basic{pointer-events:auto}
+
+/* Present a complete loading frame immediately; never fade in a bare blur surface. */
+#room-transition{display:none;transition:none}
+#room-transition.active{display:grid}

@@ -1,3 +1,4 @@
+import {aquariumBounds as bounds} from '../dist/ryokan-aquarium-layout.js';
 import test from 'node:test';import assert from 'node:assert/strict';
 import * as T from '../dist/vendor/three.module.js';
 import {createFishSchool} from '../dist/ryokan-aquarium.js';
@@ -9,7 +10,7 @@ import {createInteractionExitControl} from '../dist/interaction-exit-control.js'
 import {JSDOM} from 'jsdom';
 
 test('freshwater fish remain inside glass and move with finite bounded steering',()=>{
- const school=createFishSchool();for(let i=0;i<900;i++)school.step(1/30);for(const f of school.fish){assert.ok(Number.isFinite(f.x+f.y+f.z+f.vx+f.vy+f.vz));assert.ok(Math.abs(f.x)<=6.65-f.size*.55);assert.ok(Math.abs(f.y)<=1.65-f.size*.55);assert.ok(Math.abs(f.z)<=1.35-f.size*.55);assert.ok(Math.hypot(f.vx,f.vy,f.vz)<=1.151);}
+ const school=createFishSchool();for(let i=0;i<900;i++)school.step(1/30);for(const f of school.fish){assert.ok(Number.isFinite(f.x+f.y+f.z+f.vx+f.vy+f.vz));assert.ok(Math.abs(f.x)<=bounds.x-f.size*.55);assert.ok(Math.abs(f.y)<=bounds.y-f.size*.55);assert.ok(Math.abs(f.z)<=bounds.z-f.size*.55);assert.ok(Math.hypot(f.vx,f.vy,f.vz)<=1.151);}
 });
 test('the orbit puzzle changes real quarter turns and solves only all aligned rings',()=>{
  const p=createOrbitPuzzle();assert.equal(p.turn(99),false);for(let i=0;i<3;i++)for(let turn=0;turn<3-i;turn++){const complete=p.turn(i);assert.equal(complete,i===2&&turn===0);}assert.deepEqual(p.steps,[0,0,0]);p.reset();assert.deepEqual(p.steps,[1,2,3]);

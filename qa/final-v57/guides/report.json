@@ -1,0 +1,38 @@
+{
+  "checks": [
+    {
+      "name": "sparse stepping stones and detailed hydrangeas render",
+      "ok": true
+    },
+    {
+      "name": "plaza message and guest request are visible without greeting or sparkler text",
+      "ok": true
+    },
+    {
+      "name": "tree keeper gives wish and decorating hint",
+      "ok": true
+    },
+    {
+      "name": "tree speech does not cover the decorating action",
+      "ok": true,
+      "data": {
+        "gap": 16
+      }
+    },
+    {
+      "name": "scientist has a brief guide hint and no greeting button",
+      "ok": true
+    },
+    {
+      "name": "hand sparkler has a brighter glow and one bounded particle batch",
+      "ok": true
+    },
+    {
+      "name": "no browser or shader errors",
+      "ok": true,
+      "data": []
+    }
+  ],
+  "errors": [],
+  "environment": "Mac Chrome; mobile touch emulation; physical Windows/Edge/iOS/Android UNKNOWN"
+}

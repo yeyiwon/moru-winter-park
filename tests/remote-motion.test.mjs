@@ -20,3 +20,10 @@ test('HDR bloom uses format-specific samples and fails safely without float colo
  assert.deepEqual(glowCapabilities(mock(true,[8,4])),{hdr:true,samples:0});
  assert.deepEqual(glowCapabilities(mock(true,[4,2,1])),{hdr:true,samples:2});
 });
+
+test('WebSocket motion and stopping are visible within the short interpolation window; polling can recover',()=>{
+ const m=createRemoteMotion();m.setDelay(180);m.push(pose(1000,0,0),1000);m.push(pose(1100,.4),1100);m.push(pose(1200,.8),1200);
+ assert.ok(m.sample(1350).x>.6,'fresh movement must not sit behind the old one-second polling delay');
+ m.push(pose(1300,.8,0),1300);assert.equal(m.sample(1480).speed,0);assert.equal(m.sample(1800).x,.8);
+ m.setDelay(1100);m.push(pose(2300,1.8),2300);assert.ok(Number.isFinite(m.sample(2500).x));m.setDelay(NaN);assert.ok(Number.isFinite(m.sample(2600).x));
+});

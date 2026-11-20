@@ -11,16 +11,16 @@ const cue=(id,start,duration,palette,regions,projection,beams,particles,firework
  quality:castleShowQuality,
 });
 export const castleShowCues=Object.freeze([
- cue('winter-awakens',0,10,['#72b7ef','#cceafa','#f0d4a5'],[.6,.18,.18,.3,.16,.55,.35,.6,.5,.3],'frost',
+ cue('winter-awakens',0,10,['#2465ff','#9b45ff','#ffd794'],[.6,.18,.18,.3,.16,.55,.35,.6,.5,.3],'frost',
   {sweep:.25,laser:0,groups:['gate','plaza']},{density:.3,size:.8,rise:.6},'opening'),
- cue('starlight-waltz',10,16,['#9acfea','#b6a1dd','#eed1a2'],[.5,.65,.38,.35,.23,.7,.5,.85,.5,.5],'arch',
-  {sweep:.48,laser:.2,groups:['plaza','wall','window']},{density:.55,size:1,rise:.8},'development'),
- cue('aurora-night',26,20,['#87d7c6','#7dabe1','#cab3e4'],[.7,.4,.75,.65,.2,.48,.6,.5,.4,.5],'aurora',
-  {sweep:.65,laser:.4,groups:['plaza','wall','rear','tower']},{density:.65,size:1.12,rise:1},'main'),
- cue('golden-moment',46,14,['#f0d1a0','#96bfe0','#f6ead0'],[.7,.45,.45,.38,.16,.65,.45,.7,.65,.65],'spiral',
+ cue('starlight-waltz',10,16,['#3a85ff','#b437f5','#ff507b'],[.5,.65,.38,.35,.23,.7,.5,.85,.5,.5],'arch',
+  {sweep:.48,laser:.65,groups:['plaza','wall','window']},{density:.55,size:1,rise:.8},'development'),
+ cue('aurora-night',26,20,['#24cfac','#315fff','#ac32f1'],[.7,.4,.75,.65,.2,.48,.6,.5,.4,.5],'aurora',
+  {sweep:.65,laser:.82,groups:['plaza','wall','rear','tower']},{density:.65,size:1.12,rise:1},'main'),
+ cue('golden-moment',46,14,['#ffd080','#385fff','#ffc4ed'],[.7,.45,.45,.38,.16,.65,.45,.7,.65,.65],'spiral',
   {sweep:.42,laser:0,groups:['gate','rear','wall']},{density:.42,size:1.2,rise:.65},'golden'),
- cue('luminous-finale',60,14,['#9fcbf5','#c6b3e7','#f5dfb4'],[.8,.7,.7,.6,.26,.85,.65,.9,.8,.75],'stars',
-  {sweep:.8,laser:.8,groups:['plaza','wall','gate','window','rear','tower']},{density:1,size:1.25,rise:1.1},'finale'),
+ cue('luminous-finale',60,14,['#ff244b','#346aff','#b235ff'],[.8,.7,.7,.6,.26,.85,.65,.9,.8,.75],'stars',
+  {sweep:.8,laser:1,groups:['plaza','wall','gate','window','rear','tower']},{density:1,size:1.25,rise:1.1},'finale'),
 ]);
 const bursts=castleShowCues.map(c=>c.fireworks.bursts);
 const shell=(section,at,pattern,x,height,color,size=1)=>bursts[section].push({at,pattern,x,height,color,size});
@@ -35,10 +35,10 @@ export const castleProjectionModes=Object.freeze(['frost','arch','aurora','spira
 export const castleBeamGroups=Object.freeze(['plaza','wall','gate','window','rear','tower']);
 // Position, direction, width and length are authored per fixture, not on tower tips alone.
 export const castleBeamEmitters=Object.freeze(Array.from({length:24},(_,i)=>{
- const pair=Math.floor(i/2)%6,side=i%2?-1:1,laser=i>=12;
+ const pair=Math.floor(i/2)%6,side=i%2?-1:1,accent=i>=12;
  const group=castleBeamGroups[pair];
  const placement={plaza:[side*22,.35,8],wall:[side*20,1,-20],gate:[side*4.9,1.2,-7.4],window:[side*9.8,8.3,-11.9],rear:[side*20,.5,-34],tower:[side*7.7,30.5,-20.5]}[group];
- return {group,position:placement,phase:pair,kind:laser?'laser':pair===2?'wash':[1,3].includes(pair)?'fan':'search',direction:[side*.3,1,pair===4?-.65:.6],width:laser?.12:[1,3].includes(pair)?10:6,length:laser?105:pair===2?12:pair===3?45:75,laser};
+ return {group,position:placement,phase:pair+(accent?1.4:0),kind:pair===2?'wash':[1,3].includes(pair)?'fan':'search',direction:[side*.3,1,pair===4?-.65:.6],width:accent?5:[1,3].includes(pair)?10:6,length:pair===2?12:pair===3?45:75,laser:false,accent};
 }));
 export function sampleCastleCue(age,out={},musicId){
  const track=showTrack(musicId);

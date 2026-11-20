@@ -1,7 +1,7 @@
 import * as THREE from './vendor/three.module.js';
 
-// Accessories share immutable geometry/materials between the world, preview and
-// visitors. Each piece is one mesh, with a small number of material draw groups.
+// Accessories share geometry/materials between the world, preview and
+// visitors. Only the visible nose LED changes its shared material color. Each piece is one mesh, with a small number of material draw groups.
 const cache=new Map();
 const materials={
  black:new THREE.MeshPhysicalMaterial({color:'#101116',roughness:.28,metalness:.04,clearcoat:.75}),
@@ -11,7 +11,9 @@ const materials={
  crystal:new THREE.MeshPhysicalMaterial({color:'#d7ebef',transparent:true,opacity:.13,roughness:.09,metalness:.1,depthWrite:false}),
  glint:new THREE.MeshBasicMaterial({color:'#dcebf0',transparent:true,opacity:.6}),
  gold:new THREE.MeshStandardMaterial({color:'#dcb877',metalness:.86,roughness:.25,side:THREE.DoubleSide}),
- gem:new THREE.MeshPhysicalMaterial({color:'#e7edf8',metalness:.18,roughness:.12,clearcoat:1}),
+ gem:new THREE.MeshPhysicalMaterial({color:'#d4f0ff',emissive:'#9bd3ef',emissiveIntensity:.24,metalness:.32,roughness:.08,clearcoat:1,flatShading:true}),
+ crownSilver:new THREE.MeshStandardMaterial({color:'#e2ecf4',emissive:'#c6d7e9',emissiveIntensity:.18,metalness:.78,roughness:.17,side:THREE.DoubleSide}),
+ diamondGlint:new THREE.MeshBasicMaterial({color:'#f4fbff',toneMapped:false}),
  satin:new THREE.MeshPhysicalMaterial({color:'#c795a6',roughness:.72,side:THREE.DoubleSide,sheen:1,sheenColor:'#dfbac9',sheenRoughness:.78}),
  satinEdge:new THREE.MeshPhysicalMaterial({color:'#e1bfc8',roughness:.8,sheen:.9}),
  knit:new THREE.MeshPhysicalMaterial({color:'#d5c6b4',roughness:1,sheen:.8,sheenColor:'#f0e5d7'}),
@@ -35,6 +37,16 @@ function tube(points,radius=.01,segments=24,sides=6,closed=false){return new THR
 function sphere(position,scale,segments=16){return new THREE.SphereGeometry(1,segments,12).scale(...scale).translate(...position);}
 function extrude(shape,depth=.016,bevel=.004,curveSegments=18){return new THREE.ExtrudeGeometry(shape,{depth,bevelEnabled:true,bevelSize:bevel,bevelThickness:bevel,bevelSegments:3,curveSegments});}
 function star(radius=.15,inner=.073){const shape=new THREE.Shape();for(let i=0;i<10;i++){const a=Math.PI/2+i*Math.PI/5,r=i%2?inner:radius;i?shape.lineTo(Math.cos(a)*r,Math.sin(a)*r):shape.moveTo(Math.cos(a)*r,Math.sin(a)*r);}shape.closePath();return shape;}
+// Raised front/back facets give stars volume from the side, without a support bar.
+function facetedStar(radius,depth){
+ const positions=[],uv=[],points=Array.from({length:10},(_,i)=>{const a=Math.PI/2+i*Math.PI/5,r=i%2?radius*.46:radius;return[Math.cos(a)*r,Math.sin(a)*r,0];});
+ for(let i=0;i<10;i++)for(const face of [[[0,0,depth],points[i],points[(i+1)%10]],[[0,0,-depth],points[(i+1)%10],points[i]]])for(const p of face){positions.push(...p);uv.push(p[0]/radius*.5+.5,p[1]/radius*.5+.5);}
+ const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();return g;
+}
+function diamond(radius){
+ const profile=[[0,-.65],[.94,-.06],[1,0],[.58,.42],[0,.42]].map(([r,y])=>new THREE.Vector2(r*radius,y*radius));
+ return new THREE.LatheGeometry(profile,8).toNonIndexed().rotateX(Math.PI/2);
+}
 function curveEyewear(geometry){const p=geometry.attributes.position;for(let i=0;i<p.count;i++){const x=p.getX(i);p.setZ(i,p.getZ(i)+.77-.115*(x/.6)**2);}geometry.computeVertexNormals();return geometry;}
 function eyeContour(side,style,scale=1){
  const shape=new THREE.Shape(),point=(x,y)=>[side*(.255+(x-.255)*scale),.09+(y-.09)*scale];
@@ -95,8 +107,17 @@ function crown(){
   if(i<segments){const n=i*2;indices.push(n,n+1,n+2,n+1,n+3,n+2);}
  }
  const band=new THREE.BufferGeometry();band.setAttribute('position',new THREE.Float32BufferAttribute(vertices,3));band.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));band.setIndex(indices);band.computeVertexNormals();add(band,0);
- for(let i=0;i<8;i++){const a=i*Math.PI/4,x=Math.cos(a)*radius,z=Math.sin(a)*radius-.035;add(sphere([x,.978,z],[.025,.025,.025]),0);const gem=new THREE.OctahedronGeometry(.034,0).scale(.85,1.15,.56);gem.rotateY(-a+Math.PI/2);gem.translate(Math.cos(a)*(radius+.007),.811,Math.sin(a)*(radius+.007)-.035);add(gem,1);}
- return {geometry:merge(parts),materials:[materials.silver,materials.gem],name:'jewel-crown'};
+ for(let i=0;i<8;i++){
+  const a=i*Math.PI/4,x=Math.cos(a)*radius,z=Math.sin(a)*radius-.035,front=Math.sin(a)>.9,size=front?.071:.05;
+  add(sphere([x,.971,z],[.018,.018,.018],10),0);
+  add(diamond(size).rotateY(Math.PI/2-a).translate(Math.cos(a)*(radius+.012),.817,Math.sin(a)*(radius+.012)-.035),1);
+  for(const dy of [-1,1])for(const tangent of [-1,1])add(new THREE.OctahedronGeometry(.009).translate(Math.cos(a)*(radius+.018)-Math.sin(a)*size*.58*tangent,.817+dy*size*.63,Math.sin(a)*(radius+.018)+Math.cos(a)*size*.58*tangent-.035),0);
+  add(diamond(.032).rotateY(Math.PI/2-a).translate(x,1.008,z),1);
+ }
+ // Small white facets catch light even when the world has no environment map.
+ add(facetedStar(.033,.007).scale(.55,1,1).translate(-.025,.846,radius+.018),2);
+ add(facetedStar(.018,.005).translate(.21,1.023,.19),2);
+ return {geometry:merge(parts),materials:[materials.crownSilver,materials.gem,materials.diamondGlint],name:'jewel-crown'};
 }
 function brooch(){
  const parts=[{geometry:extrude(star(.139,.068),.024,.009),material:0}];
@@ -204,9 +225,133 @@ function neckPiece(kind){
  }
  return{geometry:merge(parts),materials:[materials.satin,materials.silver,materials.wool],name:kind};
 }
-export const extraAccessoryIDs=['heart-glasses','star-glasses','little-horns','winter-flower'];
+// Shared static pieces keep a larger catalog from adding draw calls until worn.
+const playfulIDs=['tree-star','pine-cap','witch-hat','pumpkin-cap','ghost-cap','antlers','moon-cap','earbuds','headphones','cat-headphones','glow-nose'];
+const playfulMaterials=[
+ new THREE.MeshStandardMaterial({color:'#f0eee6',roughness:.75}),
+ new THREE.MeshStandardMaterial({color:'#d5a766',roughness:.7}),
+ new THREE.MeshPhysicalMaterial({color:'#df781e',roughness:.43,clearcoat:.32,clearcoatRoughness:.4}),
+ new THREE.MeshStandardMaterial({color:'#286347',roughness:.85}),
+ new THREE.MeshStandardMaterial({color:'#342740',roughness:.72,side:THREE.DoubleSide}),
+ materials.silver,materials.black,materials.gold,
+ new THREE.MeshStandardMaterial({color:'#72544b',roughness:.95}),
+ new THREE.MeshStandardMaterial({color:'#c67787',roughness:.8}),
+ new THREE.MeshStandardMaterial({color:'#ffe8a4',emissive:'#ffd36b',emissiveIntensity:1.5,roughness:.4}),
+ new THREE.MeshPhysicalMaterial({color:'#b4a3d4',metalness:.22,roughness:.28,clearcoat:.65}),
+ new THREE.MeshStandardMaterial({color:'#e7c6d7',roughness:.78}),
+ new THREE.MeshStandardMaterial({color:'#8a496c',roughness:.8}),
+ new THREE.MeshStandardMaterial({color:'#684335',roughness:.88}),
+ new THREE.MeshPhysicalMaterial({color:'#d51232',emissive:'#ff1538',emissiveIntensity:.85,roughness:.12,metalness:.08,clearcoat:1,clearcoatRoughness:.08}),
+ new THREE.MeshBasicMaterial({color:'#fff1da',toneMapped:false}),
+ new THREE.MeshStandardMaterial({color:'#ef9c35',emissive:'#ff6f18',emissiveIntensity:.45,roughness:.65}),
+ new THREE.MeshPhysicalMaterial({color:'#293b66',roughness:.83,sheen:.6,sheenColor:'#647aa2',side:THREE.DoubleSide}),
+ new THREE.MeshStandardMaterial({color:'#ff5371',emissive:'#ff244c',emissiveIntensity:1.5,roughness:.22}),
+ new THREE.MeshStandardMaterial({color:'#87d5ff',emissive:'#40aaff',emissiveIntensity:1.5,roughness:.22}),
+];
+const glowPixels=new Uint8Array(32*32*4);
+for(let y=0;y<32;y++)for(let x=0;x<32;x++){const i=(y*32+x)*4,r=Math.hypot((x-15.5)/15.5,(y-15.5)/15.5);glowPixels.set([255,255,255,Math.round(Math.max(0,1-r)**2*255)],i);}
+const wearableGlowMap=new THREE.DataTexture(glowPixels,32,32);wearableGlowMap.needsUpdate=true;wearableGlowMap.userData.shared=true;
+const noseHaloColor=new THREE.Color('#ff2447');
+function wearableGlow(id){
+ const points=[],colors=[],put=(x,y,z,c)=>{points.push(x,y,z);colors.push(...new THREE.Color(c).toArray());};
+ if(id==='pine-cap'){for(let i=0;i<18;i++){const t=i/17,a=t*Math.PI*6,r=.355-t*.22;put(Math.cos(a)*r,.70+t*.56,Math.sin(a)*r-.04,['#ffe8a4','#ff5371','#87d5ff'][i%3]);}put(0,1.43,.018,'#ffe8a4');}
+ else if(id==='tree-star')put(0,.87,.165,'#ffe8a4');
+ else if(id==='glow-nose')put(0,-.09,.861,'#ffffff');
+ else return null;
+ const geometry=new THREE.BufferGeometry();geometry.setAttribute('position',new THREE.Float32BufferAttribute(points,3));geometry.setAttribute('color',new THREE.Float32BufferAttribute(colors,3));geometry.userData.shared=true;
+ const material=new THREE.PointsMaterial({map:wearableGlowMap,vertexColors:true,size:id==='pine-cap'?.14:id==='glow-nose'?.8:.28,transparent:true,opacity:id==='tree-star'?.28:id==='glow-nose'?.32:.5,depthWrite:false,blending:id==='glow-nose'?THREE.NormalBlending:THREE.AdditiveBlending,toneMapped:false});material.userData.shared=true;if(id==='glow-nose')material.color=noseHaloColor;
+ return{geometry,material};
+}
+function taperedBranch(points,radius,segments=20){
+ const curve=new THREE.CatmullRomCurve3(points.map(p=>new THREE.Vector3(...p))),g=new THREE.TubeGeometry(curve,segments,radius,8),p=g.attributes.position;
+ for(let i=0;i<p.count;i++){const t=Math.floor(i/9)/segments,c=curve.getPointAt(t),s=.06+.94*(1-t)**.65;p.setXYZ(i,c.x+(p.getX(i)-c.x)*s,c.y+(p.getY(i)-c.y)*s,c.z+(p.getZ(i)-c.z)*s);}g.computeVertexNormals();return g;
+}
+function playfulAccessory(id){
+ const parts=[],add=(geometry,material=0)=>parts.push({geometry,material});
+ const ball=(p,s,m=0,segments=16)=>add(sphere(p,s,segments),m);
+ const band=(radius,y,m=0)=>add(new THREE.TorusGeometry(radius,.028,6,32).rotateX(Math.PI/2).scale(1,1,.9).translate(0,y,-.035),m);
+ const cap=(sx,sy,sz,m)=>add(new THREE.SphereGeometry(1,24,12,0,Math.PI*2,0,Math.PI/2).scale(sx,sy,sz).translate(0,.64,-.035),m);
+ const badge=(size,x,y,z,m=7)=>add(extrude(star(size,size*.46),.018,.004,5).translate(x,y,z),m);
+ if(id==='tree-star'){
+  add(facetedStar(.245,.085).translate(0,.87,.075),10);
+  add(facetedStar(.024,.012).translate(0,.87,.165),16);
+ }else if(id==='pine-cap'){
+  for(const [r,h,y]of [[.38,.34,.82],[.29,.33,1.02],[.2,.3,1.21]]){
+   const tier=new THREE.ConeGeometry(r,h,32,8),p=tier.attributes.position;
+   for(let i=0;i<p.count;i++){const x=p.getX(i),z=p.getZ(i),a=Math.atan2(z,x),t=(p.getY(i)+h/2)/h,f=1+.035*Math.cos(a*10)*(1-t);p.setXYZ(i,x*f,p.getY(i)+y+.012*Math.cos(a*10)*(1-t)**3,z*f-.04);}tier.computeVertexNormals();add(tier,3);
+  }
+  add(facetedStar(.102,.035).translate(0,1.43,-.02),10);
+  const cable=[];for(let i=0;i<=64;i++){const t=i/64,a=t*Math.PI*6,r=.35-t*.22;cable.push([Math.cos(a)*r,.70+t*.56,Math.sin(a)*r-.04]);}add(tube(cable,.004,64,4),3);
+  for(let i=0;i<18;i++){const t=i/17,a=t*Math.PI*6,r=.355-t*.22;ball([Math.cos(a)*r,.70+t*.56,Math.sin(a)*r-.04],[.023,.028,.023],[10,19,20][i%3],10);}
+ }else if(id==='witch-hat'||id==='moon-cap'){
+  const cloth=id==='moon-cap'?18:4;
+  // The brim is a continuous folded surface, with a rolled hem rather than a flat disk.
+  const brim=new THREE.RingGeometry(.23,.59,48,6),bp=brim.attributes.position,hem=[];
+  const brimY=(r,a)=>.69+.065*Math.sin(a*2+.4)*(r/.59)**2+.045*Math.cos(a+1)*(r/.59)**4;
+  for(let i=0;i<bp.count;i++){const x=bp.getX(i),z=bp.getY(i),r=Math.hypot(x,z),a=Math.atan2(z,x);bp.setXYZ(i,x,brimY(r,a),z*.88-.035);}brim.computeVertexNormals();add(brim,cloth);
+  for(let i=0;i<=48;i++){const a=i/48*Math.PI*2;hem.push([Math.cos(a)*.59,brimY(.59,a),Math.sin(a)*.59*.88-.035]);}add(tube(hem,.013,48,6),cloth);
+  const profile=[[.31,0],[.325,.045],[.3,.13],[.25,.24],[.19,.36],[.125,.49],[.065,.6],[.026,.66],[0,.675]].map(p=>new THREE.Vector2(...p)),cone=new THREE.LatheGeometry(profile,40),p=cone.attributes.position;
+  for(let i=0;i<p.count;i++){const y=p.getY(i),x=p.getX(i),z=p.getZ(i),a=Math.atan2(z,x),fold=1+.026*Math.sin(a*7+y*10)*(1-y/.7);p.setXYZ(i,x*fold+.35*(y/.675)**3,y-.13*(y/.675)**5,z*fold);}cone.computeVertexNormals();add(cone.translate(0,.71,-.035),cloth);
+  add(new THREE.CylinderGeometry(.315,.342,.105,40,1,true).scale(1,1,.99).translate(0,.792,-.035),13);
+  for(const y of [.749,.832]){const points=[];for(let i=0;i<=36;i++){const a=i/36*Math.PI*2,r=y<.8?.342:.315;points.push([Math.cos(a)*r,y,Math.sin(a)*r-.035]);}add(tube(points,.004,36,5),7);}
+  if(id==='moon-cap'){for(const [y,a]of [[.20,-.42],[.33,.34],[.46,-.20]]){let j=0;while(j<profile.length-2&&y>profile[j+1].y)j++;const t=(y-profile[j].y)/(profile[j+1].y-profile[j].y),r=profile[j].x+(profile[j+1].x-profile[j].x)*t,x=.35*(y/.675)**3+Math.sin(a)*r,z=Math.cos(a)*r-.024;badge(.034,x,.71+y,z,10);}}
+  else{const buckle=new THREE.Shape();buckle.moveTo(-.07,-.049);buckle.lineTo(.07,-.049);buckle.lineTo(.07,.049);buckle.lineTo(-.07,.049);buckle.closePath();const hole=new THREE.Path();hole.moveTo(-.047,-.029);hole.lineTo(-.047,.029);hole.lineTo(.047,.029);hole.lineTo(.047,-.029);hole.closePath();buckle.holes.push(hole);add(extrude(buckle,.018,.004,4).translate(0,.792,.31),7);add(tube([[0,.765,.335],[0,.823,.335]],.005,4,5),7);add(tube([[-.31,.78,.12],[-.37,.66,.17],[-.37,.59,.18]],.005,12,5),7);badge(.047,-.37,.55,.18,10);}
+ }else if(id==='pumpkin-cap'){
+  // Connected lobes and recessed seams read as one pumpkin, not intersecting balls.
+  const pumpkin=new THREE.SphereGeometry(1,64,28),p=pumpkin.attributes.position;
+  for(let i=0;i<p.count;i++){const x=p.getX(i),y=p.getY(i),z=p.getZ(i),a=Math.atan2(z,x),rib=.93+.07*Math.cos(a*9);p.setXYZ(i,x*.47*rib,.82+y*.245-Math.max(0,y)**8*.028,z*.42*rib-.035);}pumpkin.computeVertexNormals();add(pumpkin,2);
+  add(taperedBranch([[0,1.02,-.035],[.015,1.10,-.045],[.073,1.15,-.055],[.10,1.14,-.045]],.04,18),3);
+  const leaf=new THREE.Shape();leaf.moveTo(0,0);leaf.bezierCurveTo(-.05,.12,.10,.18,.19,.11);leaf.bezierCurveTo(.17,.03,.07,-.01,0,0);add(extrude(leaf,.007,.002,12).rotateX(-.6).rotateZ(-.25).translate(.015,1.025,.005),3);add(tube([[.035,1.04,.012],[.10,1.08,-.015],[.17,1.10,-.035]],.004,10,5),14);
+  const vine=[];for(let i=0;i<=32;i++){const t=i/32,a=t*Math.PI*3;vine.push([-.035-t*.18,.985+Math.sin(a)*.035,.02+Math.cos(a)*.035]);}add(tube(vine,.006,32,5),3);
+  const face=(shape,m)=>{const g=extrude(shape,.006,.002,8),v=g.attributes.position;for(let i=0;i<v.count;i++){const x=v.getX(i),y=v.getY(i),front=Math.sqrt(Math.max(0,1-(x/.47)**2-((y-.82)/.245)**2));v.setZ(i,v.getZ(i)+front*.42*(.93+.07*Math.cos(Math.atan2(front*.42,x)*9))-.023);}g.computeVertexNormals();add(g,m);};
+  for(const side of [-1,1]){const eye=new THREE.Shape();eye.moveTo(side*.085,.84);eye.quadraticCurveTo(side*.13,.94,side*.18,.93);eye.lineTo(side*.21,.845);eye.closePath();face(eye,6);}
+  const smile=new THREE.Shape();smile.moveTo(-.17,.77);smile.quadraticCurveTo(0,.62,.17,.77);smile.lineTo(.12,.75);smile.lineTo(.07,.76);smile.lineTo(.055,.72);smile.lineTo(.015,.72);smile.lineTo(0,.75);smile.lineTo(-.06,.73);smile.closePath();face(smile,6);
+ }else if(id==='ghost-cap'){
+  cap(.39,.4,.34,0);for(let i=0;i<10;i++){const a=i/10*Math.PI*2;ball([Math.cos(a)*.31,.66,Math.sin(a)*.27-.035],[.10,.06,.10]);}
+  for(const side of [-1,1])ball([side*.1,.85,.29],[.032,.046,.016],6);ball([0,.75,.307],[.025,.035,.014],6);
+ }else if(id==='antlers'){
+  for(const side of [-1,1]){
+   add(taperedBranch([[side*.34,.72,-.08],[side*.38,.86,-.09],[side*.51,1.03,-.13],[side*.59,1.20,-.14],[side*.56,1.30,-.13]],.045,26),14);
+   add(taperedBranch([[side*.44,.95,-.11],[side*.30,1.06,-.09],[side*.27,1.18,-.065]],.029,16),14);
+   add(taperedBranch([[side*.54,1.09,-.13],[side*.71,1.12,-.12],[side*.74,1.22,-.08]],.024,16),14);
+   for(let j=0;j<3;j++)add(taperedBranch([[side*(.355+j*.012),.755,-.049],[side*(.39+j*.012),.87,-.066],[side*(.48+j*.009),.99,-.10]],.003,12),8);
+  }
+ }else if(id==='glow-nose'){
+  ball([0,-.09,.755],[.105,.095,.10],15);
+  ball([-.034,-.052,.837],[.013,.018,.008],16);
+  add(tube([[-.055,-.045,.816],[-.044,-.025,.818],[-.022,-.015,.82]],.0035,12,5),16);
+ }else if(id==='earbuds'){
+  for(const side of [-1,1]){ball([side*.713,.15,.12],[.062,.07,.075]);add(new THREE.CapsuleGeometry(.025,.13,3,8).translate(side*.732,.04,.12));ball([side*.761,.16,.13],[.008,.022,.025],6);}
+ }else if(id==='cat-headphones'){
+  const outer=[],inner=[];for(let i=0;i<=32;i++){const a=i/32*Math.PI;outer.push([Math.cos(a)*.77,.16+Math.sin(a)*.72,-.025]);inner.push([Math.cos(a)*.745,.16+Math.sin(a)*.688,-.025]);}add(tube(outer,.036,32,8),11);add(tube(inner,.019,32,6),12);
+  for(const side of [-1,1]){
+   ball([side*.775,.12,-.025],[.082,.245,.195],12);ball([side*.853,.12,-.025],[.062,.228,.181],11);
+   const rim=[];for(let i=0;i<=32;i++){const a=i/32*Math.PI*2;rim.push([side*.909,.12+Math.cos(a)*.202,-.025+Math.sin(a)*.158]);}add(tube(rim,.006,32,5),5);
+   add(tube([[side*.735,.39,-.025],[side*.86,.37,-.025],[side*.895,.29,-.025]],.016,16,6),5);ball([side*.904,.29,-.025],[.013,.024,.024],5);
+   const bandY=x=>.16+.72*Math.sqrt(1-(x/.77)**2);
+   const ear=inset=>{const shape=new THREE.Shape(),p=(x,y)=>[side*x,y],left=.26+inset,right=.58-inset;
+    shape.moveTo(...p(left,bandY(left)-.022+inset));shape.quadraticCurveTo(...p(.31+inset,.99-inset),...p(.414,1.10-inset));shape.quadraticCurveTo(...p(.435,1.125-inset),...p(.46,1.085-inset));shape.quadraticCurveTo(...p(.53-inset,.85),...p(right,bandY(right)-.022+inset));
+    for(let i=1;i<=10;i++){const x=right+(left-right)*i/10;shape.lineTo(...p(x,bandY(x)-.022+inset));}shape.closePath();return shape;};
+   add(extrude(ear(0),.10,.012,8).translate(0,0,-.075),11);add(extrude(ear(.035),.009,.005,8).translate(0,0,.04),12);
+   const seam=[];for(let i=0;i<3;i++)seam.push([side*(.338+i*.032),.90+i*.065,.06]);add(tube(seam,.004,12,5),0);
+   // Embossed paw motif on each cup; it follows the cup's side rather than floating in front.
+   ball([side*.918,.13,-.025],[.007,.034,.038],0,10);for(const [y,z]of [[.178,-.061],[.19,-.025],[.178,.011]])ball([side*.918,y,z],[.007,.014,.013],0,8);
+  }
+ }else{
+  const path=[];for(let i=0;i<=24;i++){const a=i/24*Math.PI;path.push([Math.cos(a)*.77,.13+Math.sin(a)*.75,-.02]);}add(tube(path,.036,28,8),5);
+  for(const side of [-1,1]){ball([side*.77,.15,-.02],[.095,.18,.15],6);ball([side*.823,.15,-.02],[.055,.155,.13],5);add(tube([[side*.875,.11,.015],[side*.875,.2,.015]],.009,5,5),0);}
+ }
+ return{geometry:merge(parts).translate(0,['witch-hat','moon-cap'].includes(id)?.105:0,0),materials:playfulMaterials,name:id,glow:wearableGlow(id)};
+}
+const noseColors=['#ff2447','#ef4bba','#985bff','#328aff','#36d4b8','#ffbc42'].map(c=>new THREE.Color(c));
+export function updateNoseLight(time,still=false){
+ const phase=still?0:((time%24)+24)%24/4,index=Math.floor(phase),t=phase-index,s=t*t*(3-2*t),led=playfulMaterials[15];
+ led.color.copy(noseColors[index]).lerp(noseColors[(index+1)%noseColors.length],s);led.emissive.copy(led.color);noseHaloColor.copy(led.color);
+}
+function noseBeforeRender(){updateNoseLight(Date.now()/1000,globalThis.document?.body?.classList.contains('still')||globalThis.document?.body?.classList.contains('reduce-flash'));}
+export const extraAccessoryIDs=['heart-glasses','star-glasses','little-horns','winter-flower',...playfulIDs];
 export function createStyleAccessories({detail='full'}={}){
  const level=detail==='remote'?'remote':'full';
- if(!cache.has(level))cache.set(level,{glasses:sunglasses(),ovalGlasses:sunglasses('oval'),catEyeGlasses:sunglasses('cat-eye'),silverGlasses:silverGlasses(),crown:crown(),brooch:brooch(),ribbon:ribbon(),scarf:scarf(level==='remote'),beret:beret(),...Object.fromEntries(extraAccessoryIDs.map(id=>[id,id.includes('glasses')?charmGlasses(id):['beanie','fur-hat','winter-cap'].includes(id)?winterHat(id):id==='little-horns'?horns():id==='winter-flower'?snowFlower():neckPiece(id)]))});
- return Object.fromEntries(Object.entries(cache.get(level)).map(([key,spec])=>{spec.geometry.userData.shared=true;spec.materials.forEach(m=>m.userData.shared=true);const mesh=new THREE.Mesh(spec.geometry,spec.materials);mesh.name=spec.name;mesh.visible=false;mesh.castShadow=true;if(spec.position)mesh.position.set(...spec.position);if(spec.rotation)mesh.rotation.set(...spec.rotation);return[key,mesh];}));
+ if(!cache.has(level))cache.set(level,{glasses:sunglasses(),ovalGlasses:sunglasses('oval'),catEyeGlasses:sunglasses('cat-eye'),silverGlasses:silverGlasses(),crown:crown(),brooch:brooch(),ribbon:ribbon(),scarf:scarf(level==='remote'),beret:beret(),...Object.fromEntries(extraAccessoryIDs.map(id=>[id,playfulIDs.includes(id)?playfulAccessory(id):id.includes('glasses')?charmGlasses(id):['beanie','fur-hat','winter-cap'].includes(id)?winterHat(id):id==='little-horns'?horns():id==='winter-flower'?snowFlower():neckPiece(id)]))});
+ return Object.fromEntries(Object.entries(cache.get(level)).map(([key,spec])=>{spec.geometry.userData.shared=true;spec.materials.forEach(m=>m.userData.shared=true);const mesh=new THREE.Mesh(spec.geometry,spec.materials);mesh.name=spec.name;if(key==='glow-nose')mesh.onBeforeRender=noseBeforeRender;mesh.visible=false;mesh.castShadow=true;if(spec.glow){const glow=new THREE.Points(spec.glow.geometry,spec.glow.material);glow.name=spec.name+'-glow';mesh.add(glow);}if(spec.position)mesh.position.set(...spec.position);if(spec.rotation)mesh.rotation.set(...spec.rotation);return[key,mesh];}));
 }

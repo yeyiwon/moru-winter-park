@@ -1,0 +1,218 @@
+{
+  "environment": "local macOS Cloudflare workerd + isolated SQLite; actual WebSocket network; HTTP handlers in-process",
+  "createdAt": "2026-11-20T06:24:33.741Z",
+  "results": [
+    {
+      "clients": 10,
+      "durationSeconds": 20,
+      "sent": 2000,
+      "received": 2000,
+      "rejected": 0,
+      "successRatio": 1,
+      "roundTripMs": {
+        "mean": 3.68,
+        "p50": 3.02,
+        "p95": 7.99,
+        "p99": 17.02,
+        "max": 37.478917000000365
+      },
+      "movementServerToObserverMs": {
+        "mean": 47.93,
+        "p95": 102,
+        "samples": 16747
+      },
+      "chatSubmissionToObserverMs": {
+        "mean": 103.39,
+        "p95": 105.37,
+        "samples": 45
+      },
+      "apiInProcessMs": {
+        "mean": 41.63,
+        "p95": 62.14
+      },
+      "serverHandlerP95Ms": 1,
+      "connections": 10,
+      "showIds": 1,
+      "seatClaims": [
+        409,
+        200,
+        409
+      ],
+      "reconnected": true,
+      "leaseRenewals": 0,
+      "storedWishes": 5,
+      "db": {
+        "queries": 203,
+        "writes": 64,
+        "poseWrites": 10
+      },
+      "bytesOut": 3110160,
+      "bytesIn": 3110916,
+      "reconnections": 1,
+      "nodeRssBefore": 184893440,
+      "nodeRssAfter": 188628992,
+      "nodeCpuMs": 1096.282,
+      "workerCpu": "UNKNOWN",
+      "errors": []
+    },
+    {
+      "clients": 25,
+      "durationSeconds": 20,
+      "sent": 4950,
+      "received": 4950,
+      "rejected": 0,
+      "successRatio": 1,
+      "roundTripMs": {
+        "mean": 14.31,
+        "p50": 9.54,
+        "p95": 43.41,
+        "p99": 74.31,
+        "max": 170.38779200000135
+      },
+      "movementServerToObserverMs": {
+        "mean": 53.01,
+        "p95": 109,
+        "samples": 115991
+      },
+      "chatSubmissionToObserverMs": {
+        "mean": 109.2,
+        "p95": 115.43,
+        "samples": 120
+      },
+      "apiInProcessMs": {
+        "mean": 116.82,
+        "p95": 288.23
+      },
+      "serverHandlerP95Ms": 1,
+      "connections": 25,
+      "showIds": 1,
+      "seatClaims": [
+        409,
+        200,
+        409
+      ],
+      "reconnected": true,
+      "leaseRenewals": 0,
+      "storedWishes": 5,
+      "db": {
+        "queries": 345,
+        "writes": 111,
+        "poseWrites": 25
+      },
+      "bytesOut": 18088718,
+      "bytesIn": 18092174,
+      "reconnections": 1,
+      "nodeRssBefore": 191299584,
+      "nodeRssAfter": 166232064,
+      "nodeCpuMs": 2250.281,
+      "workerCpu": "UNKNOWN",
+      "errors": []
+    },
+    {
+      "clients": 50,
+      "durationSeconds": 20,
+      "sent": 9950,
+      "received": 9950,
+      "rejected": 0,
+      "successRatio": 1,
+      "roundTripMs": {
+        "mean": 24.37,
+        "p50": 15.22,
+        "p95": 77.51,
+        "p99": 149.44,
+        "max": 246.8197500000024
+      },
+      "movementServerToObserverMs": {
+        "mean": 55.13,
+        "p95": 106,
+        "samples": 310980
+      },
+      "chatSubmissionToObserverMs": {
+        "mean": 173.97,
+        "p95": 132.43,
+        "samples": 165
+      },
+      "apiInProcessMs": {
+        "mean": 127.39,
+        "p95": 252.77
+      },
+      "serverHandlerP95Ms": 2,
+      "connections": 50,
+      "showIds": 1,
+      "seatClaims": [
+        409,
+        200,
+        409
+      ],
+      "reconnected": true,
+      "leaseRenewals": 0,
+      "storedWishes": 5,
+      "db": {
+        "queries": 570,
+        "writes": 186,
+        "poseWrites": 50
+      },
+      "bytesOut": 47771271,
+      "bytesIn": 47783967,
+      "reconnections": 1,
+      "nodeRssBefore": 167755776,
+      "nodeRssAfter": 177340416,
+      "nodeCpuMs": 3787.67,
+      "workerCpu": "UNKNOWN",
+      "errors": []
+    },
+    {
+      "clients": 100,
+      "durationSeconds": 20,
+      "sent": 19800,
+      "received": 19120,
+      "rejected": 680,
+      "successRatio": 0.9656565656565657,
+      "roundTripMs": {
+        "mean": 152.18,
+        "p50": 55.66,
+        "p95": 628.41,
+        "p99": 1151.59,
+        "max": 1567.268916999994
+      },
+      "movementServerToObserverMs": {
+        "mean": 74.59,
+        "p95": 204,
+        "samples": 449078
+      },
+      "chatSubmissionToObserverMs": {
+        "mean": 1518.39,
+        "p95": 6050.85,
+        "samples": 216
+      },
+      "apiInProcessMs": {
+        "mean": 634.18,
+        "p95": 1263.84
+      },
+      "serverHandlerP95Ms": 1,
+      "connections": 100,
+      "showIds": 1,
+      "seatClaims": [
+        409,
+        409,
+        200
+      ],
+      "reconnected": true,
+      "leaseRenewals": 0,
+      "storedWishes": 5,
+      "db": {
+        "queries": 1020,
+        "writes": 336,
+        "poseWrites": 100
+      },
+      "bytesOut": 85095824,
+      "bytesIn": 85173488,
+      "reconnections": 1,
+      "nodeRssBefore": 172163072,
+      "nodeRssAfter": 254492672,
+      "nodeCpuMs": 7269.469,
+      "workerCpu": "UNKNOWN",
+      "errors": []
+    }
+  ]
+}

@@ -1,0 +1,153 @@
+{
+  "environment": "Mac Chrome GPU, 1280x800; night fixed world sky directions",
+  "views": [
+    {
+      "id": "castle-gate",
+      "x": 0,
+      "z": 18,
+      "eyeY": 2.59,
+      "moonTerrainClearance": 23.09248554913295,
+      "sky": {
+        "moonVisible": true,
+        "auroraVisible": true,
+        "terrain": {
+          "resident": 9,
+          "queued": 0,
+          "coarseTiles": 134,
+          "illuminatedTrees": 121,
+          "worker": true
+        }
+      }
+    },
+    {
+      "id": "plaza",
+      "x": 0,
+      "z": 34,
+      "eyeY": 2.7452914270615123,
+      "moonTerrainClearance": 23.247776976194462,
+      "sky": {
+        "moonVisible": true,
+        "auroraVisible": true,
+        "terrain": {
+          "resident": 9,
+          "queued": 0,
+          "coarseTiles": 134,
+          "illuminatedTrees": 121,
+          "worker": true
+        }
+      }
+    },
+    {
+      "id": "tree",
+      "x": 0,
+      "z": 98,
+      "eyeY": 2.59,
+      "moonTerrainClearance": 23.09248554913295,
+      "sky": {
+        "moonVisible": true,
+        "auroraVisible": true,
+        "terrain": {
+          "resident": 4,
+          "queued": 0,
+          "coarseTiles": 134,
+          "illuminatedTrees": 121,
+          "worker": true
+        }
+      }
+    },
+    {
+      "id": "park-center",
+      "x": -36,
+      "z": 32,
+      "eyeY": 2.59,
+      "moonTerrainClearance": 23.09248554913295,
+      "sky": {
+        "moonVisible": true,
+        "auroraVisible": true,
+        "terrain": {
+          "resident": 9,
+          "queued": 0,
+          "coarseTiles": 134,
+          "illuminatedTrees": 121,
+          "worker": true
+        }
+      }
+    },
+    {
+      "id": "ferris",
+      "x": -38.742470829173214,
+      "z": 2.9240407720501,
+      "eyeY": 2.59,
+      "moonTerrainClearance": 23.09248554913295,
+      "sky": {
+        "moonVisible": true,
+        "auroraVisible": true,
+        "terrain": {
+          "resident": 9,
+          "queued": 0,
+          "coarseTiles": 134,
+          "illuminatedTrees": 121,
+          "worker": true
+        }
+      }
+    },
+    {
+      "id": "ski-base",
+      "x": -125.63781883847095,
+      "z": -108.00546687835524,
+      "eyeY": 2.59,
+      "moonTerrainClearance": 23.09248554913295,
+      "sky": {
+        "moonVisible": true,
+        "auroraVisible": true,
+        "terrain": {
+          "resident": 14,
+          "queued": 0,
+          "coarseTiles": 134,
+          "illuminatedTrees": 121,
+          "worker": true
+        }
+      }
+    },
+    {
+      "id": "ski-middle",
+      "x": 428.79999999999995,
+      "z": -1018.8,
+      "eyeY": 344.3556814811469,
+      "moonTerrainClearance": 23.09248554913296,
+      "sky": {
+        "moonVisible": true,
+        "auroraVisible": true,
+        "terrain": {
+          "resident": 21,
+          "queued": 0,
+          "coarseTiles": 134,
+          "illuminatedTrees": 121,
+          "worker": true
+        }
+      }
+    },
+    {
+      "id": "ski-peak",
+      "x": -146.5210304248333,
+      "z": -1925.6,
+      "height": 900.09,
+      "rx": 140,
+      "rz": 48,
+      "eyeY": 902.5899999999999,
+      "moonTerrainClearance": 23.09248554913279,
+      "sky": {
+        "moonVisible": true,
+        "auroraVisible": true,
+        "terrain": {
+          "resident": 21,
+          "queued": 0,
+          "coarseTiles": 134,
+          "illuminatedTrees": 121,
+          "worker": true
+        }
+      }
+    }
+  ],
+  "errors": []
+}

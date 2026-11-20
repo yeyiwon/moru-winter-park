@@ -7,10 +7,10 @@ export const mountainEdgeFractions=Array.from({length:481},(_,i)=>i).filter(i=>i
 export function tileGeometry(tx,tz,segments){
   const positions=[],colors=[],normals=[],indices=[],n=segments+1,step=TILE/segments;
   for(let j=0;j<=segments;j++)for(let i=0;i<=segments;i++){
-   const x=tx*TILE+i*step,z=tz*TILE+j*step,y=alpineHeight(x,z);positions.push(x,y,z);const normal=new T.Vector3(alpineHeight(x-1,z)-alpineHeight(x+1,z),2,alpineHeight(x,z-1)-alpineHeight(x,z+1)).normalize();normals.push(normal.x,normal.y,normal.z);
+   const x=tx*TILE+i*step,z=tz*TILE+j*step,y=alpineHeight(x,z);positions.push(x,y,z);const nx=alpineHeight(x-1,z)-alpineHeight(x+1,z),nz=alpineHeight(x,z-1)-alpineHeight(x,z+1),length=Math.hypot(nx,2,nz);normals.push(nx/length,2/length,nz/length);
    const run=skiRunAt(x,z),on=z>=run.startZ&&z<=run.finish&&Math.abs(x-skiRunCenter(z,run.id))<skiRunHalfWidth(z,run.id);
    const grade=Math.hypot(alpineHeight(x+2,z)-alpineHeight(x-2,z),alpineHeight(x,z+2)-alpineHeight(x,z-2))/4;
-   const c=snow.clone().lerp(on?piste:rock,on?.78:Math.min(.55,Math.max(0,grade-.65)*.3));colors.push(c.r,c.g,c.b);
+   const c=on?piste:rock,w=on?.78:Math.min(.55,Math.max(0,grade-.65)*.3);colors.push(snow.r+(c.r-snow.r)*w,snow.g+(c.g-snow.g)*w,snow.b+(c.b-snow.b)*w);
    if(i<segments&&j<segments){const cx=x+step/2,cz=z+step/2;if(mountainDistance(cx,cz)>step*.8)continue;const a=j*n+i;indices.push(a,a+n,a+1,a+1,a+n,a+n+1);}
   }
   const refined=[],edgeVertices=new Map();
@@ -18,7 +18,7 @@ export function tileGeometry(tx,tz,segments){
    const key=x+':'+z;if(edgeVertices.has(key))return edgeVertices.get(key);
    const id=positions.length/3,y=alpineHeight(x,z),nx=alpineHeight(x-1,z)-alpineHeight(x+1,z),nz=alpineHeight(x,z-1)-alpineHeight(x,z+1),length=Math.hypot(nx,2,nz);
    positions.push(x,y,z);normals.push(nx/length,2/length,nz/length);
-   const run=skiRunAt(x,z),on=z>=run.startZ&&z<=run.finish&&Math.abs(x-skiRunCenter(z,run.id))<skiRunHalfWidth(z,run.id),grade=Math.hypot(nx,nz)/2,c=snow.clone().lerp(on?piste:rock,on?.78:Math.min(.55,Math.max(0,grade-.65)*.3));colors.push(c.r,c.g,c.b);edgeVertices.set(key,id);return id;
+   const run=skiRunAt(x,z),on=z>=run.startZ&&z<=run.finish&&Math.abs(x-skiRunCenter(z,run.id))<skiRunHalfWidth(z,run.id),grade=Math.hypot(nx,nz)/2,c=on?piste:rock,w=on?.78:Math.min(.55,Math.max(0,grade-.65)*.3);colors.push(snow.r+(c.r-snow.r)*w,snow.g+(c.g-snow.g)*w,snow.b+(c.b-snow.b)*w);edgeVertices.set(key,id);return id;
   }
   for(let i=0;i<indices.length;i+=3){const triangle=indices.slice(i,i+3),polygon=[];
    for(let k=0;k<3;k++){

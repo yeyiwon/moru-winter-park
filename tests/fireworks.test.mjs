@@ -18,6 +18,7 @@ test('show uses fixed buffers, late-join clock, lower mobile density and clears 
  show.setQuality('low');show.update(32000);assert.ok(show.root.geometry.drawRange.count<full);assert.equal(show.root.geometry.attributes.position.array,buffer);show.update(33000,{interior:true});assert.equal(show.root.visible,false);assert.equal(show.root.geometry.drawRange.count,0);show.update(100000);assert.equal(show.active,false);show.setShow({...state,state:'stopped'});show.update(4000);assert.equal(show.root.visible,false);show.dispose();assert.equal(scene.children.length,0);
 });
 test('sparkler activity synchronizes as an item and the unchanged kiosk entrance is walkable',()=>{
+ for(const gesture of ['', 'wave']){const encoded=encodeActivity({heldItem:'sparkler',gesture});assert.ok(activityGestures.includes(encoded));assert.deepEqual(decodeActivity(encoded),{heldItem:'sparkler',gesture});}
  assert.ok(activityGestures.includes('sparkler-carry'));assert.equal(encodeActivity({heldItem:'sparkler'}),'sparkler-carry');assert.deepEqual(decodeActivity('sparkler-carry'),{heldItem:'sparkler',gesture:''});assert.ok(canStandAt(sparklerEntrance.x,sparklerEntrance.z));
 });
 test('firework lighting reuses the world light with bounded pulses and respects reduced flashing',()=>{
@@ -25,7 +26,7 @@ test('firework lighting reuses the world light with bounded pulses and respects 
  const show=createWinterFireworks(scene,{light}),first=createFireworkScore(42)[0],now=1000+(first.at+first.flight+.16)*1000;
  show.setShow({id:'light-test',startsAt:1000,seed:42,state:'playing'});
  const listener=new T.Vector3(first.x,first.y+first.height,first.z);
- show.update(now,{listener});assert.ok(light.intensity>.8&&light.intensity<=1.18);assert.equal(scene.children.filter(o=>o.isLight).length,1);
+ show.update(now,{listener});assert.ok(light.intensity>.8&&light.intensity<=1.18);assert.equal(scene.children.filter(o=>o.isLight).length,3);assert.equal(scene.children.filter(o=>o.isSpotLight&&!o.castShadow).length,2);
  // The world resets its ambient lighting every frame before the show adds a pulse.
  light.intensity=.8;light.color.set('#eef5ff');const color=light.color.clone();show.update(now+10,{listener,reduceFlash:true});
  assert.equal(light.intensity,.8);assert.ok(light.color.equals(color));show.dispose();assert.equal(scene.children.length,1);
@@ -62,7 +63,7 @@ async function fireworkFixture(t){
  return {DB,call,base};
 }
 
-test('simultaneous guest requests claim one show and merge into its ten-second server countdown',async t=>{
+test('simultaneous guest requests claim one show and merge into its five-second server countdown',async t=>{
  const {DB,call,base}=await fireworkFixture(t);
  const results=await Promise.all(Array.from({length:8},(_,i)=>call('request',{id:'guest-'+i})));
  assert.ok(results.every(r=>r.status===200));
@@ -70,8 +71,8 @@ test('simultaneous guest requests claim one show and merge into its ten-second s
  assert.equal(results.filter(r=>r.data.merged).length,7);
  assert.equal(new Set(results.map(r=>r.data.show.id)).size,1);
  const first=results[0].data.show;
- assert.equal(first.startsAt,base+10000);assert.equal(first.endsAt,first.startsAt+showTrack(first.musicId).duration*1000);
- assert.equal(first.nextRequestAt,first.endsAt+900000);
+ assert.equal(first.startsAt,base+5000);assert.equal(first.endsAt,first.startsAt+showTrack(first.musicId).duration*1000);
+ assert.equal(first.nextRequestAt,first.endsAt+300000);
  assert.equal((await DB.prepare('SELECT COUNT(*) AS count FROM world_settings').bind().first()).count,1);
  const replay=await call('request',{now:base+1000});
  assert.equal(replay.data.show.id,first.id);assert.equal(replay.data.merged,true);
@@ -87,11 +88,11 @@ test('a show must finish and complete its cooldown before another guest can sche
  assert.equal(during.status,200);assert.equal(during.data.merged,true);assert.equal(during.data.show.id,first.id);
  const cooling=await call('request',{id:'guest-c',now:first.endsAt});
  assert.equal(cooling.status,429);assert.equal(cooling.data.phase,'cooldown');
- assert.equal(cooling.data.retryAfterMs,900000);assert.equal(cooling.headers.get('Retry-After'),'900');
+ assert.equal(cooling.data.retryAfterMs,300000);assert.equal(cooling.headers.get('Retry-After'),'300');
  assert.equal((await call('request',{id:'guest-d',now:first.nextRequestAt-1})).status,429);
  const next=await call('request',{id:'guest-e',now:first.nextRequestAt});
  assert.equal(next.status,200);assert.equal(next.data.created,true);assert.notEqual(next.data.show.id,first.id);
- assert.equal(next.data.show.startsAt,first.nextRequestAt+10000);
+ assert.equal(next.data.show.startsAt,first.nextRequestAt+5000);
 });
 
 test('owner cancellation is idempotent and cannot shorten or repeatedly extend the reserved cooldown',async t=>{
@@ -104,7 +105,7 @@ test('owner cancellation is idempotent and cannot shorten or repeatedly extend t
  assert.equal(repeated.data.show.stoppedAt,base+1000);assert.equal(repeated.data.show.revision,2);
  assert.equal(repeated.data.show.nextRequestAt,first.nextRequestAt);
  assert.equal((await call('request',{id:'guest-b',now:base+2000})).status,429);
- const override=await call('start',{id:'owner',admin:true,now:base+2000});assert.equal(override.status,200);assert.notEqual(override.data.show.id,first.id);
+ const override=await call('start',{id:'owner',admin:true,now:base+2000});assert.equal(override.status,200);assert.equal(override.data.show.startsAt,base+2000);assert.equal(override.data.phase,'playing');assert.equal(override.data.show.nextRequestAt,override.data.show.endsAt+300000);assert.notEqual(override.data.show.id,first.id);
  assert.equal((await call('start',{id:'owner',admin:true,now:base+2001})).status,409);
  assert.equal((await call('request',{id:'guest-b',now:override.data.show.nextRequestAt})).status,200);
 });
@@ -133,7 +134,7 @@ test('legacy show records receive complete lifecycle timestamps without losing t
  await DB.prepare('INSERT INTO world_settings(id,payload,updated_at) VALUES(?,?,?)').bind('fireworks',JSON.stringify(old),base-4000).run();
  const read=await call();assert.equal(read.data.show.id,'legacy');assert.equal(read.data.show.startsAt,old.startsAt);
  assert.equal(read.data.show.seed,17);assert.equal(read.data.show.state,'playing');
- assert.equal(read.data.show.nextRequestAt,old.startsAt+74000+900000);
+ assert.equal(read.data.show.nextRequestAt,old.startsAt+74000+300000);
  assert.equal((await call('request')).data.show.id,'legacy');
 });
 
@@ -161,7 +162,7 @@ test('guest controls request a show, avoid interrupting editors and never replay
   assert.equal(url,'/api/fireworks');
   if(options.method==='POST'){
    assert.deepEqual(JSON.parse(options.body),{action:'request'});requests++;
-   show={id:'shared-show',seed:42,startsAt:now+10000,endsAt:now+84000,nextRequestAt:now+264000,state:'scheduled',revision:1};
+   show={id:'shared-show',seed:42,startsAt:now+5000,endsAt:now+79000,nextRequestAt:now+264000,state:'scheduled',revision:1};
   }
   return {ok:true,json:async()=>({show,serverTime:now})};
  };
@@ -169,10 +170,10 @@ test('guest controls request a show, avoid interrupting editors and never replay
  t.after(()=>{view.dispose();w.close();});
  const flush=()=>new Promise(resolve=>setImmediate(resolve));await flush();
  assert.equal(view.button.parentElement.id,'studio-public-actions');assert.equal(view.button.closest('section').id,'pane-activities');assert.equal(d.querySelector('#pane-light #firework-request'),null);assert.equal(view.button.disabled,false);
- d.body.classList.add('studio-open');view.button.click();await flush();
- assert.equal(requests,1);assert.equal(view.button.disabled,true);assert.equal(view.notice.hidden,true);
+ d.body.classList.add('studio-open');w.requestWinterFireworks();view.button.click();await flush();
+ assert.equal(requests,1);assert.equal(w.winterFireworkRequestState.disabled,true);assert.equal(view.button.disabled,true);assert.equal(view.notice.hidden,true);
  d.body.classList.remove('studio-open');w.dispatchEvent(new w.Event('lab:close'));
- assert.equal(view.notice.hidden,false);assert.match(view.notice.textContent,/10초/);let watches=0;w.addEventListener('lab:watch-fireworks',()=>watches++);assert.equal(watches,0);assert.equal(view.notice.querySelector('#firework-watch'),null);assert.equal(watches,0,'notice never changes the free camera');
+ assert.equal(view.notice.hidden,false);assert.match(view.notice.textContent,/5초/);let watches=0;w.addEventListener('lab:watch-fireworks',()=>watches++);assert.equal(watches,0);assert.equal(view.notice.querySelector('#firework-watch'),null);assert.equal(watches,0,'notice never changes the free camera');
  now=show.startsAt+5000;d.dispatchEvent(new w.Event('visibilitychange'));await flush();
  assert.equal(view.notice.hidden,false);assert.equal(view.notice.querySelector('.firework-notice-countdown').textContent,'');assert.match(view.button.textContent,/진행 중/);
  w.dispatchEvent(new w.CustomEvent('lab:fireworks',{detail:{...show,state:'stopped',revision:2}}));
@@ -186,7 +187,7 @@ test('a failed guest request leaves the control retryable and never announces an
  w.labSocialJoined=true;w.fetch=async(url,options={})=>{
   if(options.method!=='POST')return {ok:true,json:async()=>({show:null,serverTime:now})};
   requests++;
-  return fail?{ok:false,json:async()=>({error:'잠시 연결이 끊겼어요.'})}:{ok:true,json:async()=>({show:{id:'confirmed',startsAt:now+10000,seed:3,state:'scheduled',revision:1},serverTime:now})};
+  return fail?{ok:false,json:async()=>({error:'잠시 연결이 끊겼어요.'})}:{ok:true,json:async()=>({show:{id:'confirmed',startsAt:now+5000,seed:3,state:'scheduled',revision:1},serverTime:now})};
  };
  const view=installFireworkRequests({win:w,doc:d,now:()=>now});t.after(()=>{view.dispose();w.close();});
  const flush=()=>new Promise(resolve=>setImmediate(resolve));await flush();view.button.click();await flush();
@@ -228,4 +229,14 @@ test('playing show title is confined to audio settings and clears at stop or end
  now=30000;ui.refresh();assert.equal(info.hidden,false);assert.equal(info.closest('section').id,'pane-audio');assert.equal(info.closest('section').hidden,true);assert.match(info.textContent,/Wedding Entrance/);assert.doesNotMatch(ui.notice.textContent,/Wedding Entrance/);
  now=150000;ui.refresh();assert.equal(info.hidden,true);
  now=40000;w.dispatchEvent(new w.CustomEvent('lab:fireworks',{detail:{...show,state:'stopped',revision:2}}));assert.equal(info.hidden,true);
+});
+
+test('existing fifteen-minute reservations shorten to five minutes in both snapshot and atomic guest claim',async t=>{
+ const {DB,call,base}=await fireworkFixture(t),old={id:'old-cooldown',seed:17,startsAt:base-200000,endsAt:base-100000,nextRequestAt:base+800000,state:'scheduled'};
+ await DB.prepare('INSERT INTO world_settings(id,payload,updated_at) VALUES(?,?,?)').bind('fireworks',JSON.stringify(old),base).run();
+ const read=await call();assert.equal(read.data.nextRequestAt,old.endsAt+300000);
+ assert.equal(fireworkRequestState(old,old.endsAt+300000).phase,'idle','cached realtime snapshots must not restore the old fifteen-minute UI countdown');
+ assert.equal((await call('request',{id:'early',now:old.endsAt+299999})).status,429);
+ const next=await call('request',{id:'next-guest',now:old.endsAt+300000});
+ assert.equal(next.status,200);assert.equal(next.data.created,true);assert.notEqual(next.data.show.id,old.id);
 });

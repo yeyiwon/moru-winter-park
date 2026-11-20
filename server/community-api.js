@@ -18,7 +18,7 @@ export async function communityAPI(request,env,self,admin){
  if(!['/api/wishes','/api/reports','/api/admin','/api/events','/api/quiz'].includes(path))return null;
  try{
  if(path==='/api/wishes'&&request.method==='GET'){
-  const rows=await DB.prepare('SELECT w.id,w.author AS guestKey,(SELECT kind FROM tree_decorations d WHERE d.id=w.id) AS kind,(SELECT color FROM tree_decorations d WHERE d.id=w.id) AS color,w.message,w.visibility,w.created_at AS createdAt,CASE WHEN w.author=? THEN 1 ELSE 0 END AS mine,(SELECT COUNT(*) FROM wish_reactions r WHERE r.wish_id=w.id) AS reactions,EXISTS(SELECT 1 FROM wish_reactions r WHERE r.wish_id=w.id AND r.author=?) AS reacted FROM wishes w WHERE w.room=? AND (w.visibility=\'public\' OR w.author=?) ORDER BY w.created_at DESC LIMIT 160').bind(self.id,self.id,self.room,self.id).all();const wishes=(rows.results||[]).map(({guestKey,...wish})=>({...wish,name:'게스트 '+String(guestKey).slice(0,4).toUpperCase()}));return json({wishes});
+  const rows=await DB.prepare('SELECT w.id,w.author AS guestKey,(SELECT kind FROM tree_decorations d WHERE d.id=w.id) AS kind,(SELECT color FROM tree_decorations d WHERE d.id=w.id) AS color,w.message,w.visibility,w.created_at AS createdAt,CASE WHEN w.author=? THEN 1 ELSE 0 END AS mine,(SELECT COUNT(*) FROM wish_reactions r WHERE r.wish_id=w.id) AS reactions,EXISTS(SELECT 1 FROM wish_reactions r WHERE r.wish_id=w.id AND r.author=?) AS reacted FROM wishes w WHERE w.room=? AND (w.visibility=\'public\' OR w.author=?) ORDER BY w.created_at DESC LIMIT 160').bind(self.id,self.id,self.room,self.id).all();const wishes=(rows.results||[]).map(({guestKey,...wish})=>({...wish,name:'방문자 '+String(guestKey).slice(0,4).toUpperCase()}));return json({wishes});
  }
  if(path==='/api/wishes'&&request.method==='POST'){
   const b=await bodyOf(request,512);if(b.action!=='react')return json({error:'장식을 선택해 소원을 달아 주세요.'},400);
@@ -44,7 +44,7 @@ export async function communityAPI(request,env,self,admin){
  if(request.method==='GET'){
   const [reports,people,decorations,events,quizzes,candidates,generation]=await Promise.all([
    DB.prepare('SELECT id,room,target_type AS type,target_id AS targetId,reason,created_at AS createdAt FROM reports WHERE resolved=0 ORDER BY created_at DESC LIMIT 80').bind().all(),
-   DB.prepare('SELECT id,room,name,chat,chat_at AS chatAt FROM visitors WHERE seen>? ORDER BY seen DESC LIMIT 80').bind(now-600000).all(),
+   DB.prepare('SELECT id,room,name,chat,chat_at AS chatAt,auth_type AS authType FROM visitors WHERE seen>? ORDER BY seen DESC LIMIT 80').bind(now-600000).all(),
    DB.prepare('SELECT id,room,kind FROM tree_decorations WHERE room=? ORDER BY created_at DESC LIMIT 160').bind(self.room).all(),
    DB.prepare('SELECT id,title,starts_at AS startsAt,ends_at AS endsAt,kind,enabled FROM world_events ORDER BY starts_at DESC LIMIT 30').bind().all(),
    DB.prepare('SELECT id,payload FROM quiz_overrides ORDER BY updated_at DESC LIMIT 100').bind().all(),DB.prepare("SELECT id,payload FROM quiz_candidates WHERE status='review' ORDER BY created_at DESC LIMIT 30").bind().all(),DB.prepare('SELECT day,status,count,usage FROM quiz_generation_runs ORDER BY day DESC LIMIT 7').bind().all()]);
@@ -61,7 +61,16 @@ export async function communityAPI(request,env,self,admin){
   if(b.action==='remove-wish'){await DB.prepare('DELETE FROM wishes WHERE id=?').bind(id).run();await DB.prepare('DELETE FROM wish_reactions WHERE wish_id=?').bind(id).run();}await DB.prepare('DELETE FROM tree_decorations WHERE id=?').bind(id).run();
  }else if(b.action==='clear-chat'){await DB.prepare('UPDATE visitors SET chat=\'\',chat_at=0 WHERE id=?').bind(id).run();}
  else if(b.action==='unblock'){await DB.prepare('DELETE FROM visitor_blocks WHERE id=?').bind(id).run();await DB.prepare('UPDATE visitors SET kicked_at=0 WHERE id=?').bind(id).run();}
- else if(b.action==='block'||b.action==='kick'){
+ else if(b.action==='reset-visitor'){
+  if(b.confirmation!=='접속 초기화')return json({error:'접속 초기화를 확인해 주세요.'},400);
+  const found=await DB.prepare('SELECT id,auth_type FROM visitors WHERE id=?').bind(id).first();
+  if(!found)return json({error:'접속자를 찾을 수 없습니다.'},404);
+  if(id===self.id||found.auth_type==='owner')return json({error:'관리자 접속은 초기화할 수 없습니다.'},400);
+  // Reset only this device's gameplay identity, never its durable authored records.
+  await DB.prepare('DELETE FROM ride_seats WHERE visitor=?').bind(id).run();
+  await DB.prepare('DELETE FROM visitor_blocks WHERE id=?').bind(id).run();
+  await DB.prepare('DELETE FROM visitors WHERE id=?').bind(id).run();
+ }else if(b.action==='block'||b.action==='kick'){
   const found=await DB.prepare('SELECT id,auth_type FROM visitors WHERE id=?').bind(id).first();if(!found)return json({error:'사용자를 찾을 수 없습니다.'},404);
   if(id===self.id||found.auth_type==='owner')return json({error:'관리자 자신은 퇴장시킬 수 없습니다.'},400);
   if(b.action==='block')await DB.prepare('INSERT INTO visitor_blocks(id,created_at) VALUES(?,?) ON CONFLICT(id) DO NOTHING').bind(id,now).run();

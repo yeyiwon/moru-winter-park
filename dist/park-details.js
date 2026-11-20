@@ -1,5 +1,4 @@
 import {dressBalloonBooth} from './balloon-booth.js';
-import {createStonePaving,pavingColors} from './plaza-paving.js';
 import {buildWinterBench} from './winter-bench.js';
 import * as T from './vendor/three.module.js';
 import {parkStalls,parkBenches,balloonCart,sparklerKiosk} from './park-layout.js';
@@ -213,17 +212,8 @@ export function buildParkDetails(api){
  for(const x of [-.45,-.12]){const spool=cylinder(.08,.08,.15,cream,x,1.4,-.24,cart,14);spool.rotation.x=Math.PI/2;for(const z of [-.33,-.15]){const disc=cylinder(.1,.1,.018,gold,x,1.4,z,cart,14);disc.rotation.x=Math.PI/2;}}
  const balloons=dressBalloonBooth(cart);
  // Flush stone inlays make the former lake a walkable square, softened by snowy edges.
- const pavers=createStonePaving(600),dummy=new T.Object3D();let count=0;
- // Small flush forecourts punctuate the snow promenade without changing its soft edges.
- const courts=[{x:-6,z:1,rx:6.2,rz:6.2},{x:-27,z:24,rx:7,rz:1.8},{x:16,z:14,rx:3.5,rz:2},{x:-36,z:7,rx:3.5,rz:2.4}];
- for(const court of courts)for(let row=-9;row<=9;row++)for(let col=-10;col<=10;col++){
-  const dx=col*.8+(row%2)*.4,dz=row*.7,x=court.x+dx,z=court.z+dz;
-  if((dx/court.rx)**2+(dz/court.rz)**2>1||Math.hypot(x+18,z+5)<6.7||count>=600)continue;
-  dummy.position.set(x,.09,z);dummy.rotation.set(0,(row+col)%3*.06,0);dummy.updateMatrix();pavers.setMatrixAt(count,dummy.matrix);pavers.setColorAt(count,new T.Color(pavingColors[count%3]));count++;
- }
- pavers.count=count;pavers.name='park-plaza-inlay';pavers.receiveShadow=true;scene.add(pavers);
- const star=new T.Shape();for(let i=0;i<10;i++){const a=i*Math.PI/5+Math.PI/2,r=i%2?.55:1.4;i?star.lineTo(Math.cos(a)*r,Math.sin(a)*r):star.moveTo(Math.cos(a)*r,Math.sin(a)*r);}star.closePath();const inset=mesh(new T.ShapeGeometry(star),gold,-6,.109,1);inset.rotation.x=-Math.PI/2;
- const border=torus(1.9,.028,cream,-6,.11,1);border.rotation.x=Math.PI/2;
+ const star=new T.Shape();for(let i=0;i<10;i++){const a=i*Math.PI/5+Math.PI/2,r=i%2?.55:1.4;i?star.lineTo(Math.cos(a)*r,Math.sin(a)*r):star.moveTo(Math.cos(a)*r,Math.sin(a)*r);}star.closePath();const inset=mesh(new T.ShapeGeometry(star),gold,-6,.145,1);inset.rotation.x=-Math.PI/2;
+ const border=torus(1.9,.028,cream,-6,.15,1);border.rotation.x=Math.PI/2;
  // Railings sit within the wheel's existing footprint and leave a two metre entrance.
  for(const side of [-1,1])for(let i=0;i<5;i++){const x=-18+side*(1.4+i*.65);rod([x,.1,1],[x,1.1,1],.035,gold);ball(warm,x,1.13,1,.06);if(i<4)rod([x,1.04,1],[x+side*.65,1.04,1],.025,gold);}
  return balloons;

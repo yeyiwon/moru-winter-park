@@ -2,7 +2,7 @@
 // or keep applying a velocity after the bounded prediction window expires.
 export function createRemoteMotion({delay=1100,prediction=120}={}){
  const samples=[];
- return{push(state,receivedAt){
+ return{setDelay(value){if(Number.isFinite(value))delay=Math.max(0,Math.min(1500,value));},push(state,receivedAt){
   const at=Number.isFinite(state.updatedAt)?state.updatedAt:receivedAt,last=samples.at(-1);
   if(last&&at<=last.at)return false;
   const pose={...state,at};

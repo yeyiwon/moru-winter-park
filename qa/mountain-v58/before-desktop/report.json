@@ -1,0 +1,442 @@
+{
+  "environment": "Mac Chrome GPU; 1280x800 desktop",
+  "label": "before",
+  "physicalWindowsGalaxy": "UNKNOWN",
+  "views": [
+    {
+      "id": "01-base-uphill",
+      "x": -65,
+      "z": -78.00546687835524,
+      "eye": [
+        -65,
+        5.09,
+        -78.00546687835524
+      ],
+      "aim": [
+        -80,
+        75.09,
+        -398.00546687835526
+      ],
+      "fps": 60.25779161165283,
+      "p95": 16.799999999999272,
+      "calls": 447,
+      "triangles": 1507666,
+      "terrain": {
+        "resident": 14,
+        "queued": 0,
+        "coarseTiles": 134,
+        "illuminatedTrees": 121,
+        "worker": true
+      },
+      "quality": {
+        "quality": "high",
+        "pixelRatio": 1,
+        "samples": 2,
+        "shadowSize": 2048,
+        "shadowInterval": 0.041666666666666664
+      },
+      "memory": {
+        "geometries": 840,
+        "textures": 33
+      }
+    },
+    {
+      "id": "02-chairlift",
+      "x": 280.624,
+      "z": -709.5840000000001,
+      "eye": [
+        284.624,
+        218.4679957722537,
+        -701.5840000000001
+      ],
+      "aim": [
+        275.624,
+        219.4679957722537,
+        -799.5840000000001
+      ],
+      "fps": 60.28666107713909,
+      "p95": 16.799999999999272,
+      "calls": 232,
+      "triangles": 612896,
+      "terrain": {
+        "resident": 23,
+        "queued": 0,
+        "coarseTiles": 134,
+        "illuminatedTrees": 121,
+        "worker": true
+      },
+      "quality": {
+        "quality": "high",
+        "pixelRatio": 1,
+        "samples": 2,
+        "shadowSize": 2048,
+        "shadowInterval": 0.041666666666666664
+      },
+      "memory": {
+        "geometries": 841,
+        "textures": 33
+      }
+    },
+    {
+      "id": "03-gondola",
+      "x": -166.4039779041175,
+      "z": -1458.0785714285714,
+      "eye": [
+        -162.4039779041175,
+        624.8768045629931,
+        -1450.0785714285714
+      ],
+      "aim": [
+        -171.4039779041175,
+        625.8768045629931,
+        -1548.0785714285714
+      ],
+      "fps": 60.36136872387279,
+      "p95": 16.799999999999272,
+      "calls": 84,
+      "triangles": 534143,
+      "terrain": {
+        "resident": 28,
+        "queued": 0,
+        "coarseTiles": 134,
+        "illuminatedTrees": 121,
+        "worker": true
+      },
+      "quality": {
+        "quality": "high",
+        "pixelRatio": 1,
+        "samples": 2,
+        "shadowSize": 2048,
+        "shadowInterval": 0.041666666666666664
+      },
+      "memory": {
+        "geometries": 844,
+        "textures": 33
+      }
+    },
+    {
+      "id": "04-summit-arrival",
+      "x": -180.21921279022575,
+      "z": -1915.6045557319626,
+      "eye": [
+        -180.21921279022575,
+        905.09,
+        -1915.6045557319626
+      ],
+      "aim": [
+        -135.21921279022575,
+        897.09,
+        -1845.6045557319626
+      ],
+      "fps": 60.33242768092547,
+      "p95": 16.799999999999272,
+      "calls": 1009,
+      "triangles": 4954316,
+      "terrain": {
+        "resident": 21,
+        "queued": 0,
+        "coarseTiles": 134,
+        "illuminatedTrees": 121,
+        "worker": true
+      },
+      "quality": {
+        "quality": "high",
+        "pixelRatio": 1,
+        "samples": 2,
+        "shadowSize": 2048,
+        "shadowInterval": 0.041666666666666664
+      },
+      "memory": {
+        "geometries": 934,
+        "textures": 37
+      }
+    },
+    {
+      "id": "05-summit-start",
+      "x": -162.5210304248333,
+      "z": -1934.2,
+      "eye": [
+        -162.5210304248333,
+        907.09,
+        -1934.2
+      ],
+      "aim": [
+        -137.5210304248333,
+        897.09,
+        -1839.2
+      ],
+      "fps": 60.39999999992793,
+      "p95": 16.700000000004366,
+      "calls": 1080,
+      "triangles": 4969257,
+      "terrain": {
+        "resident": 21,
+        "queued": 0,
+        "coarseTiles": 134,
+        "illuminatedTrees": 121,
+        "worker": true
+      },
+      "quality": {
+        "quality": "high",
+        "pixelRatio": 1,
+        "samples": 2,
+        "shadowSize": 2048,
+        "shadowInterval": 0.041666666666666664
+      },
+      "memory": {
+        "geometries": 934,
+        "textures": 37
+      }
+    },
+    {
+      "id": "06-summit-downhill",
+      "x": -146.5210304248333,
+      "z": -1909.2,
+      "eye": [
+        -146.5210304248333,
+        905.4476298170305,
+        -1909.2
+      ],
+      "aim": [
+        -128.5210304248333,
+        871.4476298170305,
+        -1749.2
+      ],
+      "fps": 60.29869818704583,
+      "p95": 16.799999999995634,
+      "calls": 1087,
+      "triangles": 4978125,
+      "terrain": {
+        "resident": 21,
+        "queued": 0,
+        "coarseTiles": 134,
+        "illuminatedTrees": 121,
+        "worker": true
+      },
+      "quality": {
+        "quality": "high",
+        "pixelRatio": 1,
+        "samples": 2,
+        "shadowSize": 2048,
+        "shadowInterval": 0.041666666666666664
+      },
+      "memory": {
+        "geometries": 934,
+        "textures": 37
+      }
+    },
+    {
+      "id": "07-first-turn",
+      "x": -99.89747103390278,
+      "z": -1769.2,
+      "eye": [
+        -99.89747103390278,
+        807.77117547404,
+        -1769.2
+      ],
+      "aim": [
+        -79.89747103390278,
+        782.77117547404,
+        -1649.2
+      ],
+      "fps": 60.26019634433742,
+      "p95": 16.700000000004366,
+      "calls": 1082,
+      "triangles": 4963357,
+      "terrain": {
+        "resident": 27,
+        "queued": 0,
+        "coarseTiles": 134,
+        "illuminatedTrees": 121,
+        "worker": true
+      },
+      "quality": {
+        "quality": "high",
+        "pixelRatio": 1,
+        "samples": 2,
+        "shadowSize": 2048,
+        "shadowInterval": 0.041666666666666664
+      },
+      "memory": {
+        "geometries": 938,
+        "textures": 37
+      }
+    },
+    {
+      "id": "08-middle-run",
+      "x": 60.37655977124089,
+      "z": -998.1,
+      "eye": [
+        60.37655977124089,
+        315.42809450899193,
+        -998.1
+      ],
+      "aim": [
+        40.37655977124089,
+        293.42809450899193,
+        -858.1
+      ],
+      "fps": 60.38792241537298,
+      "p95": 16.700000000004366,
+      "calls": 925,
+      "triangles": 4900480,
+      "terrain": {
+        "resident": 28,
+        "queued": 0,
+        "coarseTiles": 134,
+        "illuminatedTrees": 121,
+        "worker": true
+      },
+      "quality": {
+        "quality": "high",
+        "pixelRatio": 1,
+        "samples": 2,
+        "shadowSize": 2048,
+        "shadowInterval": 0.041666666666666664
+      },
+      "memory": {
+        "geometries": 927,
+        "textures": 37
+      }
+    },
+    {
+      "id": "09-lower-base",
+      "x": 20,
+      "z": -38.005466878355236,
+      "eye": [
+        20,
+        5.09,
+        -38.005466878355236
+      ],
+      "aim": [
+        -25,
+        43.09,
+        -248.00546687835524
+      ],
+      "fps": 60.38309273396251,
+      "p95": 16.70000000001164,
+      "calls": 748,
+      "triangles": 3504989,
+      "terrain": {
+        "resident": 14,
+        "queued": 0,
+        "coarseTiles": 134,
+        "illuminatedTrees": 121,
+        "worker": true
+      },
+      "quality": {
+        "quality": "high",
+        "pixelRatio": 1,
+        "samples": 2,
+        "shadowSize": 2048,
+        "shadowInterval": 0.041666666666666664
+      },
+      "memory": {
+        "geometries": 923,
+        "textures": 37
+      }
+    },
+    {
+      "id": "10-castle-mountain",
+      "x": 0,
+      "z": 22,
+      "eye": [
+        0,
+        4,
+        48
+      ],
+      "aim": [
+        0,
+        47,
+        -200
+      ],
+      "fps": 55.46091985883998,
+      "p95": 33.30000000000291,
+      "calls": 1300,
+      "triangles": 6485792,
+      "terrain": {
+        "resident": 9,
+        "queued": 0,
+        "coarseTiles": 134,
+        "illuminatedTrees": 121,
+        "worker": true
+      },
+      "quality": {
+        "quality": "high",
+        "pixelRatio": 1,
+        "samples": 2,
+        "shadowSize": 2048,
+        "shadowInterval": 0.041666666666666664
+      },
+      "memory": {
+        "geometries": 922,
+        "textures": 37
+      }
+    },
+    {
+      "id": "11-peak-ridge",
+      "x": -146.5210304248333,
+      "z": -1925.6,
+      "eye": [
+        -91.5210304248333,
+        916.09,
+        -1880.6
+      ],
+      "aim": [
+        -206.5210304248333,
+        908.09,
+        -1980.6
+      ],
+      "fps": 60.13061484538529,
+      "p95": 16.70000000001164,
+      "calls": 95,
+      "triangles": 503114,
+      "terrain": {
+        "resident": 21,
+        "queued": 0,
+        "coarseTiles": 134,
+        "illuminatedTrees": 121,
+        "worker": true
+      },
+      "quality": {
+        "quality": "high",
+        "pixelRatio": 1,
+        "samples": 2,
+        "shadowSize": 2048,
+        "shadowInterval": 0.041666666666666664
+      },
+      "memory": {
+        "geometries": 921,
+        "textures": 37
+      }
+    }
+  ],
+  "errors": [],
+  "routes": [
+    {
+      "id": "main",
+      "length": 2335.8282713140957,
+      "drop": 900
+    },
+    {
+      "id": "easy",
+      "length": 483.66059927921316,
+      "drop": 137.91000000000003
+    },
+    {
+      "id": "curve",
+      "length": 1421.3330639030382,
+      "drop": 458.42018426355054
+    },
+    {
+      "id": "advanced",
+      "length": 1498.5332336243473,
+      "drop": 561.9099995
+    },
+    {
+      "id": "explore",
+      "length": 992.233344491273,
+      "drop": 390.187623993887
+    }
+  ]
+}

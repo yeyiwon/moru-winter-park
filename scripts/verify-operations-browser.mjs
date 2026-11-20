@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';import {pathToFileURL} from 'node:url';
 const {chromium}=await import(pathToFileURL(process.env.PLAYWRIGHT_PATH||'/tmp/winter-browser-qa/node_modules/playwright-core/index.mjs'));
-const origin='http://127.0.0.1:4189',owner='http://127.0.0.1:4190',out=process.env.QA_OUTPUT||'qa/operations-v46';await fs.mkdir(out,{recursive:true});
+const origin=process.env.QA_GUEST_ORIGIN||'http://127.0.0.1:4189',owner=process.env.QA_OWNER_ORIGIN||'http://127.0.0.1:4190',out=process.env.QA_OUTPUT||'qa/operations-v46';await fs.mkdir(out,{recursive:true});
+if([origin,owner].some(url=>!['127.0.0.1','localhost'].includes(new URL(url).hostname)))throw Error('Operations fixtures must remain local');
 const browser=await chromium.launch({executablePath:process.env.CHROME_PATH||'/Applications/Google Chrome.app/Contents/MacOS/Google Chrome',headless:true,args:['--disable-background-timer-throttling','--disable-renderer-backgrounding']});
 const report={at:new Date().toISOString(),browser:browser.version(),physicalMobile:false,renderMode:process.env.QA_RENDER_MODE||'auto',errors:[],consoleErrors:[],httpErrors:[],expectedNetworkFaults:[],checks:[]};
 const check=(name,ok,details)=>{report.checks.push({name,ok,...(details?{details}:{})});if(!ok){console.error('Failed check',name,details);throw Error(name);}};
@@ -27,6 +28,8 @@ async function enter(page,url){
  catch(error){console.error('Loading diagnostics',await page.evaluate(()=>{const r=document.querySelector('#world-loading'),s=getComputedStyle(r);return{documentHidden:document.hidden,hidden:r.hidden,classes:r.className,display:s.display,visibility:s.visibility,progress:r.querySelector('progress')?.value,stage:r.querySelector('#loading-stage')?.textContent,error:r.querySelector('.loading-error')?.textContent};}),{errors:report.errors,consoleErrors:report.consoleErrors});throw error;}
  const timing={viewport:page.viewportSize(),worldReadyMs,firstFrameReadyMs:Date.now()-started};
  (report.startup??=[]).push(timing);console.log('Startup',timing);
+ const publicUI=await page.evaluate(()=>({invitationControls:document.querySelectorAll('#invite-form,#admin-invite,#room-share,#invite-list').length,oldTerms:/게스트|초대/.test(document.body.innerText),managementLabel:document.querySelector('#tab-social').textContent}));
+ check('Public world and management contain no guest/invitation UI',publicUI.invitationControls===0&&!publicUI.oldTerms&&publicUI.managementLabel==='관리',publicUI);
 }
 try{
  const a=await pageFor(),b=await pageFor({viewport:{width:390,height:844},deviceScaleFactor:2,isMobile:true,hasTouch:true});
@@ -76,7 +79,7 @@ try{
  await b.evaluate(()=>openWinterSettings('map'));await b.screenshot({path:out+'/mobile-map.png'});
  await b.setViewportSize({width:844,height:390});await b.waitForTimeout(800);await b.screenshot({path:out+'/mobile-landscape.png'});check('landscape panel inside viewport',await b.evaluate(()=>{const r=document.querySelector('#studio').getBoundingClientRect();return r.left>=0&&r.right<=innerWidth&&r.top>=0&&r.bottom<=innerHeight+1;}));
  offlinePages.add(b);await b.context().setOffline(true);await b.waitForTimeout(13000);await b.context().setOffline(false);await b.evaluate(()=>window.dispatchEvent(new Event('online')));await b.waitForFunction(()=>document.querySelector('#social-status').textContent.includes('접속 중'),null,{timeout:45000});check('offline reconnection',true);offlinePages.delete(b);
- const admin=await pageFor();await enter(admin,owner+'/admin');await admin.waitForFunction(()=>document.querySelector('#admin-panel')?.open,null,{timeout:15000});await admin.locator('[data-refresh]').click();await admin.waitForTimeout(1500);
+ const admin=await pageFor();await enter(admin,owner+'/admin');await admin.waitForFunction(()=>document.querySelector('#studio').open&&!document.querySelector('#pane-social').hidden&&document.querySelector('#admin-panel')?.parentElement.id==='pane-social',null,{timeout:15000});await admin.locator('[data-refresh]').click();await admin.waitForTimeout(1500);
  const metrics=await admin.request.get(owner+'/api/operations');const data=await metrics.json();check('admin metrics with authenticated sockets',metrics.ok()&&data.service==='healthy'&&data.realtime.connections>=3,{connections:data.realtime?.connections,service:data.service});
  await admin.screenshot({path:out+'/admin.png'});const stop=await admin.request.post(owner+'/api/fireworks',{headers:{Origin:owner},data:{action:'stop'}});check('owner controls same show',stop.ok());
  check('no browser exceptions',report.errors.length===0,report.errors);check('no unexpected console or shader errors',report.consoleErrors.length===0,report.consoleErrors);

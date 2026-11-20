@@ -132,3 +132,19 @@ test('leaving while a selected chair is pending never places the guest in that c
 test('a lift arrival can start either gear at the actual transfer exit without returning to a remote course gate',t=>{
  const {e}=setup(t);e.rides.start('lift');e.rides.syncElapsed(resortRides.lift.duration);e.update(0,{});const {x,z}=summitTransfer.at(-1);e.proximity(x,z);const buttons=[...document.querySelectorAll('#place-actions button')];assert.equal(document.querySelector('#place-card').hidden,false);assert.deepEqual(buttons.map(b=>b.getAttribute('aria-label')),['스키','스노보드']);buttons[1].click();assert.equal(e.rides.equipment,'board');const p=e.rides.update(0);assert.ok(Math.hypot(p.x-x,p.z-z)<.01);
 });
+
+
+test('single-item booths retain a visible facility title',t=>{
+ const {e}=setup(t);
+ for(const [id,title]of [['sparkler','스파클러 부스'],['popcorn','팝콘 부스'],['icecream','아이스크림 부스']]){e.show(id);const name=document.querySelector('#place-name');assert.equal(name.hidden,false);assert.equal(name.textContent,title);}
+});
+test('sparkler waves while E or touch is held and releases without discarding the item',t=>{
+ const {e,click}=setup(t);e.show('sparkler');click();const button=document.querySelector('#bubble-hold');assert.equal(button.hidden,false);assert.match(button.getAttribute('aria-label'),/스파클러/);
+ const down=()=>window.dispatchEvent(new window.KeyboardEvent('keydown',{code:'KeyE'}));
+ down();e.update(15,{x:1});assert.equal(e.gesture,'wave');assert.equal(e.focusGesture,'');assert.equal(e.active,false);
+ window.dispatchEvent(new window.KeyboardEvent('keyup',{code:'KeyE'}));assert.equal(e.gesture,'');
+ button.onpointerdown({preventDefault(){},stopPropagation(){},pointerId:3});assert.equal(e.gesture,'wave');button.dispatchEvent(new Event('pointercancel'));assert.equal(e.gesture,'');
+ for(const name of ['blur','lab:pause','lab:open']){down();assert.equal(e.gesture,'wave');window.dispatchEvent(new Event(name));assert.equal(e.gesture,'');assert.equal(e.heldItem,'sparkler');}
+ const input=document.querySelector('#chat-input');input.dispatchEvent(new window.KeyboardEvent('keydown',{code:'KeyE',bubbles:true}));assert.equal(e.gesture,'');
+ down();e.cancel();assert.equal(e.gesture,'');assert.equal(e.heldItem,'sparkler');
+});

@@ -26,7 +26,7 @@ test('aurora layers respect night, interiors, quality and stopped animation',t=>
  const moon=scene.getObjectByName('detailed-winter-moon');
  for(const eye of [new T.Vector3(0,10,70),new T.Vector3(200,850,-3200),new T.Vector3(-30,1850,-5000)]){
   sky.update(121,false,{x:eye.x,y:eye.y-5,z:eye.z-8},1,false,eye);
-  assert.ok(root.position.equals(eye));assert.deepEqual(moon.position.clone().sub(eye).toArray(),[-928,1136,-2608]);
+  assert.ok(root.position.equals(eye));assert.deepEqual(moon.position.clone().sub(eye).toArray(),[-928,1900,-2608]);
  }
  sky.setQuality('low');assert.ok(root.children[0].visible&&root.children[2].visible,'uphill and downhill sky keep a curtain at low quality');
  w.dispatchEvent(new w.CustomEvent('lab:time',{detail:{hour:12}}));sky.update(122,false,{x:0,y:1,z:0});assert.equal(root.visible,false);assert.equal(material.uniforms.night.value,0);

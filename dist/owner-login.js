@@ -18,7 +18,7 @@ export function bindOwnerLogin(request){
   if(location.origin!==parkOrigin)return;
   event.preventDefault();if(button.dataset.busy)return;button.dataset.busy='true';
   try{const result=await request('owner-auth',{action:'begin'});location.assign(result.url);}
-  catch(error){document.querySelector('#invite-description').textContent=error.message;delete button.dataset.busy;}
+  catch(error){document.querySelector('#connection-description').textContent=error.message;delete button.dataset.busy;}
  });
 }
 

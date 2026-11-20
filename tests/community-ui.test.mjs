@@ -37,9 +37,9 @@ test('admin loads retained tools without notices or events and keeps fireworks s
  async function mod(file){if(modules.has(file))return modules.get(file);const m=new vm.SourceTextModule(fs.readFileSync(file,'utf8'),{context,identifier:file});modules.set(file,m);await m.link(s=>mod(path.resolve(path.dirname(file),s)));return m;}
  await(await mod(path.join(root,'community-ui.js'))).evaluate();
  w.dispatchEvent(new w.CustomEvent('lab:access',{detail:{admin:true}}));
- w.document.querySelector('#open-admin').click();await new Promise(resolve=>setTimeout(resolve,15));
+ w.labAdmin=true;w.document.querySelector('#studio').open=true;w.document.querySelector('#pane-social').hidden=false;w.dispatchEvent(new w.CustomEvent('lab:access',{detail:{admin:true}}));w.dispatchEvent(new w.CustomEvent('lab:settings-tab',{detail:'social'}));await new Promise(resolve=>setTimeout(resolve,15));
  const panel=w.document.querySelector('#admin-panel'),status=panel.querySelector('[data-admin-status]'),show=panel.querySelector('[data-show-status]');
- assert.equal(panel.open,true);assert.equal(show.closest('summary')?.parentElement.classList.contains('admin-section'),true);
+ assert.equal(panel.parentElement.id,'pane-social');assert.equal(panel.tagName,'SECTION');assert.equal(w.document.querySelector('#open-admin'),null);assert.equal(panel.hidden,false);assert.equal(show.closest('summary')?.parentElement.classList.contains('admin-section'),true);
  assert.equal(show.textContent,'시작 가능');assert.equal(status.textContent,'');
  assert.equal(panel.querySelector('[data-people] .admin-row-title').textContent,'겨울 손님');
  assert.equal(panel.querySelector('[data-people] .admin-row-detail').textContent,'안녕하세요');
@@ -126,7 +126,7 @@ test('admin fireworks honor corrected server-time cooldown boundaries and clear 
  await(await mod(path.resolve('dist/community-ui.js'))).evaluate();
  const flush=()=>new Promise(resolve=>setImmediate(resolve));
  const tick=value=>{elapsed=value;for(const [id,timer]of [...timers])if(timer.due<=elapsed){timers.delete(id);timer.callback();}};
- w.document.querySelector('#open-admin').click();await flush();
+ w.labAdmin=true;w.document.querySelector('#studio').open=true;w.document.querySelector('#pane-social').hidden=false;w.dispatchEvent(new w.CustomEvent('lab:access',{detail:{admin:true}}));w.dispatchEvent(new w.CustomEvent('lab:settings-tab',{detail:'social'}));await flush();
  const panel=w.document.querySelector('#admin-panel'),badge=panel.querySelector('[data-show-status]'),start=panel.querySelector('[data-show-start]'),stop=panel.querySelector('[data-show-stop]');
  assert.equal(w.labServerOffset,45000);assert.equal(badge.textContent,'다음 신청 2:59');assert.equal(badge.dataset.state,'cooldown');assert.equal(start.disabled,false);assert.equal(stop.disabled,true);assert.equal(timers.size,1);
  const initialRequests=requests;tick(178999);assert.equal(badge.textContent,'다음 신청 0:01');assert.equal(start.disabled,false);tick(179000);assert.equal(badge.textContent,'시작 가능');assert.equal(start.disabled,false);assert.equal(timers.size,0);assert.equal(requests,initialRequests,'the countdown never polls HTTP');
@@ -136,5 +136,5 @@ test('admin fireworks honor corrected server-time cooldown boundaries and clear 
  tick(show.startsAt-base);assert.equal(badge.dataset.state,'playing');assert.equal(stop.disabled,false);
  failStop=true;await stop.onclick();assert.equal(badge.dataset.state,'cooldown');assert.equal(start.disabled,false);assert.equal(stop.disabled,true);assert.match(panel.querySelector('[data-show-error]').textContent,/다시 확인/);
  w.dispatchEvent(new w.CustomEvent('lab:fireworks',{detail:{...show,state:'playing',revision:1}}));assert.equal(badge.dataset.state,'cooldown','a stale reply cannot undo the stopped revision');
- assert.equal(timers.size,1);panel.close();assert.equal(timers.size,0);const afterClose=requests;tick(show.nextRequestAt-base+1000);assert.equal(timers.size,0);assert.equal(requests,afterClose);
+ assert.equal(timers.size,1);w.document.querySelector('#studio').close();assert.equal(timers.size,0);const afterClose=requests;tick(show.nextRequestAt-base+1000);assert.equal(timers.size,0);assert.equal(requests,afterClose);
 });

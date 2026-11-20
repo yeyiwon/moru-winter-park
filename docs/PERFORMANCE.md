@@ -1,3 +1,34 @@
+# v58 최종 성능 기록
+
+Mac Chrome GPU, PC 및 모바일 터치 화면 에뮬레이션에서 측정했다. 실물 Windows/Edge·Galaxy·iPhone/Safari·발열·GPU 메모리 byte는 UNKNOWN이다.
+
+| 대상 | 변경/결과 | 근거 |
+|---|---|---|
+| 근거리 지형 9청크 | 12,663→8,487 정점, 22,428→14,076 triangles, 생성 중앙값 126→51.48ms | `qa/mountain-v58` |
+| 메인 슬로프 | 길이 2,335.828m 유지, 실제 활강 57.592초 / 59.99FPS / p95 16.8ms | `qa/final-v58/descent/desktop-descent-final.json` |
+| 2인 곤돌라 | 탑승 전환 977ms, PC/모바일 약 60.1FPS / p95 16.7–16.8ms | `qa/final-v58/transport/integration.json` |
+| 공연 전체 구간 | PC 60.13–60.26FPS / 모바일 약 60.2FPS, p95 16.7ms | `qa/final-v58/show-final` |
+| 공연 반복 6회 | geometry/texture PC 923/37, 모바일 818/34 유지, 종료 입자 0 | 위와 같음 |
+| 100명 로컬 WebSocket | RTT 평균 20ms/p95 38.21ms, 이동 평균 51.53ms/p95 100ms, 채팅 평균 132.33ms/p95 150.63ms | `qa/final-v57/load.json` |
+
+10/25/50/100명 각각 20초의 격리된 실제 WebSocket 시험이다. 25명 채팅 p95 268.59ms는 목표 200ms를 초과한 표본으로 숨기지 않는다. 100명 시험은 운영 최대 인원·수 시간 안정성을 보증하지 않는다. 테스트 실행 프로세스 RSS 215→267MB는 부하 드라이버를 포함하며 Worker 단독 CPU/메모리로 해석하지 않는다.
+
+최종 변경 후 사전 빌드 예산: core 36,910,197 bytes, 공연 음원 10,004,547 bytes, 코드 gzip 1,182,792 bytes로 기존 36MiB / 10MiB / 1,280,000 bytes 한도 이내다. 음원은 선택 재생 시 읽으므로 전체 아티팩트 크기가 최초 다운로드 크기는 아니다.
+
+정적 지형 생성과 LOD, 고정 불꽃 버퍼, 인스턴스 재사용, 미응답 위치 전송 합치기, 원거리 1Hz 갱신으로 비용을 제한했다. UI 테마는 월드 색감에 영향을 주지 않는다.
+
+---
+
+> v57 최종 추가: 돌 포장을 디딤돌 43개로 줄였다. 사용자 제공 BGM 두 파일(7.77MiB)은 재생할 때 읽으며 core artifact 한도만 36MiB로 조정한다. 코드 gzip 1,250KiB와 공연 음원 10MiB 상한은 유지한다.
+
+## v57 추가 마감 예산
+
+료칸 정적 자산 검사: 99 meshes, 179,557 triangles로 기존 <100 / <180,000 제한을 유지했다. 작은 등롱 고리의 원주 분할을 줄여 디테일 추가 비용을 상쇄했다. 공연 Trepak 추가로 on-demand show audio 예산만 10MiB로 조정했다.
+
+# v57 료칸·실시간 측정
+
+초기 v57 표본은 60.00FPS / geometry 707 / texture 21이었다. 이후 마감·소품 추가 후 최종 수치는 `qa/ryokan-v57/report.json`에 기록한다. 전역 GPU 첫 업로드 수와 실제 료칸 geometry identity를 구분한다. 실제 기기·GPU 실행시간·VRAM byte는 UNKNOWN. [조건·비용·부하 결과](ryokan-world-v57.md).
+
 # v55 관측 공간·공연
 
 같은 medium 품질·관람 위치에서 v54와 비교한다. 레이저는 한 배치 24개를 유지하고 빔별 교차면을 4개에서 1개로 줄였다. 안내자는 30Hz 이하로 갱신하며 별·입자 버퍼와 캐릭터 공유 geometry/material을 재사용한다. [측정 원본·한계](observatory-show-v55.md). 같은 조건의 천문대 전후 FPS는 PC·모바일 화면 모두 60.00, p95는 16.7~16.8ms였다. PC 공연 high 46.84~47.73FPS, 모바일 화면 medium 60.19~60.25FPS. 두 환경의 공연 6회 재시작 뒤 자원 수는 일정했고 종료 효과가 남지 않았다. 상세 Draw Calls/Triangles와 측정 조건은 위 기록을 참조한다. 실물 모바일과 GPU 메모리 byte는 UNKNOWN.

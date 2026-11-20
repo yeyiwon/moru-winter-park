@@ -1,0 +1,137 @@
+{
+  "before": {
+    "courses": [
+      {
+        "id": "main",
+        "length": 2335.8282713140957,
+        "drop": 900
+      },
+      {
+        "id": "easy",
+        "length": 483.66059927921316,
+        "drop": 137.91000000000003
+      },
+      {
+        "id": "curve",
+        "length": 1421.333063903038,
+        "drop": 458.42018426355054
+      },
+      {
+        "id": "advanced",
+        "length": 1498.5332336243473,
+        "drop": 561.9099995
+      },
+      {
+        "id": "explore",
+        "length": 992.2333444912729,
+        "drop": 390.187623993887
+      }
+    ],
+    "summitSideWall": 51.08784934953121,
+    "cables": {
+      "lift": {
+        "descent": 20.752785568306322,
+        "maxGrade": 0.8150457103236538,
+        "maxCurvature": 0.6525740032426618,
+        "length": 361.16383821918606
+      },
+      "upperlift": {
+        "descent": 14.080465843763875,
+        "maxGrade": 0.8200000000001513,
+        "maxCurvature": 0.17133788963417806,
+        "length": 1013.0387215923544
+      },
+      "ridgelift": {
+        "descent": 14.606173195758629,
+        "maxGrade": 0.9547457705175343,
+        "maxCurvature": 0.14868336368992502,
+        "length": 1180.9366814099258
+      },
+      "gondola": {
+        "descent": 0,
+        "maxGrade": 1.1374145794357338,
+        "maxCurvature": 0.17598508435536875,
+        "length": 2057.464851141402
+      }
+    },
+    "coarseSample": {
+      "tiles": 9,
+      "segments": 32,
+      "vertices": 12663,
+      "triangles": 22428,
+      "milliseconds": [
+        134.864459,
+        126.00170800000001,
+        117.16170799999998
+      ]
+    }
+  },
+  "after": {
+    "courses": [
+      {
+        "id": "main",
+        "length": 2335.8282713140957,
+        "drop": 900
+      },
+      {
+        "id": "easy",
+        "length": 483.66059927921316,
+        "drop": 137.91000000000003
+      },
+      {
+        "id": "curve",
+        "length": 1421.333063903038,
+        "drop": 458.42018426355054
+      },
+      {
+        "id": "advanced",
+        "length": 1498.5332336243473,
+        "drop": 561.9099995
+      },
+      {
+        "id": "explore",
+        "length": 992.2333444912729,
+        "drop": 390.187623993887
+      }
+    ],
+    "summitSideWall": 5.435298522744802,
+    "cables": {
+      "lift": {
+        "descent": 0,
+        "maxGrade": 0.5909900555531596,
+        "maxCurvature": 0.29831681926808185,
+        "length": 343.9285585756669
+      },
+      "upperlift": {
+        "descent": 0,
+        "maxGrade": 0.6544040348018775,
+        "maxCurvature": 0.0976637070623246,
+        "length": 990.7933836801111
+      },
+      "ridgelift": {
+        "descent": 0,
+        "maxGrade": 0.9315623760837269,
+        "maxCurvature": 0.19127224559553963,
+        "length": 1184.9454238994533
+      },
+      "gondola": {
+        "descent": 0,
+        "maxGrade": 0.9318138441540814,
+        "maxCurvature": 0.10543222521909268,
+        "length": 2048.419595223136
+      }
+    },
+    "coarseSample": {
+      "tiles": 9,
+      "segments": 24,
+      "vertices": 8487,
+      "triangles": 14076,
+      "milliseconds": [
+        56.86624999999992,
+        51.48062500000003,
+        49.30666599999995
+      ]
+    }
+  },
+  "timingEnvironment": "Same Mac Node 22; CPU tile generation only; no GPU timing"
+}

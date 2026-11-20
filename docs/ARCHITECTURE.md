@@ -1,3 +1,11 @@
+# v58 실제 운영 연결 확인
+
+기존 Vercel 정적 프런트엔드 → Sites API Worker → 기존 D1, 브라우저의 서명 티켓 → Cloudflare Worker/`WinterWorld` Durable Object WebSocket 구조를 유지한다. HTTP 확정 이동·좌석·공연은 서명 RPC로 DO에 전달한다. 게스트 초대 UI만 제거하고 owner 세션/CSRF/DB는 유지한다. 상세 연결·운영 절차와 미검증 항목은 [OPERATIONS](OPERATIONS.md)를 따른다. 아래 그림/기록 중 과거 단계의 계획은 현재 구조가 아니다.
+
+# v57 현재 구조
+
+공식 Vercel → Sites API → 기존 D1, 브라우저 → Cloudflare WebSocket/Durable Object가 운영 중이다. 아래 v45의 “점선 미배포” 설명은 과거 이력이다. v56은 검증된 출입만 서명 RPC relocate로 전달하고 v57은 이동 보간·원거리 갱신·혼잡 시 송신 창을 조정한다. DB schema와 영속 데이터는 유지한다. 료칸 모델·좌석·충돌은 공유 layout을 쓰며 수조·음식·수면은 재사용 가능한 별도 모듈이다. [상세](ryokan-world-v57.md).
+
 # v46 구조 상태 — 2026-11-19
 
 [현재 변경 및 확인 범위](official-ui-v46.md)

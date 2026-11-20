@@ -1,16 +1,18 @@
-import test from 'node:test';import assert from 'node:assert/strict';import * as T from '../dist/vendor/three.module.js';import {createPlazaSnowman} from '../dist/plaza-snowman.js';
+import test from 'node:test';import assert from 'node:assert/strict';import * as T from '../dist/vendor/three.module.js';
+import {createPlazaSnowman} from '../dist/plaza-snowman.js';import {createFluffyGuide} from '../dist/fluffy-guide.js';import {parkGuideLayout} from '../dist/park-guide-layout.js';import {canStandAt} from '../dist/movement.js';
+import {interiorInteractions} from '../dist/interior-layout.js';import {createParkGuides} from '../dist/park-guides.js';import {JSDOM} from 'jsdom';
 
-test('the snowman actually removes the carrot, holds it and returns it to the face',()=>{
- const scene=new T.Scene(),snowman=createPlazaSnowman(scene),nose=snowman.root.getObjectByName('snowman-carrot-nose');snowman.update(0,false);const home=nose.position.clone();assert.equal(snowman.interact(0),true);assert.equal(snowman.interact(.1),false);
- snowman.update(1.5,false);assert.ok(nose.position.distanceTo(home)>.6);assert.equal(snowman.root.getObjectByName('snowman-surprised-mouth').visible,true);const hand=snowman.root.getObjectByName('carrot-hand');assert.ok(hand.position.distanceTo(nose.position)<.15,'the actual hand follows the removed nose');
- snowman.update(4.3,false);assert.equal(snowman.busy,false);assert.ok(nose.position.distanceTo(home)<.025);assert.equal(snowman.root.getObjectByName('snowman-smile').visible,true);assert.equal(snowman.interact(5),true);snowman.update(5.2,true);assert.equal(snowman.busy,false);assert.ok(nose.position.distanceTo(home)<.001);snowman.dispose();assert.equal(scene.children.length,0);
+test('exclusive fluffy NPC costumes share real walking bounds without greeting interactions',()=>{
+ const scene=new T.Scene(),plaza=createPlazaSnowman(scene),scientist=createFluffyGuide(scene,{role:'scientist'}),tree=createFluffyGuide(scene,{role:'tree'});
+ assert.deepEqual(plaza.collision,{x:parkGuideLayout.plaza.x,z:parkGuideLayout.plaza.z,r:parkGuideLayout.plaza.r});assert.equal(plaza.interact,undefined);
+ assert.ok(scientist.root.getObjectByName('scientist-lab-coat'));assert.ok(scientist.root.getObjectByName('scientist-flask'));assert.ok(tree.root.getObjectByName('tree-keeper-crown'));assert.ok(tree.root.getObjectByName('held-tree-ornament'));
+ assert.ok(!interiorInteractions.some(p=>p.kind==='guide'));for(const p of Object.values(parkGuideLayout))assert.equal(canStandAt(p.x,p.z),false);
+ for(const npc of [plaza,scientist,tree]){npc.update(10,false,{x:2,z:4});npc.update(10.2,true,{x:2,z:4});npc.root.updateMatrixWorld(true);npc.root.traverse(o=>{assert.ok(o.matrixWorld.elements.every(Number.isFinite));for(const a of Object.values(o.geometry?.attributes||{}))assert.ok(a.array.every(Number.isFinite));});npc.dispose();npc.dispose();}assert.equal(scene.children.length,0);
 });
 
-test('snowman articulation and detailed geometry stay finite and within the asset budget',()=>{
- const asset=createPlazaSnowman(new T.Scene(),{x:-6.5,y:.09,z:3});assert.deepEqual(asset.collision,{x:-6.5,z:3,r:1.02});let meshes=0,triangles=0;asset.root.traverse(o=>{if(!o.isMesh)return;meshes++;triangles+=(o.geometry.index?.count||o.geometry.attributes.position.count)/3;for(const attribute of Object.values(o.geometry.attributes))for(const n of attribute.array)assert.ok(Number.isFinite(n));});assert.ok(meshes<=28);assert.ok(triangles<40000);
- asset.interact(10);for(let i=0;i<100;i++){asset.update(10+i/20,false,{x:0,z:0});asset.root.updateMatrixWorld(true);asset.root.traverse(o=>{for(const n of o.matrixWorld.elements)assert.ok(Number.isFinite(n));});}asset.dispose();
-});
-
-test('snowman waves and makes a small hop without drifting, and reduced motion restores the feet',()=>{
- const asset=createPlazaSnowman(new T.Scene()),left=asset.root.getObjectByName('waving-hand');asset.update(0,false);const idle=left.position.y;asset.update(3,false);assert.ok(left.position.y>idle+.5);asset.update(10.2,false);assert.ok(asset.root.position.y>.18);assert.equal(asset.root.position.x,-6.5);assert.equal(asset.root.position.z,3);asset.update(10.2,true);assert.equal(asset.root.position.y,.09);assert.equal(asset.root.rotation.z,0);assert.deepEqual(asset.root.scale.toArray(),[1,1,1]);asset.dispose();
+test('nearby guide hints show once, expire, rearm on departure and never open a greeting button',()=>{
+ const dom=new JSDOM('<body></body>'),scene=new T.Scene(),g=createParkGuides(scene,{document:dom.window.document}),p=parkGuideLayout.tree,hint=dom.window.document.querySelector('#park-guide-hint');
+ g.update(0,true,{x:0,z:24});assert.equal(hint.hidden,true);g.update(1,true,{x:p.x,z:p.z+3});assert.equal(hint.hidden,false);assert.match(hint.textContent,/소원/);assert.equal(dom.window.document.querySelector('button'),null);
+ g.update(8,true,{x:p.x,z:p.z+3});assert.equal(hint.hidden,true);g.update(9,true,{x:p.x,z:p.z+3});assert.equal(hint.hidden,true);
+ g.update(10,true,{x:0,z:24});g.update(11,true,{x:p.x,z:p.z+3});assert.equal(hint.hidden,false);g.update(12,true,{x:p.x,z:p.z+3},{interior:true});assert.equal(hint.hidden,true);assert.ok(Object.values(g.guides).every(n=>!n.root.visible));g.dispose();assert.equal(scene.children.length,0);assert.equal(dom.window.document.querySelector('#park-guide-hint'),null);dom.window.close();
 });

@@ -23,7 +23,7 @@ export function validPose(b,reservation,now=Date.now()){
  if(!reservedRidePose(b,reservation,now))return false;
  if(b.mode==='lift'&&reservation?.kind==='gondola')return true;
  const bench=benchPoseValid(reservation,b)||diningPoseValid(reservation,b);
- if(b.mode==='dining'&&!bench)return false;
+ if(['dining','footbath'].includes(b.mode)&&!bench)return false;
  const rest=b.mode==='rest'&&Object.values(restSeats).some(p=>Math.hypot(b.x-p.x,b.z-p.z)<.15&&Math.abs(b.y-p.y)<.15);
  return interiorPositionValid(b.x,b.y,b.z)||canStandAt(b.x,b.z)&&b.y>=surfaceHeight(b.x,b.z)+.5&&b.y<=surfaceHeight(b.x,b.z)+3||rest||bench||amusementPositionValid(b.x,b.y,b.z,b.mode)||spaPositionValid(b.x,b.y,b.z,b.mode)||resortRidePosition(b.x,b.y,b.z,b.mode);
 }

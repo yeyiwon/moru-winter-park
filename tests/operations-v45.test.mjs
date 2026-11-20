@@ -8,12 +8,12 @@ const showRequest=action=>new Request('https://test/api/fireworks',{method:'POST
 test('concurrent guest show requests have one winner; cooldown starts at completion; owner bypass never duplicates',async t=>{
  const f=await apiFixture(t),now=Date.now(),requests=await Promise.all(Array.from({length:25},(_,i)=>fireworksAPI(showRequest('request'),f.DB,{id:'guest-'+i,room:'winter-plaza'},false,now)));
  assert.equal(requests.filter(r=>r.status===200).length,25);assert.equal(new Set(await Promise.all(requests.map(async r=>(await r.clone().json()).show.id))).size,1);
- const show=await readFireworkShow(f.DB,now);assert.equal(show.startsAt,now+10000);assert.equal(show.nextRequestAt,show.endsAt+900000);
+ const show=await readFireworkShow(f.DB,now);assert.equal(show.startsAt,now+5000);assert.equal(show.nextRequestAt,show.endsAt+300000);
  assert.equal((await fireworksAPI(showRequest('start'),f.DB,{id:'owner',room:'winter-plaza'},true,now+10)).status,409);
  const finish=show.endsAt;
- assert.equal((await fireworksAPI(showRequest('request'),f.DB,{id:'late',room:'winter-plaza'},false,finish+899999)).status,429);
+ assert.equal((await fireworksAPI(showRequest('request'),f.DB,{id:'late',room:'winter-plaza'},false,finish+299999)).status,429);
  assert.equal((await fireworksAPI(showRequest('start'),f.DB,{id:'owner',room:'winter-plaza'},true,finish+1)).status,200);
- const ownerShow=await readFireworkShow(f.DB,finish+1);assert.notEqual(ownerShow.id,show.id);assert.equal(ownerShow.nextRequestAt,ownerShow.endsAt+900000);
+ const ownerShow=await readFireworkShow(f.DB,finish+1);assert.notEqual(ownerShow.id,show.id);assert.equal(ownerShow.nextRequestAt,ownerShow.endsAt+300000);
  assert.equal((await fireworksAPI(showRequest('stop'),f.DB,{id:'late',room:'winter-plaza'},false,finish+1)).status,403);
  assert.equal((await fireworksAPI(showRequest('request'),f.DB,{id:'after',room:'winter-plaza'},false,ownerShow.nextRequestAt)).status,200);
 });

@@ -1,3 +1,3 @@
 #place-card.seat-picker #place-actions button:disabled{opacity:.6;cursor:default}
 #place-card.seat-picker #place-actions button[data-occupied="true"]{background:var(--ui-field,#193047);border-style:dashed}
-#place-card.seat-picker #place-description:not(:empty){display:block;max-width:290px;margin:7px auto 0;padding:7px 10px;border-radius:10px;background:var(--ui-hud,#102338ed);color:var(--ui-ink,#eaf3f7);font-size:11px;line-height:1.55;pointer-events:none;text-shadow:none}
+#place-card.seat-picker:not(.guide-card) #place-description:not(:empty){display:block;max-width:290px;margin:7px auto 0;padding:7px 10px;border-radius:10px;background:var(--ui-hud,#102338ed);color:var(--ui-ink,#eaf3f7);font-size:11px;line-height:1.55;pointer-events:none;text-shadow:none}

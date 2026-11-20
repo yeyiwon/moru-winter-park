@@ -1,0 +1,124 @@
+{
+  "checks": [
+    {
+      "name": "candyfloss booth title visible",
+      "ok": true
+    },
+    {
+      "name": "popcorn booth title visible",
+      "ok": true
+    },
+    {
+      "name": "icecream booth title visible",
+      "ok": true
+    },
+    {
+      "name": "sparkler booth title visible",
+      "ok": true
+    },
+    {
+      "name": "held E continuously waves the carried sparkler",
+      "ok": true,
+      "data": {
+        "start": {
+          "gesture": "wave",
+          "x": 0.7120031356439283,
+          "rotation": -0.21106170844295
+        },
+        "end": {
+          "gesture": "wave",
+          "x": 0.5712640394215365
+        }
+      }
+    },
+    {
+      "name": "NPC guidance stays at bottom",
+      "ok": true,
+      "data": {
+        "x": 480,
+        "y": 571.625,
+        "width": 320,
+        "height": 120.375,
+        "bottom": 108,
+        "visible": "visible"
+      }
+    },
+    {
+      "name": "room transition starts as a complete full-screen loader",
+      "ok": true,
+      "data": [
+        {
+          "width": 1280,
+          "height": 800,
+          "opacity": "1",
+          "display": "grid",
+          "caption": true,
+          "npcHidden": true
+        },
+        {
+          "width": 1280,
+          "height": 800,
+          "opacity": "1",
+          "display": "grid",
+          "caption": true,
+          "npcHidden": true
+        }
+      ]
+    },
+    {
+      "name": "observatory greeting uses the same bottom anchor",
+      "ok": true,
+      "data": {
+        "x": 455,
+        "y": 629.625,
+        "width": 370,
+        "height": 62.375,
+        "bottom": 108,
+        "visible": "visible"
+      }
+    },
+    {
+      "name": "outside tap cancels chat without sending a message",
+      "ok": true
+    },
+    {
+      "name": "chat cancellation tap does not move the visitor",
+      "ok": true
+    },
+    {
+      "name": "mobile held bubble button remains square",
+      "ok": true,
+      "data": {
+        "x": 326,
+        "y": 628,
+        "width": 48,
+        "height": 48,
+        "bottom": 168,
+        "visible": "visible"
+      }
+    },
+    {
+      "name": "mobile sparkler hold releases on cancellation",
+      "ok": true
+    },
+    {
+      "name": "ski keeps joystick, jump and brake without duplicate controls",
+      "ok": true
+    },
+    {
+      "name": "ski joystick launches and steers",
+      "ok": true
+    },
+    {
+      "name": "walking controls return after skiing",
+      "ok": true
+    },
+    {
+      "name": "no browser errors",
+      "ok": true,
+      "data": []
+    }
+  ],
+  "errors": [],
+  "environment": "Mac Chrome, desktop and mobile touch emulation; physical phone UNKNOWN"
+}

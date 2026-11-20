@@ -15,7 +15,7 @@ test('compact resort groups all base boarding entrances and leaves the park/food
   [[25,-150],[70,-160],[upperLiftEntry.x-8,-174],[upperLiftEntry.x,upperLiftEntry.z-alpineShift]]
  ];
  for(const path of paths)for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i],length=Math.hypot(b[0]-a[0],b[1]-a[1]);for(let d=0;d<=length;d+=.25)for(const side of [-.7,0,.7])assert.ok(canStandAt(a[0]+(b[0]-a[0])*d/length+side,a[1]+(b[1]-a[1])*d/length+alpineShift),'boarding path blocked');}
- assert.equal(resortRides.lift.duration,28);assert.equal(resortRides.upperlift.duration,46);assert.equal(resortRides.ridgelift.duration,38);assert.equal(resortRides.gondola.duration,65);
+ assert.equal(resortRides.lift.duration,35);assert.equal(resortRides.upperlift.duration,68);assert.equal(resortRides.ridgelift.duration,62);assert.equal(resortRides.gondola.duration,95);
 });
 test('new chalet signs leave the full piste width and player clearance open',()=>{
  assert.equal(mountainWayfinders.length,8);

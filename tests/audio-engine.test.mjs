@@ -28,3 +28,18 @@ test('performance music silences background tracks and restores their chosen lev
  engine.show({id:'approved',musicId:'love',startsAt:0,endsAt:134818,state:'playing'},1000);await Promise.resolve();assert.equal(track.gain.gain.value,0);engine.fadeMedia(media,.4);assert.equal(track.gain.gain.value,0);
  engine.show(null,75000);assert.equal(track.gain.gain.value,.4);engine.dispose();
 });
+
+test('three local BGM selections freeze their playheads for a shared performance and restore independently',async t=>{
+ const clients=[];
+ for(let i=0;i<3;i++){
+  const dom=new JSDOM(fs.readFileSync(new URL('../dist/index.html',import.meta.url),'utf8'),{url:'https://winter.test'});t.after(()=>dom.window.close());const w=dom.window;Object.defineProperty(w.document,'hidden',{value:false});
+  w.HTMLMediaElement.prototype.play=function(){Object.defineProperty(this,'paused',{value:false,configurable:true});return Promise.resolve();};w.HTMLMediaElement.prototype.pause=function(){Object.defineProperty(this,'paused',{value:true,configurable:true});};
+  const music=createWinterMusic(w.document,w);w.document.dispatchEvent(new w.Event('pointerdown'));await Promise.resolve();
+  const select=w.document.querySelector('#music-select');select.selectedIndex=i;select.dispatchEvent(new w.Event('change'));await Promise.resolve();music.audio.currentTime=11+i*4;
+  if(i===2)music.engine.settings({muted:true});clients.push({w,music,track:music.track.id,time:music.audio.currentTime});
+ }
+ for(const {w,music} of clients){w.dispatchEvent(new w.CustomEvent('lab:performance-audio',{detail:{active:true}}));assert.equal(music.audio.paused,true);music.audio.dispatchEvent(new w.Event('timeupdate'));music.audio.dispatchEvent(new w.Event('ended'));}
+ assert.equal(new Set(clients.map(c=>c.music.track.id)).size,3);
+ for(const {w,music,track,time} of clients){assert.equal(music.audio.currentTime,time);assert.equal(music.track.id,track);w.dispatchEvent(new w.CustomEvent('lab:performance-audio',{detail:{active:false}}));await Promise.resolve();assert.equal(music.audio.paused,false);assert.equal(music.audio.currentTime,time);assert.equal(music.track.id,track);}
+ assert.equal(clients[2].music.engine.state.muted,true);assert.equal(clients[0].music.engine.state.muted,false);
+});

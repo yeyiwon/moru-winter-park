@@ -1,0 +1,220 @@
+{
+  "environment": "macOS Chrome headless; desktop 1440x900 and touch emulation 390x844; isolated local DB, HTTP presence",
+  "physicalMobileVerified": false,
+  "곤돌라검증": {
+    "readyMs": 13799
+  },
+  "동승검증": {
+    "readyMs": 26150
+  },
+  "reservations": [
+    {
+      "kind": "gondola",
+      "cabin": 1795160176333.3335,
+      "seat": 0,
+      "startedAt": 1795160178356
+    },
+    {
+      "kind": "gondola",
+      "cabin": 1795160176333.3335,
+      "seat": 1,
+      "startedAt": 1795160178469
+    }
+  ],
+  "chat": true,
+  "gondolaPC": {
+    "fps": 58.179055540005564,
+    "p50": 16.69999999999709,
+    "p95": 16.80000000000291,
+    "calls": 146,
+    "triangles": 714264,
+    "geometry": 631,
+    "textures": 20,
+    "terrain": {
+      "resident": 11,
+      "queued": 0,
+      "coarseTiles": 134,
+      "illuminatedTrees": 121,
+      "worker": true
+    },
+    "camera": {
+      "yaw": 0.33,
+      "pitch": 0.48,
+      "distance": 16.5,
+      "fov": 50,
+      "context": null,
+      "manualYaw": false,
+      "revision": 0,
+      "treeOffset": 0,
+      "rendered": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50
+      },
+      "focus": {
+        "x": -126.23592737330048,
+        "y": 16.130713020014426,
+        "z": -174.19895007924208
+      },
+      "eye": {
+        "x": -121.493422777654,
+        "y": 23.750069416448895,
+        "z": -160.35322661441782
+      },
+      "aim": {
+        "x": -126.23592737330048,
+        "y": 16.130713020014426,
+        "z": -174.19895007924208
+      }
+    }
+  },
+  "gondolaMobile": {
+    "fps": 52.37276616162714,
+    "p50": 16.69999999999709,
+    "p95": 33.30000000000291,
+    "calls": 145,
+    "triangles": 536145,
+    "geometry": 630,
+    "textures": 13,
+    "terrain": {
+      "resident": 21,
+      "queued": 0,
+      "coarseTiles": 134,
+      "illuminatedTrees": 121,
+      "worker": true
+    },
+    "camera": {
+      "yaw": 0.33,
+      "pitch": 0.48,
+      "distance": 16.5,
+      "fov": 50,
+      "context": null,
+      "manualYaw": false,
+      "revision": 0,
+      "treeOffset": 0,
+      "rendered": {
+        "yaw": 0.33,
+        "pitch": 0.48,
+        "distance": 16.5,
+        "fov": 50
+      },
+      "focus": {
+        "x": -131.73415164394262,
+        "y": 117.25018957508298,
+        "z": -356.2863696623766
+      },
+      "eye": {
+        "x": -126.99164704829614,
+        "y": 124.86954597151745,
+        "z": -342.4406461975523
+      },
+      "aim": {
+        "x": -131.73415164394262,
+        "y": 117.25018957508298,
+        "z": -356.2863696623766
+      }
+    }
+  },
+  "exits": [
+    {
+      "position": {
+        "x": -180.31270818535478,
+        "y": 900.9636665203453,
+        "z": -1918.700889094145,
+        "yaw": 0.03018634763028438,
+        "mode": "lift",
+        "lean": 0,
+        "tilt": 0,
+        "brake": false,
+        "air": 0,
+        "speed": 2.598996325678537,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      },
+      "reservation": {
+        "kind": "gondola",
+        "cabin": 1795160176333.3335,
+        "seat": 0,
+        "startedAt": 1795160260569
+      }
+    },
+    {
+      "position": {
+        "x": -180.38222143182514,
+        "y": 900.9738274934697,
+        "z": -1921.0029937471368,
+        "yaw": 0.03018634763028438,
+        "mode": "lift",
+        "lean": 0,
+        "tilt": 0,
+        "brake": false,
+        "air": 0,
+        "speed": 3.274550985754379,
+        "gesture": "",
+        "heldItem": "",
+        "balloonTone": -1,
+        "balloonStyle": "classic",
+        "roast": 0
+      },
+      "reservation": {
+        "kind": "gondola",
+        "cabin": 1795160176333.3335,
+        "seat": 1,
+        "startedAt": 1795160261061
+      }
+    }
+  ],
+  "summit": {
+    "fps": 57.898099345135165,
+    "p50": 16.699999999982538,
+    "p95": 16.800000000017462,
+    "calls": 1131,
+    "triangles": 5009517,
+    "geometry": 926,
+    "textures": 34,
+    "terrain": {
+      "resident": 11,
+      "queued": 0,
+      "coarseTiles": 134,
+      "illuminatedTrees": 121,
+      "worker": true
+    },
+    "camera": {
+      "yaw": 3.141592653589793,
+      "pitch": 0.21999999999999997,
+      "distance": 16.5,
+      "fov": 50,
+      "context": null,
+      "manualYaw": true,
+      "revision": 1,
+      "treeOffset": 0,
+      "rendered": {
+        "yaw": 3.1415926535897927,
+        "pitch": 0.22,
+        "distance": 16.5,
+        "fov": 50
+      },
+      "focus": {
+        "x": -180.21921279022578,
+        "y": 901.4149999999998,
+        "z": -1915.6045557319628
+      },
+      "eye": {
+        "x": -180.21921279022578,
+        "y": 905.0157887808342,
+        "z": -1931.7068636459178
+      },
+      "aim": {
+        "x": -180.21921279022578,
+        "y": 901.4149999999998,
+        "z": -1915.6045557319628
+      }
+    }
+  },
+  "failure": "Chat, arrival, seat release or API error check failed",
+  "errors": []
+}

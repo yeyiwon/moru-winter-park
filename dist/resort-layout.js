@@ -18,6 +18,7 @@ export const ridgeLiftPoint=t=>vector(blueprint.ridgeLiftPoint(t));
 export const middleTransfer=blueprint.middleTransfer.map(point),mountainRest=blueprint.mountainRest.map(point);
 export const summitTransfer=blueprint.summitTransfer.map(point),skiStarts=blueprint.skiStarts.map(point),skiRunouts=blueprint.skiRunouts.map(point);
 export const skiNetwork=blueprint.skiNetwork.map(r=>({...r,startZ:r.startZ+alpineShift,finish:r.finish+alpineShift,start:point(r.start),end:point(r.end),points:r.points.map(point),merges:r.merges.map(m=>({...m,z:m.z+alpineShift}))}));
+export const skiArrival={startZ:blueprint.skiArrival.startZ+alpineShift,finishZ:blueprint.skiArrival.finishZ+alpineShift};
 export const skiJumps=blueprint.skiJumps.map(point);
 export const skiJumpCoordinates=blueprint.skiJumpCoordinates;
 export const skiRuns=blueprint.skiRuns.map(p=>({...p,startZ:p.startZ+alpineShift,finish:p.finish+alpineShift}));

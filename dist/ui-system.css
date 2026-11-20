@@ -1,18 +1,18 @@
 /* Clear illuminated glass. The world supplies the panel color; a thin white
    reflection and bright rim provide light without an opaque pearl fill. */
 :root{
- color-scheme:only dark;
+ color-scheme:only light;
  --ui-font:'Winter Sans','Apple SD Gothic Neo',sans-serif;
  --ui-display:var(--ui-font);
- --ui-ink:#f7fbff;--ui-muted:#e0eaf3;--ui-accent:#fff0ca;--ui-text:var(--ui-ink);
- --panel-glass:linear-gradient(135deg,rgba(255,255,255,.22),rgba(236,248,255,.1) 54%,rgba(239,237,255,.16));
- --ui-glass:var(--panel-glass);--ui-solid:#eef5fa;--ui-solid-ink:#263b50;--ui-popover:rgba(223,240,253,.2);--ui-hud:rgba(237,247,255,.16);
- --ui-edge:rgba(237,247,255,.24);--ui-rim:rgba(255,255,255,.52);--ui-divider:rgba(255,255,255,.13);
- --ui-hover:rgba(245,251,255,.16);--ui-selected:rgba(236,246,255,.21);--ui-selected-edge:rgba(255,250,231,.7);
- --ui-field:rgba(255,255,255,.055);--ui-field-strong:rgba(246,252,255,.14);
- --ui-success:#c2f4dd;--ui-success-fill:rgba(87,174,143,.18);--ui-danger:#ffd1d8;--ui-danger-fill:rgba(211,106,130,.16);
- --ui-scrollbar:rgba(232,245,255,.08);--ui-world-label:#f8f7f2;
- --ui-blur:10px;--ui-backdrop:blur(var(--ui-blur)) saturate(120%);--ui-text-shadow:0 1px 3px #07182866;
+ --ui-ink:#1b3048;--ui-muted:#263b50;--ui-accent:#224c70;--ui-text:var(--ui-ink);
+ --panel-glass:linear-gradient(135deg,rgba(249,253,255,.70),rgba(233,244,253,.68) 54%,rgba(241,245,252,.69));
+ --ui-glass:var(--panel-glass);--ui-solid:#eef5fa;--ui-solid-ink:#263b50;--ui-popover:rgba(235,245,254,.94);--ui-hud:rgba(237,247,255,.82);
+ --ui-edge:rgba(52,83,112,.24);--ui-rim:rgba(255,255,255,.7);--ui-divider:rgba(52,83,112,.18);
+ --ui-hover:rgba(255,255,255,.52);--ui-selected:rgba(113,155,196,.26);--ui-selected-edge:rgba(48,92,135,.6);
+ --ui-field:rgba(255,255,255,.32);--ui-field-strong:rgba(255,255,255,.58);
+ --ui-success:#1f5845;--ui-success-fill:rgba(87,174,143,.16);--ui-danger:#843149;--ui-danger-fill:rgba(211,106,130,.16);
+ --ui-scrollbar:rgba(48,73,100,.3);--ui-world-label:#f8f7f2;
+ --ui-blur:10px;--ui-backdrop:blur(var(--ui-blur)) saturate(120%);--ui-text-shadow:none;
  --ui-shadow:inset 0 1px 0 #ffffff80,inset 0 -1px 0 #ffffff14,0 12px 32px #06172824;
  --selection:var(--ui-accent);--choice-fill:var(--ui-field);
  --ui-radius:22px;--ui-control-radius:12px;--ui-control-height:44px;
@@ -146,8 +146,8 @@ body.still *,body.still *::before,body.still *::after{animation-duration:.001ms!
 /* Reduce compositing or transparency without swapping the app's colour theme.
    Windows exposes its transparency preference independently of dark mode. */
 :root[data-render-quality=low]{--ui-blur:4px}
-@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root{--panel-glass:rgba(30,44,62,.94);--ui-blur:0px;--ui-backdrop:none;--ui-hud:rgba(30,44,62,.94);--ui-popover:#26364a}}
-@media(prefers-reduced-transparency:reduce){:root{--panel-glass:#26364a;--ui-blur:0px;--ui-backdrop:none;--ui-hud:#26364a;--ui-popover:#26364a;--ui-text-shadow:none}}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){:root{--panel-glass:rgba(235,245,253,.96);--ui-blur:0px;--ui-backdrop:none;--ui-hud:rgba(235,245,253,.96);--ui-popover:#edf5fc}}
+@media(prefers-reduced-transparency:reduce){:root{--panel-glass:#edf5fc;--ui-blur:0px;--ui-backdrop:none;--ui-hud:#edf5fc;--ui-popover:#edf5fc;--ui-text-shadow:none}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important;scroll-behavior:auto!important}}
 
 
@@ -217,7 +217,7 @@ header .world-meta{left:50%;transform:translateX(-50%);justify-content:center;te
 .studio-header{grid-template-rows:44px auto auto}
 .studio-section-title{grid-column:1/-1;display:flex;align-items:baseline;gap:10px;padding:8px 8px 0;min-height:32px}
 #studio .studio-section-title h2{font-size:14px;line-height:1.5;margin:0;font-weight:500;order:-1}
-#studio .studio-section-title .eyebrow{font-size:9px;line-height:1.5;letter-spacing:.14em;opacity:.6}
+#studio .studio-section-title .eyebrow{font-size:9px;line-height:1.5;letter-spacing:.14em;opacity:1}
 #studio #pane-social .section-intro{margin:0 0 18px;padding:0}
 @media(max-height:500px){.studio-header{grid-template-rows:36px auto auto}.studio-section-title{padding-top:2px;min-height:24px}}
 
@@ -241,6 +241,20 @@ header .world-meta{left:50%;transform:translateX(-50%);justify-content:center;te
 #show-music-status>span:last-child{min-width:0;text-align:right}
 #show-music-status strong,#show-music-status small{display:block;overflow-wrap:anywhere}
 #show-music-status strong{font-size:14px;font-weight:500;line-height:1.5}
-#show-music-status small{margin-top:3px;opacity:.65;font-size:12px}
+#show-music-status small{margin-top:3px;opacity:1;font-size:12px}
 
-#place-card.guide-card #place-description:not(:empty){display:block;max-width:260px;word-break:keep-all;margin:0 auto 8px;padding:9px 12px;border-radius:10px;background:rgba(15,27,41,.82);color:#edf3f7;font-size:12px;line-height:1.55;text-shadow:none;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+:root{--npc-message-bg:var(--ui-hud);--npc-message-ink:var(--ui-ink);--npc-message-rim:var(--ui-rim)}
+#place-card.guide-card:not([hidden]){display:flex;flex-direction:column;align-items:center;gap:14px}
+#place-card.guide-card h2,#place-card.guide-card #place-actions{margin:0}
+#place-card.guide-card #place-description:not(:empty),#ride-hud[data-activity=dining] #ride-label:not(:empty){display:block;width:max-content;max-width:min(320px,calc(100vw - 32px));box-sizing:border-box;word-break:keep-all;margin:0;padding:11px 16px;border:1px solid var(--npc-message-rim);border-radius:16px;background:var(--npc-message-bg);color:var(--npc-message-ink);font-size:12px;line-height:1.6;text-align:center;text-shadow:none;pointer-events:none}
+#ride-hud[data-activity=dining]{flex-direction:column;gap:14px}
+
+/* Frost only the settings surface; keep world colors and other overlays unchanged. */
+#studio{--ui-glass:var(--panel-glass);--ui-blur:18px;--ui-backdrop:blur(18px) saturate(120%)}
+:root[data-render-quality=low] #studio{--ui-backdrop:blur(6px) saturate(120%)}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){#studio{--ui-glass:var(--panel-glass);--ui-backdrop:none}}
+@media(prefers-reduced-transparency:reduce){#studio{--ui-glass:var(--panel-glass);--ui-backdrop:none}}
+
+/* An explicit UI preference never changes the world's lighting or color pipeline. */
+:root[data-ui-theme=dark]{color-scheme:only dark;--ui-ink:#f0f6ff;--ui-muted:#cad6e7;--ui-accent:#b8d9ff;--ui-success:#a5e2c6;--ui-danger:#ffb8c5;--ui-hover:rgba(198,215,239,.16);--ui-selected-edge:rgba(188,213,246,.65);--ui-scrollbar:rgba(209,224,245,.32);--panel-glass:linear-gradient(135deg,rgba(23,31,45,.91),rgba(17,25,38,.89));--ui-glass:var(--panel-glass);--ui-hud:rgba(20,29,43,.88);--ui-popover:#202c3e;--ui-field:rgba(198,215,239,.07);--ui-field-strong:rgba(198,215,239,.12);--ui-selected:rgba(188,208,238,.16);--ui-edge:rgba(201,219,245,.19);--ui-rim:rgba(209,224,245,.28);--ui-divider:rgba(209,224,245,.12);--ui-shadow:inset 0 1px 0 #ffffff0d,0 12px 32px #03081138;--ui-text-shadow:none}
+:root[data-ui-theme=dark] #studio{--ui-glass:var(--panel-glass)}

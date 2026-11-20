@@ -21,7 +21,7 @@ export function roundedRyokanSlab(b,material,width,height,depth,x,y,z,radius=.12
 export function addRyokanCraft(root,m,{room,ceiling}){
  const detail=new T.Group();detail.name='ryokan-crafted-finishes';root.add(detail);
  const b=makeBuilder(detail),cb=makeBuilder(ceiling),fixture=id=>ryokanFixtures.find(o=>o.id===id);
- detail.userData.fixtureIds=['reception','omakase-counter','chef-preparation','tea-table','tatami-table','tea-bench-back','tea-bench-side','footbath','aquarium'];
+ detail.userData.fixtureIds=['reception','omakase-counter','chef-preparation','tea-table','tatami-table','tea-bench-back','tea-bench-side','footbath','aquarium','tatami-cabinet','locker'];
 
  // Four broad kumiko coffers give the room a clear rhythm. Their lowest edge
  // stays above the camera's ceiling-.45m envelope, including the luminous reveal.
@@ -99,20 +99,28 @@ export function addRyokanCraft(root,m,{room,ceiling}){
  const desk=fixture('reception');
  b.box(7.5,.025,.018,m.lamp,desk.x,1.24,desk.z+1.065);
  b.box(7.5,.025,.018,m.brass,desk.x,.17,desk.z+1.065);
- // The aquarium's pedestal receives a stone toe-kick and a narrow cool reveal;
- // the glass, fish and water animation keep their existing geometry and budgets.
- const tank=fixture('aquarium');
- b.box(14.5,.09,3.5,m.darkStone,tank.x,.135,tank.z);
- b.box(13.9,.025,.018,m.coolLamp,tank.x,.24,tank.z-1.81);
- for(const x of [-7.17,7.17])b.box(.075,4.45,.16,m.lightWood,tank.x+x,2.55,tank.z-1.74);
-
+ // Seasonal objects sit on existing cabinetry, keeping the shared walking/seat layout intact.
+ const celadon=new T.MeshPhysicalMaterial({color:'#91aca0',roughness:.26,clearcoat:.7,clearcoatRoughness:.22}),plum=m.cream,petalGeo=new T.SphereGeometry(1,8,5);
+ const vase=(x,y,z,scale=1)=>{const profile=[[.16,0],[.23,.035],[.29,.2],[.27,.42],[.15,.59],[.12,.7],[.105,.71],[.095,.68],[.13,.57],[.24,.4],[.24,.18],[.15,.045]].map(([r,h])=>new T.Vector2(r*scale,h*scale));b.mesh(new T.LatheGeometry(profile,32),celadon,x,y,z);};
+ for(const [x,y,z,s]of [[16,1.39,10,1],[17.8,1.92,-13.5,1.5],[-14.8,.85,7,.7]]){
+  vase(x,y,z,s);
+  for(let j=0;j<3;j++){const a=j*2.1,dx=Math.cos(a)*s*.55,dz=Math.sin(a)*s*.32,top=y+s*(1.6+j*.24);b.tube([[x,y+s*.5,z],[x+dx*.3,y+s*1.08,z+dz*.4],[x+dx,top,z+dz]],.014*s,m.endgrain,undefined,10);
+   for(let k=0;k<2;k++){const px=x+dx*(.6+k*.4),py=y+(top-y)*(.76+k*.24),pz=z+dz*(.6+k*.4);for(let petal=0;petal<5;petal++){const a=petal*Math.PI*.4,p=b.mesh(petalGeo,plum,px+Math.cos(a)*.055*s,py+Math.sin(a)*.055*s,pz);p.scale.set(.06*s,.043*s,.025*s);p.rotation.z=a;}b.oval(m.brass,px,py,pz+.02,.018*s,.018*s,.016*s);}
+  }
+ }
+ // A small pine on the cabinet balances the blossom arrangement with a dark organic silhouette.
+ const cabinet=fixture('locker');roundedRyokanSlab(b,m.darkStone,1.3,.14,.62,cabinet.x,1.98,cabinet.z,.12);
+ b.tube([[cabinet.x,2.03,cabinet.z],[cabinet.x-.1,2.45,cabinet.z],[cabinet.x+.18,2.73,cabinet.z],[cabinet.x+.04,2.95,cabinet.z]],.045,m.endgrain,undefined,12);
+ for(let j=0;j<7;j++){const a=j*2.4,r=.18+(j%3)*.11,x=cabinet.x+Math.cos(a)*r,z=cabinet.z+Math.sin(a)*r*.6,y=2.3+j*.1;b.rod([cabinet.x,y-.1,cabinet.z],[x,y,z],.025,m.endgrain);const foliage=b.mesh(new T.IcosahedronGeometry(1,1),m.green,x,y+.05,z);foliage.scale.set(.3,.13,.2);}
+ // Towel rolls have visible spiral ends rather than flat stacked boxes.
+ for(let j=0;j<3;j++){const x=17.1+j*.38,z=-13.25;b.mesh(new T.CylinderGeometry(.14,.14,.48,16),m.linen,x,2.08,z).rotation.x=Math.PI/2;const pts=Array.from({length:30},(_,i)=>{const a=i*.35,r=.02+i*.0036;return[x+Math.cos(a)*r,2.08+Math.sin(a)*r,z+.245];});b.tube(pts,.006,m.tatamiEdge,undefined,28);}
  // Natural stone coping reads as a crafted bath, with a continuous seat height
  // and a clear open water surface. No loose rocks spill into the walking route.
  const bath=fixture('footbath');
  for(const sx of [-1,1])for(const sz of [-1,1]){
-  const stone=b.oval(m.stone,bath.x+sx*2.65,.4,bath.z+sz*1.73,.23,.13,.22);stone.rotation.y=sx*sz*.23;
+  const stone=b.oval(m.stone,bath.x+sx*4.2,.49,bath.z+sz*2.0,.23,.13,.22);stone.rotation.y=sx*sz*.23;
  }
- for(const z of [-1,1])for(const x of [-1.4,0,1.4])b.box(.018,.012,.32,m.darkStone,bath.x+x,.496,bath.z+z*1.79);
+ for(const z of [-1,1])for(const x of [-3,-1,1,3])b.box(.018,.012,.32,m.darkStone,bath.x+x,.606,bath.z+z*2.1);
  b.box(4.7,.035,.07,m.darkStone,bath.x,.35,bath.z-1.63);
  detail.userData.floorObstacles='existing-fixtures-only';
  return detail;

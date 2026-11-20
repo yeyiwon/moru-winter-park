@@ -36,11 +36,12 @@ test('authenticated appearance save persists only the caller and restores throug
  assert.equal((await call('appearance',base)).status,401);
  const invitation=await seedInvitation(DB);
  const joined=await call('join',{token:invitation,name:'꾸미기',room:'winter-plaza'}),cookie=joined.headers.get('Set-Cookie').split(';')[0],other=await call('join',{token:invitation,name:'다른 친구',room:'winter-plaza'}),otherCookie=other.headers.get('Set-Cookie').split(';')[0];
+ const originalOther=await other.json();
  const look={...base,fur:'#17191e',furTop:'#eeb7cb',accessory:'cat-ears,tail-cat,googly-glasses,eyes-star'};
  assert.equal((await call('appearance',look,cookie,'https://evil.test')).status,403);
  assert.equal((await call('appearance',{...look,accessory:'cat-ears,unknown'},cookie)).status,400);
  const result=await call('appearance',look,cookie);assert.equal(result.status,200);assert.deepEqual(await result.json(),look);
- const self=await (await call('access',undefined,cookie)).json(),peer=await (await call('access',undefined,otherCookie)).json();assert.equal(self.session.accessory,look.accessory);assert.equal(self.session.color,look.fur);assert.equal(self.session.colorTop,look.furTop);assert.equal(peer.session.accessory,'none');assert.equal(peer.session.colorTop,null);await call('appearance',{...look,furTop:null},cookie);assert.equal((await(await call('access',undefined,cookie)).json()).session.colorTop,null);
+ const self=await (await call('access',undefined,cookie)).json(),peer=await (await call('access',undefined,otherCookie)).json();assert.equal(self.session.accessory,look.accessory);assert.equal(self.session.color,look.fur);assert.equal(self.session.colorTop,look.furTop);assert.equal(peer.session.accessory,originalOther.accessory);assert.equal(peer.session.color,originalOther.color);assert.equal(peer.session.colorTop,null);await call('appearance',{...look,furTop:null},cookie);assert.equal((await(await call('access',undefined,cookie)).json()).session.colorTop,null);
 });
 
 import * as THREE from '../dist/vendor/three.module.js';

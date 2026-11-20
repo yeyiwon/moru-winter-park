@@ -5,8 +5,9 @@ import {closeDialog} from './ui-motion.js';
 import {preparePanelOpen,syncPanelState} from './panels.js';
 import {normalizeWardrobe,selectedItems} from './wardrobe.js';
 import {islands,bridges} from './world-layout.js';
-const defaults={light:'#bfd7ef',brightness:100,fur:'#f4eee5',furTop:null,fluff:100,roundness:50,accessory:'none'};
+const defaults={light:'#ffd5a1',brightness:100,fur:'#f4eee5',furTop:null,fluff:100,roundness:50,accessory:'none'};
 let saved={};try{saved=JSON.parse(localStorage.getItem('lab-appearance-v2'))||{};}catch{}
+if(saved.light==='#bfd7ef')saved.light=defaults.light;
 const validColor=v=>/^#[0-9a-f]{6}$/i.test(v);
 const appearance={...defaults,...saved};for(const key of ['light','fur'])if(!validColor(appearance[key]))appearance[key]=defaults[key];
 for(const [key,min,max] of [['brightness',55,150],['fluff',50,100],['roundness',0,100]])appearance[key]=Number.isFinite(+appearance[key])?Math.min(max,Math.max(min,+appearance[key])):defaults[key];
@@ -28,7 +29,7 @@ function update(persist=true){
   try{if(persist)localStorage.setItem('lab-appearance-v2',JSON.stringify(appearance));}catch{document.querySelector('.studio-saved').textContent='설정을 저장할 수 없습니다. 이 화면에서는 계속 적용됩니다.';}
 }
 const customization=createCustomizationUI(appearance,look=>{Object.assign(appearance,look);if(winterSnapshot!==null)winterSnapshot=look.accessory;update();});
-function selectTab(id){const names={map:['MAP','지도'],activities:['ACTIVITIES','활동'],light:['WEATHER & LIGHT','시간·날씨'],fluff:['CUSTOMIZE','커스터마이징'],audio:['SOUND','소리'],social:['INVITE','초대']};document.querySelector('#studio-section-en').textContent=names[id][0];document.querySelector('#studio-section-name').textContent=names[id][1];for(const b of tabs){const active=b.dataset.studio===id;b.setAttribute('aria-selected',active);b.tabIndex=active?0:-1;document.getElementById('pane-'+b.dataset.studio).hidden=!active;}tabs.find(button=>button.dataset.studio===id)?.scrollIntoView?.({block:'nearest',inline:'nearest'});if(id==='fluff')customization.open();else customization.close();window.labPreviewVisible=studio.open&&id==='fluff';window.dispatchEvent(new Event('lab:preview'));}
+function selectTab(id){const names={map:['MAP','지도'],activities:['ACTIVITIES','활동'],light:['DISPLAY & WEATHER','화면·날씨'],fluff:['CUSTOMIZE','커스터마이징'],audio:['SOUND','소리'],social:['ADMIN','관리']};document.querySelector('#studio-section-en').textContent=names[id][0];document.querySelector('#studio-section-name').textContent=names[id][1];for(const b of tabs){const active=b.dataset.studio===id;b.setAttribute('aria-selected',active);b.tabIndex=active?0:-1;document.getElementById('pane-'+b.dataset.studio).hidden=!active;}tabs.find(button=>button.dataset.studio===id)?.scrollIntoView?.({block:'nearest',inline:'nearest'});if(id==='fluff')customization.open();else customization.close();window.labPreviewVisible=studio.open&&id==='fluff';window.dispatchEvent(new Event('lab:preview'));window.dispatchEvent(new CustomEvent('lab:settings-tab',{detail:id}));}
 function openStudio(tab){preparePanelOpen(studio);if(!studio.open)studio.showModal();syncPanelState();selectTab(tab);window.labSound?.('open');}
 function closeStudio(){if(document.body.classList.contains('invite-gate'))return;closeDialog(studio);}
 window.openWinterSettings=openStudio;document.getElementById('hud-map').onclick=()=>openStudio('map');document.getElementById('open-settings').onclick=()=>openStudio('light');document.getElementById('close-studio').onclick=closeStudio;

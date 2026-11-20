@@ -1,0 +1,78 @@
+{
+  "revision": "f14ca97874b2292e4aa4759d974ed5d4dc4b5986",
+  "health": [
+    {
+      "url": "https://moru-winter-park.vercel.app/release.json",
+      "status": 200,
+      "revision": "f14ca97874b2292e4aa4759d974ed5d4dc4b5986"
+    },
+    {
+      "url": "https://moru-winter-park.vercel.app/api/health",
+      "status": 200,
+      "revision": "f14ca97874b2292e4aa4759d974ed5d4dc4b5986"
+    },
+    {
+      "url": "https://winterlight-realtime.winterlight.workers.dev/health",
+      "status": 200,
+      "revision": "f14ca97874b2292e4aa4759d974ed5d4dc4b5986"
+    }
+  ],
+  "assets": [
+    {
+      "file": "observatory-interior.js",
+      "matched": true
+    },
+    {
+      "file": "observatory-guide.js",
+      "matched": true
+    },
+    {
+      "file": "observatory-layout.js",
+      "matched": true
+    },
+    {
+      "file": "observatory-sky.js",
+      "matched": true
+    },
+    {
+      "file": "observatory-catalog.js",
+      "matched": true
+    },
+    {
+      "file": "observatory-astronomy.js",
+      "matched": true
+    },
+    {
+      "file": "castle-lighting.js",
+      "matched": true
+    },
+    {
+      "file": "castle-show-score.js",
+      "matched": true
+    },
+    {
+      "file": "castle-show.js",
+      "matched": true
+    },
+    {
+      "file": "fireworks-request.js",
+      "matched": true
+    },
+    {
+      "file": "interior-layout.js",
+      "matched": true
+    },
+    {
+      "file": "bench-layout.js",
+      "matched": true
+    },
+    {
+      "file": "winter-experience.js",
+      "matched": true
+    },
+    {
+      "file": "ui-system.css",
+      "matched": true
+    }
+  ]
+}

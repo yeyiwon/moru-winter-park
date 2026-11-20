@@ -4,8 +4,8 @@ export const BRAND = Object.freeze({
   name: 'WINTERLIGHT',
   nameKo: '윈터라이트',
   wordmark: 'WINTERLIGHT',
-  revision: 'silver-tree-v1',
-  description: '함께 트리를 꾸미고, 눈 내리는 밤을 걷는 겨울 공간.',
+  revision: 'festival-night-v58',
+  description: '내가 사랑하는 겨울',
   url: 'https://moru-winter-park.vercel.app',
   colors: Object.freeze({ night: '#101c2a', white: '#f6f9fc', silver: '#c4d2df', silverLight: '#edf4fa', ice: '#8bbde5', blue: '#5e87ab', ink: '#344d65' }),
   assets: Object.freeze({
@@ -17,7 +17,9 @@ export const BRAND = Object.freeze({
     icon192: '/brand/icon-192.png',
     icon512: '/brand/icon-512.png',
     appleTouchIcon: '/brand/apple-touch-icon.png',
-    socialImage: '/brand/og-image.png',
-    socialImageAlt: '푸른 겨울밤 바탕의 실버·아이스 블루 로딩 트리와 작은 대문자 WINTERLIGHT',
+    socialImage: '/brand/og-festival-night-v58.png',
+    socialImageWidth: 1672,
+    socialImageHeight: 941,
+    socialImageAlt: '겨울밤 성과 관람차 앞에 금빛과 분홍빛으로 반짝이는 나선형 트리',
   }),
 });

@@ -1,0 +1,226 @@
+{
+  "environment": "macOS Chrome 1280x800 / auto",
+  "physicalWindowsMobile": "UNKNOWN",
+  "stages": {
+    "off": {
+      "fps": 40.48683556878778,
+      "p95": 33.400000000001455,
+      "calls": [
+        1127,
+        1523
+      ],
+      "triangles": [
+        4936614,
+        8091717
+      ],
+      "memory": {
+        "geometries": 920,
+        "textures": 37
+      },
+      "cue": 0,
+      "regions": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "particles": 0
+    },
+    "opening": {
+      "fps": 44.89198640837648,
+      "p95": 33.400000000001455,
+      "calls": [
+        1139,
+        1527
+      ],
+      "triangles": [
+        4961333,
+        8071245
+      ],
+      "memory": {
+        "geometries": 923,
+        "textures": 37
+      },
+      "cue": 0,
+      "regions": [
+        0.6000000238418579,
+        0.18000000715255737,
+        0.18000000715255737,
+        0.30000001192092896,
+        0.1599999964237213,
+        0.550000011920929,
+        0.3499999940395355,
+        0.6000000238418579,
+        0.5,
+        0.30000001192092896
+      ],
+      "particles": 2592,
+      "blackPixels": 0
+    },
+    "middle": {
+      "fps": 16.829213893215574,
+      "p95": 33.400000000001455,
+      "calls": [
+        1127,
+        1530
+      ],
+      "triangles": [
+        4917094,
+        8083005
+      ],
+      "memory": {
+        "geometries": 917,
+        "textures": 36
+      },
+      "cue": 2,
+      "regions": [
+        0.699999988079071,
+        0.4000000059604645,
+        0.75,
+        0.6499999761581421,
+        0.20000000298023224,
+        0.47999998927116394,
+        0.6000000238418579,
+        0.5,
+        0.4000000059604645,
+        0.5
+      ],
+      "particles": 1152,
+      "blackPixels": 0
+    },
+    "golden": {
+      "fps": 41.484443333780774,
+      "p95": 33.400000000001455,
+      "calls": [
+        1129,
+        1516
+      ],
+      "triangles": [
+        4918994,
+        8026434
+      ],
+      "memory": {
+        "geometries": 917,
+        "textures": 36
+      },
+      "cue": 1,
+      "regions": [
+        0.6949132084846497,
+        0.4550867974758148,
+        0.4482196271419525,
+        0.37923696637153625,
+        0.16178037226200104,
+        0.6512717008590698,
+        0.4512717127799988,
+        0.7038151025772095,
+        0.6461849212646484,
+        0.6461849212646484
+      ],
+      "particles": 1728,
+      "blackPixels": 0
+    },
+    "finale": {
+      "fps": 49.970017989206454,
+      "p95": 33.400000000001455,
+      "calls": [
+        1129,
+        1516
+      ],
+      "triangles": [
+        4918994,
+        8026434
+      ],
+      "memory": {
+        "geometries": 917,
+        "textures": 36
+      },
+      "cue": 4,
+      "regions": [
+        0.800000011920929,
+        0.699999988079071,
+        0.699999988079071,
+        0.6000000238418579,
+        0.25999999046325684,
+        0.8500000238418579,
+        0.6499999761581421,
+        0.8999999761581421,
+        0.800000011920929,
+        0.75
+      ],
+      "particles": 5976,
+      "blackPixels": 0
+    }
+  },
+  "arcs": {
+    "capacity": 51840,
+    "active": 1152,
+    "arcVertices": 576
+  },
+  "notice": {
+    "offset": 0,
+    "countdown": "none"
+  },
+  "repeats": [
+    {
+      "memory": {
+        "geometries": 917,
+        "textures": 36
+      },
+      "active": false,
+      "points": 0,
+      "visible": false
+    },
+    {
+      "memory": {
+        "geometries": 917,
+        "textures": 36
+      },
+      "active": false,
+      "points": 0,
+      "visible": false
+    },
+    {
+      "memory": {
+        "geometries": 917,
+        "textures": 36
+      },
+      "active": false,
+      "points": 0,
+      "visible": false
+    },
+    {
+      "memory": {
+        "geometries": 917,
+        "textures": 36
+      },
+      "active": false,
+      "points": 0,
+      "visible": false
+    },
+    {
+      "memory": {
+        "geometries": 917,
+        "textures": 36
+      },
+      "active": false,
+      "points": 0,
+      "visible": false
+    },
+    {
+      "memory": {
+        "geometries": 917,
+        "textures": 36
+      },
+      "active": false,
+      "points": 0,
+      "visible": false
+    }
+  ],
+  "errors": []
+}

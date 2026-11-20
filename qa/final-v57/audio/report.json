@@ -1,0 +1,112 @@
+{
+  "checks": [
+    {
+      "name": "requested Ballet 01 is the first and default BGM",
+      "ok": true
+    },
+    {
+      "name": "ethereal-winter-ballet-01 user supplied BGM plays as one voice",
+      "ok": true,
+      "data": {
+        "src": "ethereal-winter-ballet-01.mp3",
+        "time": 2.634667,
+        "duration": 132.528,
+        "rms": 0.040043268033822875,
+        "voices": 1
+      }
+    },
+    {
+      "name": "winter-jazz-artmylife user supplied BGM plays as one voice",
+      "ok": true,
+      "data": {
+        "src": "winter-jazz-artmylife.mp3",
+        "time": 2.628387,
+        "duration": 122.016,
+        "rms": 0.07500150171886771,
+        "voices": 1
+      }
+    },
+    {
+      "name": "love decoded audible signal and one voice",
+      "ok": true,
+      "data": {
+        "src": "/audio/show/love.mp3",
+        "currentTime": 13.534167,
+        "voices": 1,
+        "background": [
+          0.00009186612442135811,
+          0
+        ],
+        "rms": 0.15798782009989332,
+        "label": "불꽃놀이 음악LoveAtlasAudio · 공연 중",
+        "notice": "밤하늘에 불꽃놀이가 펼쳐지고 있어요"
+      }
+    },
+    {
+      "name": "love replaces background music",
+      "ok": true
+    },
+    {
+      "name": "love title stays in sound settings",
+      "ok": true
+    },
+    {
+      "name": "wedding-entrance decoded audible signal and one voice",
+      "ok": true,
+      "data": {
+        "src": "/audio/show/wedding-entrance.mp3",
+        "currentTime": 8.07098,
+        "voices": 1,
+        "background": [
+          0,
+          0
+        ],
+        "rms": 0.15142341256256853,
+        "label": "불꽃놀이 음악Wedding EntranceAtlasAudio · 공연 중",
+        "notice": "밤하늘에 불꽃놀이가 펼쳐지고 있어요"
+      }
+    },
+    {
+      "name": "wedding-entrance replaces background music",
+      "ok": true
+    },
+    {
+      "name": "wedding-entrance title stays in sound settings",
+      "ok": true
+    },
+    {
+      "name": "trepak decoded audible signal and one voice",
+      "ok": true,
+      "data": {
+        "src": "/audio/show/trepak.m4a",
+        "currentTime": 7.543164,
+        "voices": 1,
+        "background": [
+          0.00007461581117240712,
+          0
+        ],
+        "rms": 0.17960322138559814,
+        "label": "불꽃놀이 음악트레팍 · 호두까기 인형Pyotr Ilyich Tchaikovsky · Philip Milman · 공연 중",
+        "notice": "밤하늘에 불꽃놀이가 펼쳐지고 있어요"
+      }
+    },
+    {
+      "name": "trepak replaces background music",
+      "ok": true
+    },
+    {
+      "name": "trepak title stays in sound settings",
+      "ok": true
+    },
+    {
+      "name": "end releases recording and restores background",
+      "ok": true
+    },
+    {
+      "name": "no browser errors",
+      "ok": true,
+      "data": []
+    }
+  ],
+  "errors": []
+}

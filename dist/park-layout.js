@@ -9,11 +9,12 @@ export const sparklerKiosk={x:-24,z:-14,yaw:.8};
 export const sparklerEntrance={x:sparklerKiosk.x+Math.sin(sparklerKiosk.yaw)*3.7,z:sparklerKiosk.z+Math.cos(sparklerKiosk.yaw)*3.7};
 export const balloonCart={x:8,z:20,yaw:-.35};
 export const parkFountain={x:-5,z:20};
+export const parkFlowerbeds=[{...parkFountain,rx:2.1,rz:1.1,tone:0},{x:-31,z:-10,rx:2.4,rz:1.3,tone:1},{x:28,z:22,rx:2.2,rz:1.2,tone:2}];
 export const parkObstacles=[
  {x:carouselLayout.x,z:carouselLayout.z,r:carouselLayout.r},{x:ferrisDimensions.center.x,z:ferrisDimensions.center.z,r:6},
  ...parkStalls.map(p=>({x:p.x,z:p.z,r:2.6})),...parkBenches.map(p=>({x:p.x,z:p.z,r:2.1})),
  ...parkLamps.map(p=>({x:p.x,z:p.z,r:.43})),{x:-24,z:-14,r:2.4},{...balloonCart,r:1.35},
- {...parkFountain,rx:2.1,rz:1.1}
+ ...parkFlowerbeds
 ];
 const p=point=>[point.x,point.z];
 export const ferrisForecourt=ferrisGroundPoint(0,15);

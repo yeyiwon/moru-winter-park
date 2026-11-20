@@ -14,7 +14,7 @@ export async function operationsAPI(request,DB,self,admin,now,env={}){
   if(realtimeConfigured(env))try{realtime=await realtimeRPC(env,{action:'metrics'});service='healthy';}catch{}
   const backups=await DB.prepare('SELECT COUNT(*) AS count,MAX(created_at) AS latestAt FROM decoration_backups').bind().first();
   const trend=await DB.prepare('SELECT CAST(created_at/300000 AS INTEGER)*300000 AS bucket,COUNT(*) AS count FROM operational_errors WHERE created_at>? GROUP BY bucket ORDER BY bucket LIMIT 12').bind(now-3600000).all();
-  return reply({settings,counts:counts.results,errors:errors.results,errorTrend:trend.results,realtime,service,latencyMs:Math.round(performance.now()-began),revision:typeof __WINTER_REVISION__==='string'?__WINTER_REVISION__:'local',transport:realtimeConfigured(env)?'WebSocket':'HTTP polling',roomCapacity:worldCapacity(env),backup:{decorations:backups,fullDatabase:'UNKNOWN'}});
+  return reply({database:'healthy',protocol:'winter-v1',settings,counts:counts.results,errors:errors.results,errorTrend:trend.results,realtime,service,latencyMs:Math.round(performance.now()-began),revision:typeof __WINTER_REVISION__==='string'?__WINTER_REVISION__:'local',transport:realtimeConfigured(env)?'WebSocket':'HTTP polling',roomCapacity:worldCapacity(env),backup:{decorations:backups,fullDatabase:'UNKNOWN'}});
  }
  if(request.method!=='POST')return reply({error:'지원하지 않는 요청입니다.'},405);
  if(!await rateLimit(DB,'operations:'+self.id,now,12))return reply({error:'잠시 후 다시 시도해 주세요.'},429);

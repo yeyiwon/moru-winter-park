@@ -11,12 +11,23 @@ async function fixture(t,{url='https://winter.test/',fetch}={}){
 test('public, old invite and old room URLs autojoin the same world without token or forced profile',async t=>{
  for(const suffix of ['', '#invite=bad','?room=legacy-private']){
  let joins=0;const {w,d}=await fixture(t,{url:'https://winter.test/'+suffix,fetch:async(url,init)=>{if(url==='/api/access')return{admin:false,session:null};if(url==='/api/join'){joins++;const b=JSON.parse(init.body);assert.equal(b.token,undefined);assert.ok(b.name);return{id:'guest',name:b.name,room:'winter-plaza'};}return{people:[],count:1};}});
- assert.equal(joins,1);assert.equal(w.labSocialJoined,true);assert.ok(!d.body.classList.contains('invite-gate'));assert.equal(d.querySelector('#join-form').hidden,true);assert.equal(d.querySelector('#profile-form').hidden,true);assert.equal(d.querySelector('#owner-signin').hidden,false);assert.equal(w.location.hash,'');assert.equal(w.location.search,'');
+ assert.equal(joins,1);assert.equal(w.labSocialJoined,true);assert.ok(!d.body.classList.contains('invite-gate'));assert.equal(d.querySelector('#join-form').hidden,true);assert.equal(d.querySelector('#profile-form').hidden,true);assert.equal(d.querySelector('#owner-signin').hidden,true);assert.equal(d.querySelector('#tab-social').hidden,true);assert.equal(w.location.hash,'');assert.equal(w.location.search,'');
  }
 });
 test('admin path requires server owner identity and never joins an unauthenticated owner route',async t=>{
  let joins=0;const {w,d}=await fixture(t,{url:'https://winter.test/admin',fetch:async url=>{if(url==='/api/join')joins++;return{admin:false,signedIn:false,session:null};}});
  assert.equal(joins,0);assert.equal(w.labAdmin,false);assert.equal(d.querySelector('#owner-signin').hidden,false);assert.ok(d.querySelector('#owner-signin').href.endsWith('return_to=%2Fadmin'));assert.ok(d.body.classList.contains('invite-gate'));
+});
+test('public and owner interfaces contain no invitation workflow or guest classification',async t=>{
+ for(const admin of [false,true]){
+  const calls=[];const {w,d}=await fixture(t,{url:'https://winter.test/'+(admin?'admin':''),fetch:async url=>{
+   calls.push(url);if(url==='/api/access')return{admin,session:null};if(url==='/api/join')return{id:'person',name:admin?'YIWON':'눈꽃',room:'winter-plaza'};return{people:[],count:1};
+  }});
+  assert.equal(w.labSocialJoined,true);assert.equal(d.querySelector('#tab-social').hidden,!admin);assert.equal(d.querySelector('#tab-social').textContent,'관리');
+  assert.equal(d.querySelector('#invite-form,#admin-invite,#room-share,#invite-list'),null);
+  assert.equal(d.querySelector('#visitor-color'),null);assert.equal(d.querySelector('#visitor-name').type,'hidden');
+  assert.doesNotMatch(d.body.textContent,/게스트|초대/);assert.ok(!calls.includes('/api/invite'));
+ }
 });
 test('public chat and explicit nickname editing preserve one session; owner leaving does not gate guests',async t=>{
  let joins=0,name='눈꽃';const {w,d}=await fixture(t,{fetch:async(url,init)=>{const b=init.body?JSON.parse(init.body):{};if(url==='/api/access')return{admin:false,session:{id:'guest',name,room:'winter-plaza'}};if(url==='/api/join'){joins++;return{id:'guest',name,room:'winter-plaza'};}if(url==='/api/name'){name=b.name;return{name};}if(url==='/api/chat')return{name,message:b.message,at:Date.now()};return{people:[],count:1};}});
@@ -133,4 +144,28 @@ test('a ski start or jump tapped entirely between frames is consumed once',async
  tap('push');let pose=experience.update(.016,{});assert.equal(pose.launched,true);assert.ok(pose.speed>0);
  tap('jump');pose=experience.update(.016,{});assert.ok(pose.air>0);
  w.dispatchEvent(new w.Event('blur'));tap('left');experience.update(.016,{});experience.cancel();
+});
+
+
+test('outside pointer cancels an unsent chat and does not begin world travel',async t=>{
+ let sent=0;const {w,d}=await fixture(t,{fetch:async url=>{if(url==='/api/chat')sent++;return url==='/api/access'?{admin:false}:{people:[],count:1};}});
+ const toggle=d.querySelector('#chat-toggle'),input=d.querySelector('#chat-input'),canvas=d.querySelector('#park-canvas');let worldDown=0;canvas.addEventListener('pointerdown',()=>worldDown++);
+ toggle.click();input.value='보내지 않을 초안';input.dispatchEvent(new w.Event('pointerdown',{bubbles:true}));assert.equal(d.querySelector('#chat-form').hidden,false);
+ canvas.dispatchEvent(new w.Event('pointerdown',{bubbles:true,cancelable:true}));assert.equal(d.querySelector('#chat-form').hidden,true);assert.equal(input.value,'');assert.equal(sent,0);assert.equal(worldDown,0);assert.equal(toggle.getAttribute('aria-expanded'),'false');
+ toggle.click();assert.equal(input.value,'');input.value='다른 버튼으로 취소';d.querySelector('#open-settings').dispatchEvent(new w.Event('pointerdown',{bubbles:true}));assert.equal(d.querySelector('#chat-form').hidden,true);assert.equal(input.value,'');assert.equal(sent,0);
+});
+
+test('one Enter commits Korean composition and sends exactly once; speaker identity stays distinct',async t=>{
+ const sent=[];const {w,d}=await fixture(t,{fetch:async(url,init)=>{
+  if(url==='/api/access')return{admin:false};
+  if(url==='/api/chat'){const message=JSON.parse(init.body).message;sent.push(message);return{name:'눈꽃',message,at:Date.now()};}
+  return{people:[],count:1};
+ }});
+ const input=d.querySelector('#chat-input'),toggle=d.querySelector('#chat-toggle'),enter=extra=>input.dispatchEvent(new w.KeyboardEvent('keydown',{key:'Enter',bubbles:true,cancelable:true,...extra}));
+ toggle.click();input.value='겨우';input.dispatchEvent(new w.CompositionEvent('compositionstart'));enter({isComposing:true,keyCode:229});assert.equal(sent.length,0);
+ input.value='겨울';input.dispatchEvent(new w.CompositionEvent('compositionend',{data:'울'}));input.dispatchEvent(new w.Event('input'));await tick();assert.deepEqual(sent,['겨울']);
+ assert.equal(d.querySelector('#chat-log p').dataset.author,'self');assert.match(d.querySelector('.chat-author').textContent,/눈꽃 \(나\)/);
+ w.dispatchEvent(new w.CustomEvent('lab:visitors',{detail:[{id:'peer',name:'눈꽃',chat:'같은 이름',chatAt:Date.now()}]}));assert.equal(d.querySelector('#chat-log p:last-child').dataset.author,'peer');
+ toggle.click();input.value='완성';input.dispatchEvent(new w.CompositionEvent('compositionstart'));input.dispatchEvent(new w.CompositionEvent('compositionend'));enter({keyCode:229});enter({repeat:true});await tick();assert.deepEqual(sent,['겨울','완성']);
+ toggle.click();input.value='취소';input.dispatchEvent(new w.CompositionEvent('compositionstart'));enter({isComposing:true});input.dispatchEvent(new w.CompositionEvent('compositionend'));d.querySelector('#park-canvas').dispatchEvent(new w.Event('pointerdown',{bubbles:true,cancelable:true}));await tick();assert.equal(sent.length,2);
 });

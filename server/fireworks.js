@@ -10,7 +10,7 @@ const active=show=>show&&['scheduled','playing'].includes(show.state);
 function describeShow(show,now){
  if(!show)return null;
  const endsAt=Number.isFinite(show.endsAt)?show.endsAt:show.startsAt+showLength;
- const nextRequestAt=Number.isFinite(show.nextRequestAt)?show.nextRequestAt:endsAt+fireworkConfig.cooldownMs;
+ const nextRequestAt=Number.isFinite(show.nextRequestAt)?Math.min(show.nextRequestAt,endsAt+fireworkConfig.cooldownMs):endsAt+fireworkConfig.cooldownMs;
  return {...show,endsAt,nextRequestAt,revision:show.revision||1,
   state:show.state==='stopped'?'stopped':now<show.startsAt?'scheduled':now<endsAt?'playing':'finished'};
 }
@@ -67,17 +67,17 @@ export async function fireworksAPI(request,DB,self,admin,now){
  if(active(existing)||!admin&&existing&&now<existing.nextRequestAt)return existingResponse(existing);
 
  const track=selectShowTrack(crypto.getRandomValues(new Uint8Array(1))[0]);
- const startsAt=now+fireworkConfig.leadMs,endsAt=startsAt+track.duration*1000;
+ const startsAt=now+(action==='start'?0:fireworkConfig.leadMs),endsAt=startsAt+track.duration*1000;
  const show={id:crypto.randomUUID(),musicId:track.id,duration:track.duration,timelineVersion:showTimelineVersion,startsAt,endsAt,nextRequestAt:endsAt+fireworkConfig.cooldownMs,
-  seed:crypto.getRandomValues(new Uint32Array(1))[0],state:'scheduled',revision:1};
+  seed:crypto.getRandomValues(new Uint32Array(1))[0],state:startsAt<=now?'playing':'scheduled',revision:1};
  // One atomic claim across Workers. JSON timestamps also preserve the reservation
  // after stop; older records without these fields retain a conservative cooldown.
+ const cooldownEnd="COALESCE(json_extract(world_settings.payload,'$.endsAt'),json_extract(world_settings.payload,'$.startsAt')+?) + ?";
  const ends="COALESCE(json_extract(world_settings.payload,'$.stoppedAt'),json_extract(world_settings.payload,'$.endsAt'),json_extract(world_settings.payload,'$.startsAt')+?)";
  const result=await DB.prepare(`INSERT INTO world_settings(id,payload,updated_at) VALUES(?,?,?)
   ON CONFLICT(id) DO UPDATE SET payload=excluded.payload,updated_at=excluded.updated_at
-  WHERE ${ends}<=? AND (?=1 OR COALESCE(json_extract(world_settings.payload,'$.nextRequestAt'),
-  json_extract(world_settings.payload,'$.startsAt')+?)<=?)`)
-  .bind(showKey,JSON.stringify(show),now,showLength,now,admin?1:0,showLength+fireworkConfig.cooldownMs,now).run();
+  WHERE ${ends}<=? AND (?=1 OR MIN(COALESCE(json_extract(world_settings.payload,'$.nextRequestAt'),${cooldownEnd}),${cooldownEnd})<=?)`)
+  .bind(showKey,JSON.stringify(show),now,showLength,now,admin?1:0,showLength,fireworkConfig.cooldownMs,showLength,fireworkConfig.cooldownMs,now).run();
  if(!result.meta?.changes)return existingResponse(await readFireworkShow(DB,now));
  return reply({...snapshot(show,now),created:true,merged:false});
 }

@@ -1,0 +1,112 @@
+{
+  "checks": [
+    {
+      "name": "entry shows no automatic quiz",
+      "ok": true
+    },
+    {
+      "name": "upper opaque shutter removed and no park seats remain",
+      "ok": true
+    },
+    {
+      "name": "guide greeting stays brief and leaves quiz closed",
+      "ok": true
+    },
+    {
+      "name": "physical exit uses existing E interaction",
+      "ok": true
+    },
+    {
+      "name": "camera reaches dome and sky",
+      "ok": true
+    },
+    {
+      "name": "real catalogue has an observable constellation now",
+      "ok": true,
+      "data": {
+        "id": "lyra",
+        "name": "거문고자리",
+        "v": [
+          0.2715353289980421,
+          0.9624284443656735,
+          0.00023362746968738803
+        ]
+      }
+    },
+    {
+      "name": "gaze briefly reveals constellation lines",
+      "ok": true,
+      "data": 0.24
+    },
+    {
+      "name": "constellation lines fade instead of remaining on",
+      "ok": true
+    },
+    {
+      "name": "Milky Way plane crosses open observable sky",
+      "ok": true,
+      "data": [
+        0.508647807038492,
+        0.8555327656297855,
+        0.09664934210217843
+      ]
+    },
+    {
+      "name": "one quiz action at central console",
+      "ok": true
+    },
+    {
+      "name": "server grades and records the answer",
+      "ok": true
+    },
+    {
+      "name": "private journal keeps explanation and source",
+      "ok": true
+    },
+    {
+      "name": "two guests share museum presence",
+      "ok": true
+    },
+    {
+      "name": "same site and server observation time",
+      "ok": true,
+      "data": [
+        {
+          "site": {
+            "latitude": 37.5665,
+            "longitude": 126.978
+          },
+          "time": 1795151261399.346,
+          "meteor": 24591113
+        },
+        {
+          "site": {
+            "latitude": 37.5665,
+            "longitude": 126.978
+          },
+          "time": 1795151261463.6318,
+          "meteor": 24591113
+        }
+      ]
+    },
+    {
+      "name": "interior chat and own bubble work",
+      "ok": true
+    },
+    {
+      "name": "real touch dispatch rotates sky camera",
+      "ok": true
+    },
+    {
+      "name": "exit restores outdoor camera",
+      "ok": true
+    },
+    {
+      "name": "reentry restores indoor camera",
+      "ok": true
+    }
+  ],
+  "errors": [],
+  "environment": "Mac Chrome; mobile touch emulation; physical Windows/Edge/iOS/Android UNKNOWN",
+  "failure": "page.waitForFunction: Timeout 30000ms exceeded.\n    at /Users/yeiwon/Documents/Codex/winter-alpine-v48/scripts/verify-observatory-experience-v55.mjs:41:84"
+}

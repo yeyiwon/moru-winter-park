@@ -56,16 +56,16 @@ export function sharedSeatPose(reservation,now){
 }
 
 export function gondolaSeat(index){const side=index<3?-1:1;return{x:side*1.4,z:(index%3-1)*1.9,yaw:-side*Math.PI/2};}
-export const gondolaTransitionMs=5000;
+export const gondolaTransitionMs=1000;
 export const rideClockStart=r=>r.kind==='gondola'?(r.cabin??r.startedAt):r.startedAt;
 export const gondolaExiting=r=>r.kind==='gondola'&&r.startedAt-r.cabin>=(resortRides.gondola.boardingSeconds+resortRides.gondola.duration)*1000;
-export function canExitGondola(r,now){const p=sharedSeatPose(r,now);return !!p&&r.kind==='gondola'&&p.arrived&&!p.transition&&p.dwellRemaining>=gondolaTransitionMs/1000+2;}
+export function canExitGondola(r,now){const p=sharedSeatPose(r,now);return !!p&&r.kind==='gondola'&&p.arrived&&!p.transition&&p.dwellRemaining>=gondolaTransitionMs/1000+.5;}
 // A whole number of cabins completes one loop: a fractional last cabin used to wrap
 // below the boarding cabin and appear as a duplicate at every departure.
 const gondolaCycleMs=sampleCableRide(resortRides.gondola,0).cycle*1000;
-export const gondolaSchedule=Object.freeze({count:9,cycle:gondolaCycleMs,interval:gondolaCycleMs/9,boarding:12000});
+export const gondolaSchedule=Object.freeze({count:26,cycle:gondolaCycleMs,interval:gondolaCycleMs/26,boarding:(resortRides.gondola.boardingSeconds-resortRides.gondola.doorSeconds-.5)*1000});
 export function gondolaCabinsAt(now,out=[]){
  const step=Math.floor(now/gondolaSchedule.interval);
  for(let i=0;i<gondolaSchedule.count;i++){const turn=step-i,cabin=out[i]||(out[i]={});cabin.id=((turn%gondolaSchedule.count)+gondolaSchedule.count)%gondolaSchedule.count;cabin.startedAt=turn*gondolaSchedule.interval;}out.length=gondolaSchedule.count;return out;
 }
-export function gondolaAtStation(now){const startedAt=Math.floor(now/gondolaSchedule.interval)*gondolaSchedule.interval;return{cabin:startedAt,startedAt,open:now-startedAt>=2000&&now-startedAt<gondolaSchedule.boarding-gondolaTransitionMs,wait:gondolaSchedule.interval-(now-startedAt)};}
+export function gondolaAtStation(now){const startedAt=Math.floor(now/gondolaSchedule.interval)*gondolaSchedule.interval,phase=now-startedAt,door=resortRides.gondola.doorSeconds*1000,open=phase>=door&&phase<gondolaSchedule.boarding-gondolaTransitionMs;return{cabin:startedAt,startedAt,open,wait:open?0:phase<door?door-phase:gondolaSchedule.interval-phase+door};}

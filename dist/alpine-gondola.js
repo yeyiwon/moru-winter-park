@@ -1,5 +1,5 @@
 import * as T from './vendor/three.module.js';
-import {gondolaStations} from './mountain-layout.js';
+import {gondolaStations,gondolaSupports} from './mountain-layout.js';
 import {mergeFinish} from './architecture-kit.js';
 import {resortRides,alpineHeight} from './resort-blueprint.js';
 import {alpineShift} from './resort-layout.js';
@@ -32,7 +32,8 @@ export function createGondola(parent){
  const proxy=new T.InstancedMesh(unitSphere,white,48);proxy.name='distant-gondola-cabins';proxy.userData.skiTerrain=true;root.add(proxy);
  const cablePositions=[];for(let i=1;i<route.points.length;i++){const a=route.points[i-1],b=route.points[i];const yaw=Math.atan2(b[0]-a[0],b[2]-a[2]);for(const offset of [0,12])cablePositions.push(a[0]-Math.cos(yaw)*offset,a[1]+5.35,a[2]+Math.sin(yaw)*offset,b[0]-Math.cos(yaw)*offset,b[1]+5.35,b[2]+Math.sin(yaw)*offset);}
  const cableGeometry=new T.BufferGeometry();cableGeometry.setAttribute('position',new T.Float32BufferAttribute(cablePositions,3));root.add(new T.LineSegments(cableGeometry,new T.LineBasicMaterial({color:'#344b60'})));
- for(let i=16;i<route.points.length-1;i+=16){const p=route.points[i],next=route.points[i+1],yaw=Math.atan2(next[0]-p[0],next[2]-p[2]),tower=new T.Group(),cx=p[0]-Math.cos(yaw)*6,cz=p[2]+Math.sin(yaw)*6,ground=alpineHeight(cx,cz);tower.position.set(cx,ground,cz);tower.rotation.y=yaw;root.add(tower);const h=p[1]+4.9-ground;rod(tower,new T.Vector3(0,0,0),new T.Vector3(0,h,0),.3);box(tower,dark,0,h,0,14,.4,.6);for(const x of [-6,6])box(tower,silver,x,h+.2,0,.45,.35,2);}
+ // The shared layout excludes the entire piste width; do not regenerate posts from cable samples.
+ for(const p of gondolaSupports.slice(1,-1)){const yaw=gondolaStations[0].yaw,tower=new T.Group(),cx=p[0]-Math.cos(yaw)*6,cz=p[2]+Math.sin(yaw)*6,ground=alpineHeight(cx,cz);tower.name='gondola-support';tower.position.set(cx,ground,cz);tower.rotation.y=yaw;root.add(tower);const h=p[1]+4.9-ground;rod(tower,new T.Vector3(0,0,0),new T.Vector3(0,h,0),.3);box(tower,dark,0,h,0,14,.4,.6);for(const x of [-6,6])box(tower,silver,x,h+.2,0,.45,.35,2);}
  for(const [index,p]of gondolaStations.entries()){
   const station=new T.Group();station.name=index?'cloud-summit-terminal':'cloud-base-terminal';station.position.set(p.x,p.y,p.z);station.rotation.y=p.yaw;root.add(station);
   for(const x of [-16,-4,4])for(const z of [-5,5])box(station,silver,x,3.4,z,.24,6.8,.24);

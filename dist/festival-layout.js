@@ -3,7 +3,7 @@ export const festivalLayout={x:-45,z:4,r:15};
 export const candyStall={x:-50,z:11};
 export const festivalDestinations=[
  {id:'festival-photo',name:'겨울 포토존',x:-49,z:3,kind:'photo',view:{distance:13,pitch:.18,yaw:-1.4,lookHeight:-.3}},
- {id:'candyfloss',name:'솜사탕',x:candyStall.x,z:candyStall.z+3,kind:'snack',approach:[[ferrisGroundPoint(0,15).x,ferrisGroundPoint(0,15).z],[-43,11],[-46,14]]},
+ {id:'candyfloss',name:'솜사탕 부스',x:candyStall.x,z:candyStall.z+3,kind:'snack',approach:[[ferrisGroundPoint(0,15).x,ferrisGroundPoint(0,15).z],[-43,11],[-46,14]]},
 ];
 export const festivalLamps=[[-54,1],[-35,-23]].map(([x,z])=>({x,z}));
 // Rest stops remain inside the compact park, clear of both boarding approaches.

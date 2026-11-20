@@ -1,8 +1,26 @@
-# v55 천문대·공연 안정화 — 배포 준비
+# v58 배포 준비
 
-공식 주소와 기존 Sites / Vercel / Cloudflare realtime 연결을 유지한다. v54 천문대와 v55 안내자·시야·레이저·설정 곡명·검은 블록 수정을 동일 SHA로 배포한다. 최종 배포 ID·운영 검사·데이터 보존 결과는 배포 후 갱신한다.
+설산·탑승·커마·료칸·공연·NPC·출입·실시간 수정은 로컬 검증을 진행했다. 기존 D1 schema/env/권한을 유지하고 Cloudflare realtime → Sites API → Vercel 순으로 같은 소스를 배포한다. 운영 전환·정합성 결과는 실제 확인 후 기록한다. 실패 시 v55 SHA `f14ca97874b2292e4aa4759d974ed5d4dc4b5986`의 Sites/Vercel 버전으로 되돌리고 realtime도 같은 릴리스로 복원한다. 코드 rollback에 DB 삭제/restore를 결합하지 않는다. [검증 범위](ryokan-world-v57.md).
 
-배포 전 원본 행을 세션 내에서 읽어 비교 기준으로 보관했다: 소원 7, 장식 144, 개인 퀴즈 기록 5, 소유자 1. 이 내용이나 인증 정보는 저장소에 넣지 않는다. DB migration·유료 서비스 추가·접근 정책 변경은 없다. [변경·검증 범위](observatory-show-v55.md).
+# v55 운영 반영 — 2026-11-20
+
+공식 주소: **https://moru-winter-park.vercel.app/** · 관리자: **https://moru-winter-park.vercel.app/admin**
+
+| 대상 | 결과 |
+| --- | --- |
+| GitHub main / 운영 소스 | `f14ca97874b2292e4aa4759d974ed5d4dc4b5986` |
+| Sites | 버전 **66**, `appgdep_6affd4c4eed88191a751201bc546a0f2`, succeeded |
+| Vercel | `dpl_CksenWtrVNRcEzHQvtsqtP4qxX52`, READY, 공식 도메인 연결 |
+| Cloudflare realtime | `winterlight-realtime`, version `c741d43a-f3e2-4527-bb34-5ef1cd14e214` |
+| 버전 일치 | frontend release.json / API health / realtime health 모두 운영 SHA 일치 |
+| 새 파일 일치 | 천문대·안내자·공연·상호작용·UI 14개 파일이 검증한 빌드와 SHA-256 일치 |
+| 환경 설정 | 기존 Sites env revision **4**, realtime 연결·허용 origin·소유자 인증 유지 |
+
+v54 천문대와 v55 안내자·상부 시야·레이저·설정 곡명·검은 블록 수정을 반영했다. DB migration·유료 서비스 추가·접근 정책 변경은 없다. 배포 직전 활성 공연·좌석 예약이 없었으며, 직후 소원 7/7·장식 144/144·퀴즈 기록 5/5·소유자 1/1의 원본 행이 모두 그대로 보존됨을 확인했다. 개인 행 내용이나 인증 정보는 저장소에 남기지 않았다.
+
+전체 자동 검사 **550/550**, 318개 JS 모듈, Worker·Vercel·realtime 빌드와 자산 예산 PASS. 로컬 실제 천문대 20개, 실제 두 음원 8개, 공연 PC/모바일 화면 4구간·6회 반복 PASS. [변경·화면·성능](observatory-show-v55.md) · [배포 파일 검사](../qa/experience-v55/production-integrity.json).
+
+운영 천문대 기능 18개는 통과했으나 반복 출입 검사에서 HTTP 출입 확정 뒤 예전 WebSocket 위치가 남아 즉시 퇴장이 409로 거절되는 문제를 재현했다. 이 실패는 성공 처리하지 않으며 v56에서 서버의 확정 이동을 별도로 동기화하여 후속 검증한다. 실제 Windows·Galaxy·iPhone 및 현재 소유자 계정의 로그인 재검증은 UNKNOWN이다. 기존 소유자 정보와 권한 차단은 유지했다.
 
 ---
 

@@ -1,3 +1,4 @@
+import {aquariumLayout} from './ryokan-aquarium-layout.js';
 import {observatoryLayout} from './observatory-layout.js';
 import {diningSeats} from './ryokan-service.js';
 // Room-local architecture and collision share these dimensions. World positions are
@@ -8,7 +9,7 @@ export const interiorRooms={
  ryokan:{id:'ryokan',name:'료칸',x:400,z:0,rx:21,rz:17,floor,ceiling:11.5,shape:'rectangle',entry:{x:400,z:5.3},exit:{x:400,z:15.2},arrivalYaw:Math.PI,ambient:'#e9c79e'},
 };
 export const ryokanFixtures=[
- {id:'aquarium',x:-12,z:14.7,rx:7.3,rz:1.85},
+ {id:'aquarium',x:aquariumLayout.x,z:aquariumLayout.z,rx:aquariumLayout.width/2+.45,rz:aquariumLayout.depth/2+.12},
  {id:'reception',x:13,z:10,rx:4,rz:1.1},
  {id:'tea-table',x:-13,z:7,rx:2.25,rz:1.1},
  {id:'tea-bench-back',x:-13,z:10,rx:3.5,rz:.65},
@@ -18,7 +19,7 @@ export const ryokanFixtures=[
  {id:'sauna-bench-back',x:-13,z:-13.7,rx:5,rz:1},
  {id:'sauna-bench-side',x:-18,z:-8.5,rx:1,rz:4.2},
  {id:'sauna-stove',x:-8.6,z:-11,rx:1.05,rz:1.05},
- {id:'footbath',x:0,z:-11,rx:2.9,rz:2},
+ {id:'footbath',x:0,z:-11,rx:4.6,rz:2.35},
  {id:'omakase-counter',x:12,z:0,rx:4,rz:.9},
  {id:'chef-preparation',x:12,z:-2.3,rx:4,rz:1.4},
  ...[10,12,14].map(x=>({id:'dining-seat-'+x,x,z:2.1,r:.55})),
@@ -34,24 +35,19 @@ export const ryokanFixtures=[
 export const interiorInteractions=[
  {id:'exit-museum',name:'밖으로',room:'museum',kind:'exit',x:577,z:0},
  {id:'observatory-quiz',name:'퀴즈 풀기',room:'museum',kind:'quiz-station',x:600+observatoryLayout.quiz.x,z:observatoryLayout.quiz.z,r:observatoryLayout.quiz.r},
- {id:'observatory-guide',name:'별지기',room:'museum',kind:'guide',x:600+observatoryLayout.guide.x+1.8,z:observatoryLayout.guide.z,r:2.2},
- {id:'interior-aquarium',name:'수족관',room:'ryokan',kind:'aquarium',x:388,z:11.8},
  {id:'exit-ryokan',name:'밖으로',room:'ryokan',kind:'exit',x:400,z:15.2},
  {id:'interior-tea',name:'차',room:'ryokan',kind:'tea',x:387,z:8.7},
  {id:'interior-sauna',name:'찜질',room:'ryokan',kind:'sauna',x:387,z:-11.7},
  {id:'interior-rest',name:'다다미',room:'ryokan',kind:'rest',x:410,z:-5},
  {id:'interior-dining',name:'오마카세',room:'ryokan',kind:'dining',x:412,z:3.7},
- {id:'interior-footbath',name:'족욕',room:'ryokan',kind:'footbath',x:400,z:-7.8},
 ];
 // Interaction markers occupy free floor; activity poses deliberately sit on furniture.
 // The companion's seated origin is .82 m above the cushion/bench/rim surface.
 export const interiorActivityPoses={
- 'interior-aquarium':{standing:true,room:'ryokan',x:388,y:.95,z:11.8,yaw:0,view:{distance:8,pitch:.12,yaw:Math.PI,lookHeight:1.2}},
  'interior-tea':{room:'ryokan',x:387,y:1.4975,z:10,yaw:Math.PI,seatY:.6775},
- 'interior-sauna':{room:'ryokan',x:387,y:1.56,z:-13.7,yaw:0,seatY:.74},
+ 'interior-sauna':{room:'ryokan',x:386.06,y:1.56,z:-13.7,yaw:0,seatY:.74},
  'interior-rest':{room:'ryokan',x:409,y:1.13,z:-6,yaw:Math.PI,seatY:.31},
  'interior-dining':{room:'ryokan',x:412,y:1.57,z:2.1,yaw:Math.PI,seatY:.75},
- 'interior-footbath':{room:'ryokan',x:400,y:1.31,z:-9.05,yaw:Math.PI,seatY:.49},
 };
 export function interiorActivityPoseValid(x,y,z){return Number.isFinite(x+y+z)&&[...Object.values(interiorActivityPoses),...diningSeats].some(p=>Math.hypot(x-p.x,z-p.z)<.22&&Math.abs(y-p.y)<.2);}
 export function interiorAt(x,z){if(!Number.isFinite(x+z))return null;return Object.values(interiorRooms).find(r=>Math.abs(x-r.x)<=r.rx+.6&&Math.abs(z-r.z)<=r.rz+.6)||null;}

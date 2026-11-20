@@ -56,7 +56,7 @@ export function createCustomizationUI(initial,commit){
  // social.js owns validation and persistence; only its confirmed result ends a save.
  const previewName=root.querySelector('#preview-name'),profile=root.querySelector('.wardrobe-profile'),profileForm=root.querySelector('#profile-form'),profileInput=root.querySelector('#profile-name'),profileEdit=root.querySelector('#profile-edit'),profileCancel=root.querySelector('#profile-cancel'),profileStatus=root.querySelector('#profile-status'),selfName=document.querySelector('#self-name');
  let profileEditing=false,profileComposing=false;
- const confirmedName=()=>selfName?.textContent||'게스트';
+ const confirmedName=()=>selfName?.textContent||'몽실이';
  const syncName=()=>{previewName.textContent=confirmedName();if(!profileEditing)profileInput.value=confirmedName();};
  function renderProfile(){
   const state=profileForm.dataset.state||'',saving=state==='saving';

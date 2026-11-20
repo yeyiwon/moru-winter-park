@@ -55,20 +55,17 @@ function tree(cx,cy,width,{mono=false,small=false,onWhite=false,strokeScale=1,id
  const strokes=mono?curve(12):curve((small?24:5)*strokeScale,`opacity=".48" filter="url(#${id}-halo)"`)+curve((small?18:2.2)*strokeScale,`opacity=".8" filter="url(#${id}-soft)"`)+curve((small?12:1.05)*strokeScale,'opacity=".96"');
  return defs+`<g data-symbol="loading-tree" transform="translate(${cx-width/2} ${cy-width*.45}) scale(${width/600})">${strokes}</g>`;
 }
-const background=(w,h,id)=>`<defs><linearGradient id="${id}" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#18344e"/><stop offset=".48" stop-color="#142c43"/><stop offset="1" stop-color="#0c1c30"/></linearGradient></defs><rect width="${w}" height="${h}" fill="url(#${id})"/>`;
-const stars=()=>'<g fill="#c7e3fa" opacity=".28"><circle cx="254" cy="143" r="1"/><circle cx="943" cy="178" r="1.1"/><circle cx="1006" cy="434" r=".8"/><circle cx="199" cy="446" r=".7"/><circle cx="835" cy="101" r=".65"/><circle cx="371" cy="506" r=".75"/></g>';
-function social(word){return start(1200,630,`${word} silver and ice blue loading tree`)+background(1200,630,'sky')+stars()+tree(600,270,280,{strokeScale:2.1,id:'social-tree'})+wordmark(word,600,422)+'</svg>';}
 function icon(small=false,square=false){return start(600,600,`${BRAND.name} silver blue loading tree icon`)+`<rect width="600" height="600" rx="${square?0:116}" fill="${white}"/>`+tree(300,300,520,{small,onWhite:true,strokeScale:small?1:3,id:'icon-tree'})+'</svg>';}
 const primary=start(600,540,`${BRAND.name} original loading tree`)+tree(300,270,600)+'</svg>';
 const compact=start(600,540,`${BRAND.name} compact loading tree`)+tree(300,270,600,{small:true})+'</svg>';
 const monochrome=start(600,540,`${BRAND.name} monochrome loading tree`)+tree(300,270,600,{mono:true})+'</svg>';
-const files=new Map([['logo-primary.svg',primary],['logo-compact.svg',compact],['logo-monochrome.svg',monochrome],['favicon.svg',icon(true)],['icon.svg',icon()],['og-image.svg',social(BRAND.wordmark)]]);
+const files=new Map([['logo-primary.svg',primary],['logo-compact.svg',compact],['logo-monochrome.svg',monochrome],['favicon.svg',icon(true)],['icon.svg',icon()]]);
 for(const [name,body]of files)await writeFile(join(output,name),body+'\n');
 if(!process.argv.includes('--svg-only')){
  const require=createRequire(import.meta.url);let sharp;
  try{sharp=require('sharp');}catch{sharp=require(require.resolve('sharp',{paths:[process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES]}));}
- const exports=[['favicon-32.png',icon(true),32,32],['icon-192.png',icon(),192,192],['icon-512.png',icon(),512,512],['apple-touch-icon.png',icon(false,true),180,180],['og-image.png',social(BRAND.wordmark),1200,630]];
+ const exports=[['favicon-32.png',icon(true),32,32],['icon-192.png',icon(),192,192],['icon-512.png',icon(),512,512],['apple-touch-icon.png',icon(false,true),180,180]];
  for(const [name,body,w,h]of exports)await sharp(Buffer.from(body),{density:192}).resize(w,h).png({compressionLevel:9}).toFile(join(output,name));
 }
-await writeFile(join(output,'README.md'),`# Silver / ice-blue identity\n\n- Live wordmark: ${BRAND.wordmark}. The name is confirmed by the user.\n- Palette: cool white ${white}, silver ${silver}, ice blue ${ice}, steel blue ${blue}. No gold in brand assets.\n- Static symbol: the exact loadingTreePath() curve, with original 600:540 proportions and uniform scaling. No added star or altered silhouette. Compact exports only adjust stroke weight for legibility.\n- Share image: 1200×630, winter-blue background, silver loading tree and small uppercase text. No subtitle.\n- Wordmarks use outlined bundled Pretendard 500, so SVG and PNG are identical without external fonts.\n- Manual regeneration: node scripts/build-brand-assets.mjs. Committed assets are consumed by normal builds.\n`);
+await writeFile(join(output,'README.md'),`# Silver / ice-blue identity\n\n- Live wordmark: ${BRAND.wordmark}. The name is confirmed by the user.\n- Palette: cool white ${white}, silver ${silver}, ice blue ${ice}, steel blue ${blue}. No gold in brand assets.\n- Static symbol: the exact loadingTreePath() curve, with original 600:540 proportions and uniform scaling. No added star or altered silhouette. Compact exports only adjust stroke weight for legibility.\n- Share image: ${BRAND.assets.socialImageWidth}×${BRAND.assets.socialImageHeight}, ${BRAND.assets.socialImage}. User-selected original PNG; no crop, text, or regeneration. This script only exports icons/logos.\n- Wordmarks use outlined bundled Pretendard 500, so SVG and PNG are identical without external fonts.\n- Manual regeneration: node scripts/build-brand-assets.mjs. Committed assets are consumed by normal builds.\n`);
 console.log(`Wrote silver/ice-blue assets to ${output}`);

@@ -3,6 +3,8 @@ import {ownerSession} from './owner-auth.js';
 import {rateLimit,json} from './community-api.js';
 import {invitationToken,publicRoom,spaceURL} from '../dist/space-links.js';
 import {validateNickname} from '../dist/nickname.js';
+import {createGuestName} from '../dist/guest-names.js';
+import {randomAppearance} from '../dist/wardrobe.js';
 const encoder=new TextEncoder();
 export const hex=bytes=>Array.from(bytes,b=>b.toString(16).padStart(2,'0')).join('');
 export const digest=async value=>hex(new Uint8Array(await crypto.subtle.digest('SHA-256',encoder.encode(value))));
@@ -68,25 +70,25 @@ export async function joinWorld(request,env,now){
  if(body.room&&body.room!==publicRoom)return json({error:'하나의 공개 겨울 광장만 운영합니다.'},400);
  if(!await rateLimit(env.DB,'join:'+await digest(request.headers.get('cf-connecting-ip')||'shared'),now,120))return json({error:'잠시 뒤 다시 입장해 주세요.'},429);
  const admin=await isOwner(request,env),session=await sessionInfo(request,env,now,admin);
- if(session.blocked)return json({error:'이 게스트의 입장이 제한되었습니다.'},403);
+ if(session.blocked)return json({error:'입장이 제한되었습니다.'},403);
  let invitation=null;
  if(body.token!=null){invitation=await validInvitation(env.DB,body.token,now);if(!invitation)return json({error:'만료되었거나 취소된 초대입니다. 새 링크를 받아 주세요.'},403);}
  if(!admin&&session.self?.kicked_at&&(!invitation||invitation.createdAt<=session.self.kicked_at))return json({error:'관리자에 의해 이 세션의 입장이 제한되었습니다.'},403);
- let name;try{name=validateNickname(body.name||session.self?.name||'크림토끼');}catch(e){return json({error:e.message},400);}
+ let name;try{name=validateNickname(body.name||session.self?.name||createGuestName());}catch(e){return json({error:e.message},400);}
  // Keep one of the twelve slots available so the owner can enter and moderate a full guest world.
  const authType=admin?'owner':'public',inviteId=null,capacity=worldCapacity(env);
  if(realtimeConfigured(env)){try{await realtimeRPC(env,{action:'metrics'});}catch{return json({error:'공유 서버를 복구하고 있어요. 잠시 뒤 다시 입장해 주세요.'},503);}}
  const capacitySQL=sql=>sql.replaceAll('<12','<'+capacity).replaceAll('<11','<'+(capacity-1));
  if(session.self){
   const changed=await env.DB.prepare(capacitySQL("UPDATE visitors SET room=?,name=?,seen=?,invite_id=?,admitted_at=?,kicked_at=0,auth_type=? WHERE id=? AND (SELECT COUNT(*) FROM visitors WHERE room=? AND seen>? AND admitted_at>0 AND id<>?)<12 AND (?=1 OR (SELECT COUNT(*) FROM visitors WHERE room=? AND seen>? AND admitted_at>0 AND auth_type<>'owner' AND id<>?)<11) AND (? IS NULL OR EXISTS(SELECT id FROM world_invites WHERE id=? AND revoked_at IS NULL AND expires_at>?))")).bind(publicRoom,name,now,inviteId,now,authType,session.id,publicRoom,now-20000,session.id,admin?1:0,publicRoom,now-20000,session.id,inviteId,inviteId,now).run();
-  if(!changed.meta?.changes)return json({error:`광장이 가득 찼습니다. 잠시 뒤 다시 입장해 주세요. 게스트 정원은 ${capacity-1}명입니다.`},409);
+  if(!changed.meta?.changes)return json({error:`광장이 가득 찼습니다. 잠시 뒤 다시 입장해 주세요.`},409);
   if(!session.valid){await env.DB.prepare("UPDATE visitors SET x=0,y=.95,z=30,yaw=0,region='outdoors',mode='',chat='',chat_at=0 WHERE id=?").bind(session.id).run();await env.DB.prepare('DELETE FROM ride_seats WHERE visitor=?').bind(session.id).run();}
   return json(publicSession(await env.DB.prepare('SELECT * FROM visitors WHERE id=?').bind(session.id).first()));
  }
- const color=/^#[0-9a-f]{6}$/i.test(body.color||'')?body.color:'#f4eee5';
+ const look=randomAppearance(),color=/^#[0-9a-f]{6}$/i.test(body.color||'')?body.color:look.fur;
  const secret=hex(crypto.getRandomValues(new Uint8Array(32))),id=await digest(secret);
- const result=await env.DB.prepare(capacitySQL("INSERT INTO visitors(id,room,name,color,accessory,x,z,yaw,seen,gesture,gesture_at,invite_id,admitted_at,auth_type) SELECT ?,?,?,?,'none',0,30,0,?,'',0,?,?,? WHERE (SELECT COUNT(*) FROM visitors WHERE room=? AND seen>? AND admitted_at>0)<12 AND (?=1 OR (SELECT COUNT(*) FROM visitors WHERE room=? AND seen>? AND admitted_at>0 AND auth_type<>'owner')<11) AND (? IS NULL OR EXISTS(SELECT id FROM world_invites WHERE id=? AND revoked_at IS NULL AND expires_at>?))")).bind(id,publicRoom,name,color,now,inviteId,now,authType,publicRoom,now-20000,admin?1:0,publicRoom,now-20000,inviteId,inviteId,now).run();
- if(!result.meta?.changes)return json({error:`입장할 수 없습니다. 현재 게스트 정원은 ${capacity-1}명이며 관리자 자리는 별도로 확보합니다.`},409);
+ const result=await env.DB.prepare(capacitySQL("INSERT INTO visitors(id,room,name,color,accessory,fluff,roundness,x,z,yaw,seen,gesture,gesture_at,invite_id,admitted_at,auth_type) SELECT ?,?,?,?,?,?,?,0,30,0,?,'',0,?,?,? WHERE (SELECT COUNT(*) FROM visitors WHERE room=? AND seen>? AND admitted_at>0)<12 AND (?=1 OR (SELECT COUNT(*) FROM visitors WHERE room=? AND seen>? AND admitted_at>0 AND auth_type<>'owner')<11) AND (? IS NULL OR EXISTS(SELECT id FROM world_invites WHERE id=? AND revoked_at IS NULL AND expires_at>?))")).bind(id,publicRoom,name,color,look.accessory,look.fluff,look.roundness,now,inviteId,now,authType,publicRoom,now-20000,admin?1:0,publicRoom,now-20000,inviteId,inviteId,now).run();
+ if(!result.meta?.changes)return json({error:`광장이 가득 찼습니다. 잠시 뒤 다시 입장해 주세요.`},409);
  // A callback grant belongs to the prior login session. Keep the newly generated
  // random gameplay cookie and atomically move only that verified owner grant.
  // Invitation tokens and their validation remain completely separate.

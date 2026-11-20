@@ -1,0 +1,72 @@
+{
+  "environment": "Mac Chrome GPU; 1280x800 desktop",
+  "label": "final",
+  "physicalWindowsGalaxy": "UNKNOWN",
+  "views": [
+    {
+      "id": "12-middle-concourse",
+      "x": 381.79999999999995,
+      "z": -978.8,
+      "eye": [
+        381.79999999999995,
+        318.7388902095669,
+        -978.8
+      ],
+      "aim": [
+        406.79999999999995,
+        318.7388902095669,
+        -1013.8
+      ],
+      "fps": 60.11864474264029,
+      "p95": 16.799999999999272,
+      "calls": 190,
+      "triangles": 552581,
+      "terrain": {
+        "resident": 27,
+        "queued": 0,
+        "coarseTiles": 134,
+        "illuminatedTrees": 94,
+        "worker": true
+      },
+      "quality": {
+        "quality": "high",
+        "pixelRatio": 1,
+        "samples": 2,
+        "shadowSize": 2048,
+        "shadowInterval": 0.041666666666666664
+      },
+      "memory": {
+        "geometries": 650,
+        "textures": 23
+      }
+    }
+  ],
+  "errors": [],
+  "routes": [
+    {
+      "id": "main",
+      "length": 2335.8282713140957,
+      "drop": 900
+    },
+    {
+      "id": "easy",
+      "length": 483.66059927921316,
+      "drop": 137.91000000000003
+    },
+    {
+      "id": "curve",
+      "length": 1421.3330639030382,
+      "drop": 458.42018426355054
+    },
+    {
+      "id": "advanced",
+      "length": 1498.5332336243473,
+      "drop": 561.9099995
+    },
+    {
+      "id": "explore",
+      "length": 992.233344491273,
+      "drop": 390.187623993887
+    }
+  ]
+}

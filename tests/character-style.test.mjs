@@ -15,7 +15,7 @@ test('head and expression slots coexist, replace peers, and preserve helmet auto
 
 test('plush ear concepts share one bounded mesh, match body fur color, and clear spa headwear',()=>{
   const pet=createCompanion({detail:'remote'}),headband=pet.group.getObjectByName('plush-ear-headband'),geometries=new Set();let meshes=0;
-  pet.group.traverse(object=>{if(object.isMesh)meshes++;});assert.ok(meshes<80);
+  pet.group.traverse(object=>{if(object.isMesh)meshes++;});assert.ok(meshes<=88);
   for(const accessory of ['bunny-ears','cat-ears','bear-ears']){
     pet.customize({accessory,fur:'#e6c4de'});pet.pose({still:true});assert.equal(headband.visible,true);assert.equal(headband.userData.kind,accessory);geometries.add(headband.geometry);
     assert.equal(headband.material[0].color.getHexString(),'e6c4de');

@@ -1,0 +1,84 @@
+{
+  "checks": [
+    {
+      "name": "aquarium wall covers 92 percent and has real 8m depth",
+      "ok": true
+    },
+    {
+      "name": "chef message separated from seating actions",
+      "ok": true,
+      "data": {
+        "gap": 14,
+        "background": "rgba(237, 247, 255, 0.82)"
+      }
+    },
+    {
+      "name": "aquarium has no viewing popup",
+      "ok": true
+    },
+    {
+      "name": "mobile chef message separated from seating actions",
+      "ok": true,
+      "data": {
+        "gap": 14
+      }
+    },
+    {
+      "name": "browser and shader errors",
+      "ok": true,
+      "data": []
+    }
+  ],
+  "frames": [
+    {
+      "name": "desktop hall",
+      "fps": 60.0035148502423,
+      "p95": 16.700000000000728,
+      "p99": 16.799999999999272,
+      "calls": 77,
+      "triangles": 447488,
+      "memory": {
+        "geometries": 662,
+        "textures": 21
+      }
+    },
+    {
+      "name": "desktop panorama",
+      "fps": 54.73366005587874,
+      "p95": 33.30000000000291,
+      "p99": 33.400000000001455,
+      "calls": 70,
+      "triangles": 437624,
+      "memory": {
+        "geometries": 662,
+        "textures": 21
+      }
+    },
+    {
+      "name": "mobile portrait",
+      "fps": 60.00200843542879,
+      "p95": 16.700000000000728,
+      "p99": 16.799999999999272,
+      "calls": 76,
+      "triangles": 351154,
+      "memory": {
+        "geometries": 594,
+        "textures": 14
+      }
+    },
+    {
+      "name": "mobile landscape",
+      "fps": 60.00200843542873,
+      "p95": 16.700000000004366,
+      "p99": 16.799999999999272,
+      "calls": 94,
+      "triangles": 282692,
+      "memory": {
+        "geometries": 594,
+        "textures": 14
+      }
+    }
+  ],
+  "errors": [],
+  "environment": "Mac Chrome GPU; touch viewport emulation, physical phones/Windows UNKNOWN"
+}

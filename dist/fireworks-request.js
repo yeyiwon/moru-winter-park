@@ -5,7 +5,7 @@ import {showTrack} from './show-tracks.js';
 export function fireworkRequestState(show,now){
  if(!show)return {phase:'idle',remaining:0};
  const endsAt=show.endsAt??show.startsAt+fireworkConfig.duration*1000;
- const nextRequestAt=show.nextRequestAt??endsAt+fireworkConfig.cooldownMs;
+ const nextRequestAt=Math.min(show.nextRequestAt??Infinity,endsAt+fireworkConfig.cooldownMs);
  if(show.state!=='stopped'&&now<show.startsAt)return {phase:'scheduled',remaining:Math.ceil((show.startsAt-now)/1000)};
  if(show.state!=='stopped'&&now<endsAt)return {phase:'playing',remaining:Math.ceil((endsAt-now)/1000)};
  if(now<nextRequestAt)return {phase:'cooldown',remaining:Math.ceil((nextRequestAt-now)/1000)};
@@ -53,6 +53,8 @@ export function installFireworkRequests({win=window,doc=document,now=serverNow}=
   let info=!joined?'공간에 입장하면 신청할 수 있어요.':state.phase==='scheduled'?state.remaining+'초 후 시작':state.phase==='cooldown'?'다음 신청까지 '+format(state.remaining):'';
   if(error&&time<errorUntil)info=error;
   text(status,info);status.hidden=!info;
+  win.winterFireworkRequestState={disabled:button.disabled,label:label.textContent,status:info};
+  win.dispatchEvent(new win.CustomEvent('lab:firework-request-state',{detail:win.winterFireworkRequestState}));
   // Only a future scheduled start produces an announcement. Resuming a tab or
   // closing an editor after the start cannot replay a stale countdown.
   const announce=joined&&!doc.hidden&&!doc.body.classList.contains('studio-open')&&(state.phase==='playing'||state.phase==='scheduled'&&state.remaining<=Math.ceil(fireworkConfig.leadMs/1000));
@@ -85,7 +87,7 @@ export function installFireworkRequests({win=window,doc=document,now=serverNow}=
   return refreshing;
  }
  async function requestShow(){
-  if(busy||!win.labSocialJoined)return;
+  if(disposed||busy||!win.labSocialJoined||fireworkRequestState(show,now()).phase!=='idle')return;
   busy=true;error='';refresh();const sent=Date.now();
   try{
    const response=await win.fetch('/api/fireworks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'request'}),signal:AbortSignal.timeout(8000)});
@@ -94,6 +96,7 @@ export function installFireworkRequests({win=window,doc=document,now=serverNow}=
   }catch(e){error=e.message;errorUntil=now()+6000;}
   finally{busy=false;refresh();}
  }
+ win.requestWinterFireworks=requestShow;
  listen(button,'click',requestShow);
  listen(win,'lab:fireworks',event=>receive(event.detail));
  listen(win,'lab:room',()=>{refresh();refreshFromServer();});
@@ -104,7 +107,7 @@ export function installFireworkRequests({win=window,doc=document,now=serverNow}=
  listen(win,'pagehide',()=>{win.clearTimeout(timer);notice.hidden=true;});
  listen(win,'pageshow',()=>{refresh();refreshFromServer();});
  refresh();if(win.labSocialJoined)refreshFromServer();
- return {button,notice,refresh,dispose(){disposed=true;win.clearTimeout(timer);listeners.forEach(remove=>remove());button.remove();status.remove();notice.remove();musicInfo.remove();}};
+ return {button,notice,refresh,dispose(){disposed=true;if(win.requestWinterFireworks===requestShow){delete win.requestWinterFireworks;delete win.winterFireworkRequestState;}win.clearTimeout(timer);listeners.forEach(remove=>remove());button.remove();status.remove();notice.remove();musicInfo.remove();}};
 }
 
 if(typeof window!=='undefined'&&typeof document!=='undefined')installFireworkRequests();

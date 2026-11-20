@@ -4,7 +4,7 @@ import {JSDOM} from 'jsdom';
 import * as T from '../dist/vendor/three.module.js';
 import {tileGeometry} from '../dist/mountain-tile.js';
 import {alpineHeight,skiRuns} from '../dist/mountain-layout.js';
-import {sharedSeatPose,gondolaSchedule,gondolaAtStation,canExitGondola} from '../dist/ride-seats.js';
+import {sharedSeatPose,gondolaSchedule,gondolaAtStation,canExitGondola,gondolaTransitionMs} from '../dist/ride-seats.js';
 import {resortRides} from '../dist/resort-layout.js';
 import {sampleCableRide} from '../dist/winter-rides.js';
 import {createChatViewport,chatShortcut,bubbleDuration} from '../dist/chat-policy.js';
@@ -27,22 +27,22 @@ test('piste entry height stays continuous when crossing the old restoration boun
 });
 test('gondola boarding is closed until doors open and stops early enough to seat every guest',()=>{
  const cabin=gondolaSchedule.interval*1000;
- assert.equal(gondolaAtStation(cabin+1000).open,false);assert.equal(gondolaAtStation(cabin+3000).open,true);assert.equal(gondolaAtStation(cabin+8000).open,false);
+ assert.equal(gondolaAtStation(cabin+100).open,false);assert.equal(gondolaAtStation(cabin+1500).open,true);assert.equal(gondolaAtStation(cabin+4000).open,false);
  for(let seat=0;seat<6;seat++){
-  const r={kind:'gondola',cabin,seat,startedAt:cabin+3000};let last=sharedSeatPose(r,r.startedAt);
+  const r={kind:'gondola',cabin,seat,startedAt:cabin+1500};let last=sharedSeatPose(r,r.startedAt);
   assert.equal(last.transition,'boarding');
-  for(let ms=20;ms<=5000;ms+=20){const p=sharedSeatPose(r,r.startedAt+ms);assert.ok(Math.hypot(p.x-last.x,p.y-last.y,p.z-last.z)<.13);last=p;}
+  for(let ms=4;ms<=gondolaTransitionMs;ms+=4){const p=sharedSeatPose(r,r.startedAt+ms);assert.ok(Math.hypot(p.x-last.x,p.y-last.y,p.z-last.z)<.13);last=p;}
   assert.equal(last.transition,'');
   const arrival=cabin+(resortRides.gondola.boardingSeconds+resortRides.gondola.duration)*1000;
   assert.equal(canExitGondola(r,arrival),false);assert.equal(canExitGondola(r,arrival+2500),true);
   const exiting={...r,startedAt:arrival+2500};last=sharedSeatPose(exiting,exiting.startedAt);
-  for(let ms=20;ms<=5000;ms+=20){const p=sharedSeatPose(exiting,exiting.startedAt+ms);assert.ok(Math.hypot(p.x-last.x,p.y-last.y,p.z-last.z)<.13);last=p;}
+  for(let ms=4;ms<=gondolaTransitionMs;ms+=4){const p=sharedSeatPose(exiting,exiting.startedAt+ms);assert.ok(Math.hypot(p.x-last.x,p.y-last.y,p.z-last.z)<.13);last=p;}
   assert.equal(last.transitionDone,true);assert.ok(Math.hypot(last.x-resortRides.gondola.exit[0],last.z-resortRides.gondola.exit[2])<.001);
  }
 });
 test('gondola turnaround starts and ends at rest',()=>{
  const r=resortRides.gondola,start=r.boardingSeconds+r.duration+r.arrivalSeconds;
- for(const t of [start,start+9.5]){const a=sampleCableRide(r,t-.001),b=sampleCableRide(r,t+.001);assert.ok(Math.hypot(a.x-b.x,a.z-b.z)<.0001);}
+ for(const t of [start,start+r.turnSeconds]){const a=sampleCableRide(r,t-.001),b=sampleCableRide(r,t+.001);assert.ok(Math.hypot(a.x-b.x,a.z-b.z)<.0001);}
 });
 test('chat retains input ownership until the real keyboard viewport restores',()=>{
  const dom=new JSDOM('<input><button>game</button>',{pretendToBeVisual:true}),w=dom.window,d=w.document,input=d.querySelector('input');
@@ -63,7 +63,7 @@ test('remote labels require nearby 3D player and camera positions with hysteresi
  assert.equal(nearbyLabel({subject,camera,player:{x:0,y:0,z:36},pixels:30,visible:true}),true);
 });
 test('only approved recordings play, BGM order is preserved, each finale ends before its coda',()=>{
- assert.deepEqual(showTracks.map(t=>t.id),['love','wedding-entrance']);assert.ok(Array.from({length:256},(_,i)=>selectShowTrack(i)).every(t=>showTracks.includes(t)));
- assert.deepEqual(winterTracks.slice(0,6).map(t=>t.id),['ethereal-winter-ballet-02','cinematic-christmas-piano-strings-bells','winter-waltz','winter-jazz','waltz-of-snowflakes','wonderful-night']);
- for(const t of showTracks){const score=createFireworkScore(51,t.id),coda=t.sections.find(s=>s.afterglow).start;assert.ok(score.every(s=>s.at+s.flight<coda));for(const pattern of ['comet','fountain','star','willow','double','peony','chrysanthemum'])assert.ok(score.some(s=>s.pattern===pattern),pattern);}
+ assert.deepEqual(showTracks.map(t=>t.id),['love','wedding-entrance','trepak']);assert.ok(Array.from({length:256},(_,i)=>selectShowTrack(i)).every(t=>showTracks.includes(t)));
+ assert.deepEqual(winterTracks.slice(0,6).map(t=>t.id),['ethereal-winter-ballet-01','cinematic-christmas-piano-strings-bells','winter-waltz','winter-jazz-artmylife','waltz-of-snowflakes','wonderful-night']);
+ for(const t of showTracks){const score=createFireworkScore(51,t.id),coda=t.sections.find(s=>s.afterglow).start;assert.ok(score.every(s=>s.at+s.flight<coda));for(const pattern of ['fountain','star','willow','double','peony','chrysanthemum','wheel','message'])assert.ok(score.some(s=>s.pattern===pattern),pattern);}
 });

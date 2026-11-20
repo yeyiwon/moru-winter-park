@@ -1,6 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';import os from 'node:os';import path from 'node:path';
 import {createLocalDatabase} from '../scripts/local-database.mjs';import {handleAPI} from '../server/api.js';import {digest} from '../server/invitations.js';
 import {proxyRequest,backendOrigin} from '../server/vercel-proxy.js';import {parkOrigin,publicRoom} from '../dist/space-links.js';
+import {validateAppearance} from '../dist/wardrobe.js';
 async function fixture(t){
  const folder=fs.mkdtempSync(path.join(os.tmpdir(),'single-world-')),database=createLocalDatabase(path.join(folder,'test.sqlite'));t.after(()=>{database.close();fs.rmSync(folder,{recursive:true,force:true});});
  await database.query({schema:fs.readdirSync('drizzle').filter(n=>n.endsWith('.sql')).sort().map(n=>fs.readFileSync('drizzle/'+n,'utf8')).join('\n')});
@@ -11,6 +12,23 @@ async function fixture(t){
  async function join(client,token,name='게스트'){const r=await call(client,'join',{token,name});assert.equal(r.status,200,JSON.stringify(r.data));return r.data;}
  return{DB,env,owner,guest,call,invite,join};
 }
+test('first entry needs no choices; owner can reset one test device without touching other identities or wishes',async t=>{
+ const f=await fixture(t),a=f.guest(),b=f.guest();
+ const first=await f.call(a,'join',{}),other=await f.call(b,'join',{}),owner=await f.call(f.owner,'join',{});
+ assert.equal(first.status,200);assert.match(first.data.name,/^[가-힣]+$/);
+ const look={fur:first.data.color,furTop:first.data.colorTop,accessory:first.data.accessory,fluff:first.data.fluff,roundness:first.data.roundness};assert.deepEqual(validateAppearance(look),look);
+ await f.call(a,'appearance',{fur:'#123456',furTop:null,accessory:'crown',fluff:95,roundness:60});await f.call(a,'name',{name:'테스트기기'});
+ const returning=(await f.call(a,'join',{})).data;assert.equal(returning.name,'테스트기기');assert.equal(returning.color,'#123456');assert.equal(returning.accessory,'crown');
+ const wish=await f.call(a,'tree',{kind:'star',color:'#e5bb6b',height:12,angle:1,message:'남겨 둘 소원',visibility:'public'});assert.equal(wish.status,200);
+ const body={action:'reset-visitor',id:first.data.id,confirmation:'접속 초기화'};
+ assert.equal((await f.call(b,'admin',body)).status,403);assert.equal((await f.call(f.owner,'admin',{...body,confirmation:''})).status,400);
+ assert.equal((await f.call(f.owner,'admin',{...body,id:owner.data.id})).status,400);
+ assert.equal((await f.call(f.owner,'admin',body)).status,200);assert.equal((await f.call(a,'access')).data.session,null);
+ const fresh=await f.call(a,'join',{});assert.equal(fresh.status,200);assert.notEqual(fresh.data.id,first.data.id);assert.notEqual(fresh.data.name,'테스트기기');assert.notEqual(fresh.data.color,'#123456');
+ assert.equal((await f.call(b,'access')).data.session.id,other.data.id);
+ assert.ok((await f.call(b,'wishes')).data.wishes.some(item=>item.id===wish.data.id));
+ assert.equal((await f.DB.prepare('SELECT action FROM moderation_audit WHERE target=?').bind(first.data.id).first()).action,'reset-visitor');
+});
 test('public admission upgrades old identities while only the bound owner manages legacy links',async t=>{
  const f=await fixture(t),g=f.guest();assert.equal((await f.call(g,'join',{name:'손님'})).status,200);assert.equal((await f.call(g,'invite',{admin:true})).status,403);
  for(const body of [null,[],42])assert.equal((await f.call(g,'join',body)).status,400);

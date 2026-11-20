@@ -51,7 +51,11 @@ async function fixture(t,{beforeDiningMigration=false}={}){
   // The fixture moves to the exterior door; admission still uses the production handler.
   await DB.prepare('UPDATE visitors SET x=?,z=? WHERE id=?').bind(interiorDoors.ryokan.x,interiorDoors.ryokan.z,guest.id).run();
   const entry=await call('region',{region:'ryokan'},guest.cookie);assert.equal(entry.status,200,JSON.stringify(entry.data));
+  // Simulate the walk from the doorway before moving to the counter. The real
+  // region transfer now stamps pose_at to reject stale pre-transfer updates.
+  await DB.prepare('UPDATE visitors SET pose_at=? WHERE id=?').bind(Date.now()-1000,guest.id).run();
   const position=await call('presence',{...diningEntrance,y:.95,yaw:Math.PI},guest.cookie);assert.equal(position.status,200,JSON.stringify(position.data));
+  const placed=await DB.prepare('SELECT x,z FROM visitors WHERE id=?').bind(guest.id).first();assert.deepEqual(placed,{x:diningEntrance.x,z:diningEntrance.z});
  }
  return{DB,query:database.query,claim,release,call,join,enterRyokan};
 }
@@ -247,4 +251,21 @@ test('expired or left guest sessions cannot retain dining seats through presence
  assert.equal(await DB.prepare('SELECT visitor FROM ride_seats WHERE visitor=?').bind(guest.id).first(),null);
  assert.equal((await call('ride',{kind:'dining',seat:0},guest.cookie)).status,401);
  assert.equal((await call('presence',pose,guest.cookie)).status,401);
+});
+
+test('all new cushions and footbath seats allocate only within the approached facility and reject duplicate occupation',async t=>{
+ const {DB}=await fixture(t),{benches,benchAccess}=await import('../dist/bench-layout.js'),{validPose}=await import('../server/pose-validation.js');
+ for(const bench of benches.filter(b=>['ryokan-tatami-back','ryokan-tea-cushions','ryokan-footbath-north','ryokan-footbath-south'].includes(b.id))){
+  const claim=async i=>{const self={id:bench.id+i,room:'seating',region:'ryokan',...benchAccess(bench)};const response=await rideAPI(new Request('https://winter.test/api/ride',{method:'POST',body:JSON.stringify({kind:'bench',benchId:bench.id})}),DB,self,base);return{status:response.status,data:await response.json()};};
+  const results=await Promise.all([claim(0),claim(1),claim(2)]);assert.equal(results.filter(r=>r.status===200).length,2);assert.equal(results.filter(r=>r.status===409).length,1);
+  const accepted=results.filter(r=>r.status===200).map(r=>r.data.reservation);assert.notEqual(accepted[0].seat,accepted[1].seat);
+  for(const reservation of accepted){assert.equal(reservation.cabin,bench.cabin);const pose=sharedSeatPose(reservation,base);assert.equal(pose.mode,bench.mode);assert.equal(validPose(pose,reservation,base),true);if(pose.mode==='footbath'){assert.ok(pose.y-.74-.12<.5,'normal-size foot enters water without stretching');assert.equal(validPose(pose,null,base),false);}}
+ }
+});
+
+test('the serving timestamp gives chef and guests the same varied fish, with bounded reusable geometry',async()=>{
+ const {createRyokanMeal,updateRyokanMeal,diningChefMessage}=await import('../dist/ryokan-meal.js'),seen=new Set(),resources=new Set(),names={salmon:'연어',tuna:'참치',yellowtail:'방어','sea-bream':'도미',mackerel:'고등어'};
+ for(let i=0;i<40;i++){const a=createRyokanMeal(base+i*9000),b=createRyokanMeal(base+i*9000);assert.equal(a.userData.fish,b.userData.fish);seen.add(a.userData.fish);a.children.forEach((mesh,j)=>{assert.equal(mesh.geometry,b.children[j].geometry);resources.add(mesh.geometry);});const oldName=b.userData.fish;updateRyokanMeal(a,base+(i+1)*9000);assert.equal(b.userData.fish,oldName);}
+ for(let i=0;i<20;i++){const seed=base+i*9000,meal=createRyokanMeal(seed);assert.ok(diningChefMessage('handoff',seed).includes(names[meal.userData.fish]+' 초밥'));}
+ assert.equal(seen.size,5);assert.ok(resources.size<=35,'only five shared meal templates');
 });
