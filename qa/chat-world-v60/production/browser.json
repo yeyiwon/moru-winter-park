@@ -1,0 +1,67 @@
+{
+  "environment": "Mac Chrome on official URL; physical Windows/Galaxy/iPhone UNKNOWN",
+  "checks": [
+    {
+      "name": "official WebSocket connected",
+      "ok": true
+    },
+    {
+      "name": "official world and own walk continue during chat",
+      "ok": true,
+      "details": {
+        "a": {
+          "frames": 97,
+          "time": 1.9333000000000053,
+          "p": {
+            "x": 0,
+            "y": 0.95,
+            "z": 26.283892507701893,
+            "yaw": 0,
+            "mode": "",
+            "lean": 0,
+            "tilt": 0,
+            "brake": false,
+            "air": 0,
+            "speed": 4.298238139590467,
+            "gesture": "",
+            "heldItem": "",
+            "balloonTone": -1,
+            "balloonStyle": "classic",
+            "roast": 0
+          }
+        },
+        "b": {
+          "frames": 153,
+          "time": 2.8666000000000027,
+          "p": {
+            "x": 0,
+            "y": 0.95,
+            "z": 30.297104466359038,
+            "yaw": 0,
+            "mode": "",
+            "lean": 0,
+            "tilt": 0,
+            "brake": false,
+            "air": 0,
+            "speed": 4.299999990526118,
+            "gesture": "",
+            "heldItem": "",
+            "balloonTone": -1,
+            "balloonStyle": "classic",
+            "roast": 0
+          }
+        }
+      }
+    },
+    {
+      "name": "closing official chat preserves the walking route",
+      "ok": true
+    },
+    {
+      "name": "no browser exceptions",
+      "ok": true,
+      "details": []
+    }
+  ],
+  "errors": []
+}

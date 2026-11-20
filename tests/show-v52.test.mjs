@@ -67,7 +67,7 @@ test('single and paired arcs burst at the far side; seeded shows include fans an
  assert.notDeepEqual(arrangement(42),arrangement(43));assert.notDeepEqual(arrangement(43),arrangement(44));
 });
 
-test('fan volleys alternate simultaneous bursts and a stepped cadence; a quick unified farewell survive low quality',async()=>{
+test('fan volleys alternate simultaneous bursts and a stepped cadence without text or isolated icons',async()=>{
  const {fireworkShapes,fireworkMessage}=await import('../dist/firework-shapes.js');
  assert.equal(fireworkMessage,'HAVE A GOOD DAY');
  for(const points of Object.values(fireworkShapes)){assert.ok(points.length<=360);assert.ok(points.every(p=>p.every(Number.isFinite)));}
@@ -80,33 +80,40 @@ test('fan volleys alternate simultaneous bursts and a stepped cadence; a quick u
   }
   assert.ok(!score.some(s=>s.pattern==='heart'));assert.ok(!score.some(s=>['bear','cat','rabbit','dog'].includes(s.pattern)));
   assert.deepEqual(Object.keys(fireworkShapes),['heart','message']);
-  const messages=score.filter(s=>s.pattern==='message');assert.equal(messages.length,1);assert.ok(score.every(s=>s.at+s.flight<=messages[0].at+messages[0].flight));assert.ok(messages[0].at+messages[0].flight>track.sections.find(s=>s.afterglow).start-2);
+  assert.equal(score.filter(s=>s.pattern==='message').length,0);
  }
 });
 
-test('one late paired wheel, no isolated heart and a clear final bouquet leave the opening and ground fountains still',()=>{
+test('one late paired wheel and a layered finale stay inside the unchanged particle pool',()=>{
  for(const track of showTracks)for(let seed=0;seed<32;seed++){
   const score=createFireworkScore(seed,track.id);
   assert.ok(!score.some(s=>s.pattern==='mine'));
   const wheels=score.filter(s=>s.pattern==='wheel');assert.equal(wheels.length,2);assert.equal(wheels[0].at,wheels[1].at);assert.ok(wheels.every(s=>s.at+s.flight>=track.duration*.68&&s.height>75));assert.ok(!score.some(s=>s.pattern==='spiral'));assert.equal(wheels[0].x,-wheels[1].x);
   assert.equal(score.filter(s=>s.pattern==='heart').length,0);
-  const farewell=score.find(s=>s.pattern==='message'),messageAt=farewell.at+farewell.flight;assert.ok(farewell.life<=3);
-  assert.ok(score.filter(s=>s!==farewell).every(s=>s.at+s.flight<messageAt-4));
+  const finale=score.filter(s=>s.finale),coda=track.sections.find(s=>s.afterglow).start;
+  assert.ok(finale.length>=20);assert.ok(finale.every(s=>s.at+s.flight<coda));
+  assert.ok(finale.some(s=>s.pattern==='willow')&&finale.some(s=>s.pattern==='glitter'));
+  assert.ok(Math.max(...finale.map(s=>s.height))>Math.max(...score.filter(s=>!s.finale).map(s=>s.height)));
+  assert.ok(finale.every(s=>s.pattern!=='wheel'&&s.pattern!=='message'));
+  assert.ok(finale.some(s=>s.x<-70)&&finale.some(s=>s.x>70));
   for(let age=0;age<track.duration;age+=.15)assert.ok(score.filter(s=>age>=s.at&&age<s.at+s.flight+Math.max(s.life,6)+.15).length<=24);
  }
 });
 
-test('all farewell letters share the exact start, lifetime and tail-free fade on every quality',async()=>{
- const {fireworkShapes}=await import('../dist/firework-shapes.js');
+test('finale retains its full layered layout on every quality and frees the existing draw range',()=>{
  for(const quality of ['high','medium','low']){
-  const show=createWinterFireworks(new T.Scene()),track=showTracks[2],score=createFireworkScore(42,track.id),message=score.find(s=>s.pattern==='message');
-  show.setQuality(quality);show.setShow({id:'farewell',startsAt:0,endsAt:track.duration*1000,musicId:track.id,seed:42,state:'playing'});
-  show.update((message.at+message.flight+2)*1000);
-  const {design,timing}=show.root.geometry.attributes,indices=Array.from({length:show.root.geometry.drawRange.count},(_,i)=>i).filter(i=>design.getX(i)===10);
-  assert.equal(indices.length,Math.max(216,fireworkShapes.message.length));
-  assert.equal(new Set(indices.map(i=>design.getZ(i))).size,1);
-  assert.ok(indices.every(i=>timing.getY(i)===0&&timing.getW(i)===0&&Math.abs(timing.getX(i)-message.at)<.00001));
-  show.update(track.duration*1000);assert.equal(show.root.geometry.drawRange.count,0);assert.equal(show.root.parent?.getObjectByName('firework-drifting-smoke'),undefined);show.dispose();
+  const show=createWinterFireworks(new T.Scene()),track=showTracks[2],score=createFireworkScore(42,track.id),finale=score.filter(s=>s.finale);
+  show.setQuality(quality);show.setShow({id:'finale',startsAt:0,endsAt:track.duration*1000,musicId:track.id,seed:42,state:'playing'});
+  const age=Math.max(...finale.map(s=>s.at+s.flight))+.25;
+  show.update(age*1000);
+  const g=show.root.geometry,buffer=g.attributes.position.array,{design,timing}=g.attributes;
+  const expected=score.filter(s=>age>=s.at&&age<s.at+s.flight+Math.max(s.life,6)+.15);
+  const starts=new Set(Array.from({length:g.drawRange.count},(_,i)=>timing.getX(i)));
+  for(const shell of expected)assert.ok([...starts].some(at=>Math.abs(at-shell.at)<.00001),'late finale shell was dropped');
+  assert.ok(g.drawRange.count<=360*6*24);
+  assert.ok(Array.from({length:g.drawRange.count},(_,i)=>design.getX(i)).every(kind=>kind!==10));
+  show.update((age+.1)*1000);assert.equal(g.attributes.position.array,buffer);
+  show.update(track.duration*1000);assert.equal(g.drawRange.count,0);show.dispose();
  }
 });
 

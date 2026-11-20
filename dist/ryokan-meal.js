@@ -14,7 +14,7 @@ export function diningMenuIndex(seed=0){let h=Math.floor(Number.isFinite(seed)?s
 export function diningMenuName(seed){return menu[diningMenuIndex(seed)].label+' 초밥';}
 export function diningChefMessage(stage,seed){
  const dish=diningMenuName(seed),lines={waiting:'앞 손님부터 대접할게요. 잠시만 기다려 주세요!',greeting:'어서 오세요! 맛있는 한 접시를 준비해 드릴게요.',preparing: dish+'을 정성껏 쥐고 있어요.',serving:'이번에는 '+dish+'이에요!',handoff:dish+' 나왔어요. 맛있게 드세요!',tasting:dish+'과 함께 느긋한 시간 보내세요.',finished:'잘 드셨나요? 따뜻하게 쉬다 가세요!'};
- return '셰프 · '+(lines[stage]||lines.waiting);
+ return lines[stage]||lines.waiting;
 }
 export function createRyokanMeal(seed=0){
  const index=diningMenuIndex(seed);if(templates.has(index))return templates.get(index).clone(true);

@@ -65,5 +65,5 @@ test('remote labels require nearby 3D player and camera positions with hysteresi
 test('only approved recordings play, BGM order is preserved, each finale ends before its coda',()=>{
  assert.deepEqual(showTracks.map(t=>t.id),['love','wedding-entrance','trepak']);assert.ok(Array.from({length:256},(_,i)=>selectShowTrack(i)).every(t=>showTracks.includes(t)));
  assert.deepEqual(winterTracks.slice(0,6).map(t=>t.id),['ethereal-winter-ballet-01','cinematic-christmas-piano-strings-bells','winter-waltz','winter-jazz-artmylife','waltz-of-snowflakes','wonderful-night']);
- for(const t of showTracks){const score=createFireworkScore(51,t.id),coda=t.sections.find(s=>s.afterglow).start;assert.ok(score.every(s=>s.at+s.flight<coda));for(const pattern of ['fountain','star','willow','double','peony','chrysanthemum','wheel','message'])assert.ok(score.some(s=>s.pattern===pattern),pattern);}
+ for(const t of showTracks){const score=createFireworkScore(51,t.id),coda=t.sections.find(s=>s.afterglow).start;assert.ok(score.every(s=>s.at+s.flight<coda));for(const pattern of ['fountain','star','willow','double','peony','chrysanthemum','wheel'])assert.ok(score.some(s=>s.pattern===pattern),pattern);}
 });

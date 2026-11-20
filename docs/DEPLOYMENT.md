@@ -1,3 +1,19 @@
+# v60 운영 배포 — 2026-11-20
+
+공식 주소: **https://moru-winter-park.vercel.app/**
+
+- 운영 소스: `cba745b50f5822c77d65b96d9b7014b9184fce9e`.
+- Sites 버전 **73**, `appgdep_6b005084fb5881918475f8b00b6a2e4e`, succeeded. 기존 public 접근과 환경 설정 유지.
+- Vercel `dpl_8TgbjZMkjhF1Fz4AZLMg73evfYnG`, **READY**, 공식 도메인과 위 SHA 연결 확인.
+- Cloudflare realtime 코드는 변경하지 않아 기존 v59 `6c9fa62ee9e70539f7b9ee0e2fee164cded86b58` 유지. 정상 health 확인. DB migration·데이터 삭제 없음.
+- 공식 release/API 및 Sites API가 새 SHA를 제공하고, HTML·SW·채팅·탑승·카메라 등 12개 파일이 검증한 빌드와 SHA-256 일치. [응답과 해시](../qa/chat-world-v60/production/integrity.json).
+- 공식 Mac Chrome 새 프로필에서 WebSocket·채팅 중 걷기·닫은 후 경로 유지·예외 없음 **4/4**. [실제 브라우저](../qa/chat-world-v60/production/browser.json).
+- 깨끗한 동일 커밋으로 Worker·Vercel·realtime 빌드 및 자산 예산 통과. Core **37,361,635B** / 한도 37,748,736B, code gzip **1,184,092B** / 한도 1,280,000B, 공연 음원 10,004,547B 유지.
+
+[검증·측정과 실물 기기 한계](chat-world-v60.md). 이미 열어 둔 이전 화면은 새로고침하면 갱신하며, 이전 버전이 남으면 `/refresh.html`을 사용한다. 닉네임·외형·저장 설정은 보존한다.
+
+---
+
 # v59 운영 배포 확인 — 2026-11-20
 
 공식 주소: **https://moru-winter-park.vercel.app/** · 기존 화면 갱신: **https://moru-winter-park.vercel.app/refresh.html**

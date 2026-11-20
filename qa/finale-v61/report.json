@@ -1,0 +1,185 @@
+{
+  "environment": "Mac Chrome desktop / touch emulation; physical Windows, Galaxy, iPhone UNKNOWN",
+  "checks": [
+    {
+      "name": "desktop-high chat text has extra left inset without overflow",
+      "ok": true,
+      "details": {
+        "padding": 8,
+        "inset": 20.90876007080078,
+        "overflow": false
+      }
+    },
+    {
+      "name": "desktop-high chef messages have no repeated speaker prefix",
+      "ok": true,
+      "details": [
+        "앞 손님부터 대접할게요. 잠시만 기다려 주세요!",
+        "어서 오세요! 맛있는 한 접시를 준비해 드릴게요.",
+        "연어 초밥을 정성껏 쥐고 있어요.",
+        "이번에는 연어 초밥이에요!",
+        "연어 초밥 나왔어요. 맛있게 드세요!",
+        "연어 초밥과 함께 느긋한 시간 보내세요.",
+        "잘 드셨나요? 따뜻하게 쉬다 가세요!"
+      ]
+    },
+    {
+      "name": "desktop-high love fixed particle capacity",
+      "ok": true
+    },
+    {
+      "name": "desktop-high wedding-entrance fixed particle capacity",
+      "ok": true
+    },
+    {
+      "name": "desktop-high trepak fixed particle capacity",
+      "ok": true
+    },
+    {
+      "name": "desktop-high repeated endings clean up without geometry growth",
+      "ok": true,
+      "details": [
+        {
+          "memory": {
+            "geometries": 918,
+            "textures": 37
+          },
+          "count": 0,
+          "active": false
+        },
+        {
+          "memory": {
+            "geometries": 918,
+            "textures": 37
+          },
+          "count": 0,
+          "active": false
+        },
+        {
+          "memory": {
+            "geometries": 918,
+            "textures": 37
+          },
+          "count": 0,
+          "active": false
+        }
+      ]
+    },
+    {
+      "name": "touch-low chat text has extra left inset without overflow",
+      "ok": true,
+      "details": {
+        "padding": 8,
+        "inset": 20.979202270507812,
+        "overflow": false
+      }
+    },
+    {
+      "name": "touch-low chef messages have no repeated speaker prefix",
+      "ok": true,
+      "details": [
+        "앞 손님부터 대접할게요. 잠시만 기다려 주세요!",
+        "어서 오세요! 맛있는 한 접시를 준비해 드릴게요.",
+        "연어 초밥을 정성껏 쥐고 있어요.",
+        "이번에는 연어 초밥이에요!",
+        "연어 초밥 나왔어요. 맛있게 드세요!",
+        "연어 초밥과 함께 느긋한 시간 보내세요.",
+        "잘 드셨나요? 따뜻하게 쉬다 가세요!"
+      ]
+    },
+    {
+      "name": "touch-low trepak fixed particle capacity",
+      "ok": true
+    },
+    {
+      "name": "touch-low repeated endings clean up without geometry growth",
+      "ok": true,
+      "details": [
+        {
+          "memory": {
+            "geometries": 802,
+            "textures": 34
+          },
+          "count": 0,
+          "active": false
+        },
+        {
+          "memory": {
+            "geometries": 802,
+            "textures": 34
+          },
+          "count": 0,
+          "active": false
+        },
+        {
+          "memory": {
+            "geometries": 802,
+            "textures": 34
+          },
+          "count": 0,
+          "active": false
+        }
+      ]
+    },
+    {
+      "name": "no browser or WebGL exceptions",
+      "ok": true,
+      "details": []
+    }
+  ],
+  "samples": [
+    {
+      "tag": "desktop-high",
+      "track": "love",
+      "fps": 60.199999999997765,
+      "p95": 16.700000000000728,
+      "particles": 23760,
+      "capacity": 51840,
+      "calls": 1504,
+      "memory": {
+        "geometries": 918,
+        "textures": 37
+      }
+    },
+    {
+      "tag": "desktop-high",
+      "track": "wedding-entrance",
+      "fps": 55.19006578815606,
+      "p95": 33.29999999999927,
+      "particles": 23760,
+      "capacity": 51840,
+      "calls": 1108,
+      "memory": {
+        "geometries": 918,
+        "textures": 37
+      }
+    },
+    {
+      "tag": "desktop-high",
+      "track": "trepak",
+      "fps": 39.95525011986277,
+      "p95": 33.400000000001455,
+      "particles": 23760,
+      "capacity": 51840,
+      "calls": 1504,
+      "memory": {
+        "geometries": 918,
+        "textures": 37
+      }
+    },
+    {
+      "tag": "touch-low",
+      "track": "trepak",
+      "fps": 55.77657383898346,
+      "p95": 33.30000000000291,
+      "particles": 6336,
+      "capacity": 51840,
+      "calls": 978,
+      "memory": {
+        "geometries": 802,
+        "textures": 34
+      }
+    }
+  ],
+  "errors": []
+}

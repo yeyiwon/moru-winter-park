@@ -1,0 +1,140 @@
+{
+  "at": "2026-11-20T13:53:10.196Z",
+  "revision": "cba745b50f5822c77d65b96d9b7014b9184fce9e",
+  "checks": [
+    {
+      "name": "expected revision https://moru-winter-park.vercel.app/release.json",
+      "ok": true,
+      "details": {
+        "revision": "cba745b50f5822c77d65b96d9b7014b9184fce9e",
+        "apiOrigin": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site"
+      }
+    },
+    {
+      "name": "expected revision https://moru-winter-park.vercel.app/api/health",
+      "ok": true,
+      "details": {
+        "ok": true,
+        "multiplayer": true,
+        "revision": "cba745b50f5822c77d65b96d9b7014b9184fce9e",
+        "transport": "websocket-configured"
+      }
+    },
+    {
+      "name": "expected revision https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site/api/health",
+      "ok": true,
+      "details": {
+        "ok": true,
+        "multiplayer": true,
+        "revision": "cba745b50f5822c77d65b96d9b7014b9184fce9e",
+        "transport": "websocket-configured"
+      }
+    },
+    {
+      "name": "expected revision https://winterlight-realtime.winterlight.workers.dev/health",
+      "ok": true,
+      "details": {
+        "ok": true,
+        "service": "winterlight-realtime",
+        "revision": "6c9fa62ee9e70539f7b9ee0e2fee164cded86b58"
+      }
+    },
+    {
+      "name": "verified artifact index.html",
+      "ok": true,
+      "details": {
+        "bytes": 21774,
+        "sha256": "d750dbdb87c96eccd5aa536848e674da2288fa798ee91f7499b8661cb8467130"
+      }
+    },
+    {
+      "name": "verified artifact sw.js",
+      "ok": true,
+      "details": {
+        "bytes": 29063,
+        "sha256": "27be315c365a65c3f16287b02bca3f22b924288a75720ac04c07813a0472d0a3"
+      }
+    },
+    {
+      "name": "verified artifact park.js",
+      "ok": true,
+      "details": {
+        "bytes": 40228,
+        "sha256": "513a9f2dcdcddd1ee42a29c5c6661b9de82f21d39f7868afa98dcf1b2de0f580"
+      }
+    },
+    {
+      "name": "verified artifact social.js",
+      "ok": true,
+      "details": {
+        "bytes": 19868,
+        "sha256": "3c1c5067998cc009d39360883eb154a92296cba747033efcf6c6ff885d8abd34"
+      }
+    },
+    {
+      "name": "verified artifact visitors.js",
+      "ok": true,
+      "details": {
+        "bytes": 9176,
+        "sha256": "920d93550bb21cdadc0a2355c6a8749a3d94ccfab158ec450e54b9a9fd868ed3"
+      }
+    },
+    {
+      "name": "verified artifact winter-experience.js",
+      "ok": true,
+      "details": {
+        "bytes": 31797,
+        "sha256": "2a24e48cdfe915625b7610b2cf8aaceea946f770a5cd92a8fb32ad96bc4119fa"
+      }
+    },
+    {
+      "name": "verified artifact alpine-gondola.js",
+      "ok": true,
+      "details": {
+        "bytes": 6746,
+        "sha256": "68a7983410f07eb5ac8774de7d56385030e27f9b744904ef35450367eec29e74"
+      }
+    },
+    {
+      "name": "verified artifact alpine-resort.js",
+      "ok": true,
+      "details": {
+        "bytes": 41952,
+        "sha256": "8bd91c596b2c6ca142d986cf761fcd6b1dfe5ca9e4a49eb5cc89f3b1707e51ed"
+      }
+    },
+    {
+      "name": "verified artifact themepark-world.js",
+      "ok": true,
+      "details": {
+        "bytes": 15176,
+        "sha256": "c0cc19ab5bc055e8b06a03b6518b13a0e261aa13d1e24447c04b84b65bfc7f8f"
+      }
+    },
+    {
+      "name": "verified artifact winter-world.js",
+      "ok": true,
+      "details": {
+        "bytes": 11337,
+        "sha256": "e982754b949584d39784c4d2a58dba9fcadb80415f65f2439a34914f570bbf34"
+      }
+    },
+    {
+      "name": "verified artifact game-input.js",
+      "ok": true,
+      "details": {
+        "bytes": 9649,
+        "sha256": "bed9435edacb5e0dca9f6063af1d28da9616593eb92e776568874254bcf26d49"
+      }
+    },
+    {
+      "name": "verified artifact ui-theme.js",
+      "ok": true,
+      "details": {
+        "bytes": 507,
+        "sha256": "9b6683bfd2313c9a1d880c718280730f50620bf7c80dd43031159c657cddaf08"
+      }
+    }
+  ],
+  "errors": []
+}

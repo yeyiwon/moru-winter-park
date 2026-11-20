@@ -26,7 +26,7 @@ export function createFireworkScore(seed=1,musicId){
    if(section.afterglow)continue;
    const finale=section.cue===4,interval=finale?2.5:section.cue===0?5.2:3.0;
    for(const at of track.accents){
-    if(at<section.start||at>=section.end||at<3||at-previous<interval||at>coda-8||Math.abs(at-wheelAt)<4.5)continue;
+    if(at<section.start||at>=section.end||at<3||at-previous<interval||at>coda-12||Math.abs(at-wheelAt)<4.5)continue;
     previous=at;const palette=castleShowCues[section.cue].palette.map((c,i)=>sequence%3===1?accents[(i+colorOffset)%3]:c);
     const pattern=['peony','chrysanthemum','star','willow','double','ring','glitter'][(sequence+patternOffset)%7],wide=section.cue>0;
     // Curved shells carry the middle phrase; no isolated icon interrupts it.
@@ -64,13 +64,26 @@ export function createFireworkScore(seed=1,musicId){
     sequence++;
    }
   }
-  // One rising bouquet closes the story, then a breath of clear sky leaves
-  // room for the shared farewell. Nothing launches during the afterglow.
-  const bouquet=track.accents.findLast(at=>at<coda-5.6);
-  for(const [n,x]of [-62,0,62].entries()){burst(bouquet,'chrysanthemum',x,n===1?148:112,accents[n],n===1?1.55:1.22,2.8);score.at(-1).life=4.4;}
-  for(const side of [-1,1]){burst(bouquet+.45,'ring',side*28,88,'#dac7ff',.72,2.5);score.at(-1).volleyAt=bouquet;}
-  const farewell=track.accents.findLast(at=>at<coda-.2);
-  burst(farewell,'message',0,110,'#ffe7bd',1,2.6);Object.assign(score.at(-1),{life:2.8,launchX:0,wind:0});
+  // Three rising phrases end on one layered crown. Keep the existing 24-shell
+  // GPU pool: scale and depth supply the spectacle, not unbounded particles.
+  const accentBefore=limit=>track.accents.findLast(at=>at<limit);
+  const fanAt=accentBefore(coda-9.5),crownAt=accentBefore(coda-6.2),finalAt=accentBefore(coda-.65);
+  const ending=(at,pattern,x,height,color,size,flight,life,volleyAt=at)=>{
+   burst(at,pattern,x,height,color,size,flight);
+   Object.assign(score.at(-1),{life,volleyAt,finale:true,wind:0});
+  };
+  for(let n=0;n<6;n++){
+   const spread=n/5*2-1;
+   ending(fanAt+n*.16,'peony',spread*76,82-Math.abs(spread)*20,accents[n%3],1.1,2.1,3.5,fanAt);
+   Object.assign(score.at(-1),{launchX:spread*21,z:-62,fan:true,staggered:true,reverse:false});
+  }
+  for(const [n,x]of [-49,0,49].entries())ending(crownAt,'double',x,n===1?142:108,accents[n],1.5,2.7,4.4);
+  for(const side of [-1,1])ending(crownAt,'fountain',side*33,3,'#f4e9d5',.8,.3,2.4);
+  for(const [n,x]of [-76,-38,0,38,76].entries()){
+   ending(finalAt,'chrysanthemum',x,170-Math.abs(x)*.7,accents[n%3],n===2?1.85:1.6,3,4.6);
+  }
+  for(const side of [-1,1])ending(finalAt,'willow',side*56,126,'#ffdb9a',1.5,2.9,5.6);
+  for(const [n,x]of [-66,-22,22,66].entries())ending(finalAt+.2+n*.1,'glitter',x,82-Math.abs(x)*.2,'#e7edff',.95,2.1,4,finalAt);
   return score.sort((a,b)=>a.at-b.at);
  }
  for(const cue of castleShowCues)for(const burst of cue.fireworks.bursts)add(cue.start+burst.at,burst.pattern,burst.x,burst.height,burst.color,burst.size);
