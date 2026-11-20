@@ -1,0 +1,85 @@
+{
+  "at": "2026-11-20T10:24:38.361Z",
+  "revision": "0e0364f463fd4c922a2b312a20488b7512a06b60",
+  "officialUrl": "https://moru-winter-park.vercel.app",
+  "sites": {
+    "version": 70,
+    "deploymentId": "appgdep_6b001f1611608191afc01652e857d683",
+    "status": "succeeded",
+    "envRevision": 4
+  },
+  "vercel": {
+    "id": "dpl_J7Gx1HSwx9zamACuGzMcAqArDCLW",
+    "name": "moru-winter-park",
+    "url": "moru-winter-park-4wcuappcc-yeyiwons-projects.vercel.app",
+    "type": "LAMBDAS",
+    "state": "READY",
+    "createdAt": 1795170104904,
+    "creator": {
+      "uid": "TdlLixl5yCEDmqs1wNtaWwu6",
+      "username": "yeyiwon"
+    },
+    "project": {
+      "id": "prj_mbioBXlMSNwfJ8MWNaRMi2Lsm8I0",
+      "name": "moru-winter-park",
+      "framework": null
+    },
+    "meta": {
+      "githubCommitRef": "main",
+      "githubCommitSha": "0e0364f463fd4c922a2b312a20488b7512a06b60",
+      "githubCommitMessage": "Update Site source",
+      "githubRepo": "moru-winter-park",
+      "githubOrg": "yeyiwon"
+    },
+    "alias": [
+      "moru-winter-park.vercel.app",
+      "moru-winter-park-yeyiwons-projects.vercel.app",
+      "moru-winter-park-git-main-yeyiwons-projects.vercel.app"
+    ],
+    "target": "production",
+    "regions": [
+      "icn1"
+    ],
+    "buildingAt": 1795170106098,
+    "ready": 1795170145732,
+    "readyState": "READY",
+    "source": "git",
+    "aliasError": null
+  },
+  "cloudflare": {
+    "service": "winterlight-realtime",
+    "version": "30312f99-fa20-4882-a101-55083658a6cd",
+    "revision": "0e0364f463fd4c922a2b312a20488b7512a06b60"
+  },
+  "preservation": {
+    "wishes": {
+      "before": 7,
+      "after": 7,
+      "unchanged": 7
+    },
+    "quiz_journal": {
+      "before": 6,
+      "after": 6,
+      "unchanged": 6
+    },
+    "space_owner": {
+      "before": 1,
+      "after": 1,
+      "unchanged": 1
+    },
+    "tree_decorations": {
+      "before": 144,
+      "after": 144,
+      "unchanged": 144
+    }
+  },
+  "noDatabaseMigration": true,
+  "physicalDevicesVerified": false,
+  "recoveryUrl": "https://moru-winter-park.vercel.app/refresh.html",
+  "dataComparisonRevision": "6bc3c26d3f99a4ff7e8766b3fb4901d1f312782a",
+  "cacheUpgrade": {
+    "unitTests": 13,
+    "realBrowserChecks": 8,
+    "legacyWorkerRevision": "6bc3c26d3f99a4ff7e8766b3fb4901d1f312782a"
+  }
+}

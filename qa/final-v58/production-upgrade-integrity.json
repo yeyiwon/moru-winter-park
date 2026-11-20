@@ -1,0 +1,66 @@
+{
+  "at": "2026-11-20T10:24:42.553Z",
+  "revision": "0e0364f463fd4c922a2b312a20488b7512a06b60",
+  "versions": [
+    {
+      "revision": "0e0364f463fd4c922a2b312a20488b7512a06b60",
+      "apiOrigin": "https://bits-yeiwon-knowledge.expert-bass-1722.chatgpt.site"
+    },
+    {
+      "ok": true,
+      "multiplayer": true,
+      "revision": "6bc3c26d3f99a4ff7e8766b3fb4901d1f312782a-dirty",
+      "transport": "websocket-configured"
+    },
+    {
+      "ok": true,
+      "service": "winterlight-realtime",
+      "revision": "0e0364f463fd4c922a2b312a20488b7512a06b60"
+    }
+  ],
+  "files": [
+    {
+      "path": "index.html",
+      "status": 200,
+      "match": true,
+      "sha256": "23024937c49a99218ad7ee688f4b84b4af77899cb4c8077661cbd2c06b9a71e5"
+    },
+    {
+      "path": "sw.js",
+      "status": 200,
+      "match": true,
+      "sha256": "a4e75d6e2b80b2ef565fdc1997e8e62adced4cf6655fc6286a8d531537546180"
+    },
+    {
+      "path": "refresh.html",
+      "status": 200,
+      "match": true,
+      "sha256": "70879ec1244b7f4df28733c98d51e4ce1ac3a38988f71a2bd97982d18f691fda"
+    },
+    {
+      "path": "release-update.js",
+      "status": 200,
+      "match": true,
+      "sha256": "401b21e5831ea234f7d71315002703c21550f6163ca680800d1f871a8208e3bb"
+    },
+    {
+      "path": "ui-theme.js",
+      "status": 200,
+      "match": true,
+      "sha256": "07890e7ff4a6c986c04ae09c280ac392c5a9297f51306ce78299e4858f972756"
+    },
+    {
+      "path": "ui-system.css",
+      "status": 200,
+      "match": true,
+      "sha256": "2a21fd4d452f7824174c0a88c854f789c7d4f774f1aeab70eb9279fcd5da3d32"
+    },
+    {
+      "path": "community-ui.js",
+      "status": 200,
+      "match": true,
+      "sha256": "4f50c3c2e791ee36c396707acf04b246129c38f81e39404e38a07632d081841a"
+    }
+  ],
+  "pass": false
+}

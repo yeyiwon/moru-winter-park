@@ -1,0 +1,5 @@
+{
+  "checks": [],
+  "errors": [],
+  "failure": "page.waitForFunction: Timeout 120000ms exceeded.\n    at /private/tmp/winter-v58-production-upgrade.mjs:3:40"
+}

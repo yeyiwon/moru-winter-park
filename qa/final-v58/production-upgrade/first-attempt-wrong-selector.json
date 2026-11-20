@@ -1,0 +1,18 @@
+{
+  "checks": [
+    {
+      "name": "official dark switch changes the UI",
+      "ok": true
+    },
+    {
+      "name": "real recovery retains name, session and dark mode",
+      "ok": true
+    },
+    {
+      "name": "current release includes embedded management",
+      "ok": false
+    }
+  ],
+  "errors": [],
+  "failure": "Error: current release includes embedded management\n    at check (file:///private/tmp/winter-v58-production-upgrade.mjs:2:560)\n    at file:///private/tmp/winter-v58-production-upgrade.mjs:3:1379"
+}
