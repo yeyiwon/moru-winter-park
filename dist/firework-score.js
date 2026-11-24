@@ -24,13 +24,16 @@ export function createFireworkScore(seed=1,musicId){
   for(const side of [-1,1]){burst(wheelAt,'wheel',side*59,83,accents[side>0?1:0],1,2.5);Object.assign(score.at(-1),{life:5.6,wind:side,volleyAt:wheelAt});}
   for(const section of track.sections){
    if(section.afterglow)continue;
-   const finale=section.cue===4,interval=finale?2.5:section.cue===0?5.2:3.0;
+   // The five castle cues are the five acts of the show: a sparse silver opening, two acts that
+   // add colour and shapes, one act that belongs to the golden willows, then the layered finale.
+   const finale=section.cue===4,golden=section.cue===3,interval=finale?2.5:section.cue===0?5.2:golden?3.4:3.0;
+   const vocabulary=[['glitter','star','peony'],['peony','ring','double','peony'],['chrysanthemum','double','glitter','ring','chrysanthemum'],['willow'],['chrysanthemum','peony','double','glitter']][section.cue];
    for(const at of track.accents){
     if(at<section.start||at>=section.end||at<3||at-previous<interval||at>coda-12||Math.abs(at-wheelAt)<4.5)continue;
     previous=at;const palette=castleShowCues[section.cue].palette.map((c,i)=>sequence%3===1?accents[(i+colorOffset)%3]:c);
-    const pattern=['peony','chrysanthemum','star','willow','double','ring','glitter'][(sequence+patternOffset)%7],wide=section.cue>0;
+    const pattern=vocabulary[(sequence+patternOffset)%vocabulary.length],wide=section.cue>0;
     // Curved shells carry the middle phrase; no isolated icon interrupts it.
-    const curved=wide&&sequence%3===0;
+    const curved=wide&&!golden&&sequence%3===0;
     if(curved){
      // One shell crosses above the roof and bursts at the far endpoint. The
      // next crossing reverses direction instead of making a simultaneous pair.
@@ -38,7 +41,7 @@ export function createFireworkScore(seed=1,musicId){
      for(const direction of paired?[-1,1]:[side]){burst(at,['peony','chrysanthemum','double'][(volley+style)%3],direction*48,62,palette[(sequence+(direction>0?1:0))%3],1.05,3.1);
       Object.assign(score.at(-1),{y:18,launchX:-direction*46,launchZ:-36,z:-68,arcHeight:29,wind:0,paired});}
     }
-    if(wide&&sequence%4===1){
+    if(wide&&!golden&&sequence%4===1){
      const volley=fanSequence++,rays=6,stagger=volley%3!==0,reverse=volley%3===2;
      for(let n=0;n<rays;n++){
       const spread=(reverse?rays-1-n:n)/(rays-1)*2-1;
@@ -47,17 +50,18 @@ export function createFireworkScore(seed=1,musicId){
       Object.assign(score.at(-1),{launchX:spread*19,launchZ:-34,z:-60,fan:true,volleyAt:at,staggered:stagger,reverse});
      }
     }
-    if(wide&&sequence%4===2){
+    if(wide&&!golden&&sequence%4===2){
      // Brief low pyrotechnic fans return between aerial accents, not a
      // continuously glowing stage. No extra lights or particle draw calls.
      for(const side of [-1,1])burst(at,'fountain',side*31,3,palette[(sequence+1)%3],.62,.3);
     }
-    const count=curved?0:finale?3:wide?2:1;
+    const count=curved?0:finale||golden?3:wide?2:1;
     for(let n=0;n<count;n++){
      const x=count===1?Math.sin(sequence)*22:count===3?(n-1)*48:(n?1:-1)*(34+sequence%3*6);
-     burst(at,pattern,x,82+sequence%3*14+(count===3&&n===1?36:0),pattern==='willow'?'#ffd994':palette[(sequence+n)%3],finale?1.4:.8+section.cue*.11);
+     // Golden willows open a quarter second apart so the canopy unfolds across the sky.
+     burst(at+(golden?n*.24:0),pattern,x,82+sequence%3*14+(count===3&&n===1?36:0)+(golden?16:0),pattern==='willow'?'#ffd994':section.cue===0?['#d6e4ff','#ece6ff','#ffeccb'][(sequence+n)%3]:palette[(sequence+n)%3],finale?1.4:golden?(n===1?1.5:1.3):section.cue===0?.72:.8+section.cue*.11);if(golden)score.at(-1).volleyAt=at;
     }
-    if(wide&&!curved&&sequence%4===0){
+    if(wide&&!golden&&!curved&&sequence%4===0){
      // Low coloured stars answer the high shells, with clear space above the roof.
      for(const side of [-1,1]){burst(at+.38,'star',side*62,47,palette[(sequence+1+(side>0?1:0))%3],.65,1.55);Object.assign(score.at(-1),{launchX:side*24,launchZ:-36,z:-62,accentLayer:true,volleyAt:at,life:3});}
     }
@@ -79,6 +83,9 @@ export function createFireworkScore(seed=1,musicId){
   }
   for(const [n,x]of [-49,0,49].entries())ending(crownAt,'double',x,n===1?142:108,accents[n],1.5,2.7,4.4);
   for(const side of [-1,1])ending(crownAt,'fountain',side*33,3,'#f4e9d5',.8,.3,2.4);
+  // A quick run of single shells walks across the sky between the crown and the last volley.
+  const run=track.accents.filter(at=>at>crownAt+.9&&at<finalAt-1.1);
+  for(let n=0;n<4&&run.length;n++){const pick=Math.floor(n*(run.length-1)/3);if(n&&pick===Math.floor((n-1)*(run.length-1)/3))continue;ending(run[pick],n%2?'chrysanthemum':'peony',[-62,24,-20,58][n],96+n%2*22,accents[(n+1)%3],1.15,1.9,3.2);}
   for(const [n,x]of [-76,-38,0,38,76].entries()){
    ending(finalAt,'chrysanthemum',x,170-Math.abs(x)*.7,accents[n%3],n===2?1.85:1.6,3,4.6);
   }
