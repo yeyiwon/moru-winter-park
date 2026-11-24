@@ -1,3 +1,18 @@
+# v63 운영 배포 — 2026-11-25
+
+공식 주소: **https://moru-winter-park.vercel.app/**
+
+- 운영 소스: `479aa729371f38a9d7c892f9b261a47921d75f67` (`main`, `65f15b1`에서 fast-forward). 프런트엔드만 변경. Sites API·Cloudflare realtime·DB·환경변수는 손대지 않았다.
+- Vercel Git 연동 배포 성공. 서비스 워커를 지운 상태에서 공식 도메인의 `release.json`이 위 SHA를, `firework-score.js`·`snow-surface.js`·`onsen-water.js`가 새 내용을 반환함을 확인.
+- 배포 전: 전체 **596/596**, 문법 검사 346개 모듈, `build:vercel` 통과.
+- 실제 GPU 확인(Apple M2, Claude 데스크톱 내장 브라우저, 품질 `high`): 월드 준비 완료, 콘솔 오류 없음. 브라우저 창이 가려져 있어 프레임이 초당 1회로 제한됐으므로 **FPS는 UNKNOWN**. 불꽃 공연·료칸·스키장을 운영에서 직접 보지는 않았다. 모바일 실기기도 UNKNOWN.
+- 이전 서비스 워커가 남은 브라우저는 새 워커가 설치될 때까지 v62 파일을 볼 수 있다. `/refresh.html`로 갱신한다.
+- 복구: `git revert`로 `65f15b1` 상태를 `main`에 되돌리거나 Vercel에서 이전 배포를 승격한다.
+
+[변경·측정·한계](visual-revision-ryokan.md).
+
+---
+
 # v62 운영 배포 — 2026-11-24
 
 공식 주소: **https://moru-winter-park.vercel.app/**
