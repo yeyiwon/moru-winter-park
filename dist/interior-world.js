@@ -45,7 +45,9 @@ function buildRyokan(root,m){
  const room=interiorRooms.ryokan,H=room.ceiling,shojiTop=Math.min(5.95,H-.65);
  m.cedar.color.set('#aa8c67');m.lightWood.color.set('#cdb58d');m.endgrain.color.set('#5b4736');m.cream.color.set('#ece2cb');m.tatami.color.set('#b1ad87');m.darkStone.color.set('#485550');m.stone.color.set('#92998b');
  m.cedar.roughness=.68;m.lightWood.roughness=.57;m.endgrain.roughness=.7;
- for(const material of [m.cedar,m.lightWood,m.endgrain])ryokanFinish(material);for(const material of [m.darkStone,m.stone])ryokanFinish(material,'stone');ryokanFinish(m.cream,'plaster');ryokanFinish(m.glass,'paper');ryokanFinish(m.lamp,'paper');ryokanFinish(m.tatami,'tatami');
+ // Furniture footprints from the shared layout darken the floor around and under each piece.
+ const contact={floor:room.floor,room:[room.x,room.z,room.rx,room.rz],rects:ryokanFixtures.slice(0,28).flatMap(o=>[room.x+o.x,room.z+o.z,o.rx??o.r*.8,o.rz??o.r*.8])};
+ for(const material of [m.cedar,m.lightWood,m.endgrain])ryokanFinish(material,'wood',contact);for(const material of [m.darkStone,m.stone])ryokanFinish(material,'stone',contact);ryokanFinish(m.cream,'plaster',contact);ryokanFinish(m.glass,'paper');ryokanFinish(m.lamp,'paper');ryokanFinish(m.tatami,'tatami',contact);
  const windowTime={value:0};
  const b=makeBuilder(root),walls=[],ceil=new T.Group();ceil.name='ryokan-cutaway-ceiling';ceil.userData.keepGroup=true;root.add(ceil);const cb=makeBuilder(ceil);
  b.box(room.rx*2,.28,room.rz*2,m.endgrain,0,-.05,0);b.box(room.rx*2-.4,.035,room.rz*2-.4,m.cedar,0,.072,0);
@@ -124,7 +126,7 @@ function buildRyokan(root,m){
  const bath=ryokanFixtures.find(o=>o.id==='footbath');
  roundedRyokanSlab(b,m.darkStone,9.2,.32,4.7,bath.x,.23,bath.z,.55);
  const footWater=createOnsenWater({rect:true,color:'#315b58',lights:[[0,5.5,-6],[-12,5.5,-8],[12,5.5,-8]],basin:[0,-11,4.1,1.9]});
- const waterGeo=new T.PlaneGeometry(8.3,3.85,32,16);waterGeo.rotateX(-Math.PI/2);waterGeo.translate(bath.x,.5,bath.z);b.mesh(waterGeo,footWater.material).name='ryokan-footbath-water';
+ const waterGeo=new T.PlaneGeometry(8.3,3.85,32,16);waterGeo.rotateX(-Math.PI/2);waterGeo.translate(bath.x,.57,bath.z);b.mesh(waterGeo,footWater.material).name='ryokan-footbath-water';
  buildFootbathMasonry(b,m,bath);
  for(const o of ryokanFixtures.filter(o=>['locker','tatami-cabinet'].includes(o.id))){b.box(o.rx*2,1.8,o.rz*2,m.cedar,o.x,1,o.z);for(let i=0;i<4;i++)for(let j=0;j<3;j++){const xx=o.x-o.rx+.5+i*(o.rx*2/4),y=.5+j*.55;b.box(o.rx*.43,.5,.04,m.lightWood,xx,y,o.z+o.rz+.035);b.oval(m.brass,xx+.12,y,o.z+o.rz+.065,.025,.025,.015);}}
  for(const p of ryokanFixtures.filter(o=>o.id.startsWith('planter')))makePlanter(b,m,p.x,p.z);

@@ -21,14 +21,17 @@ export function createOnsenWater({lights=[],color='#477a76',basin=[0,0,100,100],
     vec3 n=normalize(vLocalToWorld*vec3(-gradient.x,1.,-gradient.y));vec3 view=normalize(cameraPosition-vWorld);float grazing=pow(1.-max(0.,dot(n,view)),5.),fresnel=.09+grazing*.84;
     vec2 basinUV=abs((p-basin.xy)/basin.zw);float rounded=length(max(basinUV-vec2(.87),0.))/.13;float edge=mix(length(basinUV),max(max(basinUV.x,basinUV.y),.87+rounded*.13),rect);if(rect>.5&&edge>1.)discard;float depth=.12+2.1*pow(max(0.,1.-edge),.45);
     vec2 refracted=p+gradient*(.4+depth*.8);float stone=noise(refracted*1.3)*.6+noise(refracted*3.1)*.4;
-    float caustic=pow(max(0.,sin(dot(refracted,vec2(3.1,1.3))+sin(b)*.6)*cos(dot(refracted,vec2(-1.7,2.9))+sin(a)*.8)),8.);
-    vec3 bed=mix(vec3(.23,.28,.24),vec3(.29,.34,.28),stone)+vec3(.16,.23,.18)*caustic*.35;
-    vec3 transmission=exp(-vec3(.78,.34,.25)*depth*2.);vec3 water=bed*transmission+tint*(1.-transmission)*.58;
+    // Two drifting ridged-noise layers make a wandering light net; the old sine lattice read as floor tiles.
+    vec2 cq=refracted*1.7+vec2(sin(b),cos(a))*.25;float c1=1.-abs(2.*noise(cq+vec2(time*.06,-time*.045))-1.),c2=1.-abs(2.*noise(cq*1.9-vec2(time*.05,time*.07)+7.3)-1.);float caustic=pow(c1,5.)*.7+pow(c1*c2,3.)*.9;
+    vec3 bed=mix(vec3(.23,.28,.24),vec3(.29,.34,.28),stone)+vec3(.16,.23,.18)*caustic*.6;
+    bed*=1.-.34*rect;vec3 transmission=exp(-vec3(.78,.34,.25)*depth*2.);vec3 water=bed*transmission+tint*(1.-transmission)*.58;
     vec3 reflection=reflect(-view,n),sky=mix(vec3(.045,.085,.14),vec3(.18,.26,.32),pow(1.-abs(reflection.y),3.));
+    // An indoor bath mirrors a dark timber ceiling and warm paper walls, not the night sky.
+    sky=mix(sky,mix(vec3(.035,.03,.022),vec3(.15,.11,.065),pow(1.-abs(reflection.y),3.)),rect);
     water=mix(water,sky,fresnel);float lamp=0.;
     for(int i=0;i<4;i++){vec3 delta=vLocalToWorld*lights[i]+vBase-vWorld;vec3 lightDir=normalize(delta);float alignment=max(0.,dot(reflection,lightDir));float highlight=pow(alignment,100.)*.6+pow(alignment,22.)*.16+pow(alignment,8.)*.045;lamp+=highlight/(1.+dot(delta,delta)*.006);}
-    water+=vec3(1.,.73,.38)*lamp*(.5+fresnel*.9);
-    float moon=pow(max(0.,dot(reflection,normalize(vec3(-.25,.55,.8)))),110.);water+=vec3(.38,.53,.63)*moon*.28;
+    water+=vec3(1.,.73,.38)*lamp*(.5+fresnel*.9)*(1.+rect*.35);
+    float moon=pow(max(0.,dot(reflection,normalize(vec3(-.25,.55,.8)))),110.);water+=vec3(.38,.53,.63)*moon*.28*(1.-rect);
     float shore=smoothstep(.94,.99,edge)*(1.-smoothstep(1.,1.035,edge));float foam=(shore*mix(.17,.035,rect)+fallMask*.23)*smoothstep(.35,.76,noise(p*8.+vec2(time*.13,-time*.2)));
     water=mix(water,vec3(.65,.73,.67),min(.35,foam+disturbance*.025));
     gl_FragColor=vec4(water,clamp(.52+depth*.22+fresnel*.2,.5,.94));

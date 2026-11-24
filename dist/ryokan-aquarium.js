@@ -6,7 +6,7 @@ const axes=['x','y','z'];
 export function createFishSchool(count=72){
  let seed=381;const rand=()=>((seed=seed*16807%2147483647)-1)/2147483646;
  const fish=Array.from({length:count},(_,i)=>{
-  const f={x:(rand()-.5)*33,y:(rand()-.5)*5.8,z:(i%3-1)*2.2+(rand()-.5)*.7,vx:(i%3===1?-1:1)*(.35+rand()*.35),vy:0,vz:(rand()-.5)*.12,phase:rand()*Math.PI*2,size:i<4?1.05+rand()*.25:.28+rand()*.36};
+  const f={x:(rand()-.5)*33,y:(rand()-.5)*5.8,z:(i%3-1)*2.2+(rand()-.5)*.7,vx:(i%3===1?-1:1)*(.35+rand()*.35),vy:0,vz:(rand()-.5)*.12,phase:rand()*Math.PI*2,size:i<4?.62+rand()*.16:.2+rand()*.24};
   for(const k of axes){const edge=bounds[k]-f.size*(k==='y'?.62:1.6);f[k]=Math.max(-edge,Math.min(edge,f[k]));}
   f.heading=-Math.atan2(f.vz,f.vx);return f;
  });
