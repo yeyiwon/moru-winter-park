@@ -31,6 +31,14 @@ float projectionPattern(float mode,vec3 p,float t){
  vec2 cell=floor(p.xy*.6),st=fract(p.xy*.6)-.5;float hash=fract(sin(dot(cell,vec2(127.1,311.7)))*43758.5453);
  return (exp(-dot(st,st)*90.)+exp(-abs(st.x)*55.-abs(st.y)*9.)*.3+exp(-abs(st.y)*55.-abs(st.x)*9.)*.3)*(.55+.45*pow(.5+.5*sin(t*1.7+hash*30.),4.))+flow*.18;
 }
+// A second layer of moving motifs rotates every few seconds so no cue repeats one look for its whole length.
+float showMotif(float k,vec3 p,float t){
+ if(k<.5)return pow(.5+.5*sin(p.y*.9-t*2.2+sin(p.x*.25)*1.5),10.);
+ if(k<1.5)return pow(.5+.5*sin(p.y*.55+abs(p.x)*.7-t*2.4),14.);
+ if(k<2.5){vec2 q=vec2(p.x*.45,p.y*.45+t*.6),cell=floor(q),st=fract(q)-.5;float hash=fract(sin(dot(cell,vec2(41.3,289.1)))*43758.5453);return step(.45,hash)*(exp(-dot(st,st)*60.)+exp(-abs(st.x)*40.-abs(st.y)*7.)*.4+exp(-abs(st.y)*40.-abs(st.x)*7.)*.4);}
+ if(k<3.5){float d=length(vec2(p.x,(p.y-6.)*.8));return pow(.5+.5*sin(d*.9-t*2.6),12.)*exp(-d*.035);}
+ return pow(.5+.5*sin(p.x*1.3+sin(p.y*.2+t*.4)*2.),8.)*(.4+.6*pow(.5+.5*sin(p.y*.3-t*1.1),3.));
+}
 vec3 castleProjection(float finish){
  if(showPower<.0001)return vec3(0.);
  float t=mix(showTime,5.,showCalm),r=floor(vShowRegion+.5);
@@ -40,7 +48,8 @@ vec3 castleProjection(float finish){
  // Low base illumination preserves stone shadows; the moving detail carries the colour.
  float sweep=pow(.5+.5*sin(showP.y*.48-abs(showP.x)*.2-t*1.3),18.);
  float fleck=pow(.5+.5*sin(showP.x*8.+showP.y*13.+showP.z*7.),24.)*pow(.5+.5*sin(t*2.+showP.y*.7),8.);
- float energy=(.1+pattern*.84+sweep*.2+fleck*.25)*level*breathe;
+ float segment=t/6.5,motif=showMotif(mod(floor(segment)+showMode,5.),showP,t)*smoothstep(0.,.12,fract(segment))*(1.-smoothstep(.88,1.,fract(segment)));
+ float energy=(.1+pattern*.7+motif*.55+sweep*.2+fleck*.25)*level*breathe;
  tint=mix(tint,showPalette[2],sweep*.5);
  if(r>4.5&&r<5.5)energy=(.16+.14*sin(t*.7+showP.y*.25))*level;
  if(finish>1.5)energy*=1.25;
@@ -62,7 +71,7 @@ export function createCastleShow(scene){
   }else{
    const before=material.onBeforeCompile,key=material.customProgramCacheKey,cacheKey=key.call(material);
    material.onBeforeCompile=function(shader,...args){before?.call(this,shader,...args);Object.assign(shader.uniforms,uniforms);shader.vertexShader=vertexHeader+shader.vertexShader.replace('#include <begin_vertex>','#include <begin_vertex>\nshowP=position;vShowRegion=showRegion;');shader.fragmentShader=projection+'\n'+shader.fragmentShader.replace('#include <emissivemap_fragment>',`#include <emissivemap_fragment>\ntotalEmissiveRadiance+=castleProjection(${finish}.);diffuseColor.rgb*=1.-showPower*.12;`);};
-   material.customProgramCacheKey=()=>cacheKey+'-winter-castle-show-regions-2';restores.push(()=>{material.onBeforeCompile=before;material.customProgramCacheKey=key;material.needsUpdate=true;});
+   material.customProgramCacheKey=()=>cacheKey+'-winter-castle-show-regions-3';restores.push(()=>{material.onBeforeCompile=before;material.customProgramCacheKey=key;material.needsUpdate=true;});
   }material.needsUpdate=true;
  });
  const root=new T.Group();root.name='castle-performance';root.visible=false;scene.add(root);
