@@ -3,11 +3,13 @@ import {showTrack} from './show-tracks.js';
 import {serverNow} from './server-clock.js';
 import {nearestSources,surfaceAt} from './audio-world.js';
 const instances=new WeakMap();
-const defaults={master:.8,music:.75,ambient:.35,effects:.55,muted:false,musicEnabled:true,ambientEnabled:true,effectsEnabled:true};
+const defaults={master:.8,music:.75,ambient:.35,effects:.5,muted:false,musicEnabled:true,ambientEnabled:true,effectsEnabled:true};
 export function normalizedAudioSettings(value={}){const s={...defaults};for(const key of ['master','music','ambient','effects'])if(Number.isFinite(value[key]))s[key]=Math.max(0,Math.min(1,value[key]));for(const key of ['muted','musicEnabled','ambientEnabled','effectsEnabled'])if(typeof value[key]==='boolean')s[key]=value[key];return s;}
 export function getAudioEngine(win=window){if(!instances.has(win))instances.set(win,createAudioEngine(win));return instances.get(win);}
 export function createAudioEngine(win=window){
- const doc=win.document;let disposed=false,lastSpatial=-Infinity,lastListener=-Infinity,spatialPosition=null;const voices=new Set(),stepVoices=new Set();let saved={};try{saved=JSON.parse(win.localStorage.getItem('winter-audio-v2'))||{};if(!win.localStorage.getItem('winter-audio-v2')){saved.musicEnabled=win.localStorage.getItem('lab-music')!=='off';saved.effectsEnabled=win.localStorage.getItem('lab-sound')!=='off';const m=win.localStorage.getItem('lab-music-volume-v2');if(m!==null)saved.music=Math.min(1,Number(m)/.18);}}catch{}
+ const doc=win.document;let disposed=false,lastSpatial=-Infinity,lastListener=-Infinity,spatialPosition=null;const voices=new Set(),stepVoices=new Set();let saved={};try{saved=JSON.parse(win.localStorage.getItem('winter-audio-v2'))||{};if(!win.localStorage.getItem('winter-audio-v2')){saved.musicEnabled=win.localStorage.getItem('lab-music')!=='off';saved.effectsEnabled=win.localStorage.getItem('lab-sound')!=='off';const m=win.localStorage.getItem('lab-music-volume-v2');if(m!==null)saved.music=Math.min(1,Number(m)/.18);}
+  // One-time lift: effect volumes saved under the old, quieter default come up to the new 50% default.
+  if(!win.localStorage.getItem('winter-audio-effects-50')){if(Number.isFinite(saved.effects)&&saved.effects<.5)saved.effects=.5;win.localStorage.setItem('winter-audio-effects-50','1');}}catch{}
  let state=normalizedAudioSettings(saved),ctx=null,master,buses,noise,glide=null,lastWorld=null;let showMusic=null,lastShow=null,showDuck=1,performanceActive=false;const listeners=new Set(),media=new Map(),ambience=new Map(),lastEffect=new Map();let activeEffects=0;
  function publish(){try{win.localStorage.setItem('winter-audio-v2',JSON.stringify(state));}catch{}for(const fn of listeners)fn({...state});}
  function settings(next){state=normalizedAudioSettings({...state,...next});mix();publish();}
