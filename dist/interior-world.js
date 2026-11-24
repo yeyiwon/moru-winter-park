@@ -12,6 +12,7 @@ import * as T from './vendor/three.module.js';
 import {createRetreatAtmosphere} from './retreat-atmosphere.js';
 import {interiorRooms,ryokanFixtures} from './interior-layout.js';
 import {makeBuilder,mergeFinish,materials} from './architecture-kit.js';
+import {buildFootbathMasonry} from './ryokan-footbath.js';
 import {disposeOwnedScene} from './scene-resources.js';
 
 function leafGeometry(length=1,width=.22,bend=.24){
@@ -124,9 +125,7 @@ function buildRyokan(root,m){
  roundedRyokanSlab(b,m.darkStone,9.2,.32,4.7,bath.x,.23,bath.z,.55);
  const footWater=createOnsenWater({rect:true,color:'#315b58',lights:[[0,5.5,-6],[-12,5.5,-8],[12,5.5,-8]],basin:[0,-11,4.1,1.9]});
  const waterGeo=new T.PlaneGeometry(8.3,3.85,32,16);waterGeo.rotateX(-Math.PI/2);waterGeo.translate(bath.x,.5,bath.z);b.mesh(waterGeo,footWater.material).name='ryokan-footbath-water';
- for(const z of [-1,1])roundedRyokanSlab(b,m.stone,8.9,.22,.45,0,.49,bath.z+z*2.1,.17);
- for(const x of [-1,1])roundedRyokanSlab(b,m.stone,.45,.22,4.1,x*4.35,.49,bath.z,.17);
- for(const side of [-1,1])for(let i=0;i<6;i++){const rock=b.oval(m.darkStone,-3.7+i*1.45,.29,bath.z+side*2.13,.46,.22,.22);rock.rotation.y=i*.61;}
+ buildFootbathMasonry(b,m,bath);
  for(const o of ryokanFixtures.filter(o=>['locker','tatami-cabinet'].includes(o.id))){b.box(o.rx*2,1.8,o.rz*2,m.cedar,o.x,1,o.z);for(let i=0;i<4;i++)for(let j=0;j<3;j++){const xx=o.x-o.rx+.5+i*(o.rx*2/4),y=.5+j*.55;b.box(o.rx*.43,.5,.04,m.lightWood,xx,y,o.z+o.rz+.035);b.oval(m.brass,xx+.12,y,o.z+o.rz+.065,.025,.025,.015);}}
  for(const p of ryokanFixtures.filter(o=>o.id.startsWith('planter')))makePlanter(b,m,p.x,p.z);
  for(const [x,z]of [[-12,7],[12,10],[-12,-8],[12,-8]]){const y=H-3.7;makeLantern(root,b,m,x,y,z,1.35);b.rod([x,H-.3,z],[x,y+1.2,z],.018,m.endgrain);b.mesh(new T.CylinderGeometry(.2,.2,.07,24),m.brass,x,H-.25,z);for(let i=0;i<5;i++)b.mesh(new T.TorusGeometry(.035,.009,4,12),m.lightWood,x,y+1.25+i*.06,z).rotation.x=Math.PI/2;}
