@@ -7,9 +7,9 @@ const SPARKS=360,TAILS=fireworkTrailSamples,SLOTS=24;
 export function createWinterFireworks(parent,{light=null}={}){
  const capacity=SPARKS*TAILS*SLOTS,geometry=new T.BufferGeometry(),arrays={position:new Float32Array(capacity*3),velocity:new Float32Array(capacity*3),timing:new Float32Array(capacity*4),design:new Float32Array(capacity*4),launch:new Float32Array(capacity*3),color:new Float32Array(capacity*3),spark:new Float32Array(capacity),arc:new Float32Array(capacity)};
  for(const [name,array]of Object.entries(arrays))geometry.setAttribute(name,new T.BufferAttribute(array,['spark','arc'].includes(name)?1:['timing','design'].includes(name)?4:3).setUsage(T.DynamicDrawUsage));
- const uniforms={clock:{value:0},reduced:{value:0},pixelRatio:{value:1}};
+ const uniforms={clock:{value:0},reduced:{value:0},pixelRatio:{value:1},glow:{value:2.1}};
  const material=new T.ShaderMaterial({uniforms,vertexColors:true,transparent:true,depthWrite:false,blending:T.AdditiveBlending,toneMapped:true,
- vertexShader:`attribute vec3 velocity;attribute vec4 timing;attribute vec4 design;attribute vec3 launch;attribute float spark;attribute float arc;uniform float clock;uniform float reduced;uniform float pixelRatio;varying vec3 tint;varying float alpha;
+ vertexShader:`attribute vec3 velocity;attribute vec4 timing;attribute vec4 design;attribute vec3 launch;attribute float spark;attribute float arc;uniform float clock;uniform float reduced;uniform float pixelRatio;uniform float glow;varying vec3 tint;varying float alpha;
  void main(){float age=clock-timing.x-timing.y;float flight=timing.z;float kind=design.x;vec3 p=position;alpha=0.;tint=color;float size=1.;
  if(arc!=0.&&age>=0.&&age<flight){if(spark<30.){float lag=spark*.018+timing.y*.5;float u=clamp((clock-timing.x-lag)/flight,0.,1.);p=mix(launch,position,u);p.y+=arc>0.?4.*arc*u*(1.-u):(position.y-launch.y)*u*(1.-u);
  alpha=smoothstep(0.,.025,u)*exp(-lag*4.);size=mix(2.8,.7,clamp(lag/.65,0.,1.));tint=mix(color,vec3(1.,.96,.85),.5);}}
@@ -25,8 +25,8 @@ export function createWinterFireworks(parent,{light=null}={}){
  // Every letter uses one clock, one lifetime and one opacity. No staggered
  // partial letter death: a quick burst opens the whole phrase, then scatters it.
  if(kind>9.5&&kind<10.5&&age>=flight){float t=clock-timing.x-flight;float opening=1.-pow(1.-clamp(t/.55,0.,1.),3.);p=position+velocity*opening;float spread=max(0.,t-.65);float fall=max(0.,t-.45);float angle=spark*2.399963;p+=vec3(cos(angle)*(5.+mod(spark,7.)),sin(angle)*1.8,sin(spark*1.7)*3.)*spread;p.y-=4.8*fall*fall;alpha=smoothstep(0.,.08,t)*(1.-smoothstep(.9,design.z,t));tint=color;size=2.;}
- alpha*=mix(1.,.38,reduced);vec4 eye=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*eye;gl_PointSize=clamp(420.*pixelRatio*design.y/max(1.,-eye.z),1.4,5.8*pixelRatio)*size;if(alpha<.001)gl_Position=vec4(2.,2.,2.,1.);}`,
- fragmentShader:`varying vec3 tint;varying float alpha;void main(){float r=length(gl_PointCoord-.5)*2.;float a=(exp(-r*r*11.)+exp(-r*r*3.)*.32)*(1.-smoothstep(.72,1.,r))*alpha;if(a<.008)discard;gl_FragColor=vec4(tint*2.,a);
+ alpha*=mix(1.,.38,reduced);vec4 eye=modelViewMatrix*vec4(p,1.);gl_Position=projectionMatrix*eye;gl_PointSize=clamp(420.*pixelRatio*design.y/max(1.,-eye.z),1.4,5.8*pixelRatio)*size*glow;if(alpha<.001)gl_Position=vec4(2.,2.,2.,1.);}`,
+ fragmentShader:`uniform float glow;varying vec3 tint;varying float alpha;void main(){float r=length(gl_PointCoord-.5)*2.,q=r*glow;float core=exp(-q*q*11.),a=(core+exp(-q*q*3.)*.32+exp(-r*r*4.2)*.16*(glow-1.))*(1.-smoothstep(.72,1.,r))*alpha;if(a<.006)discard;gl_FragColor=vec4(mix(tint,vec3(1.,.97,.9),core*.55*step(1.01,glow))*2.,a);
 #include <tonemapping_fragment>
 #include <colorspace_fragment>
 }`});
@@ -76,5 +76,5 @@ export function createWinterFireworks(parent,{light=null}={}){
   if(listener&&previousAge!==null&&age>=previousAge&&age-previousAge<.5&&!soften)for(const shell of score){if(age<shell.at||previousAge>shell.at+shell.flight+3)continue;const distance=Math.hypot(listener.x-shell.x,listener.y-(shell.y+shell.height),listener.z-shell.z),delay=distance/343,gain=.6/(1+(distance/100)**2);if(distance>450)continue;const burst=shell.at+shell.flight+delay,glitter=burst+1.6;if(previousAge<shell.at&&age>=shell.at)globalThis.window?.labAudio?.effect('firework-launch',{gain});if(previousAge<burst&&age>=burst)globalThis.window?.labAudio?.effect('firework-burst',{gain});if(previousAge<glitter&&age>=glitter)globalThis.window?.labAudio?.effect('firework-glitter',{gain});}
   previousAge=age;
  }
- return{root:points,castle,setShow,update,setQuality(q){quality=q;key='';},get active(){return active;},dispose(){geometry.dispose();material.dispose();castle.dispose();points.removeFromParent();show=null;score=[];}};
+ return{root:points,castle,setShow,update,setQuality(q){quality=q;key='';uniforms.glow.value=q==='low'?1:2.1;},get active(){return active;},dispose(){geometry.dispose();material.dispose();castle.dispose();points.removeFromParent();show=null;score=[];}};
 }

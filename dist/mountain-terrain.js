@@ -3,6 +3,7 @@ import {tileGeometry} from './mountain-tile.js';
 import {finishSteps} from './startup-work.js';
 import {mountainTrees} from './mountain-forest.js';
 import * as T from './vendor/three.module.js';
+import {applySnowSurface} from './snow-surface.js';
 import {alpineHeight,mountainAprons,mountainBounds,mountainDistance,skiRuns,skiRunAt,skiRunCenter,skiRunHalfWidth} from './mountain-layout.js';
 
 const TILE=128;
@@ -10,7 +11,7 @@ const TILE=128;
 export function createMountainTerrain(parent){return finishSteps(createMountainTerrainSteps(parent));}
 export function* createMountainTerrainSteps(parent){
  const root=new T.Group();root.name='streamed-alpine-heightfield';parent.add(root);
- const material=new T.MeshStandardMaterial({vertexColors:true,roughness:.96});
+ const material=applySnowSurface(new T.MeshStandardMaterial({vertexColors:true,roughness:.96}));
  const live=new Map(),queue=[];let quality='medium',lastKey='',lastTick=-1;
  const forestGeo=new T.ConeGeometry(.36,1,7,1),forestMat=new T.MeshStandardMaterial({color:'#568080',roughness:1}),capMat=new T.MeshStandardMaterial({color:'#dce9f0',roughness:1}),dummy=new T.Object3D();
 

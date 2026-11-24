@@ -2,12 +2,13 @@ import {spaToWorld} from './spa-transform.js';
 import {alpineHeight,alpineShift} from './resort-layout.js';
 import {mountainBounds,mountainHalfWidth} from './mountain-layout.js';
 import * as T from './vendor/three.module.js';
+import {applySnowSurface} from './snow-surface.js';
 import {landforms,landRadius,landPoint} from './world-layout.js';
 
 // One outline drives the snow, rock skin, navigation boundary and map.
 export function buildConnectedTerrain(scene){
  const root=new T.Group();root.name='floating-winter-archipelago';
- const snow=new T.MeshStandardMaterial({vertexColors:true,roughness:1}),rock=new T.MeshStandardMaterial({vertexColors:true,roughness:.94});
+ const snow=applySnowSurface(new T.MeshStandardMaterial({vertexColors:true,roughness:1})),rock=new T.MeshStandardMaterial({vertexColors:true,roughness:.94});
  for(const form of landforms){
   // Polar samples from the mountain centre undersample the narrow base 2.5km away.
   // Follow each actual boundary in 10m steps so the rock rim meets the snow there.
