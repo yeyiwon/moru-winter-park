@@ -12,6 +12,7 @@ import * as T from './vendor/three.module.js';
 import {createRetreatAtmosphere} from './retreat-atmosphere.js';
 import {interiorRooms,ryokanFixtures} from './interior-layout.js';
 import {makeBuilder,mergeFinish,materials} from './architecture-kit.js';
+import {buildFootbathMasonry} from './ryokan-footbath.js';
 import {disposeOwnedScene} from './scene-resources.js';
 
 function leafGeometry(length=1,width=.22,bend=.24){
@@ -122,27 +123,32 @@ function buildRyokan(root,m){
  const stove=ryokanFixtures.find(o=>o.id==='sauna-stove');b.mesh(new T.CylinderGeometry(.8,.9,1.2,24),m.darkStone,stove.x,.7,stove.z);const hotRockGeometry=new T.IcosahedronGeometry(1,2),hotRockPositions=hotRockGeometry.attributes.position;for(let i=0;i<hotRockPositions.count;i++){const x=hotRockPositions.getX(i),y=hotRockPositions.getY(i),z=hotRockPositions.getZ(i),r=1+.1*Math.sin(x*8+y*11+z*7);hotRockPositions.setXYZ(i,x*r,y*r,z*r);}hotRockGeometry.computeVertexNormals();for(let i=0;i<24;i++){const a=i*2.399,r=.64*Math.sqrt(i/24),rock=b.mesh(hotRockGeometry,m.darkStone,stove.x+Math.cos(a)*r,1.32+(i%3)*.075,stove.z+Math.sin(a)*r);rock.scale.set(.23,.14,.21);rock.rotation.set(i*.3,i*.7,i*.1);}for(let j=0;j<20;j++){const a=j*Math.PI/10;b.rod([stove.x+Math.cos(a)*1,.2,stove.z+Math.sin(a)*1],[stove.x+Math.cos(a)*1,1.45,stove.z+Math.sin(a)*1],.035,m.cedar);}b.ring(1,.04,m.lightWood,stove.x,1.45,stove.z);
  const bath=ryokanFixtures.find(o=>o.id==='footbath');
  roundedRyokanSlab(b,m.darkStone,9.2,.32,4.7,bath.x,.23,bath.z,.55);
- const footWater=createOnsenWater({rect:true,color:'#315b58',lights:[[0,5.5,-6],[-12,5.5,-8],[12,5.5,-8]],basin:[0,-11,4.1,1.9]});
+ const footWater=createOnsenWater({interior:true,rect:true,color:'#2b5b58',lights:[[0,5.5,-6],[-12,5.5,-8],[12,5.5,-8]],basin:[0,-11,4.1,1.9]});
  const waterGeo=new T.PlaneGeometry(8.3,3.85,32,16);waterGeo.rotateX(-Math.PI/2);waterGeo.translate(bath.x,.5,bath.z);b.mesh(waterGeo,footWater.material).name='ryokan-footbath-water';
- for(const z of [-1,1])roundedRyokanSlab(b,m.stone,8.9,.22,.45,0,.49,bath.z+z*2.1,.17);
- for(const x of [-1,1])roundedRyokanSlab(b,m.stone,.45,.22,4.1,x*4.35,.49,bath.z,.17);
- for(const side of [-1,1])for(let i=0;i<6;i++){const rock=b.oval(m.darkStone,-3.7+i*1.45,.29,bath.z+side*2.13,.46,.22,.22);rock.rotation.y=i*.61;}
+ buildFootbathMasonry(b,m,bath);
  for(const o of ryokanFixtures.filter(o=>['locker','tatami-cabinet'].includes(o.id))){b.box(o.rx*2,1.8,o.rz*2,m.cedar,o.x,1,o.z);for(let i=0;i<4;i++)for(let j=0;j<3;j++){const xx=o.x-o.rx+.5+i*(o.rx*2/4),y=.5+j*.55;b.box(o.rx*.43,.5,.04,m.lightWood,xx,y,o.z+o.rz+.035);b.oval(m.brass,xx+.12,y,o.z+o.rz+.065,.025,.025,.015);}}
  for(const p of ryokanFixtures.filter(o=>o.id.startsWith('planter')))makePlanter(b,m,p.x,p.z);
  for(const [x,z]of [[-12,7],[12,10],[-12,-8],[12,-8]]){const y=H-3.7;makeLantern(root,b,m,x,y,z,1.35);b.rod([x,H-.3,z],[x,y+1.2,z],.018,m.endgrain);b.mesh(new T.CylinderGeometry(.2,.2,.07,24),m.brass,x,H-.25,z);for(let i=0;i<5;i++)b.mesh(new T.TorusGeometry(.035,.009,4,12),m.lightWood,x,y+1.25+i*.06,z).rotation.x=Math.PI/2;}
- addRyokanCraft(root,m,{room,ceiling:ceil});mergeFinish(ceil);
+ addRyokanCraft(root,m,{room,ceiling:ceil});mergeFinish(ceil);ceil.traverse(o=>{o.castShadow=false;});// the key light shines through the roof plane
  const aquarium=buildRyokanAquarium(root,m),chef=buildRyokanChef(root,m);
  // Local pools keep the room intimate; the aquarium remains the strongest source.
  for(const [x,y,z,power,range]of [[-13,2.4,7,30,10],[12,2.6,-9,24,9],[12,3,.1,26,13],[-13,2.3,-11,22,9],[15,2.2,10,24,9]]){const lamp=new T.PointLight('#ffd1a0',power,range,2);lamp.position.set(x,y,z);root.add(lamp);}
- const fill=new T.HemisphereLight('#ffe5c0','#a47b53',.58);root.add(fill);
+ const fill=new T.HemisphereLight('#ffe8cc','#8a8f9c',.44);root.add(fill);// cooler bounce keeps shadowed undersides from going flat amber
  const atmosphere=createRetreatAtmosphere(root,{name:'ryokan',
   waters:[],
   fireflies:[{x:12,y:2.1,z:-9,rx:4,rz:3,height:2.3,size:.06,count:18,color:'#f0d8a5'},{x:-13,y:1.5,z:7,rx:3,rz:2,height:2,size:.05,count:12,color:'#e8d2b1'}],
   vapour:[{x:bath.x,y:.52,z:bath.z-.5,rx:3.7,rz:1.6,rise:1.25,size:.9,count:20,opacity:.11},{x:-13,y:1.15,z:7,rx:.12,rz:.12,rise:.8,size:.3,count:16,opacity:.13},{x:12,y:1.15,z:-9,rx:.12,rz:.12,rise:.8,size:.3,count:16,opacity:.13},{x:stove.x,y:1.5,z:stove.z,rx:.55,rz:.55,rise:1.9,size:.8,count:28,opacity:.12}],
-  lamps:[[-12,7],[12,10],[-12,-8],[12,-8],[0,-6],[0,8]].map(([x,z])=>({x,y:.143,z,rx:3.3,rz:2.5}))
+  lamps:[...[[-12,7],[12,10],[-12,-8],[12,-8],[0,-6],[0,8]].map(([x,z])=>({x,y:.143,z,rx:3.3,rz:2.5})),
+   // cold snow-light falling in from the four scenic windows
+   ...[[-18.2,6],[-18.2,10],[18.2,-10],[18.2,-6]].map(([x,z])=>({x,y:.144,z,rx:2.9,rz:1.75,color:'#7fa6e6'}))]
  });
  let lastRipple=-Infinity;
- mergeFinish(root);return{root,walls,doors,doorOpen:0,ceiling:ceil,uniforms:[],atmosphere,update:(t,still,p)=>{footWater.update(t,still);if(!still)windowTime.value=t;if(!still&&t-lastRipple>1.1){const guests=[p,...(globalThis.window?.labRideSeats||[]).filter(r=>r.id!==globalThis.window?.labGuestId&&r.kind==='bench').map(r=>sharedSeatPose(r,serverNow()))].filter(g=>g?.mode==='footbath'&&Math.abs(g.x-400)<4.6&&Math.abs(g.z+11)<3);for(const g of guests)footWater.ripple(g.x-400,g.z+Math.cos(g.yaw)*.45,.22);if(guests.length)lastRipple=t;}aquarium.update(t,still,p);chef.update(t,still,p);},setQuality:q=>{aquarium.setQuality(q);chef.setQuality(q);footWater.setQuality(q);},dispose:()=>{aquarium.dispose();chef.dispose();}};
+ mergeFinish(root);
+ // Cut-away walls and doors are hidden whenever the camera passes behind them; if they cast shadows the
+ // room's lighting would change with the camera, so the key light ignores them.
+ for(const hidden of [...walls,...doors.map(d=>d.root)])hidden.traverse(o=>{o.castShadow=false;});
+ root.traverse(o=>{if(o.material===m.lamp)o.castShadow=false;});// glowing paper shades must not drop dark blots on the floor
+ return{root,walls,doors,doorOpen:0,ceiling:ceil,uniforms:[],atmosphere,update:(t,still,p)=>{footWater.update(t,still);if(!still)windowTime.value=t;if(!still&&t-lastRipple>1.1){const guests=[p,...(globalThis.window?.labRideSeats||[]).filter(r=>r.id!==globalThis.window?.labGuestId&&r.kind==='bench').map(r=>sharedSeatPose(r,serverNow()))].filter(g=>g?.mode==='footbath'&&Math.abs(g.x-400)<4.6&&Math.abs(g.z+11)<3);for(const g of guests)footWater.ripple(g.x-400,g.z+Math.cos(g.yaw)*.45,.22);if(guests.length)lastRipple=t;}aquarium.update(t,still,p);chef.update(t,still,p);},setQuality:q=>{aquarium.setQuality(q);chef.setQuality(q);footWater.setQuality(q);},dispose:()=>{aquarium.dispose();chef.dispose();}};
 }
 
 export function buildInteriors(scene,{lazy=false,onLoad=()=>{},onRelease=()=>{},retainMs=90000}={}){
