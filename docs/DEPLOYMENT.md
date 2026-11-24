@@ -1,3 +1,17 @@
+# v62 운영 배포 — 2026-11-24
+
+공식 주소: **https://moru-winter-park.vercel.app/**
+
+- 운영 소스: `3308130f1460dc66790ccf628bbfa50e26d65240` (`main`, 이전 `c2fbc3f`에서 fast-forward). 프런트엔드만 변경. Sites API·Cloudflare realtime·DB·환경변수는 손대지 않았다.
+- Vercel Git 연동 배포 성공. 공식 도메인의 `release.json`이 위 SHA를 반환하고 `snow-surface.js`가 200으로 제공됨을 확인.
+- 배포 전: 전체 **596/596**, 문법 검사 346개 모듈, `build:vercel` 통과.
+- 실제 GPU 확인(Apple M2, Claude 데스크톱 내장 브라우저, 1024×768 @2x, 자동 품질 `low`): 월드 입장·렌더 정상, 셰이더 오류 없음, 공원 광장 평균 **27.7 FPS**(중앙값 33.3 ms, p95 66.7 ms, 8초). 같은 기기의 v61 수치가 없어 전후 차이는 UNKNOWN. 모바일 실기기, 료칸 실내, 불꽃 공연 중 프레임은 UNKNOWN.
+- 복구: `git revert`로 `c2fbc3f` 상태를 `main`에 되돌리거나 Vercel에서 이전 배포를 승격한다.
+
+[변경·측정·한계](visual-revision-ryokan.md).
+
+---
+
 # v60 운영 배포 — 2026-11-20
 
 공식 주소: **https://moru-winter-park.vercel.app/**
