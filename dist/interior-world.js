@@ -26,13 +26,13 @@ function makePlanter(b,m,x,z,scale=1){
 }
 function makeLantern(root,b,m,x,y,z,scale=1){
  const shade=new T.Group();shade.name='ryokan-washi-lantern';shade.position.set(x,y,z);shade.scale.setScalar(scale);b.mesh(new T.LatheGeometry([[.18,0],[.28,.06],[.37,.24],[.38,.43],[.31,.64],[.18,.72]].map(v=>new T.Vector2(...v)),32),m.lamp,0,0,0,shade);
- for(let j=0;j<12;j++){const a=j*Math.PI/6,points=[.04,.18,.36,.54,.69].map((h,i)=>[Math.cos(a)*[.26,.355,.382,.355,.245][i],h,Math.sin(a)*[.26,.355,.382,.355,.245][i]]);b.mesh(new T.TubeGeometry(new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p))),10,.009,4,false),m.endgrain,0,0,0,shade);}
- for(const h of [.06,.18,.32,.46,.6,.69]){const rib=b.mesh(new T.TorusGeometry(h<.1||h>.65?.26:h<.2||h>.55?.35:.38,.007,4,24),m.lightWood,0,h,0,shade);rib.rotation.x=Math.PI/2;}
- b.ring(.2,.018,m.brass,0,.72,0,shade);b.ring(.2,.018,m.brass,0,0,0,shade);b.mesh(new T.CylinderGeometry(.2,.2,.04,24),m.endgrain,0,-.02,0,shade);b.mesh(new T.SphereGeometry(.09,12,8),m.lamp,0,.27,0,shade);b.mesh(new T.PlaneGeometry(.08,.38),m.linen,0,-.24,0,shade);root.add(shade);
- for(const y of [-.05,.75]){b.mesh(new T.CylinderGeometry(.22,.2,.025,24),m.brass,0,y,0,shade);b.mesh(new T.CylinderGeometry(.13,.13,.06,20),m.endgrain,0,y+(y<0?-.035:.035),0,shade);}
- for(let j=0;j<5;j++){const a=j*Math.PI*.4;b.rod([Math.cos(a)*.032,-.09,Math.sin(a)*.032],[Math.cos(a)*.04,-.24,Math.sin(a)*.04],.006,m.endgrain,shade);}
+ for(let j=0;j<12;j++){const a=j*Math.PI/6,points=[.04,.18,.36,.54,.69].map((h,i)=>[Math.cos(a)*[.26,.355,.382,.355,.245][i],h,Math.sin(a)*[.26,.355,.382,.355,.245][i]]);b.mesh(new T.TubeGeometry(new T.CatmullRomCurve3(points.map(p=>new T.Vector3(...p))),10,.009,4,false),m.lanternCap||(m.lanternCap=m.endgrain.clone()),0,0,0,shade);}
+ for(const h of [.06,.18,.32,.46,.6,.69]){const rib=b.mesh(new T.TorusGeometry(h<.1||h>.65?.26:h<.2||h>.55?.35:.38,.007,4,24),m.lanternCap,0,h,0,shade);rib.rotation.x=Math.PI/2;}
+ const cap=m.lanternCap||(m.lanternCap=m.endgrain.clone());b.ring(.2,.018,cap,0,.72,0,shade);b.ring(.2,.018,cap,0,0,0,shade);b.mesh(new T.CylinderGeometry(.2,.2,.04,24),cap,0,-.02,0,shade);b.mesh(new T.SphereGeometry(.09,12,8),m.lamp,0,.27,0,shade);b.mesh(new T.PlaneGeometry(.08,.38),cap,0,-.24,0,shade);root.add(shade);
+ for(const y of [-.05,.75]){b.mesh(new T.CylinderGeometry(.22,.2,.025,24),cap,0,y,0,shade);b.mesh(new T.CylinderGeometry(.13,.13,.06,20),cap,0,y+(y<0?-.035:.035),0,shade);}
+ for(let j=0;j<5;j++){const a=j*Math.PI*.4;b.rod([Math.cos(a)*.032,-.09,Math.sin(a)*.032],[Math.cos(a)*.04,-.24,Math.sin(a)*.04],.006,m.lanternCap,shade);}
  // The diffuser and the woven outer frame are separate silhouettes.
- for(let j=0;j<6;j++){const a=j*Math.PI/3;b.rod([Math.cos(a)*.21,.73,Math.sin(a)*.21],[0,.89,0],.008,m.brass,shade);}
+ for(let j=0;j<6;j++){const a=j*Math.PI/3;b.rod([Math.cos(a)*.21,.73,Math.sin(a)*.21],[0,.89,0],.008,m.lanternCap,shade);}
 }
 function makeTeaService(b,m,x,y,z){
  const pot=b.oval(m.darkStone,x,y+.24,z,.32,.26,.28);pot.name='ceramic-teapot';b.ring(.18,.025,m.brass,x,y+.46,z);b.oval(m.darkStone,x,y+.5,z,.2,.04,.18);b.oval(m.brass,x,y+.56,z,.045,.05,.045);
@@ -123,7 +123,7 @@ function buildRyokan(root,m){
  const stove=ryokanFixtures.find(o=>o.id==='sauna-stove');b.mesh(new T.CylinderGeometry(.8,.9,1.2,24),m.darkStone,stove.x,.7,stove.z);const hotRockGeometry=new T.IcosahedronGeometry(1,2),hotRockPositions=hotRockGeometry.attributes.position;for(let i=0;i<hotRockPositions.count;i++){const x=hotRockPositions.getX(i),y=hotRockPositions.getY(i),z=hotRockPositions.getZ(i),r=1+.1*Math.sin(x*8+y*11+z*7);hotRockPositions.setXYZ(i,x*r,y*r,z*r);}hotRockGeometry.computeVertexNormals();for(let i=0;i<24;i++){const a=i*2.399,r=.64*Math.sqrt(i/24),rock=b.mesh(hotRockGeometry,m.darkStone,stove.x+Math.cos(a)*r,1.32+(i%3)*.075,stove.z+Math.sin(a)*r);rock.scale.set(.23,.14,.21);rock.rotation.set(i*.3,i*.7,i*.1);}for(let j=0;j<20;j++){const a=j*Math.PI/10;b.rod([stove.x+Math.cos(a)*1,.2,stove.z+Math.sin(a)*1],[stove.x+Math.cos(a)*1,1.45,stove.z+Math.sin(a)*1],.035,m.cedar);}b.ring(1,.04,m.lightWood,stove.x,1.45,stove.z);
  const bath=ryokanFixtures.find(o=>o.id==='footbath');
  roundedRyokanSlab(b,m.darkStone,9.2,.32,4.7,bath.x,.23,bath.z,.55);
- const footWater=createOnsenWater({interior:true,rect:true,color:'#2b5b58',lights:[[0,5.5,-6],[-12,5.5,-8],[12,5.5,-8]],basin:[0,-11,4.1,1.9]});
+ const footWater=createOnsenWater({rect:true,color:'#315b58',lights:[[0,5.5,-6],[-12,5.5,-8],[12,5.5,-8]],basin:[0,-11,4.1,1.9]});
  const waterGeo=new T.PlaneGeometry(8.3,3.85,32,16);waterGeo.rotateX(-Math.PI/2);waterGeo.translate(bath.x,.5,bath.z);b.mesh(waterGeo,footWater.material).name='ryokan-footbath-water';
  buildFootbathMasonry(b,m,bath);
  for(const o of ryokanFixtures.filter(o=>['locker','tatami-cabinet'].includes(o.id))){b.box(o.rx*2,1.8,o.rz*2,m.cedar,o.x,1,o.z);for(let i=0;i<4;i++)for(let j=0;j<3;j++){const xx=o.x-o.rx+.5+i*(o.rx*2/4),y=.5+j*.55;b.box(o.rx*.43,.5,.04,m.lightWood,xx,y,o.z+o.rz+.035);b.oval(m.brass,xx+.12,y,o.z+o.rz+.065,.025,.025,.015);}}
@@ -133,21 +133,19 @@ function buildRyokan(root,m){
  const aquarium=buildRyokanAquarium(root,m),chef=buildRyokanChef(root,m);
  // Local pools keep the room intimate; the aquarium remains the strongest source.
  for(const [x,y,z,power,range]of [[-13,2.4,7,30,10],[12,2.6,-9,24,9],[12,3,.1,26,13],[-13,2.3,-11,22,9],[15,2.2,10,24,9]]){const lamp=new T.PointLight('#ffd1a0',power,range,2);lamp.position.set(x,y,z);root.add(lamp);}
- const fill=new T.HemisphereLight('#ffe8cc','#8a8f9c',.44);root.add(fill);// cooler bounce keeps shadowed undersides from going flat amber
+ const fill=new T.HemisphereLight('#ffe5c0','#a47b53',.5);root.add(fill);
  const atmosphere=createRetreatAtmosphere(root,{name:'ryokan',
   waters:[],
   fireflies:[{x:12,y:2.1,z:-9,rx:4,rz:3,height:2.3,size:.06,count:18,color:'#f0d8a5'},{x:-13,y:1.5,z:7,rx:3,rz:2,height:2,size:.05,count:12,color:'#e8d2b1'}],
   vapour:[{x:bath.x,y:.52,z:bath.z-.5,rx:3.7,rz:1.6,rise:1.25,size:.9,count:20,opacity:.11},{x:-13,y:1.15,z:7,rx:.12,rz:.12,rise:.8,size:.3,count:16,opacity:.13},{x:12,y:1.15,z:-9,rx:.12,rz:.12,rise:.8,size:.3,count:16,opacity:.13},{x:stove.x,y:1.5,z:stove.z,rx:.55,rz:.55,rise:1.9,size:.8,count:28,opacity:.12}],
-  lamps:[...[[-12,7],[12,10],[-12,-8],[12,-8],[0,-6],[0,8]].map(([x,z])=>({x,y:.143,z,rx:3.3,rz:2.5})),
-   // cold snow-light falling in from the four scenic windows
-   ...[[-18.2,6],[-18.2,10],[18.2,-10],[18.2,-6]].map(([x,z])=>({x,y:.144,z,rx:2.9,rz:1.75,color:'#7fa6e6'}))]
+  lamps:[[-12,7],[12,10],[-12,-8],[12,-8],[0,-6],[0,8]].map(([x,z])=>({x,y:.143,z,rx:3.3,rz:2.5}))
  });
  let lastRipple=-Infinity;
  mergeFinish(root);
  // Cut-away walls and doors are hidden whenever the camera passes behind them; if they cast shadows the
  // room's lighting would change with the camera, so the key light ignores them.
  for(const hidden of [...walls,...doors.map(d=>d.root)])hidden.traverse(o=>{o.castShadow=false;});
- root.traverse(o=>{if(o.material===m.lamp)o.castShadow=false;});// glowing paper shades must not drop dark blots on the floor
+ root.traverse(o=>{if(o.material===m.lamp||o.material===m.lanternCap)o.castShadow=false;else if(o.isMesh&&o.castShadow){o.geometry.computeBoundingBox();const box=o.geometry.boundingBox;if(box.max.y-box.min.y<.25&&box.max.x-box.min.x>4)o.castShadow=false;};});// hanging lanterns must not drop ownerless blots on the floor
  return{root,walls,doors,doorOpen:0,ceiling:ceil,uniforms:[],atmosphere,update:(t,still,p)=>{footWater.update(t,still);if(!still)windowTime.value=t;if(!still&&t-lastRipple>1.1){const guests=[p,...(globalThis.window?.labRideSeats||[]).filter(r=>r.id!==globalThis.window?.labGuestId&&r.kind==='bench').map(r=>sharedSeatPose(r,serverNow()))].filter(g=>g?.mode==='footbath'&&Math.abs(g.x-400)<4.6&&Math.abs(g.z+11)<3);for(const g of guests)footWater.ripple(g.x-400,g.z+Math.cos(g.yaw)*.45,.22);if(guests.length)lastRipple=t;}aquarium.update(t,still,p);chef.update(t,still,p);},setQuality:q=>{aquarium.setQuality(q);chef.setQuality(q);footWater.setQuality(q);},dispose:()=>{aquarium.dispose();chef.dispose();}};
 }
 

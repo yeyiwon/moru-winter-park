@@ -29,7 +29,7 @@ export function ryokanWindow(b,m,x,y,z,width,height,yaw=0,time={value:0}){
     // blue-hour sky, a low moon glow and a few stars
     vec3 col=mix(haze*1.25,vec3(.018,.032,.095),pow(clamp(slope*1.9,0.,1.),.55));
     vec3 moonDir=normalize(vec3(.42,.36,-1.));float moon=max(0.,dot(d,moonDir));col+=vec3(.62,.7,.9)*(smoothstep(.9992,.9996,moon)*.9+pow(moon,90.)*.16+pow(moon,9.)*.05);
-    vec2 starCell=floor(vec2(u,slope)*90.);col+=vec3(.7,.8,1.)*step(.994,hash2(starCell))*smoothstep(.12,.4,slope)*.35;
+    vec2 starAt=vec2(u,slope)*90.;col+=vec3(.7,.8,1.)*step(.994,hash2(floor(starAt)))*(1.-smoothstep(.08,.3,length(fract(starAt)-.5)))*smoothstep(.12,.4,slope)*.5;
     // two ridges; the far one keeps its snow, the near one is dark forest
     float far=.15+.05*sin(u*2.3+1.)+.03*sin(u*5.7)+.012*sin(u*13.),near=.075+.035*sin(u*3.1+2.)+.02*sin(u*7.9+.5)+.006*sin(u*31.);
     vec3 farCol=mix(vec3(.2,.27,.44),vec3(.44,.52,.72),smoothstep(-.02,.05,slope-far+.05+.02*noise(vec2(u*40.,slope*90.))));
@@ -46,14 +46,13 @@ export function ryokanWindow(b,m,x,y,z,width,height,yaw=0,time={value:0}){
     }
     // four rows of conifers standing on that ground, farthest first
     for(int layer=3;layer>=0;layer--){
-     float f=float(layer),D=10.+f*f*3.6,t=(-D-eye.z)/d.z;vec3 P=eye+d*t;float X=P.x+along,spacing=3.+f*1.2,cell=floor(X/spacing);
+     // rows start well back from the glass so a viewer across the room still sees sky and the snow field above and below them
+     float f=float(layer),D=24.+f*f*8.,t=(-D-eye.z)/d.z;vec3 P=eye+d*t;float X=P.x+along,spacing=3.4+f*1.6,cell=floor(X/spacing);
      float ground=sill+.5*sin(X*.07+f*2.1),soft=.02+t*.0016;
-     for(int i=-1;i<=1;i++){float n=cell+float(i),seed=hash(n+f*73.);if(seed<.16)continue;float h=(5.+5.5*hash(n*3.+f*19.))*(1.+.1*f),x=(n+.2+seed*.6)*spacing;
+     for(int i=-1;i<=1;i++){float n=cell+float(i),seed=hash(n+f*73.);if(seed<.16)continue;float h=(4.2+3.6*hash(n*3.+f*19.))*(1.+.12*f),x=(n+.2+seed*.6)*spacing;
       vec2 tree=conifer(vec2(X-x,P.y-ground),h,seed,soft);
-      vec3 needles=mix(vec3(.022,.05,.07),vec3(.34,.43,.66),tree.y);
-      col=mix(col,mix(needles,haze,1.-exp(-D*.015)),tree.x);
-      // a few lit cabin windows far back in the trees answer the warm room
-      if(layer==3&&seed>.9){vec2 lamp=vec2(X-x-spacing*.4,P.y-ground-1.6);col+=vec3(1.,.62,.28)*exp(-dot(lamp,lamp)*5.)*.9;}}
+      vec3 needles=mix(vec3(.022,.05,.07),vec3(.25,.33,.54),tree.y*.7);
+      col=mix(col,mix(needles,haze,1.-exp(-D*.011)),tree.x);}
     }
     // falling snow at three depths; the nearest flakes are the largest and fastest
     for(int layer=0;layer<3;layer++){float f=float(layer),D=1.4+f*f*2.2,t=(-D-eye.z)/d.z;vec3 P=eye+d*t;
