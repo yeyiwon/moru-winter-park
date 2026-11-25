@@ -9,7 +9,7 @@
 - `scripts/assets/dino-suit.py` (Blender `bpy` 5.3 + numpy, 오프라인 도구. 게임 의존성 아님)
 - 후드 캡, 얼굴 둘레 패딩 프레임, 몸통, 꼬리, 이빨 7개, 등 가시 5개, 꼬리 가시 2개를 각각 UV를 가진 로우폴리 패치로 만든다.
 - 같은 패치의 고밀도 메시(약 110만 정점)에 천 요철, 목·밑단 개더 주름, 중앙 봉제선, 스티치, 배 패널 퀼팅, 구름 패치를 넣고 Cycles로 오브젝트 스페이스 노멀, 색, AO를 굽는다.
-- 결과물: `dist/dino-suit-mesh.js`(16비트 양자화, 슈트 4,825 정점 / 8,624 삼각형, 꼬리 429 / 720), `dist/textures/dino-suit-color.webp`(1024², 색×AO), `dist/textures/dino-suit-normal.webp`(2048²).
+- 결과물: `dist/dino-suit-mesh.js`(16비트 양자화, 슈트 3,234 정점 / 5,616 삼각형, 꼬리 302 / 488), `dist/textures/dino-suit-color.webp`(1024², 색×AO), `dist/textures/dino-suit-normal.webp`(2048²).
 - 재생성: `DINO_SIZE=2048 DINO_SAMPLES=48 python3 scripts/assets/dino-suit.py -- <출력 폴더>` 후 세 파일을 위 경로로 복사.
 
 ## 게임 적용
@@ -20,7 +20,8 @@
 
 ## 실제 확인한 것
 - 게임 안 정면·45°·측면·후면·클로즈업·플레이 카메라 캡처(헤드리스 Chrome, 소프트웨어 렌더러).
-- `npm test` 596개 통과, `npm run check`, `npm run test:budget` 통과.
+- `npm test` 596개 통과, `npm run check` 통과. `npm run test:budget`는 새로 빌드한 산출물 기준 통과(codeGzipBytes 1,256,716 / 1,280,000, coreBytes 37,636,256 / 37,748,736 — 남은 여유 약 110KB).
+- 첫 배포(`99d9e7e`)는 CI 용량 검사에서 실패했다(codeGzipBytes 1,291,918). 로컬에서 이전 빌드 산출물로 검사해 통과로 잘못 판단한 것이 원인. 게임 메시 밀도를 낮추고 후드 가장자리를 얼굴 테두리 아래로 넣어 수정했다.
 
 ## 알려진 한계
 - 레퍼런스 대비: 원단의 엠보 자카드 무늬와 털 결이 없다(표면이 매끈한 플러시). 위턱이 얼굴 위로 튀어나오는 주둥이 형태와 콧구멍, 팔 소매가 없다. 캐릭터가 공 하나라 머리·몸 구분은 목 개더선으로만 표현된다.

@@ -114,6 +114,12 @@ def hood_cap(u, v, high):
     r = shell(d) + puff
     p = d * r[..., None]
     p[..., 1] -= w * .07 * (1 + .18 * np.sin(theta * 7 + 1.3))     # the hem hangs unevenly, like cloth
+    if not high:
+        # game mesh only: tuck the edge that runs under the face frame onto a ring below its crest,
+        # so the coarse boundary can never poke through the padding
+        alpha, rho = face_polar(d); ring = open_rho(alpha) + .09; under = rho < ring
+        d2 = np.cos(ring)[..., None] * FACE + np.sin(ring)[..., None] * (np.cos(alpha)[..., None] * FX + np.sin(alpha)[..., None] * FY)
+        p = np.where(under[..., None], d2 * (shell(d2) + .02)[..., None], p)
     h = np.zeros_like(r); col = np.broadcast_to(SAGE, p.shape).copy()
     # stitched cloud patch on one side of the hood
     ca = (theta - 2.05) * np.sin(ang) * r; cb = (ang - .98) * r
@@ -218,10 +224,10 @@ def tail(u, v, high):
 
 def build_charts():
     charts = [
-        Chart('hood', hood_cap, (.004, .53, .996, .996), (64, 28), (1000, 420), group='suit', keep=hood_keep),
-        Chart('frame', face_frame, (.004, .40, .996, .52), (72, 12), (1200, 170), group='suit'),
-        Chart('body', body, (.004, .15, .996, .39), (60, 12), (1000, 300), group='suit'),
-        Chart('tail', tail, (.69, .004, .996, .14), (18, 12), (260, 200), group='tail'),
+        Chart('hood', hood_cap, (.004, .53, .996, .996), (54, 22), (1000, 420), group='suit', keep=hood_keep),
+        Chart('frame', face_frame, (.004, .40, .996, .52), (60, 9), (1200, 170), group='suit'),
+        Chart('body', body, (.004, .15, .996, .39), (50, 9), (1000, 300), group='suit'),
+        Chart('tail', tail, (.69, .004, .996, .14), (16, 9), (260, 200), group='tail'),
     ]
     charts[3].origin = np.array([0, -.3, -.85])
     tiles = []
@@ -234,14 +240,14 @@ def build_charts():
         base = d * (shell(d) + .05 + .05 * brow); down = unit(-FY + FACE * .5 - FX * .12 * k / 3)
         size = 1 - .06 * abs(k) + .05 * rng.uniform(-1, 1)
         side = unit(np.cross(d, down))
-        tiles.append((f'tooth{k}', pillow(base - down * .02, down, side, .12 * size, .125 * size, .075, TOOTH, 3., .5), base + down * .05, (12, 6), (90, 70)))
+        tiles.append((f'tooth{k}', pillow(base - down * .02, down, side, .12 * size, .125 * size, .075, TOOTH, 3., .5), base + down * .05, (10, 5), (90, 70)))
     # plump stuffed spikes down the centre seam, largest on the crown
     for i, (ang, size) in enumerate([(-.42, .78), (.02, 1.), (.48, .96), (.92, .84), (1.3, .68)]):
         d = np.array([0, math.cos(ang), -math.sin(ang)]); base = d * (shell(d) + hood_puff(d) - .035)
-        tiles.append((f'spike{i}', pillow(base, d, [0, -math.sin(ang), -math.cos(ang)], .25 * size, .3 * size, .21 * size, SPIKE, 1.6, .7), base + d * .1, (14, 8), (130, 100)))
+        tiles.append((f'spike{i}', pillow(base, d, [0, -math.sin(ang), -math.cos(ang)], .25 * size, .3 * size, .21 * size, SPIKE, 1.6, .7), base + d * .1, (12, 6), (130, 100)))
     for i, sv in enumerate([.3, .62]):
         c = tail_axis(np.array(sv)); base = c + np.array([0, float(tail_rad(np.array(sv))) * .92 - .03, 0]); up = np.array([0, 1, -.35]); k = 1 - .28 * i
-        tiles.append((f'tailspike{i}', pillow(base, up, [0, .35, 1.], .15 * k, .18 * k, .13 * k, SPIKE, 1.6, .7), base + unit(up) * .05, (12, 6), (100, 80)))
+        tiles.append((f'tailspike{i}', pillow(base, up, [0, .35, 1.], .15 * k, .18 * k, .13 * k, SPIKE, 1.6, .7), base + unit(up) * .05, (10, 5), (100, 80)))
     cols = 8
     for i, (name, f, origin, low, high) in enumerate(tiles):
         cx, cy = i % cols, i // cols
