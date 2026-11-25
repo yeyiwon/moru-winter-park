@@ -30,6 +30,12 @@ export function normalizeWardrobe(value){
  const conflict=chosen.filter(id=>head.includes(id)||overEar.includes(id));
  return chosen.filter(id=>!conflict.includes(id)||id===conflict.at(-1)).join(',')||'none';
 }
+// Garments newer than the API release that validates saved looks travel in a form every release
+// accepts: the garment is left out of the accessory list and marked in the decimals of the fur
+// length, which the API stores and relays untouched. Every renderer reads the mark back.
+const coutureWire=[['dino-hood',.37]];
+export function wireAppearance(look){const items=selectedItems(look.accessory),mark=coutureWire.find(([id])=>items.includes(id));if(!mark)return look;return {...look,accessory:items.filter(id=>id!==mark[0]).join(',')||'none',fluff:Math.min(99,Math.round(Number.isFinite(+look.fluff)?+look.fluff:100))+mark[1]};}
+export function readAppearance(look){const fluff=Number(look?.fluff);if(!Number.isFinite(fluff))return look;const mark=coutureWire.find(([,m])=>Math.abs(fluff-Math.floor(fluff)-m)<.02);if(!mark)return look;return {...look,fluff:Math.floor(fluff),accessory:normalizeWardrobe([...selectedItems(look.accessory),mark[0]].join(','))};}
 export function clearSlot(value,slot){const ids=wardrobeSlots[slot]?.map(([id])=>id)||[];return normalizeWardrobe(selectedItems(value).filter(id=>!ids.includes(id)).join(','));}
 export function toggleItem(value,item){if(item==='none')return 'none';if(!wardrobeItems.includes(item))return normalizeWardrobe(value);let items=selectedItems(value);if(items.includes(item))items=items.filter(v=>v!==item);else{const slot=slots.find(group=>group.includes(item));items=items.filter(v=>!slot?.includes(v));items.push(item);}return normalizeWardrobe(items.join(','));}
 export function characterAppearance(value){return {fur:value.fur,furTop:/^#[0-9a-f]{6}$/i.test(value.furTop)?value.furTop:null,accessory:normalizeWardrobe(value.accessory),fluff:value.fluff,roundness:value.roundness};}

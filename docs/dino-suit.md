@@ -27,4 +27,12 @@
 - 레퍼런스 대비: 원단의 엠보 자카드 무늬와 털 결이 없다(표면이 매끈한 플러시). 위턱이 얼굴 위로 튀어나오는 주둥이 형태와 콧구멍, 팔 소매가 없다. 캐릭터가 공 하나라 머리·몸 구분은 목 개더선으로만 표현된다.
 - 배 패널은 얼굴 아래 좁은 영역이라 플레이 카메라에서는 거의 보이지 않는다.
 - 실제 GPU·모바일 FPS: UNKNOWN (미측정).
-- 운영 API(Sites)가 새 `wardrobe.js` 목록으로 재배포되기 전에는 `dino-hood`가 저장되지 않고 다른 사용자에게 보이지 않는다.
+- 프런트엔드 캐시가 예전 버전인 방문자에게는 후드가 보이지 않는다(`/refresh.html`로 갱신).
+- 털 길이 100에서 후드를 입으면 99로 저장된다.
+
+## 저장 형식 (API가 예전 버전일 때)
+- 원인: `/api/appearance`는 Sites API가 자기 배포본의 `wardrobe.js`로 검사한다. v65 목록에는 `dino-hood`가 없어 "지원하지 않는 장식이 포함되어 있어요."로 거부됐다.
+- 해결: `dist/wardrobe.js`의 `wireAppearance`/`readAppearance`. 보낼 때 `dino-hood`를 장식 목록에서 빼고 털 길이를 `정수 + 0.37`로 보낸다(API는 50~100 범위의 실수를 그대로 저장·중계한다). 받을 때 소수부 표시를 읽어 후드를 되돌린다. 적용 지점: 저장·presence 전송(`dist/social.js`), 입장 시 복원(`dist/social.js`), 모든 캐릭터 렌더(`dist/companion.js`의 `customize`).
+- 확인: v65 `validateAppearance`가 원래 형식은 같은 오류로 거부하고 전송 형식은 받아들임. v65 검증 규칙으로 돌린 로컬 서버에서 저장 → presence 동기화 6초 → 새로고침 후에도 `eyes-sparkle,dino-hood`, 털 길이 88로 복원됨. `tests/wardrobe-wire.test.mjs`.
+- 미확인: 운영 서버에서의 실제 저장, 다른 접속자 화면에서의 표시(같은 렌더 경로를 쓰지만 브라우저 두 대로 확인하지 않음).
+- Sites API를 새 목록으로 재배포해도 이 형식은 그대로 동작한다.

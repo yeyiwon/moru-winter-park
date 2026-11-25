@@ -10,6 +10,7 @@ import {createGuestName,isNumberedGuest} from './guest-names.js';
 import {encodeActivity} from './activity-state.js';
 import {closeDialog} from './ui-motion.js';
 import {publicRoom} from './space-links.js';
+import {wireAppearance,readAppearance} from './wardrobe.js';
 const $=s=>document.querySelector(s),form=$('#join-form'),status=$('#social-status'),people=$('#social-people'),nameInput=$('#visitor-name'),studio=$('#studio');
 const entryURL=new URL(location.href),rawInvitation=new URLSearchParams(entryURL.hash.slice(1)).get('invite');
 const adminEntry=/^\/admin(?:\/|$)/.test(entryURL.pathname);
@@ -33,7 +34,7 @@ function gate(message,canJoin=false){
  openConnection();$('.studio-head>span').textContent='WINTERLIGHT 접속';$('#studio-section-en').textContent='CONNECTION';$('#studio-section-name').textContent='접속';$('#connection-description').textContent=message;form.hidden=!canJoin;
  window.dispatchEvent(new Event('lab:session-ended'));window.dispatchEvent(new Event('lab:pause'));window.labLoading?.complete('connection');
 }
-function entered(data){presenceCache.reset();nextSync=0;if(data.color)window.dispatchEvent(new CustomEvent('lab:restore-appearance',{detail:{fur:data.color,furTop:data.colorTop||null,accessory:data.accessory,fluff:data.fluff??100,roundness:data.roundness??50}}));
+function entered(data){presenceCache.reset();nextSync=0;if(data.color)window.dispatchEvent(new CustomEvent('lab:restore-appearance',{detail:readAppearance({fur:data.color,furTop:data.colorTop||null,accessory:data.accessory,fluff:data.fluff??100,roundness:data.roundness??50})}));
  if(window.labGuestId&&window.labGuestId!==data.id){showPeople([]);recentChats.length=0;seenChats.clear();chatLog.replaceChildren();selfBubble.hidden=true;window.labRideSeats=[];if(window.labRideReservation)window.dispatchEvent(new CustomEvent('lab:ride-expired',{detail:window.labRideReservation.kind}));window.labRideReservation=null;}
  room=publicRoom;joined=true;window.labSocialJoined=true;window.labGuestId=data.id;failures=0;setName(data.name);form.hidden=true;status.textContent='접속 중 · 1명';chatStatus.textContent='';endGate();window.dispatchEvent(new CustomEvent('lab:room',{detail:room}));void realtime.restart();
 }
@@ -56,13 +57,13 @@ window.saveWinterAppearance=async look=>{
  if(!joined||joining)throw Error('공간에 연결한 뒤 다시 저장해 주세요.');
  if(appearanceSaving)throw Error('외형을 저장하고 있어요.');
  appearanceSaving=true;
- try{await syncing;return await request('appearance',look);}finally{appearanceSaving=false;nextSync=Date.now()+500;}
+ try{await syncing;return readAppearance(await request('appearance',wireAppearance(look)));}finally{appearanceSaving=false;nextSync=Date.now()+500;}
 };
 async function performSync(){
  busy=true;lastSent=Date.now();lastMoving=(window.labPlayerState?.speed||0)>.1;
  const sentGuest=window.labGuestId,sentReservation=window.labRideReservation;let recoveredSeat=false;
  try{
-  const a=window.labAppearance||{},data=await request('presence',{...outgoingPose(),...presenceCache.request(),color:a.fur,colorTop:a.furTop,accessory:a.accessory,fluff:a.fluff,roundness:a.roundness,gesture:gesture||encodeActivity(window.labPlayerState)});
+  const a=wireAppearance(window.labAppearance||{}),data=await request('presence',{...outgoingPose(),...presenceCache.request(),color:a.fur,colorTop:a.furTop,accessory:a.accessory,fluff:a.fluff,roundness:a.roundness,gesture:gesture||encodeActivity(window.labPlayerState)});
   gesture='';failures=0;if(!realtime.active)acceptPresence(data);
  }catch(e){
   // A sleeping mobile tab can outlive its chair's lease without losing admission.

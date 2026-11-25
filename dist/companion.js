@@ -10,7 +10,7 @@ import {diningServiceState} from './ryokan-service.js';
 import {createYukata} from './winter-costumes.js';
 import {createCouture,coutureTuck,coutureIDs} from './winter-couture.js';
 import {disposeOwnedScene} from './scene-resources.js';
-import {selectedItems,normalizeWardrobe} from './wardrobe.js';
+import {selectedItems,normalizeWardrobe,readAppearance} from './wardrobe.js';
 import {createStyleAccessories,extraAccessoryIDs} from './character-accessories.js';
 import * as THREE from './vendor/three.module.js';
 import {createPopcornGeometry} from './held-popcorn.js';
@@ -188,7 +188,7 @@ export function createCompanion({detail='full'}={}){
  let wardrobeGear='none',equipped='none';function equip(kind=wardrobeGear){equipped=kind;skateParts.forEach(s=>s.visible=kind==='skates');skis.visible=kind==='ski';board.visible=kind==='board';boots.forEach(b=>b.visible=kind==='ski'||kind==='board');}equip();
  let roundness=0,nameHeight=.9;
  function customize(o){
-  const items=selectedItems(normalizeWardrobe(o.accessory));appearanceItems=items;tail.select(items.includes('dino-hood')?items.filter(id=>!id.startsWith('tail-')):items);googly.root.visible=items.includes('googly-glasses');wardrobeGear=items.includes('board')?'board':items.includes('ski')?'ski':'none';equip();
+  o=readAppearance(o);const items=selectedItems(normalizeWardrobe(o.accessory));appearanceItems=items;tail.select(items.includes('dino-hood')?items.filter(id=>!id.startsWith('tail-')):items);googly.root.visible=items.includes('googly-glasses');wardrobeGear=items.includes('board')?'board':items.includes('ski')?'ski':'none';equip();
   velvet.color.set(o.fur||'#f4eee5');fibreMaterial.color.copy(velvet.color);
   // Keep the grazing highlight dyed like the fibres, without a white rim or a
   // brightness threshold that abruptly changes navy, silver and pastel looks.
