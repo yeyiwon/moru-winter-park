@@ -12,7 +12,7 @@ test('soft padded ears follow the fur color and contain a recessed front cup for
     for(let i=0;i<geometry.attributes.position.count;i++){if(i>=cup.start&&i<cup.start+cup.count){facing+=normals.getZ(i);innerFront=Math.max(innerFront,positions.getZ(i));}else outerFront=Math.max(outerFront,positions.getZ(i));}
     assert.ok(facing/cup.count>.3,'pink inset faces the camera');assert.ok(outerFront>innerFront+.005,'rolled soft rim projects beyond the inset');
   }
-  assert.equal(shapes.size,3);let meshes=0;pet.group.traverse(object=>{if(object.isMesh)meshes++;});assert.ok(meshes<=88);
+  assert.equal(shapes.size,3);let meshes=0;pet.group.traverse(object=>{if(object.isMesh)meshes++;});assert.ok(meshes<=90);
 });
 
 test('cached name height follows selected headwear and body proportions',()=>{

@@ -8,6 +8,7 @@ import {createHandSparkler} from './hand-sparkler.js';
 import {createRyokanMeal,updateRyokanMeal} from './ryokan-meal.js';
 import {diningServiceState} from './ryokan-service.js';
 import {createYukata} from './winter-costumes.js';
+import {createCouture,coutureTuck,coutureIDs} from './winter-couture.js';
 import {disposeOwnedScene} from './scene-resources.js';
 import {selectedItems,normalizeWardrobe} from './wardrobe.js';
 import {createStyleAccessories,extraAccessoryIDs} from './character-accessories.js';
@@ -41,19 +42,19 @@ export function createCompanion({detail='full'}={}){
  }
  const lowerVelvet=velvet.clone(),lowerFibres=fibreMaterial.clone(),dye=createFurGradient([velvet,fibreMaterial]);
  const tail=createCharacterTail(shape,{velvet:lowerVelvet,fibreMaterial:lowerFibres,fibreGeometry,remote:detail==='remote'});
- let lastFluff=-1;
+ let lastFluff=-1,tuck=null,lastTuck='';
  function setViewDetail(pixels=Infinity){
   // At walking-camera distance most fibres are subpixel. Preserve full grooming
   // in close-ups and the wardrobe, and use the same uniformly distributed fur.
   const density=THREE.MathUtils.clamp((Math.max(0,pixels)/220)**1.25,detail==='remote'?.28:.06,1);
   fur.count=Math.min(count,Math.max(1,Math.round(count*density)));tail.setViewDetail(pixels);
  }
- function groom(fluff){if(lastFluff===fluff)return;lastFluff=fluff;tail.groom(fluff);
+ function groom(fluff,worn=''){if(lastFluff===fluff&&lastTuck===worn)return;lastFluff=fluff;lastTuck=worn;tuck=worn?coutureTuck(worn.split(',')):null;tail.groom(fluff);
   for(let i=0;i<count;i++){const f=fibres[i],eyeDistance=Math.min(Math.hypot((f.position.x-.205)/.13,(f.position.y-.075)/.15),Math.hypot((f.position.x+.205)/.13,(f.position.y-.075)/.15)),faceBlend=f.position.z>.45?1-Math.exp(-eyeDistance*eyeDistance*1.5):1;
    dummy.position.copy(f.position);dummy.quaternion.setFromUnitVectors(up,f.normal);dummy.rotateY(f.twist);
    // A continuous radial falloff avoids a rectangular shaved patch around the eyes.
    const underside=THREE.MathUtils.smoothstep(f.position.y,-.74,-.52);
-   const length=(.18+.82*faceBlend)*(.35+.65*underside)*f.length*(.65+fluff/100*.35);
+   const length=(.18+.82*faceBlend)*(.35+.65*underside)*f.length*(.65+fluff/100*.35)*(tuck?tuck(f.position):1);
    dummy.scale.set(1,length,1);dummy.updateMatrix();fur.setMatrixAt(i,dummy.matrix);
   }fur.instanceMatrix.needsUpdate=true;
  }
@@ -100,6 +101,7 @@ export function createCompanion({detail='full'}={}){
  const reactions=new THREE.Mesh(reactionGeometry,[eyeMat,new THREE.MeshStandardMaterial({color:'#d9a2aa',roughness:1,transparent:true,opacity:.5,depthWrite:false})]);reactions.name='content-cheeks-smile';reactions.visible=false;shape.add(reactions);
  const styleAccessories=createStyleAccessories({detail}),{glasses,ovalGlasses,catEyeGlasses,silverGlasses,crown,brooch,ribbon,scarf,beret}=styleAccessories;const extras=extraAccessoryIDs.map(id=>[styleAccessories[id],id]);
  shape.add(...Object.values(styleAccessories));
+ const couture=createCouture({detail});shape.add(...couture.meshes);
  const googly=createGooglyGlasses(shape);
  const eyewear=[[glasses,'sunglasses'],[ovalGlasses,'oval-sunglasses'],[catEyeGlasses,'cat-eye-sunglasses'],[silverGlasses,'silver-glasses']];
  const frameMat=new THREE.MeshStandardMaterial({color:'#17151f',roughness:.3,metalness:.15});
@@ -186,14 +188,14 @@ export function createCompanion({detail='full'}={}){
  let wardrobeGear='none',equipped='none';function equip(kind=wardrobeGear){equipped=kind;skateParts.forEach(s=>s.visible=kind==='skates');skis.visible=kind==='ski';board.visible=kind==='board';boots.forEach(b=>b.visible=kind==='ski'||kind==='board');}equip();
  let roundness=0,nameHeight=.9;
  function customize(o){
-  const items=selectedItems(normalizeWardrobe(o.accessory));appearanceItems=items;tail.select(items);googly.root.visible=items.includes('googly-glasses');wardrobeGear=items.includes('board')?'board':items.includes('ski')?'ski':'none';equip();
+  const items=selectedItems(normalizeWardrobe(o.accessory));appearanceItems=items;tail.select(items.includes('dino-hood')?items.filter(id=>!id.startsWith('tail-')):items);googly.root.visible=items.includes('googly-glasses');wardrobeGear=items.includes('board')?'board':items.includes('ski')?'ski':'none';equip();
   velvet.color.set(o.fur||'#f4eee5');fibreMaterial.color.copy(velvet.color);
   // Keep the grazing highlight dyed like the fibres, without a white rim or a
   // brightness threshold that abruptly changes navy, silver and pastel looks.
-  velvet.sheen=.45;velvet.sheenColor.copy(velvet.color);velvet.emissive.copy(velvet.color);fibreMaterial.emissive.copy(velvet.color);groom(o.fluff??100);
+  velvet.sheen=.45;velvet.sheenColor.copy(velvet.color);velvet.emissive.copy(velvet.color);fibreMaterial.emissive.copy(velvet.color);groom(o.fluff??100,items.filter(id=>coutureIDs.includes(id)).join(','));
   dye.update(o.fur||'#f4eee5',o.furTop);tail.color(o.fur||'#f4eee5');lowerVelvet.color.copy(velvet.color);lowerVelvet.emissive.copy(velvet.emissive);lowerVelvet.sheen=.45;lowerVelvet.sheenColor.copy(velvet.color);lowerFibres.color.copy(fibreMaterial.color);lowerFibres.emissive.copy(fibreMaterial.emissive);
   earVelvet.color.set(o.furTop||o.fur||'#f4eee5');earVelvet.sheenColor.copy(earVelvet.color);earInner.color.set(items.includes('ear-tone-cream')?'#e7c5a7':items.includes('ear-tone-lilac')?'#c1a3ce':'#d99fa9');
-  for(const [mesh,id] of [...eyewear,...extras,[goggles,'goggles'],[crown,'crown'],[beret,'beret'],[scarf,'soft-scarf'],[earmuffs,'earmuffs'],[brooch,'star'],[ribbon,'ribbon'],[santa,'santa'],[helmet,'helmet']])mesh.visible=items.includes(id);
+  for(const [mesh,id] of [...eyewear,...extras,[goggles,'goggles'],[crown,'crown'],[beret,'beret'],[scarf,'soft-scarf'],[earmuffs,'earmuffs'],[brooch,'star'],[ribbon,'ribbon'],[santa,'santa'],[helmet,'helmet']])mesh.visible=items.includes(id);couture.select(items);
   roundness=((o.roundness??50)-50)/500;shape.scale.set(1+roundness,1-roundness*.5,1);
   const ears=items.find(item=>earShapes[item]),hat=items.some(id=>['santa','beret','beanie','fur-hat','winter-cap'].includes(id));
   headband.visible=!!ears&&!items.includes('helmet');headband.userData.kind=ears||'';if(ears)headband.geometry=earShapes[ears];
@@ -208,7 +210,7 @@ export function createCompanion({detail='full'}={}){
  function pose({phase=0,walking=false,time=0,landing=0,still=false,look=0,mode='',lean=0,tilt=0,speed=0,brake=false,gesture='',heldItem,balloonTone=0,balloonStyle='classic',roast=0,room='',diningStartedAt=null,diningNow=null,hands=null}={}){
   landing=Number.isFinite(landing)?THREE.MathUtils.clamp(landing,0,1):0;
   yukata.visible=room==='ryokan';heldItem=heldItem??(['ski','lift','bath','sauna','lie','tea'].includes(mode)?'':appearanceItems.find(v=>['coffee','cocoa','odeng','marshmallow','bubble-wand','balloon','icecream'].includes(v))||'');
-  group.rotation.order='YXZ';const spa=['bath','footbath','sauna','lie','tea','dining'].includes(mode),snack=gesture==='snack'&&mode!=='ski'&&mode!=='lift',warming=gesture==='warm'&&mode!=='ski'&&mode!=='lift',bubbling=gesture==='bubble'&&!spa&&mode!=='ski'&&mode!=='lift',waving=gesture==='wave'&&!spa&&mode!=='ski'&&mode!=='lift';if(spa!==relaxing){relaxing=spa;equip(spa?'none':wardrobeGear);}tail.pose({time,phase,walking,still,spa,yaw:group.rotation.y});googly.root.visible=!spa&&appearanceItems.includes('googly-glasses');googly.update({time,yaw:group.rotation.y,walking,phase,still});bathTowel.visible=spa;teaCup.visible=mode==='tea'||snack||['coffee','cocoa'].includes(heldItem);cupMaterial.color.set(heldItem==='coffee'?'#b7b0cd':heldItem==='cocoa'?'#ac857b':'#f0e3cd');tea.material.color.set(heldItem==='coffee'?'#4f3028':heldItem==='cocoa'?'#6c3b2a':'#976e42');santa.visible=!spa&&appearanceItems.includes('santa');helmet.visible=!spa&&appearanceItems.includes('helmet');headband.visible=!spa&&!!headband.userData.kind&&!appearanceItems.includes('helmet');for(const [mesh,id] of extras)mesh.visible=!spa&&appearanceItems.includes(id);beret.visible=!spa&&appearanceItems.includes('beret');scarf.visible=!spa&&appearanceItems.includes('soft-scarf');earmuffs.visible=!spa&&appearanceItems.includes('earmuffs');goggles.visible=!spa&&appearanceItems.includes('goggles');for(const [mesh,item] of eyewear)mesh.visible=!spa&&appearanceItems.includes(item);crown.visible=!spa&&appearanceItems.includes('crown');group.rotation.x=mode==='lie'?-Math.PI/2:mode==='ski'?tilt:0;
+  group.rotation.order='YXZ';const spa=['bath','footbath','sauna','lie','tea','dining'].includes(mode),snack=gesture==='snack'&&mode!=='ski'&&mode!=='lift',warming=gesture==='warm'&&mode!=='ski'&&mode!=='lift',bubbling=gesture==='bubble'&&!spa&&mode!=='ski'&&mode!=='lift',waving=gesture==='wave'&&!spa&&mode!=='ski'&&mode!=='lift';if(spa!==relaxing){relaxing=spa;equip(spa?'none':wardrobeGear);}tail.pose({time,phase,walking,still,spa,yaw:group.rotation.y});googly.root.visible=!spa&&appearanceItems.includes('googly-glasses');googly.update({time,yaw:group.rotation.y,walking,phase,still});bathTowel.visible=spa;teaCup.visible=mode==='tea'||snack||['coffee','cocoa'].includes(heldItem);cupMaterial.color.set(heldItem==='coffee'?'#b7b0cd':heldItem==='cocoa'?'#ac857b':'#f0e3cd');tea.material.color.set(heldItem==='coffee'?'#4f3028':heldItem==='cocoa'?'#6c3b2a':'#976e42');santa.visible=!spa&&appearanceItems.includes('santa');helmet.visible=!spa&&appearanceItems.includes('helmet');headband.visible=!spa&&!!headband.userData.kind&&!appearanceItems.includes('helmet')&&!appearanceItems.includes('dino-hood');for(const [mesh,id] of extras)mesh.visible=!spa&&appearanceItems.includes(id);couture.select(appearanceItems,spa,yukata.visible);couture.pose({time,walking,phase,still,yaw:group.rotation.y,mode,room});beret.visible=!spa&&appearanceItems.includes('beret');scarf.visible=!spa&&appearanceItems.includes('soft-scarf');earmuffs.visible=!spa&&appearanceItems.includes('earmuffs');goggles.visible=!spa&&appearanceItems.includes('goggles');for(const [mesh,item] of eyewear)mesh.visible=!spa&&appearanceItems.includes(item);crown.visible=!spa&&appearanceItems.includes('crown');group.rotation.x=mode==='lie'?-Math.PI/2:mode==='ski'?tilt:0;
   if(gesture!==lastGesture){lastGesture=gesture;gestureStartedAt=time;}const gestureTime=Math.max(0,time-gestureStartedAt),carrying=!!skewerShapes[heldItem]&&mode!=='ski'&&mode!=='lift';heldSkewer.visible=carrying;
   if(carrying){if(currentHeldItem!==heldItem){currentHeldItem=heldItem;skewerMesh.geometry=skewerShapes[heldItem];lastRoast=-1;}const cooked=THREE.MathUtils.clamp(roast,0,1);if(cooked!==lastRoast){lastRoast=cooked;skewerWood.color.set(heldItem==='popcorn'?'#8b3445':heldItem==='balloon'?'#e1d7c8':'#b38b60');skewerFood.roughness=heldItem==='balloon'?.28:.78;if(heldItem==='popcorn')skewerFood.color.set('#fff0cc');else if(heldItem==='balloon')skewerFood.color.set('#d9a0ce');else if(heldItem==='candyfloss')skewerFood.color.set('#efc4d5');else if(heldItem==='icecream')skewerFood.color.set('#f1d8c5');else if(heldItem==='odeng')skewerFood.color.set('#dcb079');else skewerFood.color.copy(cooked<.5?toastWhite:toastTan).lerp(cooked<.5?toastTan:toastBrown,cooked<.5?cooked*2:(cooked-.5)*2);}}
   let sipProgress=0,blowProgress=0,eatProgress=0;bubbleWand.visible=(bubbling||heldItem==='bubble-wand')&&!spa&&mode!=='ski'&&mode!=='lift'&&!carrying;if(carrying)teaCup.visible=false;

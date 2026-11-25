@@ -1,6 +1,6 @@
 // One catalog is used by the picker, session validation and all character renderers.
 export const wardrobeSlots={
- head:[['cat-ears','고양이 귀'],['bunny-ears','토끼 귀'],['bear-ears','곰 귀'],['little-horns','뿔'],['crown','실버 왕관'],['winter-flower','눈꽃 장식'],['santa','산타 모자'],['earmuffs','귀마개'],['helmet','스키 헬멧'],['tree-star','트리 요정 별'],['pine-cap','작은 크리스마스 트리'],['witch-hat','꼬마 마녀 모자'],['pumpkin-cap','호박 베레모'],['ghost-cap','꼬마 유령'],['antlers','루돌프 뿔'],['moon-cap','별밤 마법사']],
+ head:[['cat-ears','고양이 귀'],['bunny-ears','토끼 귀'],['bear-ears','곰 귀'],['little-horns','뿔'],['crown','실버 왕관'],['winter-flower','눈꽃 장식'],['santa','산타 모자'],['earmuffs','귀마개'],['helmet','스키 헬멧'],['tree-star','트리 요정 별'],['pine-cap','작은 크리스마스 트리'],['witch-hat','꼬마 마녀 모자'],['pumpkin-cap','호박 베레모'],['ghost-cap','꼬마 유령'],['antlers','루돌프 뿔'],['moon-cap','별밤 마법사'],['dino-hood','공룡 후드']],
  nose:[['glow-nose','반짝 루돌프 코']],
  audio:[['earbuds','무선 이어폰'],['headphones','실버 헤드셋'],['cat-headphones','고양이 헤드셋']],
  glasses:[['googly-glasses','눈알 안경'],['silver-glasses','동그란 실버 안경'],['sunglasses','클래식 선글라스'],['oval-sunglasses','작은 오벌 선글라스'],['cat-eye-sunglasses','캣아이 선글라스'],['heart-glasses','하트 안경'],['star-glasses','별 장식 안경'],['goggles','겨울 고글']],
@@ -37,7 +37,7 @@ export function characterAppearance(value){return {fur:value.fur,furTop:/^#[0-9a
 export function randomAppearance(random=Math.random){
  const pick=items=>items[Math.min(items.length-1,Math.floor(random()*items.length))];
  const colors=furPalettes.flatMap(([,items])=>items.map(([color])=>color));
- const head=pick(['none',...wardrobeSlots.head.map(([id])=>id).filter(id=>id!=='helmet'),'headphones','cat-headphones']);
+ const head=pick(['none',...wardrobeSlots.head.map(([id])=>id).filter(id=>id!=='helmet'&&id!=='dino-hood'),'headphones','cat-headphones']);
  return {fur:pick(colors),furTop:null,accessory:normalizeWardrobe([head,pick(wardrobeSlots.eyes)[0],pick(['none','tail-cat','tail-round'])].join(',')),fluff:85+Math.round(random()*15),roundness:35+Math.round(random()*45)};
 }
 export function validateAppearance(value){

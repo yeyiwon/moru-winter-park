@@ -14,7 +14,7 @@ test('fashion accessories share finite geometry with a bounded draw-group budget
   const normals=mesh.geometry.attributes.normal;let valid=0;for(let i=0;i<normals.count;i++)if(Math.hypot(normals.getX(i),normals.getY(i),normals.getZ(i))>.5)valid++;
   assert.ok(valid/normals.count>.98,key+' has usable lighting normals');
  }
- const pet=createCompanion({detail:'remote'});let meshes=0;pet.group.traverse(o=>{if(o.isMesh)meshes++;});assert.ok(meshes<=88);
+ const pet=createCompanion({detail:'remote'});let meshes=0;pet.group.traverse(o=>{if(o.isMesh)meshes++;});assert.ok(meshes<=90);
 });
 
 test('new headwear and eyewear replace their own slots and stay attached during activities',()=>{
